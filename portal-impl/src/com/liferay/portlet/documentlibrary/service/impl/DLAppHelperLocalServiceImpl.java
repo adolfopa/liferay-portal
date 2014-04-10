@@ -75,11 +75,8 @@ import com.liferay.portlet.trash.model.TrashEntry;
 import com.liferay.portlet.trash.model.TrashVersion;
 import com.liferay.portlet.trash.util.TrashUtil;
 
-import javax.portlet.PortletPreferences;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletURL;
-import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -139,6 +136,8 @@ public class DLAppHelperLocalServiceImpl
 
 				workflowContext.put("event", DLSyncConstants.EVENT_ADD);
 
+				workflowContext.put(DL_CONFIG, dlConfig);
+
 				WorkflowHandlerRegistryUtil.startWorkflowInstance(
 					dlFileVersion.getCompanyId(), dlFileVersion.getGroupId(),
 					userId, DLFileEntryConstants.getClassName(),
@@ -150,6 +149,8 @@ public class DLAppHelperLocalServiceImpl
 			if (!dlConfig.isWorkflowEnabled()) {
 				WorkflowThreadLocal.setEnabled(previousEnabled);
 			}
+
+			serviceContext.removeAttribute(DL_CONFIG);
 		}
 
 		if (dlConfig.isDLProcessorRegistryEnabled()) {
@@ -1551,6 +1552,12 @@ public class DLAppHelperLocalServiceImpl
 			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
+		DLConfig savedDLConfig = (DLConfig)workflowContext.get(DL_CONFIG);
+
+		if (savedDLConfig != null) {
+			dlConfig = savedDLConfig;
+		}
+
 		if (newStatus == WorkflowConstants.STATUS_APPROVED) {
 
 			// Asset
@@ -2310,5 +2317,7 @@ public class DLAppHelperLocalServiceImpl
 			}
 		);
 	}
+
+	private static final String DL_CONFIG = "dlConfig";
 
 }

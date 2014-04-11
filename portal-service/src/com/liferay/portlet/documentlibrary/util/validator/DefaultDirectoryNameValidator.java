@@ -12,25 +12,22 @@
  * details.
  */
 
-package com.liferay.portlet.documentlibrary.util;
+package com.liferay.portlet.documentlibrary.util.validator;
 
-import com.liferay.portal.kernel.util.AutoResetThreadLocal;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portlet.documentlibrary.FolderNameException;
 
 /**
- * @author Eudaldo Alonso
+ * @author Adolfo Pérez
  */
-public class DLAppHelperThreadLocal {
+public class DefaultDirectoryNameValidator
+	extends BaseNameValidator implements DirectoryNameValidator {
 
-	public static boolean isEnabled() {
-		return _enabled.get();
+	@Override
+	public void validate(String directoryName) throws PortalException {
+		if (!isValidFileName(directoryName)) {
+			throw new FolderNameException(directoryName);
+		}
 	}
-
-	public static void setEnabled(boolean enabled) {
-		_enabled.set(enabled);
-	}
-
-	private static ThreadLocal<Boolean> _enabled =
-		new AutoResetThreadLocal<Boolean>(
-			DLAppHelperThreadLocal.class + "._enabled", true);
 
 }

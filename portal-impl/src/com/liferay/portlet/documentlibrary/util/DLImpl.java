@@ -60,8 +60,8 @@ import com.liferay.portal.util.PortletKeys;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.PortletURLFactoryUtil;
 import com.liferay.portlet.documentlibrary.DLSettings;
+import com.liferay.portlet.documentlibrary.InvalidFileVersionException;
 import com.liferay.portlet.documentlibrary.model.DLFileEntry;
-import com.liferay.portlet.documentlibrary.model.DLFileEntryConstants;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryType;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryTypeConstants;
 import com.liferay.portlet.documentlibrary.model.DLFileShortcut;
@@ -74,6 +74,9 @@ import com.liferay.portlet.documentlibrary.util.comparator.RepositoryModelModifi
 import com.liferay.portlet.documentlibrary.util.comparator.RepositoryModelNameComparator;
 import com.liferay.portlet.documentlibrary.util.comparator.RepositoryModelReadCountComparator;
 import com.liferay.portlet.documentlibrary.util.comparator.RepositoryModelSizeComparator;
+import com.liferay.portlet.documentlibrary.util.validator.DLValidatorUtil;
+import com.liferay.portlet.documentlibrary.util.validator.FileNameValidator;
+import com.liferay.portlet.documentlibrary.util.validator.VersionValidator;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.trash.util.TrashUtil;
@@ -94,6 +97,8 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderResponse;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.InvalidFileNameException;
 
 /**
  * @author Brian Wing Shun Chan
@@ -1191,24 +1196,38 @@ public class DLImpl implements DL {
 	}
 
 	@Override
-	public boolean isValidVersion(String version) {
-		if (version.equals(DLFileEntryConstants.PRIVATE_WORKING_COPY_VERSION)) {
+	public boolean isValidFileName(String fileName)
+		throws PortalException, SystemException {
+
+		try {
+			FileNameValidator fileNameValidator =
+				DLValidatorUtil.getDefaultFileNameValidator();
+
+			fileNameValidator.validate(fileName);
+
 			return true;
 		}
-
-		String[] versionParts = StringUtil.split(version, StringPool.PERIOD);
-
-		if (versionParts.length != 2) {
+		catch (InvalidFileNameException e) {
 			return false;
 		}
+	}
 
-		if (Validator.isNumber(versionParts[0]) &&
-			Validator.isNumber(versionParts[1])) {
+	@Deprecated
+	@Override
+	public boolean isValidVersion(String version)
+		throws PortalException, SystemException {
+
+		try {
+			VersionValidator versionValidator =
+				DLValidatorUtil.getDefaultVersionValidator();
+
+			versionValidator.validateVersion(version);
 
 			return true;
 		}
-
-		return false;
+		catch (InvalidFileVersionException e) {
+			return false;
+		}
 	}
 
 	protected String getImageSrc(
@@ -1263,6 +1282,8 @@ public class DLImpl implements DL {
 	};
 
 	private static final String _STRUCTURE_KEY_PREFIX = "AUTO_";
+
+	private static final String _UNICODE_PREFIX = "\\u";
 
 	private static Log _log = LogFactoryUtil.getLog(DLImpl.class);
 

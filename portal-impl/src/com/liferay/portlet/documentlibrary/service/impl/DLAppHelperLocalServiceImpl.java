@@ -293,54 +293,38 @@ public class DLAppHelperLocalServiceImpl
 	public void deleteFileEntry(FileEntry fileEntry, DLConfig dlConfig)
 		throws PortalException, SystemException {
 
-		if (dlConfig.isSubscriptionEnabled()) {
-			subscriptionLocalService.deleteSubscriptions(
-				fileEntry.getCompanyId(), DLFileEntryConstants.getClassName(),
-				fileEntry.getFileEntryId());
-		}
+		subscriptionLocalService.deleteSubscriptions(
+			fileEntry.getCompanyId(), DLFileEntryConstants.getClassName(),
+			fileEntry.getFileEntryId());
 
-		if (dlConfig.isDLProcessorRegistryEnabled()) {
+		// File previews
 
-			// File previews
+		DLProcessorRegistryUtil.cleanUp(fileEntry);
 
-			DLProcessorRegistryUtil.cleanUp(fileEntry);
-		}
+		dlFileRankLocalService.deleteFileRanksByFileEntryId(
+			fileEntry.getFileEntryId());
 
-		if (dlConfig.isFileRanksEnabled()) {
-			dlFileRankLocalService.deleteFileRanksByFileEntryId(
-				fileEntry.getFileEntryId());
-		}
-
-		if (dlConfig.isFileShortcutsEnabled()) {
-			dlFileShortcutLocalService.deleteFileShortcuts(
-				fileEntry.getFileEntryId());
-		}
+		dlFileShortcutLocalService.deleteFileShortcuts(
+			fileEntry.getFileEntryId());
 
 		if (dlConfig.isDLSyncEventEnabled()) {
 			registerDLSyncEventCallback(
 				DLSyncConstants.EVENT_DELETE, fileEntry);
 		}
 
-		if (dlConfig.isAssetEnabled()) {
+		// Asset
 
-			// Asset
+		assetEntryLocalService.deleteEntry(
+			DLFileEntryConstants.getClassName(),
+			fileEntry.getFileEntryId());
 
-			assetEntryLocalService.deleteEntry(
-				DLFileEntryConstants.getClassName(),
-				fileEntry.getFileEntryId());
-		}
+		mbMessageLocalService.deleteDiscussionMessages(
+			DLFileEntryConstants.getClassName(),
+			fileEntry.getFileEntryId());
 
-		if (dlConfig.isCommentsEnabled()) {
-			mbMessageLocalService.deleteDiscussionMessages(
-				DLFileEntryConstants.getClassName(),
-				fileEntry.getFileEntryId());
-		}
-
-		if (dlConfig.isRatingStatsEnabled()) {
-			ratingsStatsLocalService.deleteStats(
-				DLFileEntryConstants.getClassName(),
-				fileEntry.getFileEntryId());
-		}
+		ratingsStatsLocalService.deleteStats(
+			DLFileEntryConstants.getClassName(),
+			fileEntry.getFileEntryId());
 
 		// Trash
 

@@ -180,3 +180,32 @@ This change gives users the flexibility to modify the default structure and
 template.
 
 ---------------------------------------
+
+### DLAppHelperThreadLocal has been replaced with a configuration object
+DLConfig
+- **Date:** 2014-Apr-11
+- **JIRA Ticket:** LPS-45659
+
+#### What changed?
+DLAppHelperThreadLocal does not longer exist. It was used to determine whether
+some actions were performed or not when interacting with Documents and Media
+entries, such as: generating previews, disable assets, disable workflow, etc.
+
+This feature has been replaced by DLConfig, a configuration object that allows
+to define the expected behaviour when interacting with Documents and Media
+entries.
+
+#### Who is affected?
+Developers using DLAppHelperThreadLocal in their own applications.
+
+#### How should I update my code?
+Remove DLAppHelperThreadLocal references and pass a DLConfig object to the
+relevant Documents and Media methods.
+
+#### Why was this change made?
+This change gives developers the flexibility to specify a more grained behaviour
+to the different Documents and Media methods.
+
+It also improves readibility and simplicity by providing a more explicit use.
+
+---------------------------------------

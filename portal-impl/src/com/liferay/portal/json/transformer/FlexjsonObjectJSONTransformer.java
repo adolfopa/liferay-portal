@@ -67,7 +67,17 @@ public class FlexjsonObjectJSONTransformer
 
 		Path path = jsonContext.getPath();
 
-		return StringUtil.merge(path.getPath(), StringPool.PERIOD);
+		List<String> paths = path.getPath();
+
+		if (paths.isEmpty()) {
+			return StringPool.BLANK;
+		}
+
+		String pathString = StringUtil.merge(paths, StringPool.PERIOD);
+
+		pathString = pathString.concat(StringPool.PERIOD);
+
+		return pathString;
 	}
 
 	private void _exclude(

@@ -42,6 +42,10 @@ boolean useAssetEntryQuery = (categoryId > 0) || Validator.isNotNull(tagName);
 
 String displayStyle = ParamUtil.getString(request, "displayStyle");
 
+DLEntryListDisplayContext dlEntriesListDisplayContext = new DLEntryListDisplayContext(request, dlPortletInstanceSettings);
+
+String[] displayViews = dlPortletInstanceSettings.getDisplayViews();
+
 if (Validator.isNull(displayStyle)) {
 	displayStyle = portalPreferences.getValue(PortletKeys.DOCUMENT_LIBRARY, "display-style", PropsValues.DL_DEFAULT_DISPLAY_VIEW);
 }
@@ -64,11 +68,13 @@ portletURL.setParameter("folderId", String.valueOf(folderId));
 portletURL.setParameter("displayStyle", String.valueOf(displayStyle));
 
 int entryStart = ParamUtil.getInteger(request, "entryStart");
-int entryEnd = ParamUtil.getInteger(request, "entryEnd", entriesPerPage);
+int entryEnd = ParamUtil.getInteger(request, "entryEnd", dlPortletInstanceSettings.getEntriesPerPage());
 
 SearchContainer searchContainer = new SearchContainer(liferayPortletRequest, null, null, "cur2", entryEnd / (entryEnd - entryStart), entryEnd - entryStart, portletURL, null, null);
 
 List<String> headerNames = new ArrayList<String>();
+
+String[] entryColumns = dlEntriesListDisplayContext.getEntryColumns();
 
 for (String headerName : entryColumns) {
 	if (headerName.equals("action")) {

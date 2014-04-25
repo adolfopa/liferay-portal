@@ -1721,6 +1721,26 @@ public class ArrayUtil {
 		return newArray;
 	}
 
+	public static Long[] toLongArray(int[] array) {
+		Long[] newArray = new Long[array.length];
+
+		for (int i = 0; i < array.length; i++) {
+			newArray[i] = (long)array[i];
+		}
+
+		return newArray;
+	}
+
+	public static Long[] toLongArray(long[] array) {
+		Long[] newArray = new Long[array.length];
+
+		for (int i = 0; i < array.length; i++) {
+			newArray[i] = Long.valueOf(array[i]);
+		}
+
+		return newArray;
+	}
+
 	public static Long[] toLongArray(Object[] array) {
 		Long[] newArray = new Long[array.length];
 
@@ -1877,6 +1897,33 @@ public class ArrayUtil {
 
 		for (int i = 0; i < array.length; i++) {
 			newArray[i] = String.valueOf(array[i]);
+		}
+
+		return newArray;
+	}
+
+	public static String[] toStringArray(Collection<String> collection) {
+		String[] newArray = new String[collection.size()];
+
+		if (collection instanceof List) {
+			List<String> list = (List<String>)collection;
+
+			for (int i = 0; i < list.size(); i++) {
+				String value = list.get(i);
+
+				newArray[i] = String.valueOf(value);
+			}
+		}
+		else {
+			int i = 0;
+
+			Iterator<String> iterator = collection.iterator();
+
+			while (iterator.hasNext()) {
+				String value = iterator.next();
+
+				newArray[i++] = String.valueOf(value);
+			}
 		}
 
 		return newArray;

@@ -650,6 +650,11 @@ public class ArrayUtil_IW {
 		return ArrayUtil.toStringArray(array);
 	}
 
+	public java.lang.String[] toStringArray(
+		java.util.Collection<java.lang.String> collection) {
+		return ArrayUtil.toStringArray(collection);
+	}
+
 	public java.lang.String[] toStringArray(java.util.Date[] array,
 		java.text.DateFormat dateFormat) {
 		return ArrayUtil.toStringArray(array, dateFormat);

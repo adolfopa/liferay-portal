@@ -40,7 +40,10 @@ import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.PortletConfigFactoryUtil;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
@@ -93,6 +96,8 @@ public class SettingsConfigurationAction
 			PortletConfig portletConfig, ActionRequest actionRequest,
 			ActionResponse actionResponse)
 		throws Exception {
+
+		updateMultiValuedKeys(actionRequest);
 
 		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
 
@@ -234,6 +239,10 @@ public class SettingsConfigurationAction
 		portletPreferencesMap.put(name, values);
 	}
 
+	protected void addMultiValuedKeys(String... multiValuedKeys) {
+		Collections.addAll(_multiValuedKeys, multiValuedKeys);
+	}
+
 	protected PortletConfig getSelPortletConfig(PortletRequest portletRequest)
 		throws SystemException {
 
@@ -296,6 +305,19 @@ public class SettingsConfigurationAction
 		_parameterNamePrefix = parameterNamePrefix;
 	}
 
+	protected void updateMultiValuedKeys(ActionRequest actionRequest) {
+		for (String multiValuedKey : _multiValuedKeys) {
+			String multiValuedValue = getParameter(
+				actionRequest, multiValuedKey);
+
+			if (multiValuedValue != null) {
+				setPreference(
+					actionRequest, multiValuedKey,
+					StringUtil.split(multiValuedValue));
+			}
+		}
+	}
+
 	protected void validateEmail(
 		ActionRequest actionRequest, String emailParam) {
 
@@ -337,6 +359,7 @@ public class SettingsConfigurationAction
 		}
 	}
 
+	private List<String> _multiValuedKeys = new ArrayList<String>();
 	private String _parameterNamePrefix;
 
 }

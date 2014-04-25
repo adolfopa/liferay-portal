@@ -88,7 +88,7 @@ public class BundleResolverClassLoader extends ClassLoader {
 			}
 		}
 
-		return Collections.emptyEnumeration();
+		return Collections.enumeration(Collections.<URL>emptyList());
 	}
 
 	@Override

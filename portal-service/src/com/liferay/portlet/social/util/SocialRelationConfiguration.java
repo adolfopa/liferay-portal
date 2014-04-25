@@ -14,53 +14,60 @@
 
 package com.liferay.portlet.social.util;
 
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.StringUtil;
+
 /**
  * @author Adolfo Pérez
  */
 public class SocialRelationConfiguration {
 
 	public SocialRelationConfiguration(
-		boolean isAnyUserEnabled, boolean isInteractionsEnabled,
-		boolean isSameSitesEnabled, boolean isSocialRelationTypesEnabled,
-		String socialRelationTypesString, int[] socialRelationTypes) {
+		boolean interactionsEnabled, boolean interactionsAnyUserEnabled,
+		boolean interactionsSitesEnabled,
+		boolean interactionsSocialRelationTypesEnabled,
+		String socialRelationTypes) {
 
-		_anyUserEnabled = isAnyUserEnabled;
-		_interactionsEnabled = isInteractionsEnabled;
-		_sameSitesEnabled = isSameSitesEnabled;
-		_socialRelationTypesEnabled = isSocialRelationTypesEnabled;
-		_socialRelationTypes = socialRelationTypes;
-		_socialRelationTypesString = socialRelationTypesString;
+		_interactionsEnabled = interactionsEnabled;
+		_interactionsAnyUserEnabled = interactionsAnyUserEnabled;
+		_interactionsSitesEnabled = interactionsSitesEnabled;
+		_interactionSocialRelationTypesEnabled =
+			interactionsSocialRelationTypesEnabled;
+		_interactionsSocialRelationTypes = socialRelationTypes;
+
+		_interactionsSocialRelationTypesArray = GetterUtil.getIntegerValues(
+			StringUtil.split(_interactionsSocialRelationTypes));
 	}
 
-	public int[] getSocialRelationTypes() {
-		return _socialRelationTypes;
+	public String getInteractionsSocialRelationTypes() {
+		return _interactionsSocialRelationTypes;
 	}
 
-	public String getSocialRelationTypesString() {
-		return _socialRelationTypesString;
+	public int[] getInteractionsSocialRelationTypesArray() {
+		return _interactionsSocialRelationTypesArray;
 	}
 
-	public boolean isAnyUserEnabled() {
-		return _anyUserEnabled;
+	public boolean isInteractionsAnyUserEnabled() {
+		return _interactionsAnyUserEnabled;
 	}
 
 	public boolean isInteractionsEnabled() {
 		return _interactionsEnabled;
 	}
 
-	public boolean isSameSitesEnabled() {
-		return _sameSitesEnabled;
+	public boolean isInteractionsSitesEnabled() {
+		return _interactionsSitesEnabled;
 	}
 
-	public boolean isSocialRelationTypesEnabled() {
-		return _socialRelationTypesEnabled;
+	public boolean isInteractionsSocialRelationTypesEnabled() {
+		return _interactionSocialRelationTypesEnabled;
 	}
 
-	private boolean _anyUserEnabled;
+	private boolean _interactionsAnyUserEnabled;
 	private boolean _interactionsEnabled;
-	private boolean _sameSitesEnabled;
-	private int[] _socialRelationTypes;
-	private boolean _socialRelationTypesEnabled;
-	private String _socialRelationTypesString;
+	private boolean _interactionSocialRelationTypesEnabled;
+	private boolean _interactionsSitesEnabled;
+	private String _interactionsSocialRelationTypes;
+	private int[] _interactionsSocialRelationTypesArray;
 
 }

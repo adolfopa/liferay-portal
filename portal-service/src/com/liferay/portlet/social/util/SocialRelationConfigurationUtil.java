@@ -14,16 +14,11 @@
 
 package com.liferay.portlet.social.util;
 
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PrefsParamUtil;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.UnicodeProperties;
-import com.liferay.portal.model.Group;
-import com.liferay.portal.service.GroupLocalServiceUtil;
 
 import javax.portlet.PortletPreferences;
 
@@ -34,7 +29,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class SocialRelationConfigurationUtil {
 
-	public static SocialRelationConfiguration getCompanySettings(long companyId)
+	public static SocialRelationConfiguration getSocialRelationConfiguration(
+			long companyId)
 		throws SystemException {
 
 		PortletPreferences companyPortletPreferences =
@@ -44,33 +40,30 @@ public class SocialRelationConfigurationUtil {
 			companyPortletPreferences.getValue(
 				"interactionsEnabled", Boolean.TRUE.toString()));
 
-		boolean anyUserEnabled = GetterUtil.getBoolean(
+		boolean interactionsAnyUserEnabled = GetterUtil.getBoolean(
 			companyPortletPreferences.getValue(
-				"interactionsAnyUser", Boolean.TRUE.toString()));
+				"interactionsAnyUserEnabled", Boolean.TRUE.toString()));
 
-		boolean sameSitesEnabled = GetterUtil.getBoolean(
+		boolean interactionsSitesEnabled = GetterUtil.getBoolean(
 			companyPortletPreferences.getValue(
 				"interactionsSitesEnabled", Boolean.TRUE.toString()));
 
-		boolean socialRelationTypesEnabled = GetterUtil.getBoolean(
+		boolean interactionsSocialRelationTypesEnabled = GetterUtil.getBoolean(
 			companyPortletPreferences.getValue(
 				"interactionsSocialRelationTypesEnabled",
 				Boolean.TRUE.toString()));
 
-		String socialRelationTypesString = companyPortletPreferences.getValue(
-			"interactionsSocialRelationTypes", StringPool.BLANK);
-
-		int[] socialRelationTypes =
-			GetterUtil.getIntegerValues(
-				StringUtil.split(socialRelationTypesString));
+		String interactionsSocialRelationTypes =
+			companyPortletPreferences.getValue(
+				"interactionsSocialRelationTypes", StringPool.BLANK);
 
 		return new SocialRelationConfiguration(
-			anyUserEnabled, interactionsEnabled, sameSitesEnabled,
-			socialRelationTypesEnabled, socialRelationTypesString,
-			socialRelationTypes);
+			interactionsEnabled, interactionsAnyUserEnabled,
+			interactionsSitesEnabled, interactionsSocialRelationTypesEnabled,
+			interactionsSocialRelationTypes);
 	}
 
-	public static SocialRelationConfiguration getCompanySettings(
+	public static SocialRelationConfiguration getSocialRelationConfiguration(
 			long companyId, HttpServletRequest request)
 		throws SystemException {
 
@@ -80,96 +73,27 @@ public class SocialRelationConfigurationUtil {
 		boolean interactionsEnabled = PrefsParamUtil.getBoolean(
 			companyPortletPreferences, request, "interactionsEnabled", true);
 
-		boolean anyUserEnabled = PrefsParamUtil.getBoolean(
-			companyPortletPreferences, request, "interactionsAnyUser", true);
+		boolean interactionsAnyUserEnabled = PrefsParamUtil.getBoolean(
+			companyPortletPreferences, request, "interactionsAnyUserEnabled",
+			true);
 
-		boolean sameSitesEnabled = PrefsParamUtil.getBoolean(
+		boolean interactionsSitesEnabled = PrefsParamUtil.getBoolean(
 			companyPortletPreferences, request, "interactionsSitesEnabled",
 			true);
 
-		boolean socialRelationTypesEnabled = PrefsParamUtil.getBoolean(
-			companyPortletPreferences, request,
-			"interactionsSocialRelationTypesEnabled", true);
+		boolean interactionsSocialRelationTypesEnabled =
+			PrefsParamUtil.getBoolean(
+				companyPortletPreferences, request,
+				"interactionsSocialRelationTypesEnabled", true);
 
-		String socialRelationTypesString = companyPortletPreferences.getValue(
-			"interactionsSocialRelationTypes", StringPool.BLANK);
-
-		int[] socialRelationTypes =
-			GetterUtil.getIntegerValues(
-				StringUtil.split(socialRelationTypesString));
+		String interactionsSocialRelationTypes =
+			companyPortletPreferences.getValue(
+				"interactionsSocialRelationTypes", StringPool.BLANK);
 
 		return new SocialRelationConfiguration(
-			anyUserEnabled, interactionsEnabled, sameSitesEnabled,
-			socialRelationTypesEnabled, socialRelationTypesString,
-			socialRelationTypes);
-	}
-
-	public static SocialRelationConfiguration getGroupSettings(
-			long companyId, long groupId)
-		throws PortalException, SystemException {
-
-		SocialRelationConfiguration companyConfiguration = getCompanySettings(
-			companyId);
-
-		if (!companyConfiguration.isInteractionsEnabled()) {
-			return companyConfiguration;
-		}
-
-		Group liveGroup = getLiveGroup(groupId);
-
-		UnicodeProperties typeSettingsProperties = null;
-
-		if (liveGroup != null) {
-			typeSettingsProperties = liveGroup.getTypeSettingsProperties();
-		}
-		else {
-			typeSettingsProperties = new UnicodeProperties();
-		}
-
-		boolean interactionsEnabled = GetterUtil.getBoolean(
-			typeSettingsProperties.getProperty("interactionsEnabled"),
-			companyConfiguration.isInteractionsEnabled());
-
-		boolean anyUserEnabled = GetterUtil.getBoolean(
-			typeSettingsProperties.getProperty("interactionsAnyUser"),
-			companyConfiguration.isAnyUserEnabled());
-
-		boolean sameSitesEnabled = GetterUtil.getBoolean(
-			typeSettingsProperties.getProperty("interactionsSitesEnabled"),
-			companyConfiguration.isSameSitesEnabled());
-
-		boolean socialRelationTypesEnabled = GetterUtil.getBoolean(
-			typeSettingsProperties.getProperty(
-				"interactionsSocialRelationTypesEnabled"),
-			companyConfiguration.isSocialRelationTypesEnabled());
-
-		String socialRelationTypesString = GetterUtil.getString(
-			typeSettingsProperties.getProperty(
-				"interactionsSocialRelationTypes"),
-			companyConfiguration.getSocialRelationTypesString());
-
-		int[] socialRelationTypes = GetterUtil.getIntegerValues(
-			StringUtil.split(socialRelationTypesString));
-
-		return new SocialRelationConfiguration(
-			anyUserEnabled, interactionsEnabled, sameSitesEnabled,
-			socialRelationTypesEnabled, socialRelationTypesString,
-			socialRelationTypes);
-	}
-
-	private static Group getLiveGroup(long groupId)
-		throws PortalException, SystemException {
-
-		Group group = GroupLocalServiceUtil.getGroup(groupId);
-
-		Group liveGroup = group.getLiveGroup();
-
-		if (liveGroup == null) {
-			return group;
-		}
-		else {
-			return liveGroup;
-		}
+			interactionsEnabled, interactionsAnyUserEnabled,
+			interactionsSitesEnabled, interactionsSocialRelationTypesEnabled,
+			interactionsSocialRelationTypes);
 	}
 
 }

@@ -1,11 +1,18 @@
 <#assign liferay_ui = taglibLiferayHash["/WEB-INF/tld/liferay-ui.tld"] />
+<#assign liferay_aui = taglibLiferayHash["/WEB-INF/tld/liferay-aui.tld"] />
+
 <#assign group=themeDisplay.getScopeGroup()>
 <#assign apiKey=group.getLiveParentTypeSettingsProperty("googleMapsKey")!"">
 
 <#if apiKey = "">
+	<#assign companyPrefs=prefsPropsUtil.getPreferences(companyId)>
+	<#assign apiKey=companyPrefs.getValue("googleMapsKey", "")>
+</#if>
+
+<#if apiKey = "">
 	<div class="alert alert-warning">
 		${languageUtil.get(
-			locale, "please-configure-your-google-maps-key-in-the-site-settings")}
+			locale, "please-configure-your-google-maps-key-in-the-site-or-portal-settings")}
 	</div>
 <#else>
 	<#assign minHeight="400px">
@@ -76,13 +83,19 @@
 		.asset-entry-abstract .taglib-icon {
 			float: right;
 		}
+
+		.gmnoprint img {
+			max-width: none;
+		}
 	</style>
+
+	<div id="${namespace}map-canvas" style="min-height: ${minHeight};"/>
 
 	<script type="text/javascript"
 			src="http://maps.googleapis.com/maps/api/js?key=${apiKey}&sensor=true">
 	</script>
 
-	<script type="text/javascript">
+	<@liferay_aui.script>
 		(function () {
 			function putMarkers(map) {
 				var points = ${markers};
@@ -116,23 +129,17 @@
 				return bounds;
 			}
 
-			function initialize() {
-				var mapOptions = { zoom: 8 };
+			var mapOptions = { zoom: 8 };
 
-				var map = new google.maps.Map(
-						document.getElementById("${namespace}map-canvas"), mapOptions);
+			var map = new google.maps.Map(
+					document.getElementById("${namespace}map-canvas"), mapOptions);
 
-				var bounds = putMarkers(map);
+			var bounds = putMarkers(map);
 
-				map.fitBounds(bounds);
-				map.panToBounds(bounds);
-			}
-
-			google.maps.event.addDomListener(window, 'load', initialize);
+			map.fitBounds(bounds);
+			map.panToBounds(bounds);
 		})();
-	</script>
-
-	<div id="${namespace}map-canvas" style="min-height: ${minHeight};"/>
+	</@liferay_aui.script>
 
 	<#macro getAbstract asset>
 		<#assign assetRenderer=asset.getAssetRenderer()>
@@ -161,12 +168,16 @@
 					"', uri:'" + htmlUtil.escapeJS(editPortletURL.toString()) +
 					"'});"
 			>
-			<@liferay_ui.icon
-				image="edit"
-				label=true
-				message="edit"
-				url=taglibEditURL
-			/>
+
+			<#if assetRenderer.hasEditPermission(permissionChecker)>
+				<@liferay_ui.icon
+					image="edit"
+					label=true
+					message="edit"
+					url=taglibEditURL
+				/>
+			</#if>
+
 			<div class="asset-entry-abstract-image">
 				<img src="${assetRenderer.getThumbnailPath(renderRequest)}"/>
 			</div>

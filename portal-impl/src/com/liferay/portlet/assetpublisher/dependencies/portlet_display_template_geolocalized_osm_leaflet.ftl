@@ -109,12 +109,15 @@
 				"', uri:'" + htmlUtil.escapeJS(editPortletURL.toString()) +
 				"'});"
 		>
-		<@liferay_ui.icon
-			image="edit"
-			label=true
-			message="edit"
-			url=taglibEditURL
-		/>
+
+		<#if assetRenderer.hasEditPermission(permissionChecker)>
+			<@liferay_ui.icon
+				image="edit"
+				label=true
+				message="edit"
+				url=taglibEditURL
+			/>
+		</#if>
 
 		<div class="asset-entry-abstract-image">
 			<img src="${assetRenderer.getThumbnailPath(renderRequest)}"/>

@@ -17,16 +17,16 @@
 <%@ include file="/html/portlet/sites_admin/init.jsp" %>
 
 <%
-	Group liveGroup = (Group)request.getAttribute("site.liveGroup");
+Group liveGroup = (Group)request.getAttribute("site.liveGroup");
 
-	UnicodeProperties groupTypeSettings = null;
+UnicodeProperties groupTypeSettings = null;
 
-	if (liveGroup != null) {
-		groupTypeSettings = liveGroup.getTypeSettingsProperties();
-	}
-	else {
-		groupTypeSettings = new UnicodeProperties();
-	}
+if (liveGroup != null) {
+    groupTypeSettings = liveGroup.getTypeSettingsProperties();
+}
+else {
+    groupTypeSettings = new UnicodeProperties();
+}
 %>
 
 <liferay-ui:error-marker key="errorSection" value="maps" />
@@ -34,7 +34,7 @@
 <h3><liferay-ui:message key="maps" /></h3>
 
 <%
-	String googleMapsKey = PropertiesParamUtil.getString(groupTypeSettings, request, "googleMapsKey");
+String googleMapsKey = PropertiesParamUtil.getString(groupTypeSettings, request, "googleMapsKey");
 %>
 
 <aui:input helpMessage="set-the-google-maps-key-that-will-be-used-for-this-set-of-pages" label="google-maps-key" name="TypeSettingsProperties--googleMapsKey--" size="40" type="text" value="<%= googleMapsKey %>" />

@@ -132,7 +132,7 @@
 			<h3><a href="${assetURL}">${assetRenderer.getTitle(locale)}</a></h3>
 
 			<div>
-			${assetRenderer.getSummary(renderRequest, renderResponse)}
+				${assetRenderer.getSummary(renderRequest, renderResponse)}
 			</div>
 		</div>
 

@@ -1,71 +1,65 @@
 <#assign liferay_ui = taglibLiferayHash["/WEB-INF/tld/liferay-ui.tld"] />
 <#assign liferay_aui = taglibLiferayHash["/WEB-INF/tld/liferay-aui.tld"] />
 
-<#assign group=themeDisplay.getScopeGroup()>
-<#assign apiKey=group.getLiveParentTypeSettingsProperty("googleMapsKey")!"">
+<#assign group = themeDisplay.getScopeGroup() />
+<#assign apiKey = group.getLiveParentTypeSettingsProperty("googleMapsKey")!"" />
 
 <#if apiKey = "">
-	<#assign companyPrefs=prefsPropsUtil.getPreferences(companyId)>
-	<#assign apiKey=companyPrefs.getValue("googleMapsKey", "")>
+	<#assign companyPrefs=prefsPropsUtil.getPreferences(companyId) />
+	<#assign apiKey=companyPrefs.getValue("googleMapsKey", "") />
 </#if>
+
+<#-- TODO: CONTEMPLAR CASO VACIO -->
+<#-- TODO: FORMATEAR ASSIGNS: ESPACIO =, /> Y UNA SOLA LINEA -->
+<#-- TODO: USAR ${} PARA VOIDS -->
 
 <#if apiKey = "">
 	<div class="alert alert-warning">
-		${languageUtil.get(
-			locale, "please-configure-your-google-maps-key-in-the-site-or-portal-settings")}
+		${languageUtil.get(locale, "please-configure-your-google-maps-key-in-the-site-or-portal-settings")}
 	</div>
 <#else>
-	<#assign minHeight="400px">
+	<#assign minHeight = "400px" />
 
-	<#assign namespace=renderResponse.getNamespace()>
+	<#assign namespace = renderResponse.getNamespace() />
 
 	<#-- Pin images to use for each asset type -->
-	<#assign images={
-		"com.liferay.portlet.journal.model.JournalArticle":
-			"http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-		"com.liferay.portlet.documentlibrary.model.DLFileEntry":
-			"http://maps.google.com/mapfiles/ms/icons/green-dot.png",
-		"com.liferay.portlet.dynamicdatalists.model.DDLRecord":
-			"http://maps.google.com/mapfiles/ms/icons/red-dot.png",
-		"default":
-			"http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
-	}>
 
-	<#assign markers=jsonFactoryUtil.createJSONArray()>
+	<#assign images={
+		"com.liferay.portlet.journal.model.JournalArticle":"http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+		"com.liferay.portlet.documentlibrary.model.DLFileEntry":"http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+		"com.liferay.portlet.dynamicdatalists.model.DDLRecord":"http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+		"default":"http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
+	} />
+
+	<#assign markers = jsonFactoryUtil.createJSONArray() />
 
 	<#list entries as entry>
-		<#assign assetRenderer=entry.getAssetRenderer()>
-		<#assign ddmReader=assetRenderer.getDDMFieldReader()>
+		<#assign assetRenderer=entry.getAssetRenderer() />
 
-		<#assign fields=ddmReader.getFields("geolocation")>
+		<#assign ddmReader=assetRenderer.getDDMFieldReader() />
+
+		<#assign fields=ddmReader.getFields("geolocation") />
 
 		<#list fields.iterator() as field>
-			<#-- Latitude and longitude -->
-			<#assign marker=jsonFactoryUtil.createJSONObject(field.getValue())>
+			<#assign marker=jsonFactoryUtil.createJSONObject(field.getValue()) />
 
-			<#-- Title -->
-			<#assign _=marker.put("title", assetRenderer.getTitle(locale))>
+			<#assign _=marker.put("title", assetRenderer.getTitle(locale)) />
 
-			<#-- Abstract -->
 			<#assign entryAbstract>
 				<@getAbstract asset=entry />
 			</#assign>
-			<#assign _=marker.put("abstract", entryAbstract)>
 
-			<#-- Pin image -->
+			<#assign _=marker.put("abstract", entryAbstract) />
+
 			<#if images?keys?seq_contains(entry.getClassName())>
-				<#assign _=marker.put("icon", images[entry.getClassName()])>
+				<#assign _=marker.put("icon", images[entry.getClassName()]) />
 			<#else>
-				<#assign _=marker.put("icon", images["default"])>
+				<#assign _=marker.put("icon", images["default"]) />
 			</#if>
 
-			<#assign _=markers.put(marker)>
+			<#assign _=markers.put(marker) />
 		</#list>
 	</#list>
-
-	<#assign showEditURL=paramUtil.getBoolean(renderRequest, "showEditURL", true)>
-	<#assign hasEditPermissions=assetRenderer.hasEditPermission(permissionChecker)>
-	<#assign showEditControls=showEditURL && hasEditPermissions>
 
 	<style type="text/css">
 		.asset-entry-abstract .asset-entry-abstract-image {
@@ -84,16 +78,18 @@
 			float: right;
 		}
 
+		.map-canvas {
+			min-height: ${minHeight};
+		}
+
 		.gmnoprint img {
 			max-width: none;
 		}
 	</style>
 
-	<div id="${namespace}map-canvas" style="min-height: ${minHeight};"/>
+	<div id="${namespace}map-canvas" class="map-canvas" />
 
-	<script type="text/javascript"
-			src="http://maps.googleapis.com/maps/api/js?key=${apiKey}&sensor=true">
-	</script>
+	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=${apiKey}&sensor=true"></script>
 
 	<@liferay_aui.script>
 		(function () {
@@ -107,7 +103,7 @@
 
 					var marker = new google.maps.Marker({
 						position: new google.maps.LatLng(
-								point["latitude"], point["longitude"]),
+							point["latitude"], point["longitude"]),
 						map: map,
 						title: point["title"],
 						icon: point["icon"]
@@ -132,7 +128,7 @@
 			var mapOptions = { zoom: 8 };
 
 			var map = new google.maps.Map(
-					document.getElementById("${namespace}map-canvas"), mapOptions);
+				document.getElementById("${namespace}map-canvas"), mapOptions);
 
 			var bounds = putMarkers(map);
 
@@ -141,23 +137,24 @@
 		})();
 	</@liferay_aui.script>
 
+	<#assign showEditURL=paramUtil.getBoolean(renderRequest, "showEditURL", true) />
+
+	<#assign hasEditPermissions=assetRenderer.hasEditPermission(permissionChecker) />
+
+	<#assign showEditControls=showEditURL && hasEditPermissions />
+
 	<#macro getAbstract asset>
-		<#assign assetRenderer=asset.getAssetRenderer()>
-		<#assign popUpWindowState=windowStateFactory.getWindowState("POP_UP")>
-		<#assign
-			redirectURL=renderResponse.createLiferayPortletURL(
-				themeDisplay.getPlid(), themeDisplay.getPortletDisplay().getId(),
-				"RENDER_PHASE", false)>
-		<#assign
-			_=redirectURL.setParameter(
-				"struts_action", "/asset_publisher/add_asset_redirect")
-		>
+		<#assign assetRenderer=asset.getAssetRenderer() />
+
+		<#assign popUpWindowState=windowStateFactory.getWindowState("POP_UP") />
+
+		<#assign redirectURL=renderResponse.createLiferayPortletURL(themeDisplay.getPlid(), themeDisplay.getPortletDisplay().getId(), "RENDER_PHASE", false) />
+
+		${redirectURL.setParameter("struts_action", "/asset_publisher/add_asset_redirect")}
 
 		<div class="asset-entry-abstract">
-			<#assign
-				editPortletURL=assetRenderer.getURLEdit(
-					renderRequest, renderResponse, popUpWindowState, redirectURL)
-			>
+			<#assign editPortletURL=assetRenderer.getURLEdit(renderRequest, renderResponse, popUpWindowState, redirectURL) />
+
 			<#assign
 				taglibEditURL="javascript:Liferay.Util.openWindow({id: '" +
 					renderResponse.getNamespace() + "editAsset', title: '" +
@@ -191,7 +188,7 @@
 				<h3><a href="${assetURL}">${assetRenderer.getTitle(locale)}</a></h3>
 
 				<div>
-				${assetRenderer.getSummary(renderRequest, renderResponse)}
+					${assetRenderer.getSummary(renderRequest, renderResponse)}
 				</div>
 			</div>
 

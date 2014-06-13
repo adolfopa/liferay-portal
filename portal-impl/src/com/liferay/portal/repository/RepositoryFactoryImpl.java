@@ -42,8 +42,8 @@ public class RepositoryFactoryImpl extends BaseRepositoryFactory<Repository>
 			repositoryId, classNameId);
 
 		return new CapabilityRepository(
-			repository, getDefaultExternalCapabilities(),
-			getDefaultExternalExports());
+			repository, getDefaultExternalRepositorySupportedCapabilities(),
+			getDefaultExternalRepositoryExportedCapabilityClasses());
 	}
 
 	@Override
@@ -57,8 +57,8 @@ public class RepositoryFactoryImpl extends BaseRepositoryFactory<Repository>
 		Repository repository = create(repositoryId);
 
 		return new CapabilityRepository(
-			repository, getDefaultExternalCapabilities(),
-			getDefaultExternalExports());
+			repository, getDefaultExternalRepositorySupportedCapabilities(),
+			getDefaultExternalRepositoryExportedCapabilityClasses());
 	}
 
 	@Override
@@ -69,8 +69,8 @@ public class RepositoryFactoryImpl extends BaseRepositoryFactory<Repository>
 			groupId, repositoryId, dlFolderId);
 
 		return new CapabilityRepository(
-			repository, getDefaultInternalCapabilities(),
-			getDefaultInternalExports());
+			repository, getDefaultLiferayRepositorySupportedCapabilities(),
+			getDefaultLiferayRepositoryExportedCapabilityClasses());
 	}
 
 	protected Repository createLiferayRepositoryInstance(

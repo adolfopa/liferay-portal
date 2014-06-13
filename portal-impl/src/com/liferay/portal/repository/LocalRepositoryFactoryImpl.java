@@ -48,8 +48,9 @@ public class LocalRepositoryFactoryImpl
 		LocalRepository localRepository = baseRepository.getLocalRepository();
 
 		return new CapabilityLocalRepository(
-			localRepository, getDefaultExternalCapabilities(),
-			getDefaultExternalExports());
+			localRepository,
+			getDefaultExternalRepositorySupportedCapabilities(),
+			getDefaultExternalRepositoryExportedCapabilityClasses());
 	}
 
 	@Override
@@ -66,8 +67,9 @@ public class LocalRepositoryFactoryImpl
 		LocalRepository localRepository = baseRepository.getLocalRepository();
 
 		return new CapabilityLocalRepository(
-			localRepository, getDefaultExternalCapabilities(),
-			getDefaultExternalExports());
+			localRepository,
+			getDefaultExternalRepositorySupportedCapabilities(),
+			getDefaultExternalRepositoryExportedCapabilityClasses());
 	}
 
 	@Override
@@ -78,8 +80,9 @@ public class LocalRepositoryFactoryImpl
 			groupId, repositoryId, dlFolderId);
 
 		return new CapabilityLocalRepository(
-			localRepository, getDefaultInternalCapabilities(),
-			getDefaultInternalExports());
+			localRepository,
+			getDefaultLiferayRepositorySupportedCapabilities(),
+			getDefaultLiferayRepositoryExportedCapabilityClasses());
 	}
 
 	protected LocalRepository createLiferayRepositoryInstance(

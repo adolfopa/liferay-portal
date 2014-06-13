@@ -238,23 +238,27 @@ public abstract class BaseRepositoryFactory<T> {
 	}
 
 	protected Map<Class<? extends Capability>, Capability>
-		getDefaultExternalCapabilities() {
+		getDefaultExternalRepositorySupportedCapabilities() {
 
-		return _DEFAULT_EXTERNAL_CAPABILITIES;
+		return _DEFAULT_EXTERNAL_REPOSITORY_SUPPORTED_CAPABILITIES;
 	}
 
-	protected Set<Class<? extends Capability>> getDefaultExternalExports() {
-		return _DEFAULT_EXTERNAL_EXPORTS;
+	protected Set<Class<? extends Capability>>
+		getDefaultExternalRepositoryExportedCapabilityClasses() {
+
+		return _DEFAULT_EXTERNAL_REPOSITORY_EXPORTED_CAPABILITY_CLASSES;
 	}
 
-	protected Set<Class<? extends Capability>> getDefaultInternalExports() {
-		return _DEFAULT_INTERNAL_EXPORTS;
+	protected Set<Class<? extends Capability>>
+		getDefaultLiferayRepositoryExportedCapabilityClasses() {
+
+		return _DEFAULT_LIFERAY_REPOSITORY_EXPORTED_CAPABILITY_CLASSES;
 	}
 
 	protected Map<Class<? extends Capability>, Capability>
-		getDefaultInternalCapabilities() {
+		getDefaultLiferayRepositorySupportedCapabilities() {
 
-		return _DEFAULT_INTERNAL_CAPABILITIES;
+		return _DEFAULT_LIFERAY_REPOSITORY_SUPPORTED_CAPABILITIES;
 	}
 
 	protected DLAppHelperLocalService getDlAppHelperLocalService() {
@@ -453,27 +457,29 @@ public abstract class BaseRepositoryFactory<T> {
 		_userLocalService = userLocalService;
 	}
 
-	private static final Map<Class<? extends Capability>, Capability>
-		_DEFAULT_EXTERNAL_CAPABILITIES = Collections.emptyMap();
-
 	private static final Set<Class<? extends Capability>>
-		_DEFAULT_EXTERNAL_EXPORTS = Collections.emptySet();
+		_DEFAULT_EXTERNAL_REPOSITORY_EXPORTED_CAPABILITY_CLASSES =
+			Collections.emptySet();
 
 	private static final Map<Class<? extends Capability>, Capability>
-		_DEFAULT_INTERNAL_CAPABILITIES;
+		_DEFAULT_EXTERNAL_REPOSITORY_SUPPORTED_CAPABILITIES =
+			Collections.emptyMap();
 
 	private static final Set<Class<? extends Capability>>
-		_DEFAULT_INTERNAL_EXPORTS =
+		_DEFAULT_LIFERAY_REPOSITORY_EXPORTED_CAPABILITY_CLASSES =
 			Collections.<Class<? extends Capability>>singleton(
 				TrashCapability.class);
 
 	static {
-		_DEFAULT_INTERNAL_CAPABILITIES =
+		_DEFAULT_LIFERAY_REPOSITORY_SUPPORTED_CAPABILITIES =
 			new HashMap<Class<? extends Capability>, Capability>();
 
-		_DEFAULT_INTERNAL_CAPABILITIES.put(
+		_DEFAULT_LIFERAY_REPOSITORY_SUPPORTED_CAPABILITIES.put(
 			TrashCapability.class, new LiferayTrashCapability());
 	}
+
+	private static final Map<Class<? extends Capability>, Capability>
+		_DEFAULT_LIFERAY_REPOSITORY_SUPPORTED_CAPABILITIES;
 
 	@BeanReference(type = AssetEntryLocalService.class)
 	private AssetEntryLocalService _assetEntryLocalService;

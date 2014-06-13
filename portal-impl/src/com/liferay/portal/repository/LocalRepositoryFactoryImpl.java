@@ -71,10 +71,10 @@ public class LocalRepositoryFactoryImpl
 	}
 
 	@Override
-	protected LocalRepository createInternalRepositoryInstance(
+	protected LocalRepository createLiferayRepository(
 		long groupId, long repositoryId, long dlFolderId) {
 
-		LocalRepository localRepository = createLiferayInternalRepository(
+		LocalRepository localRepository = createLiferayRepositoryInstance(
 			groupId, repositoryId, dlFolderId);
 
 		return new CapabilityLocalRepository(
@@ -82,7 +82,7 @@ public class LocalRepositoryFactoryImpl
 			getDefaultInternalExports());
 	}
 
-	protected LocalRepository createLiferayInternalRepository(
+	protected LocalRepository createLiferayRepositoryInstance(
 		long groupId, long repositoryId, long dlFolderId) {
 
 		return new LiferayLocalRepository(

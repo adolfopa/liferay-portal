@@ -62,10 +62,10 @@ public class RepositoryFactoryImpl extends BaseRepositoryFactory<Repository>
 	}
 
 	@Override
-	protected Repository createInternalRepositoryInstance(
+	protected Repository createLiferayRepository(
 		long groupId, long repositoryId, long dlFolderId) {
 
-		Repository repository = createLiferayInternalRepository(
+		Repository repository = createLiferayRepositoryInstance(
 			groupId, repositoryId, dlFolderId);
 
 		return new CapabilityRepository(
@@ -73,7 +73,7 @@ public class RepositoryFactoryImpl extends BaseRepositoryFactory<Repository>
 			getDefaultInternalExports());
 	}
 
-	protected Repository createLiferayInternalRepository(
+	protected Repository createLiferayRepositoryInstance(
 		long groupId, long repositoryId, long dlFolderId) {
 
 		return new LiferayRepository(

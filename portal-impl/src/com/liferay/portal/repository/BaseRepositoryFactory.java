@@ -68,7 +68,7 @@ public abstract class BaseRepositoryFactory<T> {
 		long classNameId = getRepositoryClassNameId(repositoryId);
 
 		if (classNameId == getDefaultClassNameId()) {
-			return createInternalRepository(repositoryId);
+			return createLiferayRepository(repositoryId);
 		}
 		else {
 			return createExternalRepository(repositoryId, classNameId);
@@ -78,7 +78,7 @@ public abstract class BaseRepositoryFactory<T> {
 	public T create(long folderId, long fileEntryId, long fileVersionId)
 		throws PortalException {
 
-		T liferayRepository = createInternalRepository(
+		T liferayRepository = createLiferayRepositoryInstance(
 			folderId, fileEntryId, fileVersionId);
 
 		if (liferayRepository != null) {
@@ -160,7 +160,7 @@ public abstract class BaseRepositoryFactory<T> {
 		return baseRepository;
 	}
 
-	protected T createInternalRepository(long repositoryId) {
+	protected T createLiferayRepository(long repositoryId) {
 		long dlFolderId = 0;
 		long groupId = 0;
 
@@ -174,12 +174,12 @@ public abstract class BaseRepositoryFactory<T> {
 			dlFolderId = repository.getDlFolderId();
 		}
 
-		return createInternalRepositoryInstance(
+		return createLiferayRepository(
 			groupId, repositoryId, dlFolderId);
 	}
 
-	protected T createInternalRepository(
-			long folderId, long fileEntryId, long fileVersionId)
+	protected T createLiferayRepositoryInstance(
+		long folderId, long fileEntryId, long fileVersionId)
 		throws PortalException {
 
 		try {
@@ -200,7 +200,7 @@ public abstract class BaseRepositoryFactory<T> {
 						"version");
 			}
 
-			return createInternalRepository(repositoryId);
+			return createLiferayRepository(repositoryId);
 		}
 		catch (NoSuchFileEntryException nsfee) {
 			return null;
@@ -213,7 +213,7 @@ public abstract class BaseRepositoryFactory<T> {
 		}
 	}
 
-	protected abstract T createInternalRepositoryInstance(
+	protected abstract T createLiferayRepository(
 		long groupId, long repositoryId, long dlFolderId);
 
 	protected AssetEntryLocalService getAssetEntryLocalService() {

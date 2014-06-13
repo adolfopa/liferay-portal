@@ -43,7 +43,6 @@ public class LiferayTrashCapability implements TrashCapability {
 
 	@Override
 	public void deleteFileEntry(FileEntry fileEntry) throws PortalException {
-
 		deleteTrashEntry(fileEntry);
 
 		DLAppLocalServiceUtil.deleteFileEntry(fileEntry.getFileEntryId());
@@ -51,7 +50,6 @@ public class LiferayTrashCapability implements TrashCapability {
 
 	@Override
 	public void deleteFolder(Folder folder) throws PortalException {
-
 		List<DLFileEntry> dlFileEntries =
 			DLFileEntryLocalServiceUtil.getGroupFileEntries(
 				folder.getGroupId(), 0, folder.getFolderId(), QueryUtil.ALL_POS,

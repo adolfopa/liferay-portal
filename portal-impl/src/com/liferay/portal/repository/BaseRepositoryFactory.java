@@ -174,12 +174,14 @@ public abstract class BaseRepositoryFactory<T> {
 			dlFolderId = repository.getDlFolderId();
 		}
 
-		return createLiferayRepository(
-			groupId, repositoryId, dlFolderId);
+		return createLiferayRepository(groupId, repositoryId, dlFolderId);
 	}
 
+	protected abstract T createLiferayRepository(
+		long groupId, long repositoryId, long dlFolderId);
+
 	protected T createLiferayRepositoryInstance(
-		long folderId, long fileEntryId, long fileVersionId)
+			long folderId, long fileEntryId, long fileVersionId)
 		throws PortalException {
 
 		try {
@@ -212,9 +214,6 @@ public abstract class BaseRepositoryFactory<T> {
 			return null;
 		}
 	}
-
-	protected abstract T createLiferayRepository(
-		long groupId, long repositoryId, long dlFolderId);
 
 	protected AssetEntryLocalService getAssetEntryLocalService() {
 		return _assetEntryLocalService;
@@ -470,16 +469,14 @@ public abstract class BaseRepositoryFactory<T> {
 			Collections.<Class<? extends Capability>>singleton(
 				TrashCapability.class);
 
-	static {
+	private static final Map<Class<? extends Capability>, Capability>
 		_DEFAULT_LIFERAY_REPOSITORY_SUPPORTED_CAPABILITIES =
 			new HashMap<Class<? extends Capability>, Capability>();
 
+	static {
 		_DEFAULT_LIFERAY_REPOSITORY_SUPPORTED_CAPABILITIES.put(
 			TrashCapability.class, new LiferayTrashCapability());
 	}
-
-	private static final Map<Class<? extends Capability>, Capability>
-		_DEFAULT_LIFERAY_REPOSITORY_SUPPORTED_CAPABILITIES;
 
 	@BeanReference(type = AssetEntryLocalService.class)
 	private AssetEntryLocalService _assetEntryLocalService;

@@ -80,8 +80,7 @@ public class LocalRepositoryFactoryImpl
 			groupId, repositoryId, dlFolderId);
 
 		return new CapabilityLocalRepository(
-			localRepository,
-			getDefaultLiferayRepositorySupportedCapabilities(),
+			localRepository, getDefaultLiferayRepositorySupportedCapabilities(),
 			getDefaultLiferayRepositoryExportedCapabilityClasses());
 	}
 

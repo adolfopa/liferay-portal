@@ -21,11 +21,14 @@ import com.liferay.portal.kernel.lar.ExportImportThreadLocal;
 import com.liferay.portal.kernel.repository.BaseRepository;
 import com.liferay.portal.kernel.repository.InvalidRepositoryIdException;
 import com.liferay.portal.kernel.repository.RepositoryException;
+import com.liferay.portal.kernel.repository.capabilities.Capability;
+import com.liferay.portal.kernel.repository.capabilities.TrashCapability;
 import com.liferay.portal.kernel.repository.cmis.CMISRepositoryHandler;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.model.ClassName;
 import com.liferay.portal.model.Repository;
 import com.liferay.portal.model.RepositoryEntry;
+import com.liferay.portal.repository.capabilities.LiferayTrashCapability;
 import com.liferay.portal.repository.cmis.CMISRepository;
 import com.liferay.portal.repository.liferayrepository.LiferayRepository;
 import com.liferay.portal.repository.proxy.BaseRepositoryProxyBean;
@@ -51,6 +54,11 @@ import com.liferay.portlet.documentlibrary.service.DLFileVersionService;
 import com.liferay.portlet.documentlibrary.service.DLFolderLocalService;
 import com.liferay.portlet.documentlibrary.service.DLFolderService;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author Adolfo Pérez
  */
@@ -70,7 +78,7 @@ public abstract class BaseRepositoryFactory<T> {
 	public T create(long folderId, long fileEntryId, long fileVersionId)
 		throws PortalException {
 
-		T liferayRepository = createLiferayRepository(
+		T liferayRepository = createLiferayRepositoryInstance(
 			folderId, fileEntryId, fileVersionId);
 
 		if (liferayRepository != null) {
@@ -153,7 +161,6 @@ public abstract class BaseRepositoryFactory<T> {
 	}
 
 	protected T createLiferayRepository(long repositoryId) {
-
 		long dlFolderId = 0;
 		long groupId = 0;
 
@@ -167,11 +174,13 @@ public abstract class BaseRepositoryFactory<T> {
 			dlFolderId = repository.getDlFolderId();
 		}
 
-		return createLiferayRepositoryInstance(
-			groupId, repositoryId, dlFolderId);
+		return createLiferayRepository(groupId, repositoryId, dlFolderId);
 	}
 
-	protected T createLiferayRepository(
+	protected abstract T createLiferayRepository(
+		long groupId, long repositoryId, long dlFolderId);
+
+	protected T createLiferayRepositoryInstance(
 			long folderId, long fileEntryId, long fileVersionId)
 		throws PortalException {
 
@@ -206,9 +215,6 @@ public abstract class BaseRepositoryFactory<T> {
 		}
 	}
 
-	protected abstract T createLiferayRepositoryInstance(
-		long groupId, long repositoryId, long dlFolderId);
-
 	protected AssetEntryLocalService getAssetEntryLocalService() {
 		return _assetEntryLocalService;
 	}
@@ -228,6 +234,30 @@ public abstract class BaseRepositoryFactory<T> {
 		}
 
 		return _defaultClassNameId;
+	}
+
+	protected Map<Class<? extends Capability>, Capability>
+		getDefaultExternalRepositorySupportedCapabilities() {
+
+		return _DEFAULT_EXTERNAL_REPOSITORY_SUPPORTED_CAPABILITIES;
+	}
+
+	protected Set<Class<? extends Capability>>
+		getDefaultExternalRepositoryExportedCapabilityClasses() {
+
+		return _DEFAULT_EXTERNAL_REPOSITORY_EXPORTED_CAPABILITY_CLASSES;
+	}
+
+	protected Set<Class<? extends Capability>>
+		getDefaultLiferayRepositoryExportedCapabilityClasses() {
+
+		return _DEFAULT_LIFERAY_REPOSITORY_EXPORTED_CAPABILITY_CLASSES;
+	}
+
+	protected Map<Class<? extends Capability>, Capability>
+		getDefaultLiferayRepositorySupportedCapabilities() {
+
+		return _DEFAULT_LIFERAY_REPOSITORY_SUPPORTED_CAPABILITIES;
 	}
 
 	protected DLAppHelperLocalService getDlAppHelperLocalService() {
@@ -424,6 +454,28 @@ public abstract class BaseRepositoryFactory<T> {
 
 	protected void setUserLocalService(UserLocalService userLocalService) {
 		_userLocalService = userLocalService;
+	}
+
+	private static final Set<Class<? extends Capability>>
+		_DEFAULT_EXTERNAL_REPOSITORY_EXPORTED_CAPABILITY_CLASSES =
+			Collections.emptySet();
+
+	private static final Map<Class<? extends Capability>, Capability>
+		_DEFAULT_EXTERNAL_REPOSITORY_SUPPORTED_CAPABILITIES =
+			Collections.emptyMap();
+
+	private static final Set<Class<? extends Capability>>
+		_DEFAULT_LIFERAY_REPOSITORY_EXPORTED_CAPABILITY_CLASSES =
+			Collections.<Class<? extends Capability>>singleton(
+				TrashCapability.class);
+
+	private static final Map<Class<? extends Capability>, Capability>
+		_DEFAULT_LIFERAY_REPOSITORY_SUPPORTED_CAPABILITIES =
+			new HashMap<Class<? extends Capability>, Capability>();
+
+	static {
+		_DEFAULT_LIFERAY_REPOSITORY_SUPPORTED_CAPABILITIES.put(
+			TrashCapability.class, new LiferayTrashCapability());
 	}
 
 	@BeanReference(type = AssetEntryLocalService.class)

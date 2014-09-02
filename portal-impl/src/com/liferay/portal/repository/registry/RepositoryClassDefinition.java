@@ -12,22 +12,21 @@
  * details.
  */
 
-package com.liferay.portal.kernel.repository.registry;
+package com.liferay.portal.repository.registry;
 
-import com.liferay.portal.kernel.repository.DocumentRepository;
-import com.liferay.portal.kernel.repository.capabilities.Capability;
+import com.liferay.portal.kernel.repository.RepositoryFactory;
+import com.liferay.portal.kernel.repository.event.RepositoryEventTrigger;
+import com.liferay.portal.kernel.repository.registry.RepositoryDefiner;
 
 /**
  * @author Adolfo Pérez
  */
-public interface CapabilityRegistry {
+public interface RepositoryClassDefinition {
 
-	public <S extends Capability, T extends S> void addExportedCapability(
-		Class<S> capabilityClass, T capability);
+	RepositoryDefiner getRepositoryDefiner();
 
-	public <S extends Capability, T extends S> void addSupportedCapability(
-		Class<S> capabilityClass, T capability);
+	public RepositoryEventTrigger getRepositoryEventTrigger();
 
-	public DocumentRepository getDocumentRepository();
+	public RepositoryFactory getRepositoryFactory();
 
 }

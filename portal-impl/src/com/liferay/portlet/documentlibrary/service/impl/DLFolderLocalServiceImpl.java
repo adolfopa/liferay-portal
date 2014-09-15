@@ -642,7 +642,7 @@ public class DLFolderLocalServiceImpl extends DLFolderLocalServiceBaseImpl {
 
 	@Override
 	public DLFolder getMountFolder(long repositoryId) throws PortalException {
-		return dlFolderPersistence.findByRepositoryId(repositoryId);
+		return dlFolderPersistence.findByR_M(repositoryId, true);
 	}
 
 	@Override
@@ -667,14 +667,14 @@ public class DLFolderLocalServiceImpl extends DLFolderLocalServiceBaseImpl {
 
 	@Override
 	public List<DLFolder> getRepositoryFolders(
-		long groupId, long repositoryId, int start, int end) {
+		long repositoryId, int start, int end) {
 
-		return dlFolderPersistence.findByG_R(groupId, repositoryId, start, end);
+		return dlFolderPersistence.findByRepositoryId(repositoryId, start, end);
 	}
 
 	@Override
-	public int getRepositoryFoldersCount(long groupId, long repositoryId) {
-		return dlFolderPersistence.countByG_R(groupId, repositoryId);
+	public int getRepositoryFoldersCount(long repositoryId) {
+		return dlFolderPersistence.countByRepositoryId(repositoryId);
 	}
 
 	@Override

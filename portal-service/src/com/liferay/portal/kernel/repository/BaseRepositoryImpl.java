@@ -226,7 +226,6 @@ public abstract class BaseRepositoryImpl
 		return getFoldersCount(parentFolderId, includeMountfolders);
 	}
 
-	@Override
 	public long getGroupId() {
 		return _groupId;
 	}

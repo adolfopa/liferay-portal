@@ -150,11 +150,6 @@ public class LocalRepositoryProxyBean
 	}
 
 	@Override
-	public long getGroupId() {
-		return _localRepository.getGroupId();
-	}
-
-	@Override
 	public List<FileEntry> getRepositoryFileEntries(
 			long rootFolderId, int start, int end,
 			OrderByComparator<FileEntry> obc)

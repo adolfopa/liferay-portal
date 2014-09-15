@@ -52,7 +52,6 @@ public class LiferayRepositoryDefiner extends BaseRepositoryDefiner {
 
 		BulkOperationCapability bulkOperationCapability =
 			new LiferayBulkOperationCapability(
-				documentRepository.getGroupId(),
 				documentRepository.getRepositoryId());
 
 		capabilityRegistry.addExportedCapability(

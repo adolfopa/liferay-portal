@@ -33,8 +33,7 @@ import java.util.List;
  */
 public class LiferayBulkOperationCapability implements BulkOperationCapability {
 
-	public LiferayBulkOperationCapability(long groupId, long repositoryId) {
-		_groupId = groupId;
+	public LiferayBulkOperationCapability(long repositoryId) {
 		_repositoryId = repositoryId;
 	}
 
@@ -87,14 +86,14 @@ public class LiferayBulkOperationCapability implements BulkOperationCapability {
 		@Override
 		public int getCount() {
 			return DLFileEntryLocalServiceUtil.getRepositoryFileEntriesCount(
-				_groupId, _repositoryId);
+				_repositoryId);
 		}
 
 		@Override
 		public List<FileEntry> getPage(int start, int end) {
 			List<DLFileEntry> dlFileEntries =
 				DLFileEntryLocalServiceUtil.getRepositoryFileEntries(
-					_groupId, _repositoryId, start, end);
+					_repositoryId, start, end);
 
 			return RepositoryModelUtil.toFileEntries(dlFileEntries);
 		}
@@ -107,14 +106,14 @@ public class LiferayBulkOperationCapability implements BulkOperationCapability {
 		@Override
 		public int getCount() {
 			return DLFolderLocalServiceUtil.getRepositoryFoldersCount(
-				_groupId, _repositoryId);
+				_repositoryId);
 		}
 
 		@Override
 		public List<Folder> getPage(int start, int end) {
 			List<DLFolder> dlFolders =
 				DLFolderLocalServiceUtil.getRepositoryFolders(
-					_groupId, _repositoryId, start, end);
+					_repositoryId, start, end);
 
 			return RepositoryModelUtil.toFolders(dlFolders);
 		}

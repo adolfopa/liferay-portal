@@ -21,8 +21,6 @@ import com.liferay.portal.kernel.repository.capabilities.CapabilityProvider;
  */
 public interface DocumentRepository extends CapabilityProvider {
 
-	public long getGroupId();
-
 	public long getRepositoryId();
 
 }

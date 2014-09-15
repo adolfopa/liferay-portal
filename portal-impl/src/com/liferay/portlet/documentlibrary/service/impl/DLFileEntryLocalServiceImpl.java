@@ -1333,15 +1333,15 @@ public class DLFileEntryLocalServiceImpl
 
 	@Override
 	public List<DLFileEntry> getRepositoryFileEntries(
-		long groupId, long repositoryId, int start, int end) {
+		long repositoryId, int start, int end) {
 
-		return dlFileEntryPersistence.findByG_R(
-			groupId, repositoryId, start, end);
+		return dlFileEntryPersistence.findByRepositoryId(
+			repositoryId, start, end);
 	}
 
 	@Override
-	public int getRepositoryFileEntriesCount(long groupId, long repositoryId) {
-		return dlFileEntryPersistence.countByG_R(groupId, repositoryId);
+	public int getRepositoryFileEntriesCount(long repositoryId) {
+		return dlFileEntryPersistence.countByRepositoryId(repositoryId);
 	}
 
 	@Override

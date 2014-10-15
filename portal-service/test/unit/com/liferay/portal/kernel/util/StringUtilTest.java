@@ -193,6 +193,54 @@ public class StringUtilTest {
 	}
 
 	@Test
+	public void testRemoveLeadingEmpty() throws Exception {
+		Assert.assertEquals(
+			StringPool.BLANK,
+			StringUtil.removeLeading(StringPool.BLANK, CharPool.PERIOD));
+		Assert.assertEquals(
+			StringPool.BLANK,
+			StringUtil.removeLeading(StringPool.BLANK, CharPool.SLASH));
+	}
+
+	@Test
+	public void testRemoveLeadingInner() throws Exception {
+		Assert.assertEquals(
+			"ab.de", StringUtil.removeLeading("ab.de", CharPool.PERIOD));
+		Assert.assertEquals(
+			"ab/de", StringUtil.removeLeading("ab/de", CharPool.SLASH));
+	}
+
+	@Test
+	public void testRemoveLeadingNoOccurrences() throws Exception {
+		Assert.assertEquals(
+			"abcde", StringUtil.removeLeading("abcde", CharPool.PERIOD));
+		Assert.assertEquals(
+			"abcde", StringUtil.removeLeading("abcde", CharPool.SLASH));
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void testRemoveLeadingNull() throws Exception {
+		StringUtil.removeLeading(null, CharPool.PERIOD);
+		StringUtil.removeLeading(null, CharPool.SLASH);
+	}
+
+	@Test
+	public void testRemoveLeadingPrefix() throws Exception {
+		Assert.assertEquals(
+			"abcde", StringUtil.removeLeading("..abcde", CharPool.PERIOD));
+		Assert.assertEquals(
+			"abcde", StringUtil.removeLeading("//abcde", CharPool.SLASH));
+	}
+
+	@Test
+	public void testRemoveLeadingSuffix() throws Exception {
+		Assert.assertEquals(
+			"abcde..", StringUtil.removeLeading("abcde..", CharPool.PERIOD));
+		Assert.assertEquals(
+			"abcde//", StringUtil.removeLeading("abcde//", CharPool.SLASH));
+	}
+
+	@Test
 	public void testReplaceChar() throws Exception {
 		Assert.assertEquals(
 			"127_0_0_1", StringUtil.replace("127.0.0.1", '.', '_'));

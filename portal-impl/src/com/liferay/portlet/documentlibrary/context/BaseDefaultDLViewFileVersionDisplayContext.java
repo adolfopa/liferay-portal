@@ -184,11 +184,6 @@ public abstract class BaseDefaultDLViewFileVersionDisplayContext
 	}
 
 	@Override
-	public boolean isMoveButtonVisible() throws PortalException {
-		return _fileEntryDisplayContextHelper.isUpdatable();
-	}
-
-	@Override
 	public boolean isMoveToTheRecycleBinButtonVisible() throws PortalException {
 		if (!isDeleteActionAvailable() &&
 			_fileEntryDisplayContextHelper.isFileEntryDeletable()) {
@@ -363,7 +358,7 @@ public abstract class BaseDefaultDLViewFileVersionDisplayContext
 	protected void addMoveMenuItem(List<MenuItem> menuItems)
 		throws PortalException {
 
-		if (!isMoveButtonVisible()) {
+		if (!_fileEntryDisplayContextHelper.isMoveActionAvailable()) {
 			return;
 		}
 
@@ -628,7 +623,7 @@ public abstract class BaseDefaultDLViewFileVersionDisplayContext
 	private void _addMoveToolbarItem(List<ToolbarItem> toolbarItems)
 		throws PortalException {
 
-		if (!isMoveButtonVisible()) {
+		if (!_fileEntryDisplayContextHelper.isMoveActionAvailable()) {
 			return;
 		}
 

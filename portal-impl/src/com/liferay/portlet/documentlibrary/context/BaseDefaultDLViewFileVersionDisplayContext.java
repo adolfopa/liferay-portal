@@ -178,16 +178,6 @@ public abstract class BaseDefaultDLViewFileVersionDisplayContext
 		return _UUID;
 	}
 
-	protected boolean isDeleteActionAvailable() throws PortalException {
-		if (_fileEntryDisplayContextHelper.isFileEntryDeletable() &&
-			!_isFileEntryTrashable()) {
-
-			return true;
-		}
-
-		return false;
-	}
-
 	@Override
 	public boolean isDownloadLinkVisible() throws PortalException {
 		return _fileEntryDisplayContextHelper.isDownloadActionAvailable();
@@ -506,6 +496,16 @@ public abstract class BaseDefaultDLViewFileVersionDisplayContext
 		sb.append("fm);");
 
 		return sb.toString();
+	}
+
+	protected boolean isDeleteActionAvailable() throws PortalException {
+		if (_fileEntryDisplayContextHelper.isFileEntryDeletable() &&
+			!_isFileEntryTrashable()) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private void _addCancelCheckoutToolbarItem(List<ToolbarItem> toolbarItems)

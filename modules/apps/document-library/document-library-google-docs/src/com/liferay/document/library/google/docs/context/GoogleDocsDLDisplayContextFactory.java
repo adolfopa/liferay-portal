@@ -132,32 +132,6 @@ public class GoogleDocsDLDisplayContextFactory
 		return parentDLViewFileVersionDisplayContext;
 	}
 
-	@Override
-	public DLViewFileVersionDisplayContext
-		getIGFileVersionActionsDisplayContext(
-			DLViewFileVersionDisplayContext
-				parentDLViewFileVersionDisplayContext,
-			HttpServletRequest request, HttpServletResponse response,
-			DLFileShortcut dlFileShortcut) {
-
-		return getDLViewFileVersionDisplayContext(
-			parentDLViewFileVersionDisplayContext, request, response,
-			dlFileShortcut);
-	}
-
-	@Override
-	public DLViewFileVersionDisplayContext
-		getIGFileVersionActionsDisplayContext(
-			DLViewFileVersionDisplayContext
-				parentDLViewFileVersionDisplayContext,
-			HttpServletRequest request, HttpServletResponse response,
-			FileVersion fileVersion) {
-
-		return getDLViewFileVersionDisplayContext(
-			parentDLViewFileVersionDisplayContext, request, response,
-			fileVersion);
-	}
-
 	@Reference
 	public void setDLAppService(DLAppService dlAppService) {
 		_dlAppService = dlAppService;

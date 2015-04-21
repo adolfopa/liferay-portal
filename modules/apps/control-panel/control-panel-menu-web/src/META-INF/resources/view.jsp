@@ -189,4 +189,22 @@
 		%>
 
 	</liferay-ui:panel-container>
+
+	<c:if test="<%= !themeDisplay.isStatePopUp() %>">
+		<aui:script use="liferay-control-panel">
+			<%
+			String controlPanelMenuPortletId = PortletProviderUtil.getPortletId(PortalAdministrationApplicationType.SiteAdmin.CLASS_NAME, PortletProvider.Action.VIEW);
+			%>
+
+			new Liferay.ControlPanel(
+				{
+					panelContainerId: 'controlPanelMenuAddContentPanelContainer',
+					searchPanelId: '_<%= controlPanelMenuPortletId %>_searchPanel',
+					sidebarHiddenAttr: 'controlPanelSidebarHidden',
+					sidebarMinimizedAttr: 'control-panel-sidebar-minimized',
+					togglerComponentId: '_<%= controlPanelMenuPortletId %>_controlPanelMenuAddContentPanelContainer',
+				}
+			);
+		</aui:script>
+	</c:if>
 </div>

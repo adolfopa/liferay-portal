@@ -210,6 +210,19 @@
 						path: 'browser_selectors.js',
 						requires: ['yui-base']
 					},
+					'liferay-control-panel': {
+						path: 'control_panel.js',
+						requires: [
+							'aui-live-search-deprecated',
+							'aui-overlay-context-panel-deprecated',
+							'event-mouseenter',
+							'liferay-message',
+							'liferay-panel-search',
+							'liferay-store',
+							'node-focusmanager',
+							'transition'
+						]
+					},
 					'liferay-cover-cropper': {
 						path: 'cover_cropper.js',
 						requires: [

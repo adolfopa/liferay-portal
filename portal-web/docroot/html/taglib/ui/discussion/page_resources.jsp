@@ -1,4 +1,3 @@
-
 <%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
@@ -29,7 +28,9 @@ CommentManager commentManager = CommentManagerUtil.getCommentManager();
 
 Comment rootComment = commentManager.getComment(discussionTaglibHelper.getUserId(), discussionRequestHelper.getScopeGroupId(), discussionTaglibHelper.getClassName(), discussionTaglibHelper.getClassPK(), ServiceContextFactory.getInstance(request));
 
-CommentSectionDisplayContext commentSectionDisplayContext = new MBCommentSectionDisplayContext(discussionTaglibHelper, discussionRequestHelper, rootComment);
+DiscussionPermission discussionPermission = new MBDiscussionPermissionImpl(discussionRequestHelper.getPermissionChecker());
+
+CommentSectionDisplayContext commentSectionDisplayContext = new MBCommentSectionDisplayContext(discussionTaglibHelper, discussionRequestHelper, rootComment, discussionPermission);
 
 CommentIterator commentIterator = rootComment.getThreadCommentsIterator(rootIndexPage);
 

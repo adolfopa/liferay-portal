@@ -32,15 +32,15 @@ public class MBCommentSectionDisplayContext
 
 	public MBCommentSectionDisplayContext(
 		DiscussionTaglibHelper discussionTaglibHelper,
-		DiscussionRequestHelper discussionRequestHelper, Comment rootComment,
+		DiscussionRequestHelper discussionRequestHelper,
 		DiscussionPermission discussionPermission,
-		CommentManager commentManager) {
+		CommentManager commentManager, Comment rootComment) {
 
 		_discussionTaglibHelper = discussionTaglibHelper;
 		_discussionRequestHelper = discussionRequestHelper;
-		_rootComment = rootComment;
 		_discussionPermission = discussionPermission;
 		_commentManager = commentManager;
+		_rootComment = rootComment;
 	}
 
 	@Override

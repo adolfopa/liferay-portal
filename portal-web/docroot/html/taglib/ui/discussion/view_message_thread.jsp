@@ -26,7 +26,7 @@ Comment comment = (Comment)request.getAttribute("liferay-ui:discussion:currentCo
 
 DiscussionPermission discussionPermission = new MBDiscussionPermissionImpl(discussionRequestHelper.getPermissionChecker());
 
-CommentTreeDisplayContext commentTreeDisplayContext = new MBCommentTreeDisplayContext(discussionTaglibHelper, discussionRequestHelper, comment, discussionPermission);
+CommentTreeDisplayContext commentTreeDisplayContext = new MBCommentTreeDisplayContext(discussionTaglibHelper, discussionRequestHelper, discussionPermission, comment);
 
 int index = GetterUtil.getInteger(request.getAttribute("liferay-ui:discussion:index"));
 String randomNamespace = (String)request.getAttribute("liferay-ui:discussion:randomNamespace");

@@ -28,7 +28,7 @@ Comment rootComment = commentManager.getComment(discussionTaglibHelper.getUserId
 
 DiscussionPermission discussionPermission = new MBDiscussionPermissionImpl(discussionRequestHelper.getPermissionChecker());
 
-CommentSectionDisplayContext commentSectionDisplayContext = new MBCommentSectionDisplayContext(discussionTaglibHelper, discussionRequestHelper, rootComment, discussionPermission);
+CommentSectionDisplayContext commentSectionDisplayContext = new MBCommentSectionDisplayContext(discussionTaglibHelper, discussionRequestHelper, rootComment, discussionPermission, commentManager);
 %>
 
 <section>

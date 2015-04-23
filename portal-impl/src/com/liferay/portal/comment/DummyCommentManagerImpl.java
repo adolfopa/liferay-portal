@@ -68,4 +68,13 @@ public class DummyCommentManagerImpl implements CommentManager {
 		return 0;
 	}
 
+	@Override
+	public boolean isDiscussionMaxCommentsExceeded(
+			long userId, long groupId, String className, long classPK,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		return false;
+	}
+
 }

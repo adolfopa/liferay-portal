@@ -51,4 +51,9 @@ public interface CommentManager {
 
 	public int getCommentsCount(String className, long classPK);
 
+	public boolean isDiscussionMaxCommentsExceeded(
+			long userId, long groupId, String className, long classPK,
+			ServiceContext serviceContext)
+		throws PortalException;
+
 }

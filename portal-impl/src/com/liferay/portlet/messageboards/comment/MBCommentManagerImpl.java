@@ -175,6 +175,20 @@ public class MBCommentManagerImpl implements CommentManager {
 			classNameId, classPK, WorkflowConstants.STATUS_APPROVED);
 	}
 
+	@Override
+	public boolean isDiscussionMaxCommentsExceeded(
+			long userId, long groupId, String className, long classPK,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		MBMessageDisplay messageDisplay =
+			MBMessageLocalServiceUtil.getDiscussionMessageDisplay(
+				userId, groupId, className, classPK,
+				WorkflowConstants.STATUS_ANY, new MessageThreadComparator());
+
+		return messageDisplay.isDiscussionMaxComments();
+	}
+
 	public void setMBMessageLocalService(
 		MBMessageLocalService mbMessageLocalService) {
 

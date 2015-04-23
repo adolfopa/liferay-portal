@@ -120,6 +120,18 @@ public class CommentManagerImpl implements CommentManager {
 		return commentManager.getCommentsCount(className, classPK);
 	}
 
+	@Override
+	public boolean isDiscussionMaxCommentsExceeded(
+			long userId, long groupId, String className, long classPK,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		CommentManager commentManager = getCommentManager();
+
+		return commentManager.isDiscussionMaxCommentsExceeded(
+			userId, groupId, className, classPK, serviceContext);
+	}
+
 	protected CommentManager getCommentManager() {
 		if (_serviceTracker.isEmpty()) {
 			return _defaultCommentManager;

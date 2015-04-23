@@ -22,24 +22,34 @@ PanelCategoryRegistry panelCategoryRegistry = (PanelCategoryRegistry)request.get
 %>
 
 <div class="portal-add-content">
-	<div class="panel-group">
-		<liferay-ui:panel-container
-			accordion="<%= true %>"
-			extended="<%= true %>"
-			id="userPersonalPanelMenuAddContentPanelContainer"
-			persistState="<%= true %>"
-		>
+	<liferay-ui:panel-container
+		accordion="<%= true %>"
+		cssClass="panel-group"
+		extended="<%= true %>"
+		id="userPersonalPanelMenuAddContentPanelContainer"
+		persistState="<%= true %>"
+	>
 
-			<%
-			for (PanelCategory childPanelCategory : panelCategoryRegistry.getChildPanelCategories(panelCategory)) {
-			%>
+		<%
+		for (PanelCategory childPanelCategory : panelCategoryRegistry.getChildPanelCategories(panelCategory)) {
+		%>
 
-				<productivity-center-ui:panel-category panelCategory="<%= childPanelCategory %>" servletContext="<%= application %>" />
+			<productivity-center-ui:panel-category panelCategory="<%= childPanelCategory %>" servletContext="<%= application %>" />
 
-			<%
-			}
-			%>
+		<%
+		}
+		%>
 
-		</liferay-ui:panel-container>
-	</div>
+	</liferay-ui:panel-container>
 </div>
+
+<aui:script use="liferay-control-panel">
+	new Liferay.ControlPanel(
+		{
+			panelContainerId: 'userPersonalPanelMenuAddContentPanelContainer',
+			sidebarHiddenAttr: 'userPanelSidebarHidden',
+			sidebarMinimizedAttr: 'user-panel-sidebar-minimized',
+			togglerComponentId: '_com_liferay_productivity_center_portlet_ProductivityCenterPortlet_userPersonalPanelMenuAddContentPanelContainer'
+		}
+	);
+</aui:script>

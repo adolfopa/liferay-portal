@@ -184,6 +184,17 @@ request.setAttribute("control_panel.jsp-ppid", ppid);
 				</div>
 			</div>
 		</div>
+		<aui:script use="liferay-control-panel">
+			new Liferay.ControlPanel(
+				{
+					panelContainerId: 'controlPanelMenuAddContentPanelContainer',
+					searchPanelId: '_160_searchPanel',
+					sidebarHiddenAttr: 'controlPanelSidebarHidden',
+					sidebarMinimizedAttr: 'control-panel-sidebar-minimized',
+					togglerComponentId: '_160_controlPanelMenuAddContentPanelContainer',
+				}
+			);
+		</aui:script>
 	</c:when>
 	<c:otherwise>
 		<%@ include file="/html/portal/layout/view/panel_content.jspf" %>

@@ -14,21 +14,15 @@
 
 package com.liferay.portlet.messageboards.comment.context;
 
+import com.liferay.portal.kernel.comment.Comment;
+import com.liferay.portal.kernel.comment.CommentManager;
+import com.liferay.portal.kernel.comment.DiscussionPermission;
 import com.liferay.portal.kernel.comment.context.CommentSectionDisplayContext;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portal.security.permission.ActionKeys;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portlet.messageboards.comment.context.util.DiscussionRequestHelper;
 import com.liferay.portlet.messageboards.comment.context.util.DiscussionTaglibHelper;
-import com.liferay.portlet.messageboards.model.MBMessage;
-import com.liferay.portlet.messageboards.model.MBMessageDisplay;
-import com.liferay.portlet.messageboards.model.MBThread;
-import com.liferay.portlet.messageboards.model.MBTreeWalker;
-import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
-import com.liferay.portlet.messageboards.service.permission.MBDiscussionPermission;
-import com.liferay.portlet.messageboards.util.comparator.MessageThreadComparator;
-
-import java.util.List;
 
 /**
  * @author Adolfo Pérez
@@ -38,55 +32,43 @@ public class MBCommentSectionDisplayContext
 
 	public MBCommentSectionDisplayContext(
 		DiscussionTaglibHelper discussionTaglibHelper,
-		DiscussionRequestHelper discussionRequestHelper) {
+		DiscussionRequestHelper discussionRequestHelper,
+		DiscussionPermission discussionPermission,
+		CommentManager commentManager, Comment rootComment) {
 
 		_discussionTaglibHelper = discussionTaglibHelper;
 		_discussionRequestHelper = discussionRequestHelper;
+		_discussionPermission = discussionPermission;
+		_commentManager = commentManager;
+		_rootComment = rootComment;
 	}
 
 	@Override
-	public long getRootMessageId() throws PortalException {
-		if (_rootMessage == null) {
-			MBTreeWalker treeWalker = getTreeWalker();
-
-			_rootMessage = treeWalker.getRoot();
-		}
-
-		return _rootMessage.getMessageId();
-	}
-
-	@Override
-	public long getThreadId() throws PortalException {
-		if (_thread == null) {
-			MBMessageDisplay messageDisplay = getMBMessageDisplay();
-
-			_thread = messageDisplay.getThread();
-		}
-
-		return _thread.getThreadId();
-	}
-
-	@Override
-	public boolean isControlsVisible() {
+	public boolean isControlsVisible() throws PortalException {
 		if (_discussionTaglibHelper.isHideControls()) {
 			return false;
 		}
 
-		return MBDiscussionPermission.contains(
-			_discussionRequestHelper.getPermissionChecker(),
+		return _discussionPermission.hasAddPermission(
 			_discussionRequestHelper.getCompanyId(),
 			_discussionRequestHelper.getScopeGroupId(),
 			_discussionTaglibHelper.getPermissionClassName(),
 			_discussionTaglibHelper.getPermissionClassPK(),
-			_discussionTaglibHelper.getUserId(), ActionKeys.ADD_DISCUSSION);
+			_discussionTaglibHelper.getUserId());
 	}
 
 	@Override
 	public boolean isDiscussionMaxComments() throws PortalException {
 		if (_discussionMaxComments == null) {
-			MBMessageDisplay messageDisplay = getMBMessageDisplay();
+			ServiceContext serviceContext = ServiceContextFactory.getInstance(
+				_discussionRequestHelper.getRequest());
 
-			_discussionMaxComments = messageDisplay.isDiscussionMaxComments();
+			_discussionMaxComments =
+				_commentManager.isDiscussionMaxCommentsExceeded(
+					_discussionTaglibHelper.getUserId(),
+					_discussionRequestHelper.getScopeGroupId(),
+					_discussionTaglibHelper.getClassName(),
+					_discussionTaglibHelper.getClassPK(), serviceContext);
 		}
 
 		return _discussionMaxComments;
@@ -94,65 +76,36 @@ public class MBCommentSectionDisplayContext
 
 	@Override
 	public boolean isDiscussionVisible() throws PortalException {
-		return (getMessagesCount() > 1) || hasViewPermission();
-	}
-
-	protected MBMessageDisplay getMBMessageDisplay() throws PortalException {
-		if (_discussionMessageDisplay == null) {
-			_discussionMessageDisplay =
-				MBMessageLocalServiceUtil.getDiscussionMessageDisplay(
-					_discussionTaglibHelper.getUserId(),
-					_discussionRequestHelper.getScopeGroupId(),
-					_discussionTaglibHelper.getClassName(),
-					_discussionTaglibHelper.getClassPK(),
-					WorkflowConstants.STATUS_ANY,
-					new MessageThreadComparator());
+		if (_rootComment == null) {
+			return false;
 		}
 
-		return _discussionMessageDisplay;
-	}
-
-	protected int getMessagesCount() throws PortalException {
-		if (_messagesCount == null) {
-			MBMessageDisplay messageDisplay = getMBMessageDisplay();
-
-			MBTreeWalker treeWalker = messageDisplay.getTreeWalker();
-
-			List<MBMessage> messages = treeWalker.getMessages();
-
-			_messagesCount = messages.size();
+		if ((_rootComment.getThreadCommentCount() > 1) || hasViewPermission()) {
+			return true;
 		}
 
-		return _messagesCount;
+		return false;
 	}
 
-	protected MBTreeWalker getTreeWalker() throws PortalException {
-		if (_treeWalker == null) {
-			MBMessageDisplay messageDisplay = getMBMessageDisplay();
-
-			_treeWalker = messageDisplay.getTreeWalker();
-		}
-
-		return _treeWalker;
+	@Override
+	public boolean isMessageThreadVisible() throws PortalException {
+		return _rootComment.getThreadCommentCount() > 1;
 	}
 
-	protected boolean hasViewPermission() {
-		return MBDiscussionPermission.contains(
-			_discussionRequestHelper.getPermissionChecker(),
+	protected boolean hasViewPermission() throws PortalException {
+		return _discussionPermission.hasViewPermission(
 			_discussionRequestHelper.getCompanyId(),
 			_discussionRequestHelper.getScopeGroupId(),
 			_discussionTaglibHelper.getPermissionClassName(),
 			_discussionTaglibHelper.getPermissionClassPK(),
-			_discussionTaglibHelper.getUserId(), ActionKeys.VIEW);
+			_discussionTaglibHelper.getUserId());
 	}
 
+	private final CommentManager _commentManager;
 	private Boolean _discussionMaxComments;
-	private MBMessageDisplay _discussionMessageDisplay;
+	private final DiscussionPermission _discussionPermission;
 	private final DiscussionRequestHelper _discussionRequestHelper;
 	private final DiscussionTaglibHelper _discussionTaglibHelper;
-	private Integer _messagesCount;
-	private MBMessage _rootMessage;
-	private MBThread _thread;
-	private MBTreeWalker _treeWalker;
+	private final Comment _rootComment;
 
 }

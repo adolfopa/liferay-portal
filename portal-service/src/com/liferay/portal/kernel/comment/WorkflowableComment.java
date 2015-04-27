@@ -12,21 +12,23 @@
  * details.
  */
 
-package com.liferay.portal.kernel.comment.context;
-
-import com.liferay.portal.kernel.exception.PortalException;
+package com.liferay.portal.kernel.comment;
 
 /**
  * @author Adolfo Pérez
  */
-public interface CommentSectionDisplayContext {
+public interface WorkflowableComment extends Comment {
 
-	public boolean isControlsVisible() throws PortalException;
+	public long getCompanyId();
 
-	public boolean isDiscussionMaxComments() throws PortalException;
+	public long getGroupId();
 
-	public boolean isDiscussionVisible() throws PortalException;
+	public long getPrimaryKey();
 
-	public boolean isMessageThreadVisible() throws PortalException;
+	public int getStatus();
+
+	public boolean isApproved();
+
+	public boolean isPending();
 
 }

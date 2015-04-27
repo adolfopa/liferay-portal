@@ -12,21 +12,21 @@
  * details.
  */
 
-package com.liferay.portal.kernel.comment.context;
+package com.liferay.portal.kernel.comment;
 
-import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portlet.messageboards.model.MBDiscussion;
 
 /**
  * @author Adolfo Pérez
  */
-public interface CommentSectionDisplayContext {
+public class CommentConstants {
 
-	public boolean isControlsVisible() throws PortalException;
+	public static Class<?> getDiscussionClass() {
+		return MBDiscussion.class;
+	}
 
-	public boolean isDiscussionMaxComments() throws PortalException;
-
-	public boolean isDiscussionVisible() throws PortalException;
-
-	public boolean isMessageThreadVisible() throws PortalException;
+	public static String getDiscussionClassName() {
+		return MBDiscussion.class.getName();
+	}
 
 }

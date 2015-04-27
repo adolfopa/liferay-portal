@@ -14,6 +14,7 @@
 
 package com.liferay.portal.comment;
 
+import com.liferay.portal.kernel.comment.Comment;
 import com.liferay.portal.kernel.comment.CommentManager;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
@@ -101,10 +102,34 @@ public class CommentManagerImpl implements CommentManager {
 	}
 
 	@Override
+	public Comment getComment(
+			long userId, long groupId, String className, long classPK,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		CommentManager commentManager = getCommentManager();
+
+		return commentManager.getComment(
+			userId, groupId, className, classPK, serviceContext);
+	}
+
+	@Override
 	public int getCommentsCount(String className, long classPK) {
 		CommentManager commentManager = getCommentManager();
 
 		return commentManager.getCommentsCount(className, classPK);
+	}
+
+	@Override
+	public boolean isDiscussionMaxCommentsExceeded(
+			long userId, long groupId, String className, long classPK,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		CommentManager commentManager = getCommentManager();
+
+		return commentManager.isDiscussionMaxCommentsExceeded(
+			userId, groupId, className, classPK, serviceContext);
 	}
 
 	protected CommentManager getCommentManager() {

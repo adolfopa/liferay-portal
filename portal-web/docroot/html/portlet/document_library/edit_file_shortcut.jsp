@@ -117,8 +117,6 @@ portletURL.setParameter("fileShortcutId", String.valueOf(fileShortcutId));
 
 		<c:if test="<%= fileShortcut == null %>">
 			<aui:field-wrapper label="permissions">
-				<%--TODO QIE es esto?--%>
-
 				<liferay-ui:input-permissions
 					modelName="<%= DLFileShortcutConstants.getClassName() %>"
 				/>

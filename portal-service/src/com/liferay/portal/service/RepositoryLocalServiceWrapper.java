@@ -280,14 +280,6 @@ public class RepositoryLocalServiceWrapper implements RepositoryLocalService,
 
 	@Override
 	public com.liferay.portal.kernel.repository.LocalRepository getLocalRepositoryImpl(
-		long folderId, long fileEntryId, long fileVersionId)
-		throws com.liferay.portal.kernel.exception.PortalException {
-		return _repositoryLocalService.getLocalRepositoryImpl(folderId,
-			fileEntryId, fileVersionId);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.repository.LocalRepository getLocalRepositoryImpl(
 		long folderId, long fileEntryId, long fileVersionId, long fileShortcutId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _repositoryLocalService.getLocalRepositoryImpl(folderId,
@@ -413,14 +405,6 @@ public class RepositoryLocalServiceWrapper implements RepositoryLocalService,
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _repositoryLocalService.getRepositoryByUuidAndGroupId(uuid,
 			groupId);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.repository.Repository getRepositoryImpl(
-		long folderId, long fileEntryId, long fileVersionId)
-		throws com.liferay.portal.kernel.exception.PortalException {
-		return _repositoryLocalService.getRepositoryImpl(folderId, fileEntryId,
-			fileVersionId);
 	}
 
 	@Override

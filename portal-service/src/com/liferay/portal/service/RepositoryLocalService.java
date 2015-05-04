@@ -230,11 +230,6 @@ public interface RepositoryLocalService extends BaseLocalService,
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.portal.kernel.repository.LocalRepository getLocalRepositoryImpl(
-		long folderId, long fileEntryId, long fileVersionId)
-		throws PortalException;
-
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public com.liferay.portal.kernel.repository.LocalRepository getLocalRepositoryImpl(
 		long folderId, long fileEntryId, long fileVersionId, long fileShortcutId)
 		throws PortalException;
 
@@ -330,11 +325,6 @@ public interface RepositoryLocalService extends BaseLocalService,
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.portal.model.Repository getRepositoryByUuidAndGroupId(
 		java.lang.String uuid, long groupId) throws PortalException;
-
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public com.liferay.portal.kernel.repository.Repository getRepositoryImpl(
-		long folderId, long fileEntryId, long fileVersionId)
-		throws PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.portal.kernel.repository.Repository getRepositoryImpl(

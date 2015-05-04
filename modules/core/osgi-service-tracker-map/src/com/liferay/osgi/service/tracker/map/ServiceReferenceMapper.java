@@ -21,7 +21,8 @@ import org.osgi.framework.ServiceReference;
  */
 public interface ServiceReferenceMapper<K, S> {
 
-	public void map(ServiceReference<S> serviceReference, Emitter<K> emitter);
+	public void map(
+		ServiceReference<S> serviceReference, Emitter<K> emitter);
 
 	public interface Emitter<K> {
 

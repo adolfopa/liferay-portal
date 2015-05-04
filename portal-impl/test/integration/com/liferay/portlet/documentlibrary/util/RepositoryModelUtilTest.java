@@ -38,6 +38,7 @@ import com.liferay.portlet.documentlibrary.model.DLFolder;
 import com.liferay.portlet.documentlibrary.model.DLFolderConstants;
 import com.liferay.portlet.documentlibrary.service.DLAppServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
+import com.liferay.portlet.documentlibrary.service.DLFileShortcutLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFolderLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.util.test.DLTestUtil;
 
@@ -230,9 +231,10 @@ public class RepositoryModelUtilTest {
 			_folder.getFolderId());
 
 		for (int i = 0; i < 5; i++) {
-			DLTestUtil.addDLFileShortcuts(
-				_group.getGroupId(), _folder.getFolderId(),
-				dlFileEntry.getFileEntryId(), _serviceContext);
+			DLFileShortcutLocalServiceUtil.addFileShortcut(
+				TestPropsValues.getUserId(), _group.getGroupId(),
+				_folder.getFolderId(), dlFileEntry.getFileEntryId(),
+				_serviceContext);
 		}
 	}
 

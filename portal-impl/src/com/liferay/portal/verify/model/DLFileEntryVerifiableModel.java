@@ -14,7 +14,7 @@
 
 package com.liferay.portal.verify.model;
 
-import com.liferay.portlet.documentlibrary.model.DLFileEntry;
+import com.liferay.portlet.documentlibrary.model.DLFileEntryConstants;
 
 /**
  * @author Brian Wing Shun Chan
@@ -23,7 +23,7 @@ public class DLFileEntryVerifiableModel implements VerifiableResourcedModel {
 
 	@Override
 	public String getModelName() {
-		return DLFileEntry.class.getName();
+		return DLFileEntryConstants.getClassName();
 	}
 
 	@Override

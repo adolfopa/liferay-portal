@@ -2392,15 +2392,6 @@ public class DLFileEntryLocalServiceImpl
 			dlFileEntry.getGroupId(), newFolderId, dlFileEntry.getFileEntryId(),
 			dlFileEntry.getFileName(), dlFileEntry.getTitle());
 
-		if (_dlStore.hasFile(
-				user.getCompanyId(),
-				DLFolderConstants.getDataRepositoryId(
-					dlFileEntry.getGroupId(), newFolderId),
-				dlFileEntry.getName(), StringPool.BLANK)) {
-
-			throw new DuplicateFileEntryException(dlFileEntry.getName());
-		}
-
 		dlFileEntry.setModifiedDate(serviceContext.getModifiedDate(null));
 		dlFileEntry.setFolderId(newFolderId);
 		dlFileEntry.setTreePath(dlFileEntry.buildTreePath());

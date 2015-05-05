@@ -98,7 +98,7 @@ public class IgnoreDuplicatesStoreWrapper extends BaseStoreWrapper {
 
 		recoverAndRetryOnFailure(
 			deleteFileStoreAction(
-				companyId, repositoryId, fileName, fromVersionLabel),
+				companyId, repositoryId, fileName, toVersionLabel),
 			new StoreAction<PortalException>() {
 
 				@Override

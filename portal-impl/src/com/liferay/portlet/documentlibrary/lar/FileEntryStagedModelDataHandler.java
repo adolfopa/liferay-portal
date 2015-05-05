@@ -537,7 +537,7 @@ public class FileEntryStagedModelDataHandler
 					fileEntry.getTitle(), fileEntry.getDescription(), null, is,
 					fileEntry.getSize(), serviceContext);
 			}
-			catch (DuplicateFileEntryException dfe) {
+			catch (DuplicateFileEntryException dfee) {
 				String title = fileEntry.getTitle();
 
 				String[] titleParts = title.split("\\.", 2);

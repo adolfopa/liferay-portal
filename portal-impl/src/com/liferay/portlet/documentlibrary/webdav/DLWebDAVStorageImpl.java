@@ -208,7 +208,7 @@ public class DLWebDAVStorageImpl extends BaseWebDAVStorageImpl {
 
 			return status;
 		}
-		catch (DuplicateFileEntryException dfe) {
+		catch (DuplicateFileEntryException dfee) {
 			return HttpServletResponse.SC_PRECONDITION_FAILED;
 		}
 		catch (DuplicateFolderNameException dfne) {
@@ -499,7 +499,7 @@ public class DLWebDAVStorageImpl extends BaseWebDAVStorageImpl {
 		catch (DuplicateFolderNameException dfne) {
 			return new Status(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 		}
-		catch (DuplicateFileEntryException dfe) {
+		catch (DuplicateFileEntryException dfee) {
 			return new Status(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 		}
 		catch (NoSuchFolderException nsfe) {
@@ -659,7 +659,7 @@ public class DLWebDAVStorageImpl extends BaseWebDAVStorageImpl {
 		catch (PrincipalException pe) {
 			return HttpServletResponse.SC_FORBIDDEN;
 		}
-		catch (DuplicateFileEntryException dfe) {
+		catch (DuplicateFileEntryException dfee) {
 			return HttpServletResponse.SC_PRECONDITION_FAILED;
 		}
 		catch (DuplicateFolderNameException dfne) {

@@ -127,6 +127,11 @@ public interface Repository extends DocumentRepository {
 		throws PortalException;
 
 	public List<FileEntry> getFileEntries(
+			long folderId, int status, int start, int end,
+			OrderByComparator<FileEntry> obc)
+		throws PortalException;
+
+	public List<FileEntry> getFileEntries(
 			long folderId, int start, int end, OrderByComparator<FileEntry> obc)
 		throws PortalException;
 
@@ -152,6 +157,9 @@ public interface Repository extends DocumentRepository {
 		throws PortalException;
 
 	public int getFileEntriesCount(long folderId) throws PortalException;
+
+	public int getFileEntriesCount(long folderId, int status)
+		throws PortalException;
 
 	public int getFileEntriesCount(long folderId, long fileEntryTypeId)
 		throws PortalException;

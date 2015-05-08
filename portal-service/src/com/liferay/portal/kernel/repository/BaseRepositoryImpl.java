@@ -274,12 +274,6 @@ public abstract class BaseRepositoryImpl
 		return getFolders(parentFolderId, includeMountfolders, start, end, obc);
 	}
 
-	public abstract int getRepositoryEntriesCount(long folderId);
-
-	public abstract int getRepositoryEntriesCount(
-			long folderId, String[] mimeTypes)
-		throws PortalException;
-
 	@Override
 	public int getFoldersCount(
 			long parentFolderId, int status, boolean includeMountfolders)
@@ -341,6 +335,8 @@ public abstract class BaseRepositoryImpl
 			OrderByComparator<?> obc)
 		throws PortalException;
 
+	public abstract int getRepositoryEntriesCount(long folderId);
+
 	@Override
 	public int getRepositoryEntriesCount(long folderId, int status)
 		throws PortalException {
@@ -371,6 +367,10 @@ public abstract class BaseRepositoryImpl
 
 		return getRepositoryEntriesCount(folderId, mimeTypes);
 	}
+
+	public abstract int getRepositoryEntriesCount(
+			long folderId, String[] mimeTypes)
+		throws PortalException;
 
 	/**
 	 * @deprecated As of 7.0.0, replaced by {@link #getRepositoryEntry(String)}

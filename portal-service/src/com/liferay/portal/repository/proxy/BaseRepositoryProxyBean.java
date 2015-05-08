@@ -382,33 +382,6 @@ public class BaseRepositoryProxyBean
 	}
 
 	@Override
-	public List<RepositoryEntry> getRepositoryEntries(
-			long folderId, int status, int start, int end)
-		throws PortalException {
-
-		List<RepositoryEntry> repositoryEntries =
-			_baseRepository.getRepositoryEntries(folderId, status, start, end);
-
-		return toRepositoryEntriesProxyBeans(repositoryEntries);
-	}
-
-	@Override
-	public int getRepositoryEntriesCount(long folderId, int status)
-		throws PortalException {
-
-		return _baseRepository.getRepositoryEntriesCount(folderId, status);
-	}
-
-	@Override
-	public int getRepositoryEntriesCount(
-			long folderId, int status, String[] mimeTypes)
-		throws PortalException {
-
-		return _baseRepository.getRepositoryEntriesCount(
-			folderId, status, mimeTypes);
-	}
-
-	@Override
 	public int getFileEntriesCount(long folderId) throws PortalException {
 		return _baseRepository.getFileEntriesCount(folderId);
 	}
@@ -517,53 +490,6 @@ public class BaseRepositoryProxyBean
 	}
 
 	@Override
-	public List<RepositoryEntry> getRepositoryEntries(
-			long folderId, int status, boolean includeMountFolders, int start,
-			int end, OrderByComparator<?> obc)
-		throws PortalException {
-
-		List<RepositoryEntry> repositoryEntries =
-			_baseRepository.getRepositoryEntries(
-				folderId, status, includeMountFolders, start, end, obc);
-
-		return toRepositoryEntriesProxyBeans(repositoryEntries);
-	}
-
-	@Override
-	public List<RepositoryEntry> getRepositoryEntries(
-			long folderId, int status, String[] mimeTypes,
-			boolean includeMountFolders, int start, int end,
-			OrderByComparator<?> obc)
-		throws PortalException {
-
-		List<RepositoryEntry> repositoryEntries =
-			_baseRepository.getRepositoryEntries(
-				folderId, status, mimeTypes, includeMountFolders, start, end,
-				obc);
-
-		return toRepositoryEntriesProxyBeans(repositoryEntries);
-	}
-
-	@Override
-	public int getRepositoryEntriesCount(
-			long folderId, int status, boolean includeMountFolders)
-		throws PortalException {
-
-		return _baseRepository.getRepositoryEntriesCount(
-			folderId, status, includeMountFolders);
-	}
-
-	@Override
-	public int getRepositoryEntriesCount(
-			long folderId, int status, String[] mimeTypes,
-			boolean includeMountFolders)
-		throws PortalException {
-
-		return _baseRepository.getRepositoryEntriesCount(
-			folderId, status, mimeTypes, includeMountFolders);
-	}
-
-	@Override
 	public int getFoldersCount(long parentFolderId, boolean includeMountfolders)
 		throws PortalException {
 
@@ -615,6 +541,80 @@ public class BaseRepositoryProxyBean
 
 	public BaseRepository getProxyBean() {
 		return _baseRepository;
+	}
+
+	@Override
+	public List<RepositoryEntry> getRepositoryEntries(
+			long folderId, int status, boolean includeMountFolders, int start,
+			int end, OrderByComparator<?> obc)
+		throws PortalException {
+
+		List<RepositoryEntry> repositoryEntries =
+			_baseRepository.getRepositoryEntries(
+				folderId, status, includeMountFolders, start, end, obc);
+
+		return toRepositoryEntriesProxyBeans(repositoryEntries);
+	}
+
+	@Override
+	public List<RepositoryEntry> getRepositoryEntries(
+			long folderId, int status, int start, int end)
+		throws PortalException {
+
+		List<RepositoryEntry> repositoryEntries =
+			_baseRepository.getRepositoryEntries(folderId, status, start, end);
+
+		return toRepositoryEntriesProxyBeans(repositoryEntries);
+	}
+
+	@Override
+	public List<RepositoryEntry> getRepositoryEntries(
+			long folderId, int status, String[] mimeTypes,
+			boolean includeMountFolders, int start, int end,
+			OrderByComparator<?> obc)
+		throws PortalException {
+
+		List<RepositoryEntry> repositoryEntries =
+			_baseRepository.getRepositoryEntries(
+				folderId, status, mimeTypes, includeMountFolders, start, end,
+				obc);
+
+		return toRepositoryEntriesProxyBeans(repositoryEntries);
+	}
+
+	@Override
+	public int getRepositoryEntriesCount(long folderId, int status)
+		throws PortalException {
+
+		return _baseRepository.getRepositoryEntriesCount(folderId, status);
+	}
+
+	@Override
+	public int getRepositoryEntriesCount(
+			long folderId, int status, boolean includeMountFolders)
+		throws PortalException {
+
+		return _baseRepository.getRepositoryEntriesCount(
+			folderId, status, includeMountFolders);
+	}
+
+	@Override
+	public int getRepositoryEntriesCount(
+			long folderId, int status, String[] mimeTypes)
+		throws PortalException {
+
+		return _baseRepository.getRepositoryEntriesCount(
+			folderId, status, mimeTypes);
+	}
+
+	@Override
+	public int getRepositoryEntriesCount(
+			long folderId, int status, String[] mimeTypes,
+			boolean includeMountFolders)
+		throws PortalException {
+
+		return _baseRepository.getRepositoryEntriesCount(
+			folderId, status, mimeTypes, includeMountFolders);
 	}
 
 	@Override

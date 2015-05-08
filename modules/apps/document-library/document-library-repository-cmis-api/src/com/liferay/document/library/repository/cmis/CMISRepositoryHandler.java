@@ -279,37 +279,6 @@ public abstract class CMISRepositoryHandler
 	}
 
 	@Override
-	public List<RepositoryEntry> getRepositoryEntries(
-		long folderId, int start, int end, OrderByComparator<?> obc) {
-
-		return _baseCmisRepository.getRepositoryEntries(
-			folderId, start, end, obc);
-	}
-
-	@Override
-	public List<RepositoryEntry> getRepositoryEntries(
-			long folderId, String[] mimeTypes, int start, int end,
-			OrderByComparator<?> obc)
-		throws PortalException {
-
-		return _baseCmisRepository.getRepositoryEntries(
-			folderId, mimeTypes, start, end, obc);
-	}
-
-	@Override
-	public int getRepositoryEntriesCount(long folderId) {
-		return _baseCmisRepository.getRepositoryEntriesCount(folderId);
-	}
-
-	@Override
-	public int getRepositoryEntriesCount(long folderId, String[] mimeTypes)
-		throws PortalException {
-
-		return _baseCmisRepository.getRepositoryEntriesCount(
-			folderId, mimeTypes);
-	}
-
-	@Override
 	public int getFoldersCount(long parentFolderId, boolean includeMountfolders)
 		throws PortalException {
 
@@ -382,6 +351,37 @@ public abstract class CMISRepositoryHandler
 
 	public List<String> getObjectPaths(String objectId) throws PortalException {
 		return _baseCmisRepository.getObjectPaths(objectId);
+	}
+
+	@Override
+	public List<RepositoryEntry> getRepositoryEntries(
+		long folderId, int start, int end, OrderByComparator<?> obc) {
+
+		return _baseCmisRepository.getRepositoryEntries(
+			folderId, start, end, obc);
+	}
+
+	@Override
+	public List<RepositoryEntry> getRepositoryEntries(
+			long folderId, String[] mimeTypes, int start, int end,
+			OrderByComparator<?> obc)
+		throws PortalException {
+
+		return _baseCmisRepository.getRepositoryEntries(
+			folderId, mimeTypes, start, end, obc);
+	}
+
+	@Override
+	public int getRepositoryEntriesCount(long folderId) {
+		return _baseCmisRepository.getRepositoryEntriesCount(folderId);
+	}
+
+	@Override
+	public int getRepositoryEntriesCount(long folderId, String[] mimeTypes)
+		throws PortalException {
+
+		return _baseCmisRepository.getRepositoryEntriesCount(
+			folderId, mimeTypes);
 	}
 
 	public abstract Session getSession() throws PortalException;

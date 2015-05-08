@@ -467,36 +467,6 @@ public class LiferayRepository
 	}
 
 	@Override
-	public List<RepositoryEntry> getRepositoryEntries(
-		long folderId, int status, int start, int end)
-		throws PortalException {
-
-		List<Object> dlFileEntriesAndFileShortcuts =
-			dlFolderService.getFileEntriesAndFileShortcuts(
-				getGroupId(), toFolderId(folderId), status, start, end);
-
-		return RepositoryModelUtil.toRepositoryEntries(
-			dlFileEntriesAndFileShortcuts);
-	}
-
-	@Override
-	public int getRepositoryEntriesCount(long folderId, int status)
-		throws PortalException {
-
-		return dlFolderService.getFileEntriesAndFileShortcutsCount(
-			getGroupId(), toFolderId(folderId), status);
-	}
-
-	@Override
-	public int getRepositoryEntriesCount(
-		long folderId, int status, String[] mimeTypes)
-		throws PortalException {
-
-		return dlFolderService.getFileEntriesAndFileShortcutsCount(
-			getGroupId(), toFolderId(folderId), status, mimeTypes);
-	}
-
-	@Override
 	public int getFileEntriesCount(long folderId) {
 		return dlFileEntryService.getFileEntriesCount(
 			getGroupId(), toFolderId(folderId));
@@ -612,57 +582,6 @@ public class LiferayRepository
 	}
 
 	@Override
-	public List<RepositoryEntry> getRepositoryEntries(
-			long folderId, int status, boolean includeMountFolders, int start,
-			int end, OrderByComparator<?> obc)
-		throws PortalException {
-
-		List<Object> dlFoldersAndDLFileEntriesAndDLFileShortcuts =
-			dlFolderService.getFoldersAndFileEntriesAndFileShortcuts(
-				getGroupId(), toFolderId(folderId), status, includeMountFolders,
-				start, end, obc);
-
-		return RepositoryModelUtil.toRepositoryEntries(
-			dlFoldersAndDLFileEntriesAndDLFileShortcuts);
-	}
-
-	@Override
-	public List<RepositoryEntry> getRepositoryEntries(
-			long folderId, int status, String[] mimeTypes,
-			boolean includeMountFolders, int start, int end,
-			OrderByComparator<?> obc)
-		throws PortalException {
-
-		List<Object> dlFoldersAndDLFileEntriesAndDLFileShortcuts =
-			dlFolderService.getFoldersAndFileEntriesAndFileShortcuts(
-				getGroupId(), toFolderId(folderId), status, mimeTypes,
-				includeMountFolders, start, end, obc);
-
-		return RepositoryModelUtil.toRepositoryEntries(
-			dlFoldersAndDLFileEntriesAndDLFileShortcuts);
-	}
-
-	@Override
-	public int getRepositoryEntriesCount(
-			long folderId, int status, boolean includeMountFolders)
-		throws PortalException {
-
-		return dlFolderService.getFoldersAndFileEntriesAndFileShortcutsCount(
-			getGroupId(), toFolderId(folderId), status, includeMountFolders);
-	}
-
-	@Override
-	public int getRepositoryEntriesCount(
-			long folderId, int status, String[] mimeTypes,
-			boolean includeMountFolders)
-		throws PortalException {
-
-		return dlFolderService.getFoldersAndFileEntriesAndFileShortcutsCount(
-			getGroupId(), toFolderId(folderId), status, mimeTypes,
-			includeMountFolders);
-	}
-
-	@Override
 	public int getFoldersCount(long parentFolderId, boolean includeMountfolders)
 		throws PortalException {
 
@@ -706,6 +625,87 @@ public class LiferayRepository
 
 		return dlFolderService.getMountFoldersCount(
 			getGroupId(), toFolderId(parentFolderId));
+	}
+
+	@Override
+	public List<RepositoryEntry> getRepositoryEntries(
+			long folderId, int status, boolean includeMountFolders, int start,
+			int end, OrderByComparator<?> obc)
+		throws PortalException {
+
+		List<Object> dlFoldersAndDLFileEntriesAndDLFileShortcuts =
+			dlFolderService.getFoldersAndFileEntriesAndFileShortcuts(
+				getGroupId(), toFolderId(folderId), status, includeMountFolders,
+				start, end, obc);
+
+		return RepositoryModelUtil.toRepositoryEntries(
+			dlFoldersAndDLFileEntriesAndDLFileShortcuts);
+	}
+
+	@Override
+	public List<RepositoryEntry> getRepositoryEntries(
+			long folderId, int status, int start, int end)
+		throws PortalException {
+
+		List<Object> dlFileEntriesAndFileShortcuts =
+			dlFolderService.getFileEntriesAndFileShortcuts(
+				getGroupId(), toFolderId(folderId), status, start, end);
+
+		return RepositoryModelUtil.toRepositoryEntries(
+			dlFileEntriesAndFileShortcuts);
+	}
+
+	@Override
+	public List<RepositoryEntry> getRepositoryEntries(
+			long folderId, int status, String[] mimeTypes,
+			boolean includeMountFolders, int start, int end,
+			OrderByComparator<?> obc)
+		throws PortalException {
+
+		List<Object> dlFoldersAndDLFileEntriesAndDLFileShortcuts =
+			dlFolderService.getFoldersAndFileEntriesAndFileShortcuts(
+				getGroupId(), toFolderId(folderId), status, mimeTypes,
+				includeMountFolders, start, end, obc);
+
+		return RepositoryModelUtil.toRepositoryEntries(
+			dlFoldersAndDLFileEntriesAndDLFileShortcuts);
+	}
+
+	@Override
+	public int getRepositoryEntriesCount(long folderId, int status)
+		throws PortalException {
+
+		return dlFolderService.getFileEntriesAndFileShortcutsCount(
+			getGroupId(), toFolderId(folderId), status);
+	}
+
+	@Override
+	public int getRepositoryEntriesCount(
+			long folderId, int status, boolean includeMountFolders)
+		throws PortalException {
+
+		return dlFolderService.getFoldersAndFileEntriesAndFileShortcutsCount(
+			getGroupId(), toFolderId(folderId), status, includeMountFolders);
+	}
+
+	@Override
+	public int getRepositoryEntriesCount(
+			long folderId, int status, String[] mimeTypes)
+		throws PortalException {
+
+		return dlFolderService.getFileEntriesAndFileShortcutsCount(
+			getGroupId(), toFolderId(folderId), status, mimeTypes);
+	}
+
+	@Override
+	public int getRepositoryEntriesCount(
+			long folderId, int status, String[] mimeTypes,
+			boolean includeMountFolders)
+		throws PortalException {
+
+		return dlFolderService.getFoldersAndFileEntriesAndFileShortcutsCount(
+			getGroupId(), toFolderId(folderId), status, mimeTypes,
+			includeMountFolders);
 	}
 
 	@Override

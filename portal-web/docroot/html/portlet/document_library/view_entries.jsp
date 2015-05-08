@@ -152,11 +152,11 @@ else {
 			results = AssetEntryServiceUtil.getEntries(assetEntryQuery);
 		}
 		else {
-			total = DLAppServiceUtil.getFoldersAndFileEntriesAndFileShortcutsCount(repositoryId, folderId, status, false);
+			total = DLAppServiceUtil.getRepositoryEntriesCount(repositoryId, folderId, status, false);
 
 			dlSearchContainer.setTotal(total);
 
-			results = DLAppServiceUtil.getFoldersAndFileEntriesAndFileShortcuts(repositoryId, folderId, status, false, dlSearchContainer.getStart(), dlSearchContainer.getEnd(), dlSearchContainer.getOrderByComparator());
+			results = DLAppServiceUtil.getRepositoryEntries(repositoryId, folderId, status, false, dlSearchContainer.getStart(), dlSearchContainer.getEnd(), dlSearchContainer.getOrderByComparator());
 		}
 	}
 	else if (navigation.equals("mine") || navigation.equals("recent")) {
@@ -325,7 +325,7 @@ dlSearchContainer.setResults(results);
 						<%
 						String folderImage = "folder_empty_document";
 
-						if (PropsValues.DL_FOLDER_ICON_CHECK_COUNT && (DLAppServiceUtil.getFoldersAndFileEntriesAndFileShortcutsCount(curFolder.getRepositoryId(), curFolder.getFolderId(), status, true) > 0)) {
+						if (PropsValues.DL_FOLDER_ICON_CHECK_COUNT && (DLAppServiceUtil.getRepositoryEntriesCount(curFolder.getRepositoryId(), curFolder.getFolderId(), status, true) > 0)) {
 							folderImage = "folder_full_document";
 						}
 

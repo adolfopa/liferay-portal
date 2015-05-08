@@ -118,7 +118,7 @@ public class DLFolderAssetRenderer
 	public String getIconPath(ThemeDisplay themeDisplay) {
 		try {
 			if (PropsValues.DL_FOLDER_ICON_CHECK_COUNT &&
-				DLAppServiceUtil.getFoldersAndFileEntriesAndFileShortcutsCount(
+				DLAppServiceUtil.getRepositoryEntriesCount(
 					_folder.getRepositoryId(), _folder.getFolderId(),
 					WorkflowConstants.STATUS_APPROVED, true) > 0) {
 
@@ -160,11 +160,11 @@ public class DLFolderAssetRenderer
 
 		int foldersCount = DLAppServiceUtil.getFoldersCount(
 			_folder.getRepositoryId(), _folder.getFolderId());
-		int entriesCount = DLAppServiceUtil.getFileEntriesAndFileShortcutsCount(
+		int repositoryEntriesCount = DLAppServiceUtil.getRepositoryEntriesCount(
 			_folder.getRepositoryId(), _folder.getFolderId(),
 			WorkflowConstants.STATUS_APPROVED);
 
-		if ((entriesCount > 0) || (foldersCount > 0)) {
+		if ((repositoryEntriesCount > 0) || (foldersCount > 0)) {
 			return themeDisplay.getPathThemeImages() +
 				"/file_system/large/folder_full_document.png";
 		}

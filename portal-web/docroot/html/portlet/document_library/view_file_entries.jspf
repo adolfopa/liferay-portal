@@ -66,18 +66,18 @@
 			}
 			else {
 				if (mergedView) {
-					total = DLAppServiceUtil.getFoldersAndFileEntriesAndFileShortcutsCount(repositoryId, folderId, status, true);
+					total = DLAppServiceUtil.getRepositoryEntriesCount(repositoryId, folderId, status, true);
 
 					searchContainer.setTotal(total);
 
-					results = DLAppServiceUtil.getFoldersAndFileEntriesAndFileShortcuts(repositoryId, folderId, status, true, searchContainer.getStart(), searchContainer.getEnd());
+					results = DLAppServiceUtil.getRepositoryEntries(repositoryId, folderId, status, true, searchContainer.getStart(), searchContainer.getEnd());
 				}
 				else {
-					total = DLAppServiceUtil.getFileEntriesAndFileShortcutsCount(repositoryId, folderId, status);
+					total = DLAppServiceUtil.getRepositoryEntriesCount(repositoryId, folderId, status);
 
 					searchContainer.setTotal(total);
 
-					results = DLAppServiceUtil.getFileEntriesAndFileShortcuts(repositoryId, folderId, status, searchContainer.getStart(), searchContainer.getEnd());
+					results = DLAppServiceUtil.getRepositoryEntries(repositoryId, folderId, status, searchContainer.getStart(), searchContainer.getEnd());
 				}
 			}
 
@@ -87,9 +87,9 @@
 		</liferay-ui:search-container-results>
 
 		<liferay-ui:search-container-row
-			className="Object"
+			className="com.liferay.portal.kernel.repository.model.RepositoryEntry "
 			keyProperty="primaryKey"
-			modelVar="result"
+			modelVar="repositoryEntry"
 		>
 			<%@ include file="/html/portlet/document_library/cast_result.jspf" %>
 

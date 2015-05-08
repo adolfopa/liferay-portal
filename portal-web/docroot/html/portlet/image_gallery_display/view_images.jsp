@@ -223,10 +223,10 @@ DLPortletInstanceSettingsHelper dlPortletInstanceSettingsHelper = new DLPortletI
 									int curImagesCount = 0;
 
 									if (mediaGalleryMimeTypes != null) {
-										curImagesCount = DLAppServiceUtil.getFileEntriesAndFileShortcutsCount(curFolder.getRepositoryId(), curFolder.getFolderId(), WorkflowConstants.STATUS_APPROVED, mediaGalleryMimeTypes);
+										curImagesCount = DLAppServiceUtil.getRepositoryEntriesCount(curFolder.getRepositoryId(), curFolder.getFolderId(), WorkflowConstants.STATUS_APPROVED, mediaGalleryMimeTypes);
 									}
 									else {
-										curImagesCount = DLAppServiceUtil.getFileEntriesAndFileShortcutsCount(curFolder.getRepositoryId(), curFolder.getFolderId(), WorkflowConstants.STATUS_APPROVED);
+										curImagesCount = DLAppServiceUtil.getRepositoryEntriesCount(curFolder.getRepositoryId(), curFolder.getFolderId(), WorkflowConstants.STATUS_APPROVED);
 									}
 
 									if ((curFoldersCount + curImagesCount) > 0) {

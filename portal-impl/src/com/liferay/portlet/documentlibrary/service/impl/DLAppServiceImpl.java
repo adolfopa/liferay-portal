@@ -1033,13 +1033,13 @@ public class DLAppServiceImpl extends DLAppServiceBaseImpl {
 	 */
 	@Override
 	@SuppressWarnings("rawtypes")
-	public List<Object> getFileEntriesAndFileShortcuts(
+	public List<RepositoryEntry> getRepositoryEntries(
 			long repositoryId, long folderId, int status, int start, int end)
 		throws PortalException {
 
 		Repository repository = getRepository(repositoryId);
 
-		return (List)repository.getFileEntriesAndFileShortcuts(
+		return (List)repository.getRepositoryEntries(
 			folderId, status, start, end);
 	}
 
@@ -1053,13 +1053,13 @@ public class DLAppServiceImpl extends DLAppServiceBaseImpl {
 	 * @throws PortalException if the folder ould not be found
 	 */
 	@Override
-	public int getFileEntriesAndFileShortcutsCount(
+	public int getRepositoryEntriesCount(
 			long repositoryId, long folderId, int status)
 		throws PortalException {
 
 		Repository repository = getRepository(repositoryId);
 
-		return repository.getFileEntriesAndFileShortcutsCount(folderId, status);
+		return repository.getRepositoryEntriesCount(folderId, status);
 	}
 
 	/**
@@ -1073,13 +1073,13 @@ public class DLAppServiceImpl extends DLAppServiceBaseImpl {
 	 * @throws PortalException if the folder ould not be found
 	 */
 	@Override
-	public int getFileEntriesAndFileShortcutsCount(
+	public int getRepositoryEntriesCount(
 			long repositoryId, long folderId, int status, String[] mimeTypes)
 		throws PortalException {
 
 		Repository repository = getRepository(repositoryId);
 
-		return repository.getFileEntriesAndFileShortcutsCount(
+		return repository.getRepositoryEntriesCount(
 			folderId, status, mimeTypes);
 	}
 
@@ -1521,12 +1521,12 @@ public class DLAppServiceImpl extends DLAppServiceBaseImpl {
 	 * @throws PortalException if the parent folder could not be found
 	 */
 	@Override
-	public List<Object> getFoldersAndFileEntriesAndFileShortcuts(
+	public List<RepositoryEntry> getRepositoryEntries(
 			long repositoryId, long folderId, int status,
 			boolean includeMountFolders, int start, int end)
 		throws PortalException {
 
-		return getFoldersAndFileEntriesAndFileShortcuts(
+		return getRepositoryEntries(
 			repositoryId, folderId, status, includeMountFolders, start, end,
 			null);
 	}
@@ -1560,20 +1560,20 @@ public class DLAppServiceImpl extends DLAppServiceBaseImpl {
 	 * @throws PortalException if the parent folder could not be found
 	 */
 	@Override
-	public List<Object> getFoldersAndFileEntriesAndFileShortcuts(
+	public List<RepositoryEntry> getRepositoryEntries(
 			long repositoryId, long folderId, int status,
 			boolean includeMountFolders, int start, int end,
 			OrderByComparator<?> obc)
 		throws PortalException {
 
-		return getFoldersAndFileEntriesAndFileShortcuts(
+		return getRepositoryEntries(
 			repositoryId, folderId, status, null, includeMountFolders, start,
 			end, obc);
 	}
 
 	@Override
 	@SuppressWarnings("rawtypes")
-	public List<Object> getFoldersAndFileEntriesAndFileShortcuts(
+	public List<RepositoryEntry> getRepositoryEntries(
 			long repositoryId, long folderId, int status, String[] mimeTypes,
 			boolean includeMountFolders, int start, int end,
 			OrderByComparator<?> obc)
@@ -1581,7 +1581,7 @@ public class DLAppServiceImpl extends DLAppServiceBaseImpl {
 
 		Repository repository = getRepository(repositoryId);
 
-		return (List)repository.getFoldersAndFileEntriesAndFileShortcuts(
+		return repository.getRepositoryEntries(
 			folderId, status, mimeTypes, includeMountFolders, start, end, obc);
 	}
 
@@ -1599,7 +1599,7 @@ public class DLAppServiceImpl extends DLAppServiceBaseImpl {
 	 * @throws PortalException if the folder could not be found
 	 */
 	@Override
-	public int getFoldersAndFileEntriesAndFileShortcutsCount(
+	public int getRepositoryEntriesCount(
 			long repositoryId, long folderId, int status,
 			boolean includeMountFolders)
 		throws PortalException {
@@ -1609,14 +1609,14 @@ public class DLAppServiceImpl extends DLAppServiceBaseImpl {
 	}
 
 	@Override
-	public int getFoldersAndFileEntriesAndFileShortcutsCount(
+	public int getRepositoryEntriesCount(
 			long repositoryId, long folderId, int status, String[] mimeTypes,
 			boolean includeMountFolders)
 		throws PortalException {
 
 		Repository repository = getRepository(repositoryId);
 
-		return repository.getFoldersAndFileEntriesAndFileShortcutsCount(
+		return repository.getRepositoryEntriesCount(
 			folderId, status, mimeTypes, includeMountFolders);
 	}
 
@@ -3477,7 +3477,7 @@ public class DLAppServiceImpl extends DLAppServiceBaseImpl {
 			getUserId(), newFolder, serviceContext);
 
 		List<RepositoryEntry> repositoryEntries =
-			fromRepository.getFoldersAndFileEntriesAndFileShortcuts(
+			fromRepository.getRepositoryEntries(
 				folderId, WorkflowConstants.STATUS_ANY, true, QueryUtil.ALL_POS,
 				QueryUtil.ALL_POS, null);
 

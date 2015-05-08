@@ -487,28 +487,28 @@ public class CapabilityRepository
 	}
 
 	@Override
-	public List<RepositoryEntry> getFileEntriesAndFileShortcuts(
+	public List<RepositoryEntry> getRepositoryEntries(
 			long folderId, int status, int start, int end)
 		throws PortalException {
 
-		return getRepository().getFileEntriesAndFileShortcuts(
+		return getRepository().getRepositoryEntries(
 			folderId, status, start, end);
 	}
 
 	@Override
-	public int getFileEntriesAndFileShortcutsCount(long folderId, int status)
+	public int getRepositoryEntriesCount(long folderId, int status)
 		throws PortalException {
 
-		return getRepository().getFileEntriesAndFileShortcutsCount(
+		return getRepository().getRepositoryEntriesCount(
 			folderId, status);
 	}
 
 	@Override
-	public int getFileEntriesAndFileShortcutsCount(
+	public int getRepositoryEntriesCount(
 			long folderId, int status, String[] mimeTypes)
 		throws PortalException {
 
-		return getRepository().getFileEntriesAndFileShortcutsCount(
+		return getRepository().getRepositoryEntriesCount(
 			folderId, status, mimeTypes);
 	}
 
@@ -602,42 +602,42 @@ public class CapabilityRepository
 	}
 
 	@Override
-	public List<RepositoryEntry> getFoldersAndFileEntriesAndFileShortcuts(
-			long folderId, int status, boolean includeMountFolders, int start,
-			int end, OrderByComparator<?> obc)
+	public List<RepositoryEntry> getRepositoryEntries(
+		long folderId, int status, boolean includeMountFolders, int start,
+		int end, OrderByComparator<?> obc)
 		throws PortalException {
 
-		return getRepository().getFoldersAndFileEntriesAndFileShortcuts(
+		return getRepository().getRepositoryEntries(
 			folderId, status, includeMountFolders, start, end, obc);
 	}
 
 	@Override
-	public List<RepositoryEntry> getFoldersAndFileEntriesAndFileShortcuts(
-			long folderId, int status, String[] mimetypes,
-			boolean includeMountFolders, int start, int end,
-			OrderByComparator<?> obc)
+	public List<RepositoryEntry> getRepositoryEntries(
+		long folderId, int status, String[] mimetypes,
+		boolean includeMountFolders, int start, int end,
+		OrderByComparator<?> obc)
 		throws PortalException {
 
-		return getRepository().getFoldersAndFileEntriesAndFileShortcuts(
+		return getRepository().getRepositoryEntries(
 			folderId, status, mimetypes, includeMountFolders, start, end, obc);
 	}
 
 	@Override
-	public int getFoldersAndFileEntriesAndFileShortcutsCount(
-			long folderId, int status, boolean includeMountFolders)
+	public int getRepositoryEntriesCount(
+		long folderId, int status, boolean includeMountFolders)
 		throws PortalException {
 
-		return getRepository().getFoldersAndFileEntriesAndFileShortcutsCount(
+		return getRepository().getRepositoryEntriesCount(
 			folderId, status, includeMountFolders);
 	}
 
 	@Override
-	public int getFoldersAndFileEntriesAndFileShortcutsCount(
-			long folderId, int status, String[] mimetypes,
-			boolean includeMountFolders)
+	public int getRepositoryEntriesCount(
+		long folderId, int status, String[] mimetypes,
+		boolean includeMountFolders)
 		throws PortalException {
 
-		return getRepository().getFoldersAndFileEntriesAndFileShortcutsCount(
+		return getRepository().getRepositoryEntriesCount(
 			folderId, status, mimetypes, includeMountFolders);
 	}
 

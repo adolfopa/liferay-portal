@@ -467,8 +467,8 @@ public class LiferayRepository
 	}
 
 	@Override
-	public List<RepositoryEntry> getFileEntriesAndFileShortcuts(
-			long folderId, int status, int start, int end)
+	public List<RepositoryEntry> getRepositoryEntries(
+		long folderId, int status, int start, int end)
 		throws PortalException {
 
 		List<Object> dlFileEntriesAndFileShortcuts =
@@ -480,7 +480,7 @@ public class LiferayRepository
 	}
 
 	@Override
-	public int getFileEntriesAndFileShortcutsCount(long folderId, int status)
+	public int getRepositoryEntriesCount(long folderId, int status)
 		throws PortalException {
 
 		return dlFolderService.getFileEntriesAndFileShortcutsCount(
@@ -488,8 +488,8 @@ public class LiferayRepository
 	}
 
 	@Override
-	public int getFileEntriesAndFileShortcutsCount(
-			long folderId, int status, String[] mimeTypes)
+	public int getRepositoryEntriesCount(
+		long folderId, int status, String[] mimeTypes)
 		throws PortalException {
 
 		return dlFolderService.getFileEntriesAndFileShortcutsCount(
@@ -612,7 +612,7 @@ public class LiferayRepository
 	}
 
 	@Override
-	public List<RepositoryEntry> getFoldersAndFileEntriesAndFileShortcuts(
+	public List<RepositoryEntry> getRepositoryEntries(
 			long folderId, int status, boolean includeMountFolders, int start,
 			int end, OrderByComparator<?> obc)
 		throws PortalException {
@@ -627,7 +627,7 @@ public class LiferayRepository
 	}
 
 	@Override
-	public List<RepositoryEntry> getFoldersAndFileEntriesAndFileShortcuts(
+	public List<RepositoryEntry> getRepositoryEntries(
 			long folderId, int status, String[] mimeTypes,
 			boolean includeMountFolders, int start, int end,
 			OrderByComparator<?> obc)
@@ -643,7 +643,7 @@ public class LiferayRepository
 	}
 
 	@Override
-	public int getFoldersAndFileEntriesAndFileShortcutsCount(
+	public int getRepositoryEntriesCount(
 			long folderId, int status, boolean includeMountFolders)
 		throws PortalException {
 
@@ -652,7 +652,7 @@ public class LiferayRepository
 	}
 
 	@Override
-	public int getFoldersAndFileEntriesAndFileShortcutsCount(
+	public int getRepositoryEntriesCount(
 			long folderId, int status, String[] mimeTypes,
 			boolean includeMountFolders)
 		throws PortalException {

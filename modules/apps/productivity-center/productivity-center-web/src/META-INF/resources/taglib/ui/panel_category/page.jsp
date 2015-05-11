@@ -56,3 +56,12 @@ String panelPageCategoryId = "panel-manage-" + panelCategory.getKey();
 
 	</ul>
 </liferay-ui:panel>
+<aui:script use="liferay-control-panel">
+	new Liferay.ControlPanel(
+		{
+			panelContainerId: 'userPersonalPanelMenuAddContentPanelContainer',
+			sidebarHiddenAttr: 'userPanelSidebarHidden',
+			sidebarMinimizedAttr: 'user-panel-sidebar-minimized'
+		}
+	);
+</aui:script>

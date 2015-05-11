@@ -30,7 +30,7 @@ Folder folder = (Folder)request.getAttribute(WebKeys.DOCUMENT_LIBRARY_FOLDER);
 	}
 
 	int foldersCount = DLAppServiceUtil.getFoldersCount(folder.getRepositoryId(), folder.getFolderId());
-	int fileEntriesCount = DLAppServiceUtil.getFileEntriesAndFileShortcutsCount(folder.getRepositoryId(), folder.getFolderId(), status);
+	int fileEntriesCount = DLAppServiceUtil.getRepositoryEntriesCount(folder.getRepositoryId(), folder.getFolderId(), status);
 	%>
 
 	<aui:row>

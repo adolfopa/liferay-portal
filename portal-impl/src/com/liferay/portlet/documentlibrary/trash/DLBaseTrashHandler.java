@@ -146,7 +146,7 @@ public abstract class DLBaseTrashHandler extends BaseTrashHandler {
 
 		Repository repository = getRepository(classPK);
 
-		return repository.getFileEntriesAndFileShortcutsCount(
+		return repository.getRepositoryEntriesCount(
 			classPK, WorkflowConstants.STATUS_IN_TRASH);
 	}
 
@@ -160,7 +160,7 @@ public abstract class DLBaseTrashHandler extends BaseTrashHandler {
 		Repository repository = getRepository(classPK);
 
 		List<RepositoryEntry> repositoryEntries =
-			repository.getFileEntriesAndFileShortcuts(
+			repository.getRepositoryEntries(
 				classPK, WorkflowConstants.STATUS_IN_TRASH, start, end);
 
 		for (RepositoryEntry repositoryEntry : repositoryEntries) {

@@ -25,6 +25,7 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileShortcut;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.repository.model.Folder;
+import com.liferay.portal.kernel.repository.model.RepositoryEntry;
 import com.liferay.portal.kernel.repository.util.RepositoryTrashUtil;
 import com.liferay.portal.kernel.systemevent.SystemEventHierarchyEntryThreadLocal;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -1525,38 +1526,35 @@ public class DLAppLocalServiceImpl extends DLAppLocalServiceBaseImpl {
 		dlAppHelperLocalService.addFolder(
 			userId, destinationFolder, serviceContext);
 
-		List<Object> foldersAndFileEntriesAndFileShortcuts =
-			dlAppService.getFoldersAndFileEntriesAndFileShortcuts(
+		List<RepositoryEntry> repositoryEntries =
+			dlAppService.getRepositoryEntries(
 				sourceLocalRepository.getRepositoryId(), folderId,
 				WorkflowConstants.STATUS_ANY, true, QueryUtil.ALL_POS,
 				QueryUtil.ALL_POS);
 
 		try {
-			for (Object folderAndFileEntryAndFileShortcut :
-					foldersAndFileEntriesAndFileShortcuts) {
-
-				if (folderAndFileEntryAndFileShortcut instanceof FileEntry) {
-					FileEntry fileEntry =
-						(FileEntry)folderAndFileEntryAndFileShortcut;
+			for (RepositoryEntry repositoryEntry : repositoryEntries) {
+				if (repositoryEntry instanceof FileEntry) {
+					FileEntry fileEntry = (FileEntry)repositoryEntry;
 
 					copyFileEntry(
 						userId, destinationLocalRepository, fileEntry,
 						destinationFolder.getFolderId(), serviceContext);
 				}
-				else if (folderAndFileEntryAndFileShortcut instanceof Folder) {
-					Folder folder = (Folder)folderAndFileEntryAndFileShortcut;
+				else if (repositoryEntry instanceof Folder) {
+					Folder folder = (Folder)repositoryEntry;
 
 					moveFolders(
 						userId, folder.getFolderId(),
 						destinationFolder.getFolderId(), sourceLocalRepository,
 						destinationLocalRepository, serviceContext);
 				}
-				else if (folderAndFileEntryAndFileShortcut
+				else if (repositoryEntry
 							instanceof FileShortcut) {
 
 					if (destinationFolder.isSupportsShortcuts()) {
 						FileShortcut fileShortcut =
-							(FileShortcut)folderAndFileEntryAndFileShortcut;
+							(FileShortcut)repositoryEntry;
 
 						destinationLocalRepository.addFileShortcut(
 							userId, destinationFolder.getFolderId(),

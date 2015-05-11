@@ -60,7 +60,7 @@ String[] folderColumns = dlPortletInstanceSettingsHelper.getFolderColumns();
 String[] fileEntryColumns = dlPortletInstanceSettingsHelper.getFileEntryColumns();
 
 int foldersCount = DLAppServiceUtil.getFoldersCount(repositoryId, folderId);
-int fileEntriesCount = DLAppServiceUtil.getFileEntriesAndFileShortcutsCount(repositoryId, folderId, status);
+int fileEntriesCount = DLAppServiceUtil.getRepositoryEntriesCount(repositoryId, folderId, status);
 
 long assetCategoryId = ParamUtil.getLong(request, "categoryId");
 String assetTagName = ParamUtil.getString(request, "tag");

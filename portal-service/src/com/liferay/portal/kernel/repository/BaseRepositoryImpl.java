@@ -266,31 +266,6 @@ public abstract class BaseRepositoryImpl
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
-	public List<com.liferay.portal.kernel.repository.model.RepositoryEntry>
-		getFileEntriesAndFileShortcuts(
-			long folderId, int status, int start, int end)
-		throws PortalException {
-
-		return (List)getFileEntries(folderId, start, end, null);
-	}
-
-	@Override
-	public int getFileEntriesAndFileShortcutsCount(long folderId, int status)
-		throws PortalException {
-
-		return getFileEntriesCount(folderId);
-	}
-
-	@Override
-	public int getFileEntriesAndFileShortcutsCount(
-			long folderId, int status, String[] mimeTypes)
-		throws PortalException {
-
-		return getFileEntriesCount(folderId, mimeTypes);
-	}
-
-	@Override
 	public List<Folder> getFolders(
 			long parentFolderId, int status, boolean includeMountfolders,
 			int start, int end, OrderByComparator<Folder> obc)
@@ -298,59 +273,6 @@ public abstract class BaseRepositoryImpl
 
 		return getFolders(parentFolderId, includeMountfolders, start, end, obc);
 	}
-
-	public abstract List<Object> getFoldersAndFileEntries(
-		long folderId, int start, int end, OrderByComparator<?> obc);
-
-	public abstract List<Object> getFoldersAndFileEntries(
-			long folderId, String[] mimeTypes, int start, int end,
-			OrderByComparator<?> obc)
-		throws PortalException;
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public List<com.liferay.portal.kernel.repository.model.RepositoryEntry>
-		getFoldersAndFileEntriesAndFileShortcuts(
-			long folderId, int status, boolean includeMountFolders, int start,
-			int end, OrderByComparator<?> obc) {
-
-		return (List)getFoldersAndFileEntries(folderId, start, end, obc);
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public List<com.liferay.portal.kernel.repository.model.RepositoryEntry>
-		getFoldersAndFileEntriesAndFileShortcuts(
-			long folderId, int status, String[] mimeTypes,
-			boolean includeMountFolders, int start, int end,
-			OrderByComparator<?> obc)
-		throws PortalException {
-
-		return (List)getFoldersAndFileEntries(
-			folderId, mimeTypes, start, end, obc);
-	}
-
-	@Override
-	public int getFoldersAndFileEntriesAndFileShortcutsCount(
-		long folderId, int status, boolean includeMountFolders) {
-
-		return getFoldersAndFileEntriesCount(folderId);
-	}
-
-	@Override
-	public int getFoldersAndFileEntriesAndFileShortcutsCount(
-			long folderId, int status, String[] mimeTypes,
-			boolean includeMountFolders)
-		throws PortalException {
-
-		return getFoldersAndFileEntriesCount(folderId, mimeTypes);
-	}
-
-	public abstract int getFoldersAndFileEntriesCount(long folderId);
-
-	public abstract int getFoldersAndFileEntriesCount(
-			long folderId, String[] mimeTypes)
-		throws PortalException;
 
 	@Override
 	public int getFoldersCount(
@@ -368,6 +290,87 @@ public abstract class BaseRepositoryImpl
 	public LocalRepository getLocalRepository() {
 		return _localRepository;
 	}
+
+	@Override
+	@SuppressWarnings("rawtypes")
+	public List<com.liferay.portal.kernel.repository.model.RepositoryEntry>
+		getRepositoryEntries(
+			long folderId, int status, boolean includeMountFolders, int start,
+			int end, OrderByComparator<?> obc) {
+
+		return getRepositoryEntries(folderId, start, end, obc);
+	}
+
+	@Override
+	@SuppressWarnings("rawtypes")
+	public List<com.liferay.portal.kernel.repository.model.RepositoryEntry>
+		getRepositoryEntries(
+			long folderId, int status, int start, int end)
+		throws PortalException {
+
+		return (List)getFileEntries(folderId, start, end, null);
+	}
+
+	public abstract
+		List<com.liferay.portal.kernel.repository.model.RepositoryEntry>
+		getRepositoryEntries(
+			long folderId, int start, int end, OrderByComparator<?> obc);
+
+	@Override
+	@SuppressWarnings("rawtypes")
+	public List<com.liferay.portal.kernel.repository.model.RepositoryEntry>
+		getRepositoryEntries(
+			long folderId, int status, String[] mimeTypes,
+			boolean includeMountFolders, int start, int end,
+			OrderByComparator<?> obc)
+		throws PortalException {
+
+		return getRepositoryEntries(folderId, mimeTypes, start, end, obc);
+	}
+
+	public abstract
+		List<com.liferay.portal.kernel.repository.model.RepositoryEntry>
+		getRepositoryEntries(
+			long folderId, String[] mimeTypes, int start, int end,
+			OrderByComparator<?> obc)
+		throws PortalException;
+
+	public abstract int getRepositoryEntriesCount(long folderId);
+
+	@Override
+	public int getRepositoryEntriesCount(long folderId, int status)
+		throws PortalException {
+
+		return getFileEntriesCount(folderId);
+	}
+
+	@Override
+	public int getRepositoryEntriesCount(
+		long folderId, int status, boolean includeMountFolders) {
+
+		return getRepositoryEntriesCount(folderId);
+	}
+
+	@Override
+	public int getRepositoryEntriesCount(
+			long folderId, int status, String[] mimeTypes)
+		throws PortalException {
+
+		return getFileEntriesCount(folderId, mimeTypes);
+	}
+
+	@Override
+	public int getRepositoryEntriesCount(
+			long folderId, int status, String[] mimeTypes,
+			boolean includeMountFolders)
+		throws PortalException {
+
+		return getRepositoryEntriesCount(folderId, mimeTypes);
+	}
+
+	public abstract int getRepositoryEntriesCount(
+			long folderId, String[] mimeTypes)
+		throws PortalException;
 
 	/**
 	 * @deprecated As of 7.0.0, replaced by {@link #getRepositoryEntry(String)}

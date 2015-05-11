@@ -87,13 +87,13 @@ public class RepositoryTest {
 				DLFolderConstants.DEFAULT_PARENT_FOLDER_ID));
 		Assert.assertEquals(
 			1,
-			DLAppServiceUtil.getFileEntriesAndFileShortcutsCount(
+			DLAppServiceUtil.getRepositoryEntriesCount(
 				repository.getRepositoryId(),
 				DLFolderConstants.DEFAULT_PARENT_FOLDER_ID,
 				WorkflowConstants.STATUS_ANY));
 		Assert.assertEquals(
 			1,
-			DLAppServiceUtil.getFileEntriesAndFileShortcutsCount(
+			DLAppServiceUtil.getRepositoryEntriesCount(
 				repository.getRepositoryId(), primaryKeys[1],
 				WorkflowConstants.STATUS_ANY));
 	}

@@ -22,7 +22,7 @@ boolean repositoryAccess = true;
 
 try {
 	curFoldersCount = DLAppServiceUtil.getFoldersCount(curFolder.getRepositoryId(), curFolder.getFolderId());
-	curFileEntriesCount = DLAppServiceUtil.getFileEntriesAndFileShortcutsCount(curFolder.getRepositoryId(), curFolder.getFolderId(), status);
+	curFileEntriesCount = DLAppServiceUtil.getRepositoryEntriesCount(curFolder.getRepositoryId(), curFolder.getFolderId(), status);
 }
 catch (RepositoryException re) {
 	_log.error(re.getMessage());

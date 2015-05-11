@@ -66,7 +66,7 @@ if (!ArrayUtil.contains(displayViews, displayStyle)) {
 	displayStyle = displayViews[0];
 }
 
-int total = DLAppServiceUtil.getFoldersAndFileEntriesAndFileShortcutsCount(repositoryId, folderId, WorkflowConstants.STATUS_ANY, false);
+int total = DLAppServiceUtil.getRepositoryEntriesCount(repositoryId, folderId, WorkflowConstants.STATUS_ANY, false);
 
 boolean showSelectAll = false;
 

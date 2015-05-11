@@ -1507,3 +1507,43 @@ method that returns just the editor's content, without any HTML markup. This
 change is used for the blog abstract field.
 
 ---------------------------------------
+
+### [Title]
+- **Date:** 2015-May-8
+- **JIRA Ticket:** LPS-55103
+
+#### What changed?
+The methods `getFoldersAndFileEntriesAndFileShortcuts()` and
+`getFileEntriesAndFileShortcuts()` in `Repository` returned a list of raw
+`Object`.
+
+A new interface `RepositoryEntry` has been created to abstract over the
+existing repository entity types (`FileEntry`, `FileShortcut`, `FileVersion`
+and `Folder`). The signature of the methods that returned raw `Object`s has
+been changed to return `RepositoryEntry` instead and their name now is
+`getRepositoryEntries()`.
+
+Due consistency `getFoldersAndFileEntriesAndFileShortcutsCount()` methods have
+also changed its name to `getRepositoryEntriesCount()`.
+
+#### Who is affected?
+
+Applications that use `Repository` directly.
+
+#### How should I update my code?
+
+There are two possible approaches:
+- Cast the returned list to a raw `List`, with no type parameters. Do this only
+  if strictly necessary.
+- Change the type annotation for variables storing the returned value or methods
+  accepting it from `List<Object>` to `List<RepositoryEntry>`.
+
+#### Why was this change made?
+
+To help the compiler catch errors and to make the API more explicit. By
+returning `List<Object>` the repository API wasn't telling anything at all about
+the returned objects; with this change at least the consumer knows that the
+returned objects must be one of `FileEntry`, `FileShortcut`, `FileVersion` or
+`Folder`.
+
+---------------------------------------

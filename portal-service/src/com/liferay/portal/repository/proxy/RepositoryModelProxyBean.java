@@ -179,7 +179,7 @@ public abstract class RepositoryModelProxyBean {
 		return folderProxyBeans;
 	}
 
-	protected List<RepositoryEntry> toObjectProxyBeans(
+	protected List<RepositoryEntry> toRepositoryEntriesProxyBeans(
 		List<RepositoryEntry> repositoryEntries) {
 
 		if ((repositoryEntries == null) || repositoryEntries.isEmpty()) {

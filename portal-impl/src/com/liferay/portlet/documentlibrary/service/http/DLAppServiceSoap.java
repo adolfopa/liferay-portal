@@ -751,10 +751,10 @@ public class DLAppServiceSoap {
 	* @return the number of file entries and shortcuts in the folder
 	* @throws PortalException if the folder ould not be found
 	*/
-	public static int getFileEntriesAndFileShortcutsCount(long repositoryId,
+	public static int getRepositoryEntriesCount(long repositoryId,
 		long folderId, int status) throws RemoteException {
 		try {
-			int returnValue = DLAppServiceUtil.getFileEntriesAndFileShortcutsCount(repositoryId,
+			int returnValue = DLAppServiceUtil.getRepositoryEntriesCount(repositoryId,
 					folderId, status);
 
 			return returnValue;
@@ -776,11 +776,11 @@ public class DLAppServiceSoap {
 	* @return the number of file entries and shortcuts in the folder
 	* @throws PortalException if the folder ould not be found
 	*/
-	public static int getFileEntriesAndFileShortcutsCount(long repositoryId,
+	public static int getRepositoryEntriesCount(long repositoryId,
 		long folderId, int status, java.lang.String[] mimeTypes)
 		throws RemoteException {
 		try {
-			int returnValue = DLAppServiceUtil.getFileEntriesAndFileShortcutsCount(repositoryId,
+			int returnValue = DLAppServiceUtil.getRepositoryEntriesCount(repositoryId,
 					folderId, status, mimeTypes);
 
 			return returnValue;
@@ -1223,52 +1223,6 @@ public class DLAppServiceSoap {
 					start, end, obc);
 
 			return com.liferay.portal.kernel.repository.model.FolderSoap.toSoapModels(returnValue);
-		}
-		catch (Exception e) {
-			_log.error(e, e);
-
-			throw new RemoteException(e.getMessage());
-		}
-	}
-
-	/**
-	* Returns the number of immediate subfolders, file entries, and file
-	* shortcuts in the parent folder.
-	*
-	* @param repositoryId the primary key of the repository
-	* @param folderId the primary key of the parent folder
-	* @param status the workflow status
-	* @param includeMountFolders whether to include mount folders for
-	third-party repositories
-	* @return the number of immediate subfolders, file entries, and file
-	shortcuts in the parent folder
-	* @throws PortalException if the folder could not be found
-	*/
-	public static int getFoldersAndFileEntriesAndFileShortcutsCount(
-		long repositoryId, long folderId, int status,
-		boolean includeMountFolders) throws RemoteException {
-		try {
-			int returnValue = DLAppServiceUtil.getFoldersAndFileEntriesAndFileShortcutsCount(repositoryId,
-					folderId, status, includeMountFolders);
-
-			return returnValue;
-		}
-		catch (Exception e) {
-			_log.error(e, e);
-
-			throw new RemoteException(e.getMessage());
-		}
-	}
-
-	public static int getFoldersAndFileEntriesAndFileShortcutsCount(
-		long repositoryId, long folderId, int status,
-		java.lang.String[] mimeTypes, boolean includeMountFolders)
-		throws RemoteException {
-		try {
-			int returnValue = DLAppServiceUtil.getFoldersAndFileEntriesAndFileShortcutsCount(repositoryId,
-					folderId, status, mimeTypes, includeMountFolders);
-
-			return returnValue;
 		}
 		catch (Exception e) {
 			_log.error(e, e);
@@ -1777,6 +1731,51 @@ public class DLAppServiceSoap {
 		try {
 			int returnValue = DLAppServiceUtil.getMountFoldersCount(repositoryId,
 					parentFolderId);
+
+			return returnValue;
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	/**
+	* Returns the number of immediate subfolders, file entries, and file
+	* shortcuts in the parent folder.
+	*
+	* @param repositoryId the primary key of the repository
+	* @param folderId the primary key of the parent folder
+	* @param status the workflow status
+	* @param includeMountFolders whether to include mount folders for
+	third-party repositories
+	* @return the number of immediate subfolders, file entries, and file
+	shortcuts in the parent folder
+	* @throws PortalException if the folder could not be found
+	*/
+	public static int getRepositoryEntriesCount(long repositoryId,
+		long folderId, int status, boolean includeMountFolders)
+		throws RemoteException {
+		try {
+			int returnValue = DLAppServiceUtil.getRepositoryEntriesCount(repositoryId,
+					folderId, status, includeMountFolders);
+
+			return returnValue;
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static int getRepositoryEntriesCount(long repositoryId,
+		long folderId, int status, java.lang.String[] mimeTypes,
+		boolean includeMountFolders) throws RemoteException {
+		try {
+			int returnValue = DLAppServiceUtil.getRepositoryEntriesCount(repositoryId,
+					folderId, status, mimeTypes, includeMountFolders);
 
 			return returnValue;
 		}

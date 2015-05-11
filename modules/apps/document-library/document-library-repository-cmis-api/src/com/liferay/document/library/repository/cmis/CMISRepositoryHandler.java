@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileShortcut;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.repository.model.Folder;
+import com.liferay.portal.kernel.repository.model.RepositoryEntry;
 import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.search.Query;
 import com.liferay.portal.kernel.search.SearchContext;
@@ -278,37 +279,6 @@ public abstract class CMISRepositoryHandler
 	}
 
 	@Override
-	public List<Object> getFoldersAndFileEntries(
-		long folderId, int start, int end, OrderByComparator<?> obc) {
-
-		return _baseCmisRepository.getFoldersAndFileEntries(
-			folderId, start, end, obc);
-	}
-
-	@Override
-	public List<Object> getFoldersAndFileEntries(
-			long folderId, String[] mimeTypes, int start, int end,
-			OrderByComparator<?> obc)
-		throws PortalException {
-
-		return _baseCmisRepository.getFoldersAndFileEntries(
-			folderId, mimeTypes, start, end, obc);
-	}
-
-	@Override
-	public int getFoldersAndFileEntriesCount(long folderId) {
-		return _baseCmisRepository.getFoldersAndFileEntriesCount(folderId);
-	}
-
-	@Override
-	public int getFoldersAndFileEntriesCount(long folderId, String[] mimeTypes)
-		throws PortalException {
-
-		return _baseCmisRepository.getFoldersAndFileEntriesCount(
-			folderId, mimeTypes);
-	}
-
-	@Override
 	public int getFoldersCount(long parentFolderId, boolean includeMountfolders)
 		throws PortalException {
 
@@ -381,6 +351,37 @@ public abstract class CMISRepositoryHandler
 
 	public List<String> getObjectPaths(String objectId) throws PortalException {
 		return _baseCmisRepository.getObjectPaths(objectId);
+	}
+
+	@Override
+	public List<RepositoryEntry> getRepositoryEntries(
+		long folderId, int start, int end, OrderByComparator<?> obc) {
+
+		return _baseCmisRepository.getRepositoryEntries(
+			folderId, start, end, obc);
+	}
+
+	@Override
+	public List<RepositoryEntry> getRepositoryEntries(
+			long folderId, String[] mimeTypes, int start, int end,
+			OrderByComparator<?> obc)
+		throws PortalException {
+
+		return _baseCmisRepository.getRepositoryEntries(
+			folderId, mimeTypes, start, end, obc);
+	}
+
+	@Override
+	public int getRepositoryEntriesCount(long folderId) {
+		return _baseCmisRepository.getRepositoryEntriesCount(folderId);
+	}
+
+	@Override
+	public int getRepositoryEntriesCount(long folderId, String[] mimeTypes)
+		throws PortalException {
+
+		return _baseCmisRepository.getRepositoryEntriesCount(
+			folderId, mimeTypes);
 	}
 
 	public abstract Session getSession() throws PortalException;
@@ -587,7 +588,11 @@ public abstract class CMISRepositoryHandler
 
 	@Override
 	public void updateFileShortcuts(
-		long oldToFileEntryId, long newToFileEntryId) {
+			long oldToFileEntryId, long newToFileEntryId)
+		throws PortalException {
+
+		_baseCmisRepository.updateFileShortcuts(
+			oldToFileEntryId, newToFileEntryId);
 	}
 
 	@Override

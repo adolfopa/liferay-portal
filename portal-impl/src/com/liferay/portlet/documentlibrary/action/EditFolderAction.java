@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.repository.LocalRepository;
 import com.liferay.portal.kernel.repository.capabilities.TemporaryFileEntriesCapability;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
+import com.liferay.portal.kernel.repository.model.RepositoryEntry;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.ContentTypes;
@@ -343,22 +344,22 @@ public class EditFolderAction extends PortletAction {
 			long repositoryId, long folderId, String path, ZipWriter zipWriter)
 		throws Exception {
 
-		List<Object> foldersAndFileEntriesAndFileShortcuts =
-			DLAppServiceUtil.getFoldersAndFileEntriesAndFileShortcuts(
+		List<RepositoryEntry> repositoryEntries =
+			DLAppServiceUtil.getRepositoryEntries(
 				repositoryId, folderId, WorkflowConstants.STATUS_APPROVED,
 				false, QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 
-		for (Object entry : foldersAndFileEntriesAndFileShortcuts) {
-			if (entry instanceof Folder) {
-				Folder folder = (Folder)entry;
+		for (RepositoryEntry repositoryEntry : repositoryEntries) {
+			if (repositoryEntry instanceof Folder) {
+				Folder folder = (Folder)repositoryEntry;
 
 				zipFolder(
 					folder.getRepositoryId(), folder.getFolderId(),
 					path.concat(StringPool.SLASH).concat(folder.getName()),
 					zipWriter);
 			}
-			else if (entry instanceof FileEntry) {
-				FileEntry fileEntry = (FileEntry)entry;
+			else if (repositoryEntry instanceof FileEntry) {
+				FileEntry fileEntry = (FileEntry)repositoryEntry;
 
 				zipWriter.addEntry(
 					path + StringPool.SLASH +

@@ -367,7 +367,7 @@ String iconMenuId = null;
 					/>
 				</c:if>
 
-				<c:if test="<%= hasViewPermission && portletName.equals(PortletKeys.MEDIA_GALLERY_DISPLAY) && (DLAppServiceUtil.getFileEntriesAndFileShortcutsCount(repositoryId, folderId, status) > 0) %>">
+				<c:if test="<%= hasViewPermission && portletName.equals(PortletKeys.MEDIA_GALLERY_DISPLAY) && (DLAppServiceUtil.getRepositoryEntriesCount(repositoryId, folderId, status) > 0) %>">
 					<liferay-ui:icon
 						cssClass='<%= randomNamespace + "-slide-show" %>'
 						iconCssClass="icon-search"

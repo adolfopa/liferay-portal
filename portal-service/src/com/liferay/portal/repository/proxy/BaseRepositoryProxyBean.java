@@ -382,35 +382,6 @@ public class BaseRepositoryProxyBean
 	}
 
 	@Override
-	public List<RepositoryEntry> getFileEntriesAndFileShortcuts(
-			long folderId, int status, int start, int end)
-		throws PortalException {
-
-		List<RepositoryEntry> fileEntriesAndFileShortcuts =
-			_baseRepository.getFileEntriesAndFileShortcuts(
-				folderId, status, start, end);
-
-		return toObjectProxyBeans(fileEntriesAndFileShortcuts);
-	}
-
-	@Override
-	public int getFileEntriesAndFileShortcutsCount(long folderId, int status)
-		throws PortalException {
-
-		return _baseRepository.getFileEntriesAndFileShortcutsCount(
-			folderId, status);
-	}
-
-	@Override
-	public int getFileEntriesAndFileShortcutsCount(
-			long folderId, int status, String[] mimeTypes)
-		throws PortalException {
-
-		return _baseRepository.getFileEntriesAndFileShortcutsCount(
-			folderId, status, mimeTypes);
-	}
-
-	@Override
 	public int getFileEntriesCount(long folderId) throws PortalException {
 		return _baseRepository.getFileEntriesCount(folderId);
 	}
@@ -519,53 +490,6 @@ public class BaseRepositoryProxyBean
 	}
 
 	@Override
-	public List<RepositoryEntry> getFoldersAndFileEntriesAndFileShortcuts(
-			long folderId, int status, boolean includeMountFolders, int start,
-			int end, OrderByComparator<?> obc)
-		throws PortalException {
-
-		List<RepositoryEntry> foldersAndFileEntriesAndFileShortcuts =
-			_baseRepository.getFoldersAndFileEntriesAndFileShortcuts(
-				folderId, status, includeMountFolders, start, end, obc);
-
-		return toObjectProxyBeans(foldersAndFileEntriesAndFileShortcuts);
-	}
-
-	@Override
-	public List<RepositoryEntry> getFoldersAndFileEntriesAndFileShortcuts(
-			long folderId, int status, String[] mimeTypes,
-			boolean includeMountFolders, int start, int end,
-			OrderByComparator<?> obc)
-		throws PortalException {
-
-		List<RepositoryEntry> foldersAndFileEntriesAndFileShortcuts =
-			_baseRepository.getFoldersAndFileEntriesAndFileShortcuts(
-				folderId, status, mimeTypes, includeMountFolders, start, end,
-				obc);
-
-		return toObjectProxyBeans(foldersAndFileEntriesAndFileShortcuts);
-	}
-
-	@Override
-	public int getFoldersAndFileEntriesAndFileShortcutsCount(
-			long folderId, int status, boolean includeMountFolders)
-		throws PortalException {
-
-		return _baseRepository.getFoldersAndFileEntriesAndFileShortcutsCount(
-			folderId, status, includeMountFolders);
-	}
-
-	@Override
-	public int getFoldersAndFileEntriesAndFileShortcutsCount(
-			long folderId, int status, String[] mimeTypes,
-			boolean includeMountFolders)
-		throws PortalException {
-
-		return _baseRepository.getFoldersAndFileEntriesAndFileShortcutsCount(
-			folderId, status, mimeTypes, includeMountFolders);
-	}
-
-	@Override
 	public int getFoldersCount(long parentFolderId, boolean includeMountfolders)
 		throws PortalException {
 
@@ -617,6 +541,80 @@ public class BaseRepositoryProxyBean
 
 	public BaseRepository getProxyBean() {
 		return _baseRepository;
+	}
+
+	@Override
+	public List<RepositoryEntry> getRepositoryEntries(
+			long folderId, int status, boolean includeMountFolders, int start,
+			int end, OrderByComparator<?> obc)
+		throws PortalException {
+
+		List<RepositoryEntry> repositoryEntries =
+			_baseRepository.getRepositoryEntries(
+				folderId, status, includeMountFolders, start, end, obc);
+
+		return toRepositoryEntriesProxyBeans(repositoryEntries);
+	}
+
+	@Override
+	public List<RepositoryEntry> getRepositoryEntries(
+			long folderId, int status, int start, int end)
+		throws PortalException {
+
+		List<RepositoryEntry> repositoryEntries =
+			_baseRepository.getRepositoryEntries(folderId, status, start, end);
+
+		return toRepositoryEntriesProxyBeans(repositoryEntries);
+	}
+
+	@Override
+	public List<RepositoryEntry> getRepositoryEntries(
+			long folderId, int status, String[] mimeTypes,
+			boolean includeMountFolders, int start, int end,
+			OrderByComparator<?> obc)
+		throws PortalException {
+
+		List<RepositoryEntry> repositoryEntries =
+			_baseRepository.getRepositoryEntries(
+				folderId, status, mimeTypes, includeMountFolders, start, end,
+				obc);
+
+		return toRepositoryEntriesProxyBeans(repositoryEntries);
+	}
+
+	@Override
+	public int getRepositoryEntriesCount(long folderId, int status)
+		throws PortalException {
+
+		return _baseRepository.getRepositoryEntriesCount(folderId, status);
+	}
+
+	@Override
+	public int getRepositoryEntriesCount(
+			long folderId, int status, boolean includeMountFolders)
+		throws PortalException {
+
+		return _baseRepository.getRepositoryEntriesCount(
+			folderId, status, includeMountFolders);
+	}
+
+	@Override
+	public int getRepositoryEntriesCount(
+			long folderId, int status, String[] mimeTypes)
+		throws PortalException {
+
+		return _baseRepository.getRepositoryEntriesCount(
+			folderId, status, mimeTypes);
+	}
+
+	@Override
+	public int getRepositoryEntriesCount(
+			long folderId, int status, String[] mimeTypes,
+			boolean includeMountFolders)
+		throws PortalException {
+
+		return _baseRepository.getRepositoryEntriesCount(
+			folderId, status, mimeTypes, includeMountFolders);
 	}
 
 	@Override
@@ -1042,7 +1040,10 @@ public class BaseRepositoryProxyBean
 
 	@Override
 	public void updateFileShortcuts(
-		long oldToFileEntryId, long newToFileEntryId) {
+			long oldToFileEntryId, long newToFileEntryId)
+		throws PortalException {
+
+		_baseRepository.updateFileShortcuts(oldToFileEntryId, newToFileEntryId);
 	}
 
 	@Override

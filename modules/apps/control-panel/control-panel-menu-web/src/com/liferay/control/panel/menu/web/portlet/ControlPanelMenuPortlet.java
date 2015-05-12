@@ -26,14 +26,14 @@ import org.osgi.service.component.annotations.Component;
 @Component(
 	immediate = true,
 	property = {
-		"com.liferay.portlet.access-denied=false",
 		"com.liferay.portlet.add-default-resource=true",
 		"com.liferay.portlet.private-request-attributes=false",
 		"com.liferay.portlet.private-session-attributes=false",
 		"com.liferay.portlet.render-weight=50",
+		"com.liferay.portlet.show-portlet-access-denied=false",
 		"com.liferay.portlet.show-portlet-inactive=false",
 		"com.liferay.portlet.system=true",
-		"com.liferay.portlet.use-default-template=true",
+		"com.liferay.portlet.use-default-template=false",
 		"javax.portlet.display-name=Control Panel Menu",
 		"javax.portlet.expiration-cache=0",
 		"javax.portlet.init-param.template-path=/",

@@ -84,7 +84,8 @@ page import="com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.storage.StorageEngineUtil" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.util.DDMFormValuesToFieldsConverterUtil" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.util.DDMUtil" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.util.comparator.StructureStructureKeyComparator" %>
+page import="com.liferay.portlet.dynamicdatamapping.util.comparator.StructureStructureKeyComparator" %><%@
+page import="com.liferay.portlet.admin.util.PortalAdministrationApplicationType" %>
 
 <%
 PortalPreferences portalPreferences = PortletPreferencesFactoryUtil.getPortalPreferences(liferayPortletRequest);

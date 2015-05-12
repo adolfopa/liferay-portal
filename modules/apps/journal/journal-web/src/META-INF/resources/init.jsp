@@ -177,6 +177,7 @@ page import="com.liferay.portlet.trash.model.TrashEntry" %><%@
 page import="com.liferay.portlet.trash.util.TrashUtil" %><%@
 page import="com.liferay.taglib.search.ResultRow" %><%@
 page import="com.liferay.util.ContentUtil" %><%@
+page import="com.liferay.portlet.admin.util.PortalAdministrationApplicationType" %><%@
 page import="com.liferay.util.RSSUtil" %>
 
 <%@ page import="java.text.Format" %>

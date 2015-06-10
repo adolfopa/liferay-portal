@@ -17,7 +17,8 @@
 <%@ include file="/taglib/ui/browser/init.jsp" %>
 
 <%
-String displayStyle = GetterUtil.getString(request.getAttribute("liferay-ui:item-selector-browser:displayStyle"), "descriptive");
+String displayStyle = GetterUtil.getString(request.getAttribute("liferay-ui:item-selector-browser:displayStyle"));
+PortletURL displayStyleURL = (PortletURL)request.getAttribute("liferay-ui:item-selector-browser:displayStyleURL");
 String idPrefix = GetterUtil.getString(request.getAttribute("liferay-ui:item-selector-browser:idPrefix"));
 String itemSelectedEventName = GetterUtil.getString(request.getAttribute("liferay-ui:item-selector-browser:itemSelectedEventName"));
 ReturnType returnType = (ReturnType)request.getAttribute("liferay-ui:item-selector-browser:returnType");
@@ -27,6 +28,24 @@ String uploadMessage = GetterUtil.getString(request.getAttribute("liferay-ui:ite
 %>
 
 <div class="lfr-item-viewer" id="<%= idPrefix %>ItemSelectorContainer">
+
+	<c:if test="<%= Validator.isNotNull(displayStyleURL) %>">
+		<aui:nav-bar>
+			<aui:col cssClass="context-pane">
+				<liferay-ui:app-view-toolbar includeDisplayStyle="<%= true %>">
+
+					<aui:nav collapsible="<%= false %>" cssClass="nav-display-style-buttons navbar-nav" icon="th-list" id="displayStyleButtons">
+						<liferay-ui:app-view-display-style
+							displayStyle="<%= displayStyle %>"
+							displayStyleURL="<%= displayStyleURL %>"
+							displayStyles='<%= new String[] {"descriptive", "list"} %>'
+						/>
+					</aui:nav>
+				</liferay-ui:app-view-toolbar>
+			</aui:col>
+		</aui:nav-bar>
+	</c:if>
+
 	<c:if test="<%= ReturnType.BASE_64.equals(returnType) %>">
 		<div class="drop-zone">
 			<label class="btn btn-primary" for="<%= idPrefix %>InputFile"><liferay-ui:message key="select-file" /></label>

@@ -98,6 +98,7 @@ import com.liferay.portlet.messageboards.util.MailingListThreadLocal;
 import com.liferay.portlet.messageboards.util.comparator.MessageCreateDateComparator;
 import com.liferay.portlet.messageboards.util.comparator.MessageThreadComparator;
 import com.liferay.portlet.messageboards.util.comparator.ThreadLastPostDateComparator;
+import com.liferay.portlet.social.handler.SocialActivityHandlerUtil;
 import com.liferay.portlet.social.model.SocialActivity;
 import com.liferay.portlet.social.model.SocialActivityConstants;
 import com.liferay.portlet.trash.util.TrashUtil;
@@ -1226,15 +1227,10 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 		if (message.isApproved() && !message.isDiscussion()) {
 			mbThreadLocalService.incrementViewCounter(thread.getThreadId(), 1);
 
-			if (thread.getRootMessageUserId() != userId) {
-				MBMessage rootMessage = mbMessagePersistence.findByPrimaryKey(
-					thread.getRootMessageId());
-
-				socialActivityLocalService.addActivity(
-					userId, rootMessage.getGroupId(), MBMessage.class.getName(),
-					rootMessage.getMessageId(),
-					SocialActivityConstants.TYPE_VIEW, StringPool.BLANK, 0);
-			}
+			SocialActivityHandlerUtil.addActivity(
+				userId, thread.getGroupId(), MBThread.class.getName(),
+				thread.getThreadId(), SocialActivityConstants.TYPE_VIEW,
+				StringPool.BLANK, 0);
 		}
 
 		MBThread previousThread = null;
@@ -1853,7 +1849,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 								receiverUserId = parentMessage.getUserId();
 							}
 
-							socialActivityLocalService.addActivity(
+							SocialActivityHandlerUtil.addActivity(
 								message.getUserId(), message.getGroupId(),
 								MBMessage.class.getName(),
 								message.getMessageId(),
@@ -1863,7 +1859,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 							if ((parentMessage != null) &&
 								(receiverUserId != message.getUserId())) {
 
-								socialActivityLocalService.addActivity(
+								SocialActivityHandlerUtil.addActivity(
 									message.getUserId(),
 									parentMessage.getGroupId(),
 									MBMessage.class.getName(),
@@ -1891,7 +1887,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 								extraDataJSONObject.put(
 									"messageId", message.getMessageId());
 
-								socialActivityLocalService.addActivity(
+								SocialActivityHandlerUtil.addActivity(
 									message.getUserId(),
 									assetEntry.getGroupId(), className, classPK,
 									SocialActivityConstants.TYPE_ADD_COMMENT,

@@ -1585,10 +1585,8 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 						extraDataJSONObject.toString(), 0);
 				}
 				else {
-					socialActivityLocalService.addUniqueActivity(
-						user.getUserId(), entry.getGroupId(),
-						BlogsEntry.class.getName(), entryId,
-						BlogsActivityKeys.ADD_ENTRY,
+					SocialActivityHandlerUtil.addUniqueActivity(
+						user.getUserId(), entry, BlogsActivityKeys.ADD_ENTRY,
 						extraDataJSONObject.toString(), 0);
 				}
 			}

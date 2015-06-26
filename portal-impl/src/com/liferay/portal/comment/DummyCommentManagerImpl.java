@@ -153,7 +153,6 @@ public class DummyCommentManagerImpl implements CommentManager {
 
 			@Override
 			public boolean hasDeletePermission(long commentId) {
-
 				return false;
 			}
 

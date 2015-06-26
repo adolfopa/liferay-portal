@@ -19,13 +19,7 @@ import aQute.bnd.annotation.ProviderType;
 import com.liferay.portal.kernel.comment.DiscussionComment;
 
 /**
- * The extended model implementation for the Comment service. Represents a row in the &quot;Comment&quot; database table, with each column mapped to a property of this class.
- *
- * <p>
- * Helper methods and all application logic should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the {@link com.liferay.comments.remote.comment.model.Comment} interface.
- * </p>
- *
- * @author Brian Wing Shun Chan
+ * @author Adolfo Pérez
  */
 @ProviderType
 public class CommentImpl extends CommentBaseImpl {

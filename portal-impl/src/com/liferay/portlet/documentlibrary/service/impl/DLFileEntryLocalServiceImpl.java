@@ -725,7 +725,7 @@ public class DLFileEntryLocalServiceImpl
 		throws PortalException {
 
 		final RepositoryEventTrigger repositoryEventTrigger =
-			RepositoryUtil.getFolderRepositoryEventTrigger(folderId);
+			getFolderRepositoryEventTrigger(groupId, folderId);
 
 		ActionableDynamicQuery actionableDynamicQuery =
 			dlFileEntryLocalService.getActionableDynamicQuery();
@@ -2287,6 +2287,17 @@ public class DLFileEntryLocalServiceImpl
 				companyId, ddmStructures, fileEntryId, toFileVersionId,
 				ddmFormValuesMap, serviceContext);
 		}
+	}
+
+	protected RepositoryEventTrigger getFolderRepositoryEventTrigger(
+			long groupId, long folderId)
+		throws PortalException {
+
+		if (folderId != DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
+			return RepositoryUtil.getFolderRepositoryEventTrigger(folderId);
+		}
+
+		return RepositoryUtil.getRepositoryEventTrigger(groupId);
 	}
 
 	protected String getNextVersion(

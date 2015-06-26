@@ -36,6 +36,9 @@ import com.liferay.portal.kernel.lock.LockManagerUtil;
 import com.liferay.portal.kernel.lock.NoSuchLockException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.repository.event.RepositoryEventTrigger;
+import com.liferay.portal.kernel.repository.event.RepositoryEventType;
+import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.search.Indexable;
@@ -75,6 +78,7 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PrefsPropsUtil;
 import com.liferay.portal.util.PropsValues;
+import com.liferay.portal.util.RepositoryUtil;
 import com.liferay.portlet.documentlibrary.DuplicateFileException;
 import com.liferay.portlet.documentlibrary.DuplicateFolderNameException;
 import com.liferay.portlet.documentlibrary.FileExtensionException;
@@ -720,6 +724,9 @@ public class DLFileEntryLocalServiceImpl
 			final boolean includeTrashedEntries)
 		throws PortalException {
 
+		final RepositoryEventTrigger repositoryEventTrigger =
+			getFolderRepositoryEventTrigger(groupId, folderId);
+
 		ActionableDynamicQuery actionableDynamicQuery =
 			dlFileEntryLocalService.getActionableDynamicQuery();
 
@@ -747,6 +754,10 @@ public class DLFileEntryLocalServiceImpl
 
 					if (includeTrashedEntries ||
 						!dlFileEntry.isInTrashExplicitly()) {
+
+						repositoryEventTrigger.trigger(
+							RepositoryEventType.Delete.class, FileEntry.class,
+							new LiferayFileEntry(dlFileEntry));
 
 						dlFileEntryLocalService.deleteFileEntry(dlFileEntry);
 					}
@@ -972,6 +983,9 @@ public class DLFileEntryLocalServiceImpl
 			final boolean includeTrashedEntries)
 		throws PortalException {
 
+		final RepositoryEventTrigger repositoryEventTrigger =
+			RepositoryUtil.getRepositoryEventTrigger(repositoryId);
+
 		int total = dlFileEntryPersistence.countByR_F(repositoryId, folderId);
 
 		final IntervalActionProcessor<Void> intervalActionProcessor =
@@ -991,6 +1005,11 @@ public class DLFileEntryLocalServiceImpl
 					for (DLFileEntry dlFileEntry : dlFileEntries) {
 						if (includeTrashedEntries ||
 							!dlFileEntry.isInTrashExplicitly()) {
+
+							repositoryEventTrigger.trigger(
+								RepositoryEventType.Delete.class,
+								FileEntry.class,
+								new LiferayFileEntry(dlFileEntry));
 
 							dlFileEntryLocalService.deleteFileEntry(
 								dlFileEntry);
@@ -2268,6 +2287,17 @@ public class DLFileEntryLocalServiceImpl
 				companyId, ddmStructures, fileEntryId, toFileVersionId,
 				ddmFormValuesMap, serviceContext);
 		}
+	}
+
+	protected RepositoryEventTrigger getFolderRepositoryEventTrigger(
+			long groupId, long folderId)
+		throws PortalException {
+
+		if (folderId != DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
+			return RepositoryUtil.getFolderRepositoryEventTrigger(folderId);
+		}
+
+		return RepositoryUtil.getRepositoryEventTrigger(groupId);
 	}
 
 	protected String getNextVersion(

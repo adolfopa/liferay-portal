@@ -43,7 +43,6 @@ import com.liferay.portal.repository.util.RepositoryWrapperAware;
 import com.liferay.portlet.documentlibrary.model.DLSyncConstants;
 import com.liferay.portlet.documentlibrary.model.DLSyncEvent;
 import com.liferay.portlet.documentlibrary.service.DLSyncEventLocalService;
-import com.liferay.portlet.documentlibrary.service.DLSyncEventLocalServiceUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -130,41 +129,6 @@ public class LiferaySyncCapability
 		return new LiferaySyncRepositoryWrapper(repository, this);
 	}
 
-	protected void registerDLSyncEventCallback(
-		final String event, final String type, final long typePK) {
-
-		DLSyncEvent dlSyncEvent = _dlSyncEventLocalService.addDLSyncEvent(
-			event, type, typePK);
-
-		final long modifiedTime = dlSyncEvent.getModifiedTime();
-
-		TransactionCommitCallbackRegistryUtil.registerCallback(
-			new Callable<Void>() {
-
-				@Override
-				public Void call() throws Exception {
-					Message message = new Message();
-
-					Map<String, Object> values = new HashMap<>(4);
-
-					values.put("event", event);
-					values.put("modifiedTime", modifiedTime);
-					values.put("type", type);
-					values.put("typePK", typePK);
-
-					message.setValues(values);
-
-					MessageBusUtil.sendMessage(
-						DestinationNames.DOCUMENT_LIBRARY_SYNC_EVENT_PROCESSOR,
-						message);
-
-					return null;
-				}
-
-			}
-		);
-	}
-
 	protected boolean isStagingGroup(long groupId) {
 		try {
 			Group group = _groupServiceAdapter.getGroup(groupId);
@@ -198,6 +162,41 @@ public class LiferaySyncCapability
 
 		registerDLSyncEventCallback(
 			event, DLSyncConstants.TYPE_FOLDER, folder.getFolderId());
+	}
+
+	protected void registerDLSyncEventCallback(
+		final String event, final String type, final long typePK) {
+
+		DLSyncEvent dlSyncEvent = _dlSyncEventLocalService.addDLSyncEvent(
+			event, type, typePK);
+
+		final long modifiedTime = dlSyncEvent.getModifiedTime();
+
+		TransactionCommitCallbackRegistryUtil.registerCallback(
+			new Callable<Void>() {
+
+				@Override
+				public Void call() throws Exception {
+					Message message = new Message();
+
+					Map<String, Object> values = new HashMap<>(4);
+
+					values.put("event", event);
+					values.put("modifiedTime", modifiedTime);
+					values.put("type", type);
+					values.put("typePK", typePK);
+
+					message.setValues(values);
+
+					MessageBusUtil.sendMessage(
+						DestinationNames.DOCUMENT_LIBRARY_SYNC_EVENT_PROCESSOR,
+						message);
+
+					return null;
+				}
+
+			}
+		);
 	}
 
 	private final RepositoryEventListener

@@ -16,6 +16,7 @@ package com.liferay.portlet.documentlibrary.trash;
 
 import com.liferay.portal.InvalidRepositoryException;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.repository.LocalRepository;
 import com.liferay.portal.kernel.repository.Repository;
 import com.liferay.portal.kernel.repository.RepositoryProviderUtil;
 import com.liferay.portal.kernel.repository.capabilities.TrashCapability;
@@ -86,12 +87,12 @@ public class DLFileEntryTrashHandler extends DLBaseTrashHandler {
 
 	@Override
 	public void deleteTrashEntry(long classPK) throws PortalException {
-		Repository repository = getRepository(classPK);
+		LocalRepository localRepository = getLocalRepository(classPK);
 
-		TrashCapability trashCapability = repository.getCapability(
+		TrashCapability trashCapability = localRepository.getCapability(
 			TrashCapability.class);
 
-		trashCapability.deleteFileEntry(repository.getFileEntry(classPK));
+		trashCapability.deleteFileEntry(localRepository.getFileEntry(classPK));
 	}
 
 	@Override
@@ -249,10 +250,10 @@ public class DLFileEntryTrashHandler extends DLBaseTrashHandler {
 			ServiceContext serviceContext)
 		throws PortalException {
 
-		Repository repository = getRepository(classPK);
+		LocalRepository localRepository = getLocalRepository(classPK);
 
 		RepositoryTrashUtil.moveFileEntryFromTrash(
-			userId, repository.getRepositoryId(), classPK, containerModelId,
+			userId, localRepository.getRepositoryId(), classPK, containerModelId,
 			serviceContext);
 	}
 
@@ -397,17 +398,19 @@ public class DLFileEntryTrashHandler extends DLBaseTrashHandler {
 	}
 
 	@Override
-	protected Repository getRepository(long classPK) throws PortalException {
-		Repository repository = RepositoryProviderUtil.getFileEntryRepository(
-			classPK);
+	protected LocalRepository getLocalRepository(long classPK)
+		throws PortalException {
 
-		if (!repository.isCapabilityProvided(TrashCapability.class)) {
+		LocalRepository localRepository =
+			RepositoryProviderUtil.getFileEntryLocalRepository(classPK);
+
+		if (!localRepository.isCapabilityProvided(TrashCapability.class)) {
 			throw new InvalidRepositoryException(
-				"Repository " + repository.getRepositoryId() +
+				"Repository " + localRepository.getRepositoryId() +
 					" does not support trash operations");
 		}
 
-		return repository;
+		return localRepository;
 	}
 
 	@Override

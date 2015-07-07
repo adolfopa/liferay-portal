@@ -49,6 +49,7 @@ import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.diff.DiffHtmlUtil;
+import com.liferay.portal.kernel.dummy.Dummy;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -292,6 +293,8 @@ public class JournalArticleLocalServiceImpl
 			Map<String, byte[]> images, String articleURL,
 			ServiceContext serviceContext)
 		throws PortalException {
+
+		new Dummy();
 
 		// Article
 

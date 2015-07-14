@@ -35,8 +35,8 @@ import org.osgi.service.component.annotations.Component;
 		"com.liferay.portlet.use-default-template=true",
 		"javax.portlet.display-name=Page Flags",
 		"javax.portlet.expiration-cache=0",
-		"javax.portlet.init-param.template-path=/page_flags/",
-		"javax.portlet.init-param.view-template=/page_flags/view.jsp",
+		"javax.portlet.init-param.template-path=/",
+		"javax.portlet.init-param.view-template=/view.jsp",
 		"javax.portlet.security-role-ref=guest,power-user,user",
 		"javax.portlet.supports.mime-type=text/html"
 	},

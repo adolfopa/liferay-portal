@@ -26,4 +26,4 @@ page import="com.liferay.portal.model.Layout" %>
 <portlet:defineObjects />
 <liferay-theme:defineObjects />
 
-<%@ include file="/page_flags/init-ext.jsp" %>
+<%@ include file="/init-ext.jsp" %>

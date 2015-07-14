@@ -14,7 +14,7 @@
  */
 --%>
 
-<%@ include file="/page_flags/init.jsp" %>
+<%@ include file="/init.jsp" %>
 
 <%
 long reportedUserId = themeDisplay.getDefaultUserId();

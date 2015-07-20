@@ -48,7 +48,6 @@ import java.util.regex.Pattern;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -79,8 +78,6 @@ public class StripFilter extends BasePortalFilter {
 		for (String ignorePath : PropsValues.STRIP_IGNORE_PATHS) {
 			_ignorePaths.add(ignorePath);
 		}
-
-		_servletContext = filterConfig.getServletContext();
 	}
 
 	@Override
@@ -734,6 +731,5 @@ public class StripFilter extends BasePortalFilter {
 
 	private final Set<String> _ignorePaths = new HashSet<>();
 	private final ConcurrentLFUCache<String, String> _minifierCache;
-	private ServletContext _servletContext;
 
 }

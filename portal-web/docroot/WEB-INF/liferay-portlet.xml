@@ -80,7 +80,6 @@
 		<portlet-name>19</portlet-name>
 		<icon>/html/icons/message_boards.png</icon>
 		<struts-path>message_boards</struts-path>
-		<pop-message-listener-class>com.liferay.portlet.messageboards.pop.MessageListenerImpl</pop-message-listener-class>
 		<social-activity-interpreter-class>com.liferay.portlet.messageboards.social.MBMessageActivityInterpreter</social-activity-interpreter-class>
 		<social-activity-interpreter-class>com.liferay.portlet.messageboards.social.MBThreadActivityInterpreter</social-activity-interpreter-class>
 		<user-notification-definitions>com/liferay/portlet/messageboards/message-boards-user-notification-definitions.xml</user-notification-definitions>

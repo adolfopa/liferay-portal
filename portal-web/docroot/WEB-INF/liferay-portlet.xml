@@ -80,8 +80,6 @@
 		<portlet-name>19</portlet-name>
 		<icon>/html/icons/message_boards.png</icon>
 		<struts-path>message_boards</struts-path>
-		<user-notification-definitions>com/liferay/portlet/messageboards/message-boards-user-notification-definitions.xml</user-notification-definitions>
-		<user-notification-handler-class>com.liferay.portlet.messageboards.notifications.MessageBoardsUserNotificationHandler</user-notification-handler-class>
 		<custom-attributes-display>com.liferay.portlet.messageboards.MBCategoryCustomAttributesDisplay</custom-attributes-display>
 		<custom-attributes-display>com.liferay.portlet.messageboards.MBMessageCustomAttributesDisplay</custom-attributes-display>
 		<permission-propagator>com.liferay.portlet.messageboards.security.permission.MBPermissionPropagatorImpl</permission-propagator>

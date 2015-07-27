@@ -21,11 +21,9 @@ import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.security.auth.PrincipalException;
 import com.liferay.portal.theme.ThemeDisplay;
-import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portlet.announcements.EntryContentException;
 import com.liferay.portlet.announcements.EntryDisplayDateException;
@@ -74,13 +72,6 @@ public class EditEntryMVCActionCommand extends BaseMVCActionCommand {
 			}
 			else if (cmd.equals(Constants.DELETE)) {
 				deleteEntry(actionRequest);
-			}
-
-			String redirect = PortalUtil.escapeRedirect(
-				ParamUtil.getString(actionRequest, "redirect"));
-
-			if (Validator.isNotNull(redirect)) {
-				actionResponse.sendRedirect(redirect);
 			}
 		}
 		catch (EntryContentException | EntryDisplayDateException |

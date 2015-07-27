@@ -36,7 +36,8 @@ public class AnnouncementsConfigurationAction
 
 	@Override
 	@Reference(
-		target = "(osgi.web.symbolicname=com.liferay.announcements.web)", unbind = "-"
+		target = "(osgi.web.symbolicname=com.liferay.announcements.web)",
+		unbind = "-"
 	)
 	public void setServletContext(ServletContext servletContext) {
 		super.setServletContext(servletContext);

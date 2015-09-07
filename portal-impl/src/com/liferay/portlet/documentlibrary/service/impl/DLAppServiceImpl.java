@@ -2244,6 +2244,10 @@ public class DLAppServiceImpl extends DLAppServiceBaseImpl {
 		DLFileEntryPermission.check(
 			getPermissionChecker(), fileEntry, ActionKeys.DELETE);
 
+		if (fileEntry.isCheckedOut()) {
+			repository.cancelCheckOut(fileEntryId);
+		}
+
 		TrashCapability trashCapability = repository.getCapability(
 			TrashCapability.class);
 

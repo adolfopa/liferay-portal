@@ -78,6 +78,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.hibernate.util.JDBCExceptionReporter;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -949,6 +950,58 @@ public class DLAppServiceTest extends BaseDLAppTestCase {
 
 			Assert.assertEquals(1, moveCounter.get());
 		}
+
+	}
+
+	@Sync
+	public static class WhenMovingAFileEntryToTrash extends BaseDLAppTestCase {
+
+		@ClassRule
+		@Rule
+		public static final AggregateTestRule aggregateTestRule =
+			new AggregateTestRule(
+				new LiferayIntegrationTestRule(), MainServletTestRule.INSTANCE,
+				SynchronousDestinationTestRule.INSTANCE);
+
+		@Before
+		public void setUp() throws Exception {
+			_fileEntry = addFileEntry(
+				group.getGroupId(), parentFolder.getFolderId());
+		}
+
+		@Test
+		public void shouldCancelCheckout() throws Exception {
+			DLAppServiceUtil.checkOutFileEntry(
+				_fileEntry.getFileEntryId(),
+				ServiceContextTestUtil.getServiceContext(group.getGroupId()));
+
+			Assert.assertTrue(_fileEntry.isCheckedOut());
+
+			DLAppServiceUtil.moveFileEntryToTrash(_fileEntry.getFileEntryId());
+
+			_fileEntry = DLAppServiceUtil.getFileEntry(
+				_fileEntry.getFileEntryId());
+
+			Assert.assertFalse(_fileEntry.isCheckedOut());
+		}
+
+		@Test
+		public void shouldDeleteAssetEntries() throws Exception {
+			Assert.assertNotNull(
+				AssetEntryLocalServiceUtil.fetchEntry(
+					DLFileEntryConstants.getClassName(),
+					_fileEntry.getFileEntryId()));
+
+			DLAppServiceUtil.moveFileEntryToTrash(_fileEntry.getFileEntryId());
+
+			Assert.assertNull(
+				AssetEntryLocalServiceUtil.fetchEntry(
+					DLFileEntryConstants.getClassName(),
+					_fileEntry.getFileEntryId()));
+		}
+
+		@DeleteAfterTestRun
+		private FileEntry _fileEntry;
 
 	}
 

@@ -2138,30 +2138,20 @@ public class WikiPageLocalServiceImpl extends WikiPageLocalServiceBaseImpl {
 				 wikiGroupServiceOverriddenConfiguration.
 					 pageMinorEditAddSocialActivity())) {
 
-				if (status == WorkflowConstants.STATUS_APPROVED) {
-					JSONObject extraDataJSONObject =
-						JSONFactoryUtil.createJSONObject();
+				JSONObject extraDataJSONObject =
+					JSONFactoryUtil.createJSONObject();
 
-					extraDataJSONObject.put("title", page.getTitle());
-					extraDataJSONObject.put("version", page.getVersion());
+				extraDataJSONObject.put("title", page.getTitle());
+				extraDataJSONObject.put("version", page.getVersion());
 
-					int type = WikiActivityKeys.ADD_PAGE;
+				int type = WikiActivityKeys.ADD_PAGE;
 
-					if (cmd.equals(Constants.UPDATE)) {
-						type = WikiActivityKeys.UPDATE_PAGE;
-					}
-
-					SocialActivityManagerUtil.addActivity(
-						userId, page, type, extraDataJSONObject.toString(), 0);
+				if (cmd.equals(Constants.UPDATE)) {
+					type = WikiActivityKeys.UPDATE_PAGE;
 				}
-				else {
-					Date statusDate = page.getStatusDate();
-					Date createDate = new Date(statusDate.getTime() + 1);
 
-					SocialActivityManagerUtil.updateLastSocialActivity(
-						serviceContext.getUserId(), page,
-						WikiActivityKeys.UPDATE_PAGE, createDate);
-				}
+				SocialActivityManagerUtil.addActivity(
+					userId, page, type, extraDataJSONObject.toString(), 0);
 			}
 
 			// Subscriptions

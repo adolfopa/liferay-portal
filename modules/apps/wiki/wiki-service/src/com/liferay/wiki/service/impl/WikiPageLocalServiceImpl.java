@@ -2049,10 +2049,10 @@ public class WikiPageLocalServiceImpl extends WikiPageLocalServiceBaseImpl {
 
 		wikiPagePersistence.update(page);
 
-		String cmd = GetterUtil.getString(
-			workflowContext.get(WorkflowConstants.CONTEXT_COMMAND));
-
 		if (status == WorkflowConstants.STATUS_APPROVED) {
+			String cmd = GetterUtil.getString(
+				workflowContext.get(WorkflowConstants.CONTEXT_COMMAND));
+
 			if (cmd.equals(Constants.MOVE)) {
 				long resourcePrimKey = page.getResourcePrimKey();
 

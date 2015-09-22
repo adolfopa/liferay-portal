@@ -19,6 +19,10 @@ import com.liferay.portal.kernel.repository.RepositoryFactory;
 import com.liferay.portal.kernel.repository.registry.BaseRepositoryDefiner;
 import com.liferay.portal.kernel.repository.registry.RepositoryDefiner;
 import com.liferay.portal.kernel.repository.registry.RepositoryFactoryRegistry;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -32,6 +36,15 @@ public class DropboxRepositoryDefiner extends BaseRepositoryDefiner {
 	@Override
 	public String getClassName() {
 		return DropboxRepository.class.getName();
+	}
+
+	@Override
+	public String getRepositoryTypeLabel(Locale locale) {
+		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
+			"content.Language", locale, getClass());
+
+		return resourceBundle.getString(
+			_MODEL_RESOURCE_NAME_PREFIX + getClassName());
 	}
 
 	@Override
@@ -63,6 +76,8 @@ public class DropboxRepositoryDefiner extends BaseRepositoryDefiner {
 	public void setRepositoryFactory(RepositoryFactory repositoryFactory) {
 		_repositoryFactory = repositoryFactory;
 	}
+
+	private static final String _MODEL_RESOURCE_NAME_PREFIX = "model.resource.";
 
 	private static final String[] _SUPPORTED_CONFIGURATION = {"DROPBOX"};
 

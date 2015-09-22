@@ -1,0 +1,15 @@
+Bundle-Name: Liferay Document Library Repository Dropbox Implementation
+Bundle-SymbolicName: com.liferay.document.library.repository.dropbox.impl
+Bundle-Version: 1.0.0
+Import-Package:\
+	!com.squareup.*,\
+	!com.dropbox.core.*,\
+	!com.fasterxml.*,\
+ 	!com.liferay.repository.external.*,\
+ 	!okio.*,\
+ 	*
+Include-Resource:\
+	classes,\
+	@lib/dropbox-core-sdk.jar,\
+	@lib/jackson-core.jar,\
+	@lib-ext/dl-repository-shared-7.0.0.1.jar

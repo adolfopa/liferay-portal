@@ -14,9 +14,21 @@
 
 package com.liferay.document.library.repository.dropbox.internal;
 
+import com.dropbox.core.DbxClient;
+import com.dropbox.core.DbxEntry;
+import com.dropbox.core.DbxException;
+import com.dropbox.core.DbxWriteMode;
+
+import com.liferay.document.library.repository.dropbox.internal.model.DropboxFileEntry;
+import com.liferay.document.library.repository.dropbox.internal.model.DropboxFileVersion;
+import com.liferay.document.library.repository.dropbox.internal.model.DropboxFolder;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.search.Query;
 import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.kernel.util.CharPool;
+import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.service.CompanyLocalService;
 import com.liferay.portal.service.RepositoryEntryLocalService;
@@ -36,9 +48,15 @@ import com.liferay.repository.external.ExtRepositoryObjectType;
 import com.liferay.repository.external.ExtRepositorySearchResult;
 import com.liferay.repository.external.search.ExtRepositoryQueryMapper;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import jodd.io.StreamUtil;
 
 /**
  * @author Adolfo Pérez
@@ -79,7 +97,29 @@ public class DropboxRepository
 			String description, String changeLog, InputStream inputStream)
 		throws PortalException {
 
-		throw new UnsupportedOperationException();
+		File tempFile = null;
+		InputStream is = null;
+
+		try {
+			DbxClient dbxClient = getDbxClient();
+
+			tempFile = FileUtil.createTempFile(inputStream);
+
+			is = new FileInputStream(tempFile);
+
+			DbxEntry.File dbxFile = dbxClient.uploadFile(
+				getDropboxPath(extRepositoryParentFolderKey, title),
+				DbxWriteMode.add(), tempFile.length(), inputStream);
+
+			return new DropboxFileEntry(dbxFile);
+		}
+		catch (DbxException | IOException e) {
+			throw new PortalException(e);
+		}
+		finally {
+			StreamUtil.close(is);
+			FileUtil.delete(tempFile);
+		}
 	}
 
 	@Override
@@ -88,7 +128,17 @@ public class DropboxRepository
 			String description)
 		throws PortalException {
 
-		throw new UnsupportedOperationException();
+		try {
+			DbxClient dbxClient = getDbxClient();
+
+			DbxEntry.Folder dbxFolder = dbxClient.createFolder(
+				getDropboxPath(extRepositoryParentFolderKey, name));
+
+			return new DropboxFolder(dbxFolder);
+		}
+		catch (DbxException de) {
+			throw new PortalException(de);
+		}
 	}
 
 	@Override
@@ -96,7 +146,8 @@ public class DropboxRepository
 			String extRepositoryFileEntryKey)
 		throws PortalException {
 
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException(
+			"Cancel check-out is not supported for Dropbox repositories");
 	}
 
 	@Override
@@ -105,7 +156,8 @@ public class DropboxRepository
 			String changeLog)
 		throws PortalException {
 
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException(
+			"Check-in is not supported for Dropbox repositories");
 	}
 
 	@Override
@@ -113,7 +165,8 @@ public class DropboxRepository
 			String extRepositoryFileEntryKey)
 		throws PortalException {
 
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException(
+			"Check-out is not supported for Dropbox repositories");
 	}
 
 	@Override
@@ -123,7 +176,18 @@ public class DropboxRepository
 			String newTitle)
 		throws PortalException {
 
-		throw new UnsupportedOperationException();
+		try {
+			DbxClient dbxClient = getDbxClient();
+
+			DbxEntry dbxEntry = dbxClient.copy(
+				extRepositoryFileEntryKey,
+				getDropboxPath(newExtRepositoryFolderKey, newTitle));
+
+			return (T)createExtRepositoryObject(dbxEntry);
+		}
+		catch (DbxException de) {
+			throw new PortalException(de);
+		}
 	}
 
 	@Override
@@ -133,7 +197,14 @@ public class DropboxRepository
 			String extRepositoryObjectKey)
 		throws PortalException {
 
-		throw new UnsupportedOperationException();
+		try {
+			DbxClient dbxClient = getDbxClient();
+
+			dbxClient.delete(extRepositoryObjectKey);
+		}
+		catch (DbxException de) {
+			throw new PortalException(de);
+		}
 	}
 
 	@Override
@@ -141,7 +212,10 @@ public class DropboxRepository
 			ExtRepositoryFileEntry extRepositoryFileEntry)
 		throws PortalException {
 
-		throw new UnsupportedOperationException();
+		DropboxFileEntry dropboxFileEntry =
+			(DropboxFileEntry)extRepositoryFileEntry;
+
+		return getContentStream(dropboxFileEntry.getDbxFile());
 	}
 
 	@Override
@@ -149,7 +223,10 @@ public class DropboxRepository
 			ExtRepositoryFileVersion extRepositoryFileVersion)
 		throws PortalException {
 
-		throw new UnsupportedOperationException();
+		DropboxFileVersion dropboxFileVersion =
+			(DropboxFileVersion)extRepositoryFileVersion;
+
+		return getContentStream(dropboxFileVersion.getDbxFile());
 	}
 
 	@Override
@@ -157,7 +234,12 @@ public class DropboxRepository
 			ExtRepositoryFileEntry extRepositoryFileEntry, String version)
 		throws PortalException {
 
-		throw new UnsupportedOperationException();
+		DropboxFileEntry dropboxFileEntry =
+			(DropboxFileEntry)extRepositoryFileEntry;
+
+		DbxEntry.File dbxFile = dropboxFileEntry.getDbxFile();
+
+		return new DropboxFileVersion(dbxFile, version);
 	}
 
 	@Override
@@ -165,7 +247,17 @@ public class DropboxRepository
 		getExtRepositoryFileVersionDescriptor(
 			String extRepositoryFileVersionKey) {
 
-		throw new UnsupportedOperationException();
+		int i = extRepositoryFileVersionKey.lastIndexOf(CharPool.AT);
+
+		if (i == -1) {
+			throw new IllegalArgumentException(
+				"Dropbox repository version keys must be of the form " +
+					"path@rev: " + extRepositoryFileVersionKey);
+		}
+
+		return new ExtRepositoryFileVersionDescriptor(
+			extRepositoryFileVersionKey.substring(0, i),
+			extRepositoryFileVersionKey.substring(i + 1));
 	}
 
 	@Override
@@ -173,7 +265,29 @@ public class DropboxRepository
 			ExtRepositoryFileEntry extRepositoryFileEntry)
 		throws PortalException {
 
-		throw new UnsupportedOperationException();
+		try {
+			DropboxFileEntry dropboxFileEntry =
+				(DropboxFileEntry)extRepositoryFileEntry;
+
+			DbxEntry.File dbxFile = dropboxFileEntry.getDbxFile();
+
+			DbxClient dbxClient = getDbxClient();
+
+			List<DbxEntry.File> revisions = dbxClient.getRevisions(
+				dbxFile.path);
+
+			List<ExtRepositoryFileVersion> extRepositoryFileVersions =
+				new ArrayList<>(revisions.size());
+
+			for (DbxEntry.File revision : revisions) {
+				extRepositoryFileVersions.add(new DropboxFileVersion(revision));
+			}
+
+			return extRepositoryFileVersions;
+		}
+		catch (DbxException de) {
+			throw new PortalException(de);
+		}
 	}
 
 	@Override
@@ -182,7 +296,20 @@ public class DropboxRepository
 			String extRepositoryObjectKey)
 		throws PortalException {
 
-		throw new UnsupportedOperationException();
+		try {
+			DbxClient dbxClient = getDbxClient();
+
+			DbxEntry dbxEntry = dbxClient.getMetadata(extRepositoryObjectKey);
+
+			if (!isOfType(dbxEntry, extRepositoryObjectType)) {
+				throw new IllegalArgumentException();
+			}
+
+			return (T)createExtRepositoryObject(dbxEntry);
+		}
+		catch (DbxException de) {
+			throw new PortalException(de);
+		}
 	}
 
 	@Override
@@ -191,7 +318,9 @@ public class DropboxRepository
 			String extRepositoryFolderKey, String title)
 		throws PortalException {
 
-		throw new UnsupportedOperationException();
+		return getExtRepositoryObject(
+			extRepositoryObjectType,
+			getDropboxPath(extRepositoryFolderKey, title));
 	}
 
 	@Override
@@ -200,7 +329,26 @@ public class DropboxRepository
 			String extRepositoryFolderKey)
 		throws PortalException {
 
-		throw new UnsupportedOperationException();
+		try {
+			DbxClient dbxClient = getDbxClient();
+
+			DbxEntry.WithChildren metadataWithChildren =
+				dbxClient.getMetadataWithChildren(extRepositoryFolderKey);
+
+			List<T> extRepositoryObjects = new ArrayList<>();
+
+			for (DbxEntry dbxEntry : metadataWithChildren.children) {
+				if (isOfType(dbxEntry, extRepositoryObjectType)) {
+					extRepositoryObjects.add(
+						(T)createExtRepositoryObject(dbxEntry));
+				}
+			}
+
+			return extRepositoryObjects;
+		}
+		catch (DbxException de) {
+			throw new PortalException(de);
+		}
 	}
 
 	@Override
@@ -210,7 +358,25 @@ public class DropboxRepository
 			String extRepositoryFolderKey)
 		throws PortalException {
 
-		throw new UnsupportedOperationException();
+		try {
+			DbxClient dbxClient = getDbxClient();
+
+			DbxEntry.WithChildren metadataWithChildren =
+				dbxClient.getMetadataWithChildren(extRepositoryFolderKey);
+
+			int count = 0;
+
+			for (DbxEntry dbxEntry : metadataWithChildren.children) {
+				if (isOfType(dbxEntry, extRepositoryObjectType)) {
+					count++;
+				}
+			}
+
+			return count;
+		}
+		catch (DbxException de) {
+			throw new PortalException(de);
+		}
 	}
 
 	@Override
@@ -218,12 +384,41 @@ public class DropboxRepository
 			ExtRepositoryObject extRepositoryObject)
 		throws PortalException {
 
-		throw new UnsupportedOperationException();
+		try {
+			DbxEntry dbxEntry = null;
+
+			if (extRepositoryObject instanceof DropboxFileEntry) {
+				dbxEntry = ((DropboxFileEntry)extRepositoryObject).getDbxFile();
+			}
+			else if (extRepositoryObject instanceof DropboxFolder) {
+				dbxEntry = ((DropboxFolder)extRepositoryObject).getDbxFolder();
+			}
+			else {
+				throw new IllegalArgumentException(
+					"Only files and folders have parents: " +
+						extRepositoryObject);
+			}
+
+			String parentObjectKey = getDropboxParentPath(dbxEntry);
+
+			if (parentObjectKey == null) {
+				return null;
+			}
+
+			DbxClient dbxClient = getDbxClient();
+
+			DbxEntry parentDbxEntry = dbxClient.getMetadata(parentObjectKey);
+
+			return new DropboxFolder(parentDbxEntry.asFolder());
+		}
+		catch (DbxException de) {
+			throw new PortalException(de);
+		}
 	}
 
 	@Override
 	public String getRootFolderKey() throws PortalException {
-		throw new UnsupportedOperationException();
+		return StringPool.SLASH;
 	}
 
 	@Override
@@ -231,7 +426,19 @@ public class DropboxRepository
 			String extRepositoryFolderKey, boolean recurse)
 		throws PortalException {
 
-		throw new UnsupportedOperationException();
+		try {
+			DbxClient dbxClient = getDbxClient();
+
+			List<String> subfolderKeys = new ArrayList<>();
+
+			collectSubfolderKeys(
+				extRepositoryFolderKey, dbxClient, subfolderKeys, recurse);
+
+			return subfolderKeys;
+		}
+		catch (DbxException de) {
+			throw new PortalException(de);
+		}
 	}
 
 	@Override
@@ -239,8 +446,6 @@ public class DropboxRepository
 			UnicodeProperties typeSettingsProperties,
 			CredentialsProvider credentialsProvider)
 		throws PortalException {
-
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -250,7 +455,18 @@ public class DropboxRepository
 			String newTitle)
 		throws PortalException {
 
-		throw new UnsupportedOperationException();
+		try {
+			DbxClient dbxClient = getDbxClient();
+
+			DbxEntry entry = dbxClient.move(
+				extRepositoryObjectKey,
+				getDropboxPath(newExtRepositoryFolderKey, newTitle));
+
+			return (T)createExtRepositoryObject(entry);
+		}
+		catch (DbxException de) {
+			throw new PortalException(de);
+		}
 	}
 
 	@Override
@@ -268,7 +484,167 @@ public class DropboxRepository
 			InputStream inputStream)
 		throws PortalException {
 
-		throw new UnsupportedOperationException();
+		File tempFile = null;
+		InputStream is = null;
+
+		try {
+			DbxClient dbxClient = getDbxClient();
+
+			DbxEntry metadata = dbxClient.getMetadata(
+				extRepositoryFileEntryKey);
+
+			DbxEntry.File fileMetadata = metadata.asFile();
+
+			tempFile = FileUtil.createTempFile(inputStream);
+
+			is = new FileInputStream(tempFile);
+
+			DbxEntry.File file = dbxClient.uploadFile(
+				extRepositoryFileEntryKey,
+				DbxWriteMode.update(fileMetadata.rev), tempFile.length(), is);
+
+			return new DropboxFileEntry(file);
+		}
+		catch (DbxException | IOException e) {
+			throw new PortalException(e);
+		}
+		finally {
+			StreamUtil.close(is);
+			FileUtil.delete(tempFile);
+		}
 	}
+
+	protected void collectSubfolderKeys(
+			String path, DbxClient dbxClient, List<String> subfolderKeys,
+			boolean recurse)
+		throws DbxException {
+
+		DbxEntry.WithChildren metadataWithChildren =
+			dbxClient.getMetadataWithChildren(path);
+
+		for (DbxEntry dbxEntry : metadataWithChildren.children) {
+			if (dbxEntry.isFolder()) {
+				subfolderKeys.add(dbxEntry.path);
+
+				if (recurse) {
+					collectSubfolderKeys(
+						dbxEntry.path, dbxClient, subfolderKeys, recurse);
+				}
+			}
+		}
+	}
+
+	protected ExtRepositoryObject createExtRepositoryObject(DbxEntry dbxEntry) {
+		if (dbxEntry.isFile()) {
+			return new DropboxFileEntry(dbxEntry.asFile());
+		}
+
+		if (dbxEntry.isFolder()) {
+			return new DropboxFolder(dbxEntry.asFolder());
+		}
+
+		throw new IllegalArgumentException(
+			"Expected file or folder, got " + dbxEntry);
+	}
+
+	protected String escapePathComponent(String pathComponent) {
+		return pathComponent; // For the moment, we won't escape anything.
+	}
+
+	protected InputStream getContentStream(DbxEntry.File dbxFile)
+		throws PortalException {
+
+		return getContentStream(dbxFile, dbxFile.rev);
+	}
+
+	protected InputStream getContentStream(
+			DbxEntry.File dbxFile, String revision)
+		throws PortalException {
+
+		DbxClient.Downloader downloader = null;
+
+		try {
+			DbxClient dbxClient = getDbxClient();
+
+			downloader = dbxClient.startGetFile(dbxFile.path, revision);
+
+			final File tempFile = FileUtil.createTempFile(downloader.body);
+
+			return new FileInputStream(tempFile) {
+
+				@Override
+				public void close() throws IOException {
+					super.close();
+
+					FileUtil.delete(tempFile);
+				}
+
+			};
+		}
+		catch (IOException | DbxException e) {
+			throw new PortalException(e);
+		}
+		finally {
+			downloader.close();
+		}
+	}
+
+	protected DbxClient getDbxClient() {
+		return _dbxClientFactory.getDbxClient(
+			getRepositoryId(), getTypeSettingsProperties());
+	}
+
+	protected String getDropboxParentPath(DbxEntry dbxEntry) {
+		if (dbxEntry.path.equals(StringPool.SLASH)) {
+			return null;
+		}
+
+		int i = dbxEntry.path.lastIndexOf(CharPool.SLASH);
+
+		if (i == 0) {
+			return StringPool.SLASH;
+		}
+
+		return dbxEntry.path.substring(0, i);
+	}
+
+	protected String getDropboxPath(
+		String extRepositoryParentFolderKey, String extRepositoryObjectName) {
+
+		String[] parentPathComponents = StringUtil.split(
+			extRepositoryParentFolderKey, StringPool.SLASH);
+
+		String[] extRepositoryObjectPathComponents =
+			new String[parentPathComponents.length + 1];
+
+		int i = 0;
+
+		for (i = 0; i < parentPathComponents.length; i++) {
+			extRepositoryObjectPathComponents[i] = escapePathComponent(
+				parentPathComponents[i]);
+		}
+
+		extRepositoryObjectPathComponents[i] = escapePathComponent(
+			extRepositoryObjectName);
+
+		return StringUtil.merge(
+			extRepositoryObjectPathComponents, StringPool.SLASH);
+	}
+
+	protected boolean isOfType(
+		DbxEntry dbxEntry, ExtRepositoryObjectType extRepositoryObjectType) {
+
+		if (extRepositoryObjectType == ExtRepositoryObjectType.FILE) {
+			return dbxEntry.isFile();
+		}
+
+		if (extRepositoryObjectType == ExtRepositoryObjectType.FOLDER) {
+			return dbxEntry.isFolder();
+		}
+
+		return true;
+	}
+
+	private final DbxClientFactory _dbxClientFactory;
 
 }

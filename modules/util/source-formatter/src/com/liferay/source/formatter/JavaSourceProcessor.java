@@ -900,6 +900,17 @@ public class JavaSourceProcessor extends BaseSourceProcessor {
 					"modules: " + fileName);
 		}
 
+		// LPS-58529
+
+		if (portalSource && newContent.contains("ResourceBundle.getBundle(") &&
+			!fileName.endsWith("ResourceBundleUtil.java")) {
+
+			processErrorMessage(
+				fileName,
+				"Use ResourceBundleUtil.getBundle instead of " +
+					"ResourceBundle.getBundle: " + fileName);
+		}
+
 		newContent = getCombinedLinesContent(
 			newContent, _combinedLinesPattern1);
 		newContent = getCombinedLinesContent(
@@ -1465,9 +1476,9 @@ public class JavaSourceProcessor extends BaseSourceProcessor {
 							StringPool.TAB);
 					}
 
-					line = formatIncorrectSyntax(line, ",}", "}");
+					line = formatIncorrectSyntax(line, ",}", "}", false);
 
-					line = formatWhitespace(line, trimmedLine);
+					line = formatWhitespace(line, trimmedLine, true);
 				}
 
 				if (line.contains(StringPool.TAB + "for (") &&

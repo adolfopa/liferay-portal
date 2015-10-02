@@ -417,7 +417,7 @@ else {
 			</c:if>
 
 			<c:if test="<%= fileEntry != null %>">
-				<aui:input label="major-version" name="majorVersion" type="checkbox" />
+				<aui:input name="majorVersion" type="checkbox" />
 			</c:if>
 
 			<liferay-ui:custom-attributes-available className="<%= DLFileEntryConstants.getClassName() %>">

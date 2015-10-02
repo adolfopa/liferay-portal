@@ -80,7 +80,8 @@ public class LiferayWorkflowCapability
 			ServiceContext serviceContext)
 		throws PortalException {
 
-		boolean keepFileVersionLabel = !majorVersion &&
+		boolean keepFileVersionLabel =
+			!majorVersion &&
 			_dlFileEntryServiceAdapter.isKeepFileVersionLabel(
 				fileEntry.getFileEntryId(), serviceContext);
 

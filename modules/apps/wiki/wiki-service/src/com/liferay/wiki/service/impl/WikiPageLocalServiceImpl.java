@@ -2133,8 +2133,7 @@ public class WikiPageLocalServiceImpl extends WikiPageLocalServiceBaseImpl {
 						new GroupServiceSettingsLocator(
 							page.getGroupId(), WikiConstants.SERVICE_NAME));
 
-			if ((oldStatus != WorkflowConstants.STATUS_IN_TRASH) &&
-				(page.getVersion() == WikiPageConstants.VERSION_DEFAULT) &&
+			if ((cmd.equals(Constants.ADD) || cmd.equals(Constants.UPDATE)) &&
 				(!page.isMinorEdit() ||
 				 wikiGroupServiceOverriddenConfiguration.
 					 pageMinorEditAddSocialActivity())) {
@@ -2145,9 +2144,14 @@ public class WikiPageLocalServiceImpl extends WikiPageLocalServiceBaseImpl {
 				extraDataJSONObject.put("title", page.getTitle());
 				extraDataJSONObject.put("version", page.getVersion());
 
+				int type = WikiActivityKeys.ADD_PAGE;
+
+				if (cmd.equals(Constants.UPDATE)) {
+					type = WikiActivityKeys.UPDATE_PAGE;
+				}
+
 				SocialActivityManagerUtil.addActivity(
-					userId, page, WikiActivityKeys.ADD_PAGE,
-					extraDataJSONObject.toString(), 0);
+					userId, page, type, extraDataJSONObject.toString(), 0);
 			}
 
 			// Subscriptions
@@ -3380,39 +3384,6 @@ public class WikiPageLocalServiceImpl extends WikiPageLocalServiceBaseImpl {
 			userId, page, serviceContext.getAssetCategoryIds(),
 			serviceContext.getAssetTagNames(),
 			serviceContext.getAssetLinkEntryIds());
-
-		// Social
-
-		WikiGroupServiceOverriddenConfiguration
-			wikiGroupServiceOverriddenConfiguration =
-				configurationFactory.getConfiguration(
-					WikiGroupServiceOverriddenConfiguration.class,
-					new GroupServiceSettingsLocator(
-						node.getGroupId(), WikiConstants.SERVICE_NAME));
-
-		if (!page.isMinorEdit() ||
-			wikiGroupServiceOverriddenConfiguration.
-				pageMinorEditAddSocialActivity()) {
-
-			if (oldPage.getVersion() == newVersion) {
-				Date createDate = new Date(now.getTime() + 1);
-
-				SocialActivityManagerUtil.updateLastSocialActivity(
-					serviceContext.getUserId(), page,
-					WikiActivityKeys.UPDATE_PAGE, createDate);
-			}
-			else {
-				JSONObject extraDataJSONObject =
-					JSONFactoryUtil.createJSONObject();
-
-				extraDataJSONObject.put("title", page.getTitle());
-				extraDataJSONObject.put("version", page.getVersion());
-
-				SocialActivityManagerUtil.addActivity(
-					userId, page, WikiActivityKeys.UPDATE_PAGE,
-					extraDataJSONObject.toString(), 0);
-			}
-		}
 
 		// Workflow
 

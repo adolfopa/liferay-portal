@@ -1564,6 +1564,7 @@
 		<field name="description" type="String">
 			<hint-collection name="TEXTAREA" />
 		</field>
+		<field name="majorVersion" type="boolean" />
 		<field name="changeLog" type="String" />
 		<field name="extraSettings" type="String">
 			<hint-collection name="CLOB" />

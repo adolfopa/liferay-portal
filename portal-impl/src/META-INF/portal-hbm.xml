@@ -1506,6 +1506,7 @@
 		<property name="mimeType" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="title" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="description" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="majorVersion" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
 		<property name="changeLog" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="extraSettings" type="com.liferay.portal.dao.orm.hibernate.StringClobType" />
 		<property name="fileEntryTypeId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
@@ -1517,7 +1518,6 @@
 		<property name="statusByUserId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property name="statusByUserName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="statusDate" type="org.hibernate.type.TimestampType" />
-		<property name="majorVersion" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
 	</class>
 	<class name="com.liferay.portlet.documentlibrary.model.impl.DLFolderImpl" table="DLFolder">
 		<id name="folderId" type="long">

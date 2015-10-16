@@ -72,6 +72,7 @@ public class DLFileVersionWrapper implements DLFileVersion,
 		attributes.put("mimeType", getMimeType());
 		attributes.put("title", getTitle());
 		attributes.put("description", getDescription());
+		attributes.put("majorVersion", getMajorVersion());
 		attributes.put("changeLog", getChangeLog());
 		attributes.put("extraSettings", getExtraSettings());
 		attributes.put("fileEntryTypeId", getFileEntryTypeId());
@@ -83,7 +84,6 @@ public class DLFileVersionWrapper implements DLFileVersion,
 		attributes.put("statusByUserId", getStatusByUserId());
 		attributes.put("statusByUserName", getStatusByUserName());
 		attributes.put("statusDate", getStatusDate());
-		attributes.put("majorVersion", getMajorVersion());
 
 		return attributes;
 	}
@@ -192,6 +192,12 @@ public class DLFileVersionWrapper implements DLFileVersion,
 			setDescription(description);
 		}
 
+		Boolean majorVersion = (Boolean)attributes.get("majorVersion");
+
+		if (majorVersion != null) {
+			setMajorVersion(majorVersion);
+		}
+
 		String changeLog = (String)attributes.get("changeLog");
 
 		if (changeLog != null) {
@@ -256,12 +262,6 @@ public class DLFileVersionWrapper implements DLFileVersion,
 
 		if (statusDate != null) {
 			setStatusDate(statusDate);
-		}
-
-		Boolean majorVersion = (Boolean)attributes.get("majorVersion");
-
-		if (majorVersion != null) {
-			setMajorVersion(majorVersion);
 		}
 	}
 

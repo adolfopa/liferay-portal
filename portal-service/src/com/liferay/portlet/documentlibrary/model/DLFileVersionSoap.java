@@ -51,6 +51,7 @@ public class DLFileVersionSoap implements Serializable {
 		soapModel.setMimeType(model.getMimeType());
 		soapModel.setTitle(model.getTitle());
 		soapModel.setDescription(model.getDescription());
+		soapModel.setMajorVersion(model.getMajorVersion());
 		soapModel.setChangeLog(model.getChangeLog());
 		soapModel.setExtraSettings(model.getExtraSettings());
 		soapModel.setFileEntryTypeId(model.getFileEntryTypeId());
@@ -62,7 +63,6 @@ public class DLFileVersionSoap implements Serializable {
 		soapModel.setStatusByUserId(model.getStatusByUserId());
 		soapModel.setStatusByUserName(model.getStatusByUserName());
 		soapModel.setStatusDate(model.getStatusDate());
-		soapModel.setMajorVersion(model.getMajorVersion());
 
 		return soapModel;
 	}
@@ -251,6 +251,18 @@ public class DLFileVersionSoap implements Serializable {
 		_description = description;
 	}
 
+	public boolean getMajorVersion() {
+		return _majorVersion;
+	}
+
+	public boolean isMajorVersion() {
+		return _majorVersion;
+	}
+
+	public void setMajorVersion(boolean majorVersion) {
+		_majorVersion = majorVersion;
+	}
+
 	public String getChangeLog() {
 		return _changeLog;
 	}
@@ -339,18 +351,6 @@ public class DLFileVersionSoap implements Serializable {
 		_statusDate = statusDate;
 	}
 
-	public boolean getMajorVersion() {
-		return _majorVersion;
-	}
-
-	public boolean isMajorVersion() {
-		return _majorVersion;
-	}
-
-	public void setMajorVersion(boolean majorVersion) {
-		_majorVersion = majorVersion;
-	}
-
 	private String _uuid;
 	private long _fileVersionId;
 	private long _groupId;
@@ -368,6 +368,7 @@ public class DLFileVersionSoap implements Serializable {
 	private String _mimeType;
 	private String _title;
 	private String _description;
+	private boolean _majorVersion;
 	private String _changeLog;
 	private String _extraSettings;
 	private long _fileEntryTypeId;
@@ -379,5 +380,4 @@ public class DLFileVersionSoap implements Serializable {
 	private long _statusByUserId;
 	private String _statusByUserName;
 	private Date _statusDate;
-	private boolean _majorVersion;
 }

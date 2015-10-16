@@ -497,6 +497,7 @@ create table DLFileVersion (
 	mimeType VARCHAR(75) null,
 	title VARCHAR(255) null,
 	description STRING null,
+	majorVersion BOOLEAN,
 	changeLog VARCHAR(75) null,
 	extraSettings TEXT null,
 	fileEntryTypeId LONG,
@@ -507,8 +508,7 @@ create table DLFileVersion (
 	status INTEGER,
 	statusByUserId LONG,
 	statusByUserName VARCHAR(75) null,
-	statusDate DATE null,
-	majorVersion BOOLEAN
+	statusDate DATE null
 );
 
 create table DLFolder (

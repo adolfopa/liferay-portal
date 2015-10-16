@@ -1564,6 +1564,7 @@
 		<field name="description" type="String">
 			<hint-collection name="TEXTAREA" />
 		</field>
+		<field name="majorVersion" type="boolean" />
 		<field name="changeLog" type="String" />
 		<field name="extraSettings" type="String">
 			<hint-collection name="CLOB" />
@@ -1577,7 +1578,6 @@
 		<field name="statusByUserId" type="long" />
 		<field name="statusByUserName" type="String" />
 		<field name="statusDate" type="Date" />
-		<field name="majorVersion" type="boolean" />
 	</model>
 	<model name="com.liferay.portlet.documentlibrary.model.DLFolder">
 		<field name="uuid" type="String" />

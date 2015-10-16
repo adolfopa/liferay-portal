@@ -542,8 +542,8 @@ public class DLFileEntryLocalServiceImpl
 					existingDLFileVersion.getMimeType(),
 					existingDLFileVersion.getTitle(),
 					existingDLFileVersion.getDescription(),
-					existingDLFileVersion.getChangeLog(),
 					existingDLFileVersion.isMajorVersion(),
+					existingDLFileVersion.getChangeLog(),
 					existingDLFileVersion.getExtraSettings(),
 					existingDLFileVersion.getFileEntryTypeId(), null,
 					DLFileEntryConstants.PRIVATE_WORKING_COPY_VERSION,
@@ -2674,7 +2674,7 @@ public class DLFileEntryLocalServiceImpl
 
 			updateFileVersion(
 				user, dlFileVersion, sourceFileName, fileName, extension,
-				mimeType, title, description, changeLog, majorVersion,
+				mimeType, title, description, majorVersion, changeLog,
 				extraSettings, fileEntryTypeId, ddmFormValuesMap, version, size,
 				dlFileVersion.getStatus(), serviceContext.getModifiedDate(now),
 				serviceContext);
@@ -2769,7 +2769,7 @@ public class DLFileEntryLocalServiceImpl
 	protected DLFileVersion updateFileVersion(
 			User user, DLFileVersion dlFileVersion, String sourceFileName,
 			String fileName, String extension, String mimeType, String title,
-			String description, String changeLog, boolean majorVersion,
+			String description, boolean majorVersion, String changeLog,
 			String extraSettings, long fileEntryTypeId, Map<String,
 			DDMFormValues> ddmFormValuesMap, String version, long size,
 			int status, Date statusDate, ServiceContext serviceContext)
@@ -2787,6 +2787,7 @@ public class DLFileEntryLocalServiceImpl
 
 		dlFileVersion.setTitle(title);
 		dlFileVersion.setDescription(description);
+		dlFileVersion.setMajorVersion(majorVersion);
 		dlFileVersion.setChangeLog(changeLog);
 		dlFileVersion.setExtraSettings(extraSettings);
 		dlFileVersion.setFileEntryTypeId(fileEntryTypeId);
@@ -2796,7 +2797,6 @@ public class DLFileEntryLocalServiceImpl
 		dlFileVersion.setStatusByUserId(user.getUserId());
 		dlFileVersion.setStatusByUserName(user.getFullName());
 		dlFileVersion.setStatusDate(statusDate);
-		dlFileVersion.setMajorVersion(majorVersion);
 
 		ExpandoBridgeUtil.setExpandoBridgeAttributes(
 			dlFileVersion.getExpandoBridge(), dlFileVersion.getExpandoBridge(),

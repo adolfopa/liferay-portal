@@ -49,10 +49,32 @@ public class PortletCategoryUtil {
 
 			return PortletCategoryKeys.CONTROL_PANEL_CONFIGURATION;
 		}
-		else if (Validator.equals(legacyPortletCategoryKey, "content")) {
+		else if (Validator.equals(
+					legacyPortletCategoryKey,
+					"site_administration.configuration")) {
+
+			return PortletCategoryKeys.SITE_ADMINISTRATION_CONFIGURATION;
+		}
+		else if (Validator.equals(legacyPortletCategoryKey, "content") ||
+				 Validator.equals(
+					 legacyPortletCategoryKey, "site_administration.content")) {
+
 			return PortletCategoryKeys.SITE_ADMINISTRATION_CONTENT;
 		}
-		else if (Validator.equals(legacyPortletCategoryKey, "my")) {
+		else if (Validator.equals(
+					legacyPortletCategoryKey, "site_administration.pages")) {
+
+			return PortletCategoryKeys.SITE_ADMINISTRATION_PAGES;
+		}
+		else if (Validator.equals(
+					legacyPortletCategoryKey, "site_administration.users")) {
+
+			return PortletCategoryKeys.SITE_ADMINISTRATION_USERS;
+		}
+		else if (Validator.equals(legacyPortletCategoryKey, "my") ||
+				 Validator.equals(
+					 legacyPortletCategoryKey, "user.my_account")) {
+
 			return PortletCategoryKeys.USER_MY_ACCOUNT;
 		}
 		else if (Validator.equals(legacyPortletCategoryKey, "sites")) {

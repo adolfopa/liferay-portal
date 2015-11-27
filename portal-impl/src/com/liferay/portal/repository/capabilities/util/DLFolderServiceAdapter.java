@@ -24,6 +24,8 @@ import com.liferay.portlet.documentlibrary.service.DLFolderLocalService;
 import com.liferay.portlet.documentlibrary.service.DLFolderLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFolderService;
 import com.liferay.portlet.documentlibrary.service.DLFolderServiceUtil;
+import com.liferay.portlet.documentlibrary.service.persistence.DLFolderPersistence;
+import com.liferay.portlet.documentlibrary.service.persistence.DLFolderUtil;
 
 import java.util.List;
 
@@ -37,24 +39,30 @@ public class DLFolderServiceAdapter {
 
 		if (documentRepository instanceof LocalRepository) {
 			return new DLFolderServiceAdapter(
-				DLFolderLocalServiceUtil.getService());
+				DLFolderLocalServiceUtil.getService(),
+				DLFolderUtil.getPersistence());
 		}
 
 		return new DLFolderServiceAdapter(
 			DLFolderLocalServiceUtil.getService(),
-			DLFolderServiceUtil.getService());
-	}
-
-	public DLFolderServiceAdapter(DLFolderLocalService dlFolderLocalService) {
-		this(dlFolderLocalService, null);
+			DLFolderServiceUtil.getService(), DLFolderUtil.getPersistence());
 	}
 
 	public DLFolderServiceAdapter(
 		DLFolderLocalService dlFolderLocalService,
-		DLFolderService dlFolderService) {
+		DLFolderPersistence dlFolderPersistence) {
+
+		this(dlFolderLocalService, null, dlFolderPersistence);
+	}
+
+	public DLFolderServiceAdapter(
+		DLFolderLocalService dlFolderLocalService,
+		DLFolderService dlFolderService,
+		DLFolderPersistence dlFolderPersistence) {
 
 		_dlFolderLocalService = dlFolderLocalService;
 		_dlFolderService = dlFolderService;
+		_dlFolderPersistence = dlFolderPersistence;
 	}
 
 	public void deleteFolder(long folderId, boolean includeTrashedEntries)
@@ -102,6 +110,7 @@ public class DLFolderServiceAdapter {
 	}
 
 	private final DLFolderLocalService _dlFolderLocalService;
+	private final DLFolderPersistence _dlFolderPersistence;
 	private final DLFolderService _dlFolderService;
 
 }

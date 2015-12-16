@@ -17,15 +17,23 @@ package com.liferay.portal.repository.capabilities.util;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.lock.Lock;
 import com.liferay.portal.kernel.repository.DocumentRepository;
 import com.liferay.portal.kernel.repository.LocalRepository;
 import com.liferay.portal.security.auth.PrincipalException;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portlet.documentlibrary.model.DLFolder;
 import com.liferay.portlet.documentlibrary.service.DLFolderLocalService;
 import com.liferay.portlet.documentlibrary.service.DLFolderLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFolderService;
 import com.liferay.portlet.documentlibrary.service.DLFolderServiceUtil;
+import com.liferay.portlet.documentlibrary.service.persistence.DLFolderPersistence;
+import com.liferay.portlet.documentlibrary.service.persistence.DLFolderUtil;
+
+import java.io.Serializable;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Iván Zaera
@@ -37,24 +45,30 @@ public class DLFolderServiceAdapter {
 
 		if (documentRepository instanceof LocalRepository) {
 			return new DLFolderServiceAdapter(
-				DLFolderLocalServiceUtil.getService());
+				DLFolderLocalServiceUtil.getService(),
+				DLFolderUtil.getPersistence());
 		}
 
 		return new DLFolderServiceAdapter(
 			DLFolderLocalServiceUtil.getService(),
-			DLFolderServiceUtil.getService());
-	}
-
-	public DLFolderServiceAdapter(DLFolderLocalService dlFolderLocalService) {
-		this(dlFolderLocalService, null);
+			DLFolderServiceUtil.getService(), DLFolderUtil.getPersistence());
 	}
 
 	public DLFolderServiceAdapter(
 		DLFolderLocalService dlFolderLocalService,
-		DLFolderService dlFolderService) {
+		DLFolderPersistence dlFolderPersistence) {
+
+		this(dlFolderLocalService, null, dlFolderPersistence);
+	}
+
+	public DLFolderServiceAdapter(
+		DLFolderLocalService dlFolderLocalService,
+		DLFolderService dlFolderService,
+		DLFolderPersistence dlFolderPersistence) {
 
 		_dlFolderLocalService = dlFolderLocalService;
 		_dlFolderService = dlFolderService;
+		_dlFolderPersistence = dlFolderPersistence;
 	}
 
 	public void deleteFolder(long folderId, boolean includeTrashedEntries)
@@ -76,6 +90,15 @@ public class DLFolderServiceAdapter {
 		}
 
 		return _dlFolderLocalService.getActionableDynamicQuery();
+	}
+
+	public List<DLFolder> getFolders(
+			long groupId, long parentFolderId, boolean includeMountFolders,
+			boolean hidden)
+		throws PortalException {
+
+		return _dlFolderLocalService.getFolders(
+			groupId, parentFolderId, includeMountFolders, hidden);
 	}
 
 	public List<Object> getFoldersAndFileEntriesAndFileShortcuts(
@@ -101,7 +124,51 @@ public class DLFolderServiceAdapter {
 		return foldersAndFileEntriesAndFileShortcuts;
 	}
 
+	public boolean hasFolderLock(long userId, long folderId) {
+		return _dlFolderLocalService.hasFolderLock(userId, folderId);
+	}
+
+	public Lock lockFolder(long userId, long folderId) throws PortalException {
+		if (_dlFolderService != null) {
+			return _dlFolderService.lockFolder(folderId);
+		}
+
+		return _dlFolderLocalService.lockFolder(userId, folderId);
+	}
+
+	public void unlockFolder(long folderId, String lockUuid)
+		throws PortalException {
+
+		if (_dlFolderService != null) {
+			_dlFolderService.unlockFolder(folderId, lockUuid);
+		}
+		else {
+			_dlFolderLocalService.unlockFolder(folderId, lockUuid);
+		}
+	}
+
+	public DLFolder update(DLFolder dlFolder) {
+		return _dlFolderPersistence.update(dlFolder);
+	}
+
+	public void updateAssets(long folderId, boolean visible)
+		throws PortalException {
+
+		_dlFolderLocalService.updateAssets(folderId, visible);
+	}
+
+	public DLFolder updateStatus(
+			long userId, long folderId, int status,
+			Map<String, Serializable> workflowStatus,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		return _dlFolderLocalService.updateStatus(
+			userId, folderId, status, workflowStatus, serviceContext);
+	}
+
 	private final DLFolderLocalService _dlFolderLocalService;
+	private final DLFolderPersistence _dlFolderPersistence;
 	private final DLFolderService _dlFolderService;
 
 }

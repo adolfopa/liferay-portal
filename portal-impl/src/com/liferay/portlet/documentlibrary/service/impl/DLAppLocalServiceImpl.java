@@ -44,6 +44,7 @@ import com.liferay.portal.model.UserConstants;
 import com.liferay.portal.repository.liferayrepository.model.LiferayFolder;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.documentlibrary.NoSuchFileEntryException;
+import com.liferay.portlet.documentlibrary.NoSuchFileException;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryType;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryTypeConstants;
 import com.liferay.portlet.documentlibrary.model.DLFileRank;
@@ -1380,9 +1381,14 @@ public class DLAppLocalServiceImpl extends DLAppLocalServiceBaseImpl {
 					FileEntry fileEntry =
 						(FileEntry)folderAndFileEntryAndFileShortcut;
 
-					moveFileEntry(
-						userId, fileEntry.getFileEntryId(),
-						destinationFolder.getFolderId(), serviceContext);
+					try {
+						moveFileEntry(
+							userId, fileEntry.getFileEntryId(),
+							destinationFolder.getFolderId(), serviceContext);
+					}
+					catch (NoSuchFileException nsfe) {
+						_log.error(nsfe, nsfe);
+					}
 				}
 				else if (folderAndFileEntryAndFileShortcut instanceof Folder) {
 					Folder folder = (Folder)folderAndFileEntryAndFileShortcut;
@@ -1421,7 +1427,13 @@ public class DLAppLocalServiceImpl extends DLAppLocalServiceBaseImpl {
 		}
 
 		try {
-			sourceLocalRepository.deleteFolder(folderId);
+			int fileEntriesAndFileShortcutsCount =
+				sourceLocalRepository.getFileEntriesAndFileShortcutsCount(
+					folderId, WorkflowConstants.STATUS_ANY);
+
+			if (fileEntriesAndFileShortcutsCount == 0) {
+				sourceLocalRepository.deleteFolder(folderId);
+			}
 		}
 		catch (PortalException pe) {
 			destinationLocalRepository.deleteFolder(

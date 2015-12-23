@@ -53,6 +53,7 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.documentlibrary.NoSuchFileEntryException;
+import com.liferay.portlet.documentlibrary.NoSuchFileException;
 import com.liferay.portlet.documentlibrary.model.DLFolderConstants;
 import com.liferay.portlet.documentlibrary.service.base.DLAppServiceBaseImpl;
 import com.liferay.portlet.documentlibrary.service.permission.DLFolderPermission;
@@ -3031,9 +3032,14 @@ public class DLAppServiceImpl extends DLAppServiceBaseImpl {
 				if (repositoryEntry instanceof FileEntry) {
 					FileEntry fileEntry = (FileEntry)repositoryEntry;
 
-					moveFileEntry(
-						fileEntry.getFileEntryId(), newFolder.getFolderId(),
-						serviceContext);
+					try {
+						moveFileEntry(
+							fileEntry.getFileEntryId(), newFolder.getFolderId(),
+							serviceContext);
+					}
+					catch (NoSuchFileException nsfe) {
+						_log.error(nsfe, nsfe);
+					}
 				}
 				else if (repositoryEntry instanceof Folder) {
 					Folder currentFolder = (Folder)repositoryEntry;
@@ -3068,7 +3074,14 @@ public class DLAppServiceImpl extends DLAppServiceBaseImpl {
 		}
 
 		try {
-			fromRepository.deleteFolder(folderId);
+			int foldersAndFileEntriesAndFileShortcutsCount =
+				getFoldersAndFileEntriesAndFileShortcutsCount(
+					fromRepository.getRepositoryId(), folderId,
+					WorkflowConstants.STATUS_ANY, true);
+
+			if (foldersAndFileEntriesAndFileShortcutsCount == 0) {
+				fromRepository.deleteFolder(folderId);
+			}
 		}
 		catch (PortalException pe) {
 			toRepository.deleteFolder(newFolder.getFolderId());

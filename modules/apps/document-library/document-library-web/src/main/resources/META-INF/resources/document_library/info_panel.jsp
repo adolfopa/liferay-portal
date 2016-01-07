@@ -71,7 +71,7 @@ if (ListUtil.isEmpty(folders) && ListUtil.isEmpty(fileEntries)) {
 		<liferay-ui:tabs names="details" refresh="<%= false %>" type="dropdown">
 			<liferay-ui:section>
 				<div class="sidebar-body">
-					<h5><liferay-ui:message key="num-of-items" /></h5>
+					<h5><strong><liferay-ui:message key="num-of-items" /></strong></h5>
 
 					<%
 					long folderId = DLFolderConstants.DEFAULT_PARENT_FOLDER_ID;
@@ -86,7 +86,7 @@ if (ListUtil.isEmpty(folders) && ListUtil.isEmpty(fileEntries)) {
 					</p>
 
 					<c:if test="<%= folder != null %>">
-						<h5><liferay-ui:message key="created" /></h5>
+						<h5><strong><liferay-ui:message key="created" /></strong></h5>
 
 						<p>
 							<%= HtmlUtil.escape(folder.getUserName()) %>
@@ -97,6 +97,7 @@ if (ListUtil.isEmpty(folders) && ListUtil.isEmpty(fileEntries)) {
 		</liferay-ui:tabs>
 	</c:when>
 	<c:when test="<%= ListUtil.isEmpty(folders) && ListUtil.isNotEmpty(fileEntries) && (fileEntries.size() == 1) %>">
+
 		<%
 		FileEntry fileEntry = fileEntries.get(0);
 
@@ -117,7 +118,7 @@ if (ListUtil.isEmpty(folders) && ListUtil.isEmpty(fileEntries)) {
 			</div>
 		</div>
 
-		<liferay-ui:tabs names="details,comments" refresh="<%= false %>" type="dropdown">
+		<liferay-ui:tabs names="details,versions" refresh="<%= false %>" type="dropdown">
 			<liferay-ui:section>
 				<div class="sidebar-body">
 
@@ -132,35 +133,90 @@ if (ListUtil.isEmpty(folders) && ListUtil.isEmpty(fileEntries)) {
 					}
 					%>
 
-					<img alt="<liferay-ui:message escapeAttribute="<%= true %>" key="crop-image" />" src="<%= DLUtil.getThumbnailSrc(fileEntry, fileVersion, themeDisplay) %>" />
+					<img alt="<liferay-ui:message escapeAttribute="<%= true %>" class="crop-image img-rounded" />" src="<%= DLUtil.getThumbnailSrc(fileEntry, fileVersion, themeDisplay) %>" />
 
-					<h5><liferay-ui:message key="created" /></h5>
+					<aui:button href="<%= DLUtil.getDownloadURL(fileEntry, fileVersion, themeDisplay, StringPool.BLANK) %>" value="download" />
+
+					<aui:input name="url" type="resource" value="<%= DLUtil.getPreviewURL(fileEntry, fileEntry.getFileVersion(), themeDisplay, StringPool.BLANK, false, true) %>" />
+
+					<c:if test="<%= portletDisplay.isWebDAVEnabled() && fileEntry.isSupportsSocial() %>">
+
+							<%
+							String webDavHelpMessage = null;
+
+							if (BrowserSnifferUtil.isWindows(request)) {
+								webDavHelpMessage = LanguageUtil.format(request, "webdav-windows-help", new Object[] {"http://www.microsoft.com/downloads/details.aspx?FamilyId=17C36612-632E-4C04-9382-987622ED1D64", "http://www.liferay.com/web/guest/community/wiki/-/wiki/Main/WebDAV"}, false);
+							}
+							else {
+								webDavHelpMessage = LanguageUtil.format(request, "webdav-help", "http://www.liferay.com/web/guest/community/wiki/-/wiki/Main/WebDAV", false);
+							}
+							%>
+
+						<aui:input helpMessage="<%= webDavHelpMessage %>" name="webDavURL"  type="resource" value="<%= DLUtil.getWebDavURL(themeDisplay, fileEntry.getFolder(), fileEntry) %>" />
+					</c:if>
+
+					<h5><strong><liferay-ui:message key="created" /></strong></h5>
 
 					<p>
 						<%= HtmlUtil.escape(fileEntry.getUserName()) %>
 					</p>
 
 					<c:if test="<%= Validator.isNotNull(fileEntry.getDescription()) %>">
-						<h5><liferay-ui:message key="description" /></h5>
+						<h5><strong><liferay-ui:message key="description" /></strong></h5>
 
 						<p>
 							<%= fileEntry.getDescription() %>
 						</p>
 					</c:if>
 
-					<h5><liferay-ui:message key="size" /></h5>
+					<h5><strong><liferay-ui:message key="size" /></strong></h5>
 
 					<p>
 						<%= HtmlUtil.escape(TextFormatter.formatStorageSize(fileEntry.getSize(), locale)) %>
 					</p>
 
-					<h5><liferay-ui:message key="version" /></h5>
+					<h5><strong><liferay-ui:message key="version" /></strong></h5>
 
 					<p>
 						<%= HtmlUtil.escape(fileVersion.getVersion()) %>
 					</p>
 				</div>
 			</liferay-ui:section>
+
+			<liferay-ui:section>
+				<div class="sidebar-body">
+
+					<%
+					int status = WorkflowConstants.STATUS_APPROVED;
+
+					if ((user.getUserId() == fileEntry.getUserId()) || permissionChecker.isContentReviewer(user.getCompanyId(), scopeGroupId)) {
+						status = WorkflowConstants.STATUS_ANY;
+					}
+
+					List<FileVersion> fileVersions = fileEntry.getFileVersions(status);
+
+					for (FileVersion fileVersion : fileVersions) {
+						request.setAttribute("info_panel.jsp-fileVersion", fileVersion);
+					%>
+
+						<div>
+							<ul class="list-inline list-unstyled sidebar-header-actions">
+								<li>
+									<liferay-util:include page="/document_library/file_entry_history_action.jsp" servletContext="<%= application %>" />
+								</li>
+							</ul>
+
+							<h4><liferay-ui:message arguments="<%= fileVersion.getVersion() %>" key="version-x" /></h4>
+						</div>
+
+					<%
+					}
+					%>
+
+				</div>
+			</liferay-ui:section>
+
+<%--
 			<liferay-ui:section>
 				<div class="sidebar-body">
 					<liferay-ui:discussion
@@ -173,6 +229,7 @@ if (ListUtil.isEmpty(folders) && ListUtil.isEmpty(fileEntries)) {
 					/>
 				</div>
 			</liferay-ui:section>
+--%>
 		</liferay-ui:tabs>
 	</c:when>
 	<c:otherwise>
@@ -183,13 +240,9 @@ if (ListUtil.isEmpty(folders) && ListUtil.isEmpty(fileEntries)) {
 		<liferay-ui:tabs names="details" refresh="<%= false %>" type="dropdown">
 			<liferay-ui:section>
 				<div class="sidebar-body">
-					<h5><liferay-ui:message arguments="<%= folders.size() + fileEntries.size() %>" key="x-items-selected" /></h5>
+					<h5><strong><liferay-ui:message arguments="<%= folders.size() + fileEntries.size() %>" key="x-items-selected" /></strong></h5>
 				</div>
 			</liferay-ui:section>
 		</liferay-ui:tabs>
 	</c:otherwise>
 </c:choose>
-
-
-
-

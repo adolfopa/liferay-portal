@@ -350,9 +350,7 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 	protected void checkInefficientStringMethods(
 		String line, String fileName, String absolutePath, int lineCount) {
 
-		if (isExcludedPath(getRunOutsidePortalExcludes(), absolutePath) ||
-			fileName.endsWith("GetterUtil.java")) {
-
+		if (isExcludedPath(getRunOutsidePortalExcludes(), absolutePath)) {
 			return;
 		}
 
@@ -381,7 +379,8 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 	}
 
 	protected void checkLanguageKeys(
-			String fileName, String content, Pattern pattern)
+			String fileName, String absolutePath, String content,
+			Pattern pattern)
 		throws Exception {
 
 		String fileExtension = FilenameUtils.getExtension(fileName);
@@ -434,7 +433,7 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 				}
 
 				Properties moduleLangLanguageProperties =
-					getModuleLangLanguageProperties(fileName);
+					getModuleLangLanguageProperties(absolutePath);
 
 				if ((moduleLangLanguageProperties != null) &&
 					moduleLangLanguageProperties.containsKey(languageKey)) {
@@ -1461,17 +1460,17 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 		return moduleLocation.substring(0, x + 1) + baseModuleName + "-lang";
 	}
 
-	protected Properties getModuleLangLanguageProperties(String fileName)
+	protected Properties getModuleLangLanguageProperties(String absolutePath)
 		throws Exception {
 
-		Properties properties = _moduleLangLanguageProperties.get(fileName);
+		Properties properties = _moduleLangLanguageProperties.get(absolutePath);
 
 		if (properties != null) {
 			return properties;
 		}
 
 		String buildGradleContent = null;
-		String buildGradleFileLocation = fileName;
+		String buildGradleFileLocation = absolutePath;
 
 		while (true) {
 			int pos = buildGradleFileLocation.lastIndexOf(StringPool.SLASH);
@@ -1521,7 +1520,7 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 
 		properties.load(inputStream);
 
-		_moduleLangLanguageProperties.put(fileName, properties);
+		_moduleLangLanguageProperties.put(absolutePath, properties);
 
 		return properties;
 	}

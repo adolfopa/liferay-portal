@@ -17,6 +17,7 @@ package com.liferay.wiki.web.portlet.action;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.wiki.constants.WikiPortletKeys;
 import com.liferay.wiki.constants.WikiWebKeys;
 
@@ -44,8 +45,16 @@ public class InfoPanelMVCResourceCommand extends BaseMVCResourceCommand {
 		throws Exception {
 
 		if (ParamUtil.getLong(resourceRequest, "nodeId") != 0) {
-			resourceRequest.setAttribute(
-				WikiWebKeys.WIKI_NODE, ActionUtil.getNode(resourceRequest));
+			if (Validator.isNotNull(
+					ParamUtil.getString(resourceRequest, "title"))) {
+
+				resourceRequest.setAttribute(
+					WikiWebKeys.WIKI_PAGE, ActionUtil.getPage(resourceRequest));
+			}
+			else {
+				resourceRequest.setAttribute(
+					WikiWebKeys.WIKI_NODE, ActionUtil.getNode(resourceRequest));
+			}
 		}
 
 		resourceRequest.setAttribute(

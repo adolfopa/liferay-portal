@@ -57,7 +57,7 @@ public class DefaultWikiInfoPanelDisplayContext
 		List<WikiPage> pages = _wikiInfoPanelRequestHelper.getPages();
 
 		if (pages.isEmpty()) {
-			return null;
+			return _wikiInfoPanelRequestHelper.getPage();
 		}
 
 		return pages.get(0);
@@ -144,6 +144,12 @@ public class DefaultWikiInfoPanelDisplayContext
 			return true;
 		}
 		else {
+			WikiPage page = _wikiInfoPanelRequestHelper.getPage();
+
+			if (page != null) {
+				return true;
+			}
+
 			return false;
 		}
 	}

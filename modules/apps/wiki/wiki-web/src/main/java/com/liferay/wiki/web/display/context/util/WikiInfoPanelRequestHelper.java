@@ -66,6 +66,18 @@ public class WikiInfoPanelRequestHelper extends BaseRequestHelper {
 		return _nodes;
 	}
 
+	public WikiPage getPage() {
+		if (_page != null) {
+			return _page;
+		}
+
+		HttpServletRequest request = getRequest();
+
+		_page = (WikiPage)request.getAttribute(WikiWebKeys.WIKI_PAGE);
+
+		return _page;
+	}
+
 	public List<WikiPage> getPages() {
 		if (_pages != null) {
 			return _pages;
@@ -84,6 +96,7 @@ public class WikiInfoPanelRequestHelper extends BaseRequestHelper {
 
 	private WikiNode _node;
 	private List<WikiNode> _nodes;
+	private WikiPage _page;
 	private List<WikiPage> _pages;
 
 }

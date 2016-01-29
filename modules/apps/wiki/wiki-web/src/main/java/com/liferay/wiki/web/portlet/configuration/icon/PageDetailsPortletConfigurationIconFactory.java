@@ -18,8 +18,6 @@ import com.liferay.portal.kernel.portlet.configuration.icon.BasePortletConfigura
 import com.liferay.portal.kernel.portlet.configuration.icon.PortletConfigurationIcon;
 import com.liferay.portal.kernel.portlet.configuration.icon.PortletConfigurationIconFactory;
 import com.liferay.wiki.constants.WikiPortletKeys;
-import com.liferay.wiki.model.WikiPage;
-import com.liferay.wiki.web.portlet.action.ActionUtil;
 
 import javax.portlet.PortletRequest;
 
@@ -35,15 +33,13 @@ import org.osgi.service.component.annotations.Component;
 	},
 	service = PortletConfigurationIconFactory.class
 )
-public class EditPagePortletConfigurationIconFactory
+public class PageDetailsPortletConfigurationIconFactory
 	extends BasePortletConfigurationIconFactory {
 
 	@Override
 	public PortletConfigurationIcon create(PortletRequest portletRequest) {
 		try {
-			WikiPage page = ActionUtil.getPage(portletRequest);
-
-			return new EditPagePortletConfigurationIcon(portletRequest, page);
+			return new PageDetailsPortletConfigurationIcon(portletRequest);
 		}
 		catch (Exception e) {
 		}
@@ -53,7 +49,7 @@ public class EditPagePortletConfigurationIconFactory
 
 	@Override
 	public double getWeight() {
-		return 106;
+		return 105;
 	}
 
 }

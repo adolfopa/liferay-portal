@@ -17,7 +17,6 @@ package com.liferay.wiki.web.portlet.action;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.wiki.constants.WikiPortletKeys;
 import com.liferay.wiki.constants.WikiWebKeys;
 
@@ -33,11 +32,11 @@ import org.osgi.service.component.annotations.Component;
 	immediate = true,
 	property = {
 		"javax.portlet.name=" + WikiPortletKeys.WIKI_ADMIN,
-		"mvc.command.name=/wiki/info_panel"
+		"mvc.command.name=/wiki/node_info_panel"
 	},
 	service = MVCResourceCommand.class
 )
-public class InfoPanelMVCResourceCommand extends BaseMVCResourceCommand {
+public class NodeInfoPanelMVCResourceCommand extends BaseMVCResourceCommand {
 
 	@Override
 	public void doServeResource(
@@ -45,25 +44,16 @@ public class InfoPanelMVCResourceCommand extends BaseMVCResourceCommand {
 		throws Exception {
 
 		if (ParamUtil.getLong(resourceRequest, "nodeId") != 0) {
-			if (Validator.isNotNull(
-					ParamUtil.getString(resourceRequest, "title"))) {
-
-				resourceRequest.setAttribute(
-					WikiWebKeys.WIKI_PAGE, ActionUtil.getPage(resourceRequest));
-			}
-			else {
-				resourceRequest.setAttribute(
-					WikiWebKeys.WIKI_NODE, ActionUtil.getNode(resourceRequest));
-			}
+			resourceRequest.setAttribute(
+				WikiWebKeys.WIKI_NODE, ActionUtil.getNode(resourceRequest));
 		}
 
 		resourceRequest.setAttribute(
 			WikiWebKeys.WIKI_NODES, ActionUtil.getNodes(resourceRequest));
-		resourceRequest.setAttribute(
-			WikiWebKeys.WIKI_PAGES, ActionUtil.getPages(resourceRequest));
 
 		include(
-			resourceRequest, resourceResponse, "/wiki_admin/info_panel.jsp");
+			resourceRequest, resourceResponse,
+			"/wiki_admin/node_info_panel.jsp");
 	}
 
 }

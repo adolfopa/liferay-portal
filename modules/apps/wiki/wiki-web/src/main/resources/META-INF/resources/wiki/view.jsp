@@ -162,7 +162,7 @@ if (portletTitleBasedNavigation) {
 				<liferay-util:include page="/wiki/top_links.jsp" servletContext="<%= application %>" />
 			</c:when>
 			<c:otherwise>
-				<portlet:resourceURL id="/wiki/info_panel" var="sidebarPanelURL">
+				<portlet:resourceURL id="/wiki/page_info_panel" var="sidebarPanelURL">
 					<portlet:param name="nodeId" value="<%= String.valueOf(node.getNodeId()) %>" />
 					<portlet:param name="title" value="<%= title %>" />
 				</portlet:resourceURL>
@@ -171,7 +171,7 @@ if (portletTitleBasedNavigation) {
 					resourceURL="<%= sidebarPanelURL %>"
 					searchContainerId="wikiPages"
 				>
-					<liferay-util:include page="/wiki_admin/info_panel.jsp" servletContext="<%= application %>" />
+					<liferay-util:include page="/wiki_admin/page_info_panel.jsp" servletContext="<%= application %>" />
 				</liferay-frontend:sidebar-panel>
 			</c:otherwise>
 		</c:choose>

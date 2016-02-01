@@ -111,7 +111,7 @@ else {
 </liferay-frontend:management-bar>
 
 <div class="closed container-fluid-1280 sidenav-container sidenav-right" id="<portlet:namespace />infoPanelId">
-	<portlet:resourceURL id="/wiki/info_panel" var="sidebarPanelURL">
+	<portlet:resourceURL id="/wiki/page_info_panel" var="sidebarPanelURL">
 		<portlet:param name="nodeId" value="<%= String.valueOf(node.getNodeId()) %>" />
 	</portlet:resourceURL>
 
@@ -124,7 +124,7 @@ else {
 		request.setAttribute(WikiWebKeys.WIKI_NODE, node);
 		%>
 
-		<liferay-util:include page="/wiki_admin/info_panel.jsp" servletContext="<%= application %>" />
+		<liferay-util:include page="/wiki_admin/page_info_panel.jsp" servletContext="<%= application %>" />
 	</liferay-frontend:sidebar-panel>
 
 	<%
@@ -221,7 +221,6 @@ else {
 						/>
 
 						<liferay-ui:search-container-column-status
-							href="<%= rowURL %>"
 							name="status"
 							status="<%= curPage.getStatus() %>"
 						/>
@@ -235,19 +234,16 @@ else {
 						%>
 
 						<liferay-ui:search-container-column-text
-							href="<%= rowURL %>"
 							name="revision"
 							value="<%= revision %>"
 						/>
 
 						<liferay-ui:search-container-column-text
-							href="<%= rowURL %>"
 							name="user"
 							value="<%= HtmlUtil.escape(PortalUtil.getUserName(curPage)) %>"
 						/>
 
 						<liferay-ui:search-container-column-date
-							href="<%= rowURL %>"
 							name="modified-date"
 							value="<%= curPage.getModifiedDate() %>"
 						/>

@@ -17,44 +17,16 @@
 <%@ include file="/wiki/init.jsp" %>
 
 <%
-WikiInfoPanelDisplayContext wikiInfoPanelDisplayContext = wikiDisplayContextProvider.getWikiInfoPanelDisplayContext(request, response);
+WikiPageInfoPanelDisplayContext wikiPageInfoPanelDisplayContext = wikiDisplayContextProvider.getWikiPageInfoPanelDisplayContext(request, response);
 %>
 
 <div class="sidebar-header">
 	<c:choose>
-		<c:when test="<%= wikiInfoPanelDisplayContext.isSingleNodeSelection() %>">
+		<c:when test="<%= wikiPageInfoPanelDisplayContext.isSinglePageSelection() %>">
 			<ul class="list-inline list-unstyled sidebar-header-actions">
 
 				<%
-				request.setAttribute("info_panel.jsp-wikiNode", wikiInfoPanelDisplayContext.getFirstNode());
-				%>
-
-				<li>
-					<liferay-util:include page="/wiki/subscribe.jsp" servletContext="<%= application %>" />
-				</li>
-
-				<li>
-					<liferay-util:include page="/wiki/node_action.jsp" servletContext="<%= application %>" />
-				</li>
-			</ul>
-
-			<%
-			WikiNode node = wikiInfoPanelDisplayContext.getFirstNode();
-			%>
-
-			<h4>
-				<%= HtmlUtil.escape(node.getName()) %>
-			</h4>
-
-			<p>
-				<liferay-ui:message key="wiki" />
-			</p>
-		</c:when>
-		<c:when test="<%= wikiInfoPanelDisplayContext.isSinglePageSelection() %>">
-			<ul class="list-inline list-unstyled sidebar-header-actions">
-
-				<%
-				request.setAttribute("info_panel.jsp-wikiPage", wikiInfoPanelDisplayContext.getFirstPage());
+				request.setAttribute("page_info_panel.jsp-wikiPage", wikiPageInfoPanelDisplayContext.getFirstPage());
 				%>
 
 				<li>
@@ -67,7 +39,7 @@ WikiInfoPanelDisplayContext wikiInfoPanelDisplayContext = wikiDisplayContextProv
 			</ul>
 
 			<%
-			WikiPage wikiPage = wikiInfoPanelDisplayContext.getFirstPage();
+			WikiPage wikiPage = wikiPageInfoPanelDisplayContext.getFirstPage();
 			%>
 
 			<h4>
@@ -78,11 +50,11 @@ WikiInfoPanelDisplayContext wikiInfoPanelDisplayContext = wikiDisplayContextProv
 				<liferay-ui:message key="page" />
 			</p>
 		</c:when>
-		<c:when test="<%= wikiInfoPanelDisplayContext.isMultipleItemSelection() %>">
-			<h4><liferay-ui:message arguments="<%= wikiInfoPanelDisplayContext.getSelectedItemsCount() %>" key="x-items-are-selected" /></h4>
+		<c:when test="<%= wikiPageInfoPanelDisplayContext.isMultiplePageSelection() %>">
+			<h4><liferay-ui:message arguments="<%= wikiPageInfoPanelDisplayContext.getSelectedPagesCount() %>" key="x-items-are-selected" /></h4>
 		</c:when>
 		<c:otherwise>
-			<h4><liferay-ui:message key="<%= wikiInfoPanelDisplayContext.getItemNameLabel() %>" /></h4>
+			<h4><liferay-ui:message key="pages" /></h4>
 		</c:otherwise>
 	</c:choose>
 </div>
@@ -90,7 +62,7 @@ WikiInfoPanelDisplayContext wikiInfoPanelDisplayContext = wikiDisplayContextProv
 <%
 String sections = "details";
 
-if (wikiInfoPanelDisplayContext.isSinglePageSelection()) {
+if (wikiPageInfoPanelDisplayContext.isSinglePageSelection()) {
 	sections += ",versions,activity";
 }
 %>
@@ -99,53 +71,10 @@ if (wikiInfoPanelDisplayContext.isSinglePageSelection()) {
 	<liferay-ui:section>
 		<div class="sidebar-body">
 			<c:choose>
-				<c:when test="<%= wikiInfoPanelDisplayContext.isSingleNodeSelection() %>">
+				<c:when test="<%= wikiPageInfoPanelDisplayContext.isSinglePageSelection() %>">
 
 					<%
-					WikiNode node = wikiInfoPanelDisplayContext.getFirstNode();
-					%>
-
-					<c:if test="<%= Validator.isNotNull(node.getDescription()) %>">
-						<h5><strong><liferay-ui:message key="description" /></strong></h5>
-
-						<p>
-							<%= HtmlUtil.escape(node.getDescription()) %>
-						</p>
-					</c:if>
-
-					<h5><strong><liferay-ui:message key="total-pages" /></strong></h5>
-
-					<p>
-						<%= WikiPageServiceUtil.getPagesCount(scopeGroupId, node.getNodeId(), true) %>
-					</p>
-
-					<h5><strong><liferay-ui:message key="orphan-pages" /></strong></h5>
-
-					<p>
-
-						<%
-						List<WikiPage> orphanPages = WikiPageServiceUtil.getOrphans(scopeGroupId, node.getNodeId());
-						%>
-
-						<%= orphanPages.size() %>
-					</p>
-
-					<h5><strong><liferay-ui:message key="last-modified" /></strong></h5>
-
-					<p>
-						<%= dateFormatDateTime.format(node.getModifiedDate()) %>
-					</p>
-
-					<h5><strong><liferay-ui:message key="create-date" /></strong></h5>
-
-					<p>
-						<%= dateFormatDateTime.format(node.getModifiedDate()) %>
-					</p>
-				</c:when>
-				<c:when test="<%= wikiInfoPanelDisplayContext.isSinglePageSelection() %>">
-
-					<%
-					WikiPage wikiPage = wikiInfoPanelDisplayContext.getFirstPage();
+					WikiPage wikiPage = wikiPageInfoPanelDisplayContext.getFirstPage();
 					%>
 
 					<c:if test="<%= Validator.isNotNull(wikiPage.getSummary()) %>">
@@ -193,7 +122,7 @@ if (wikiInfoPanelDisplayContext.isSinglePageSelection()) {
 					<h5><strong><liferay-ui:message key="rss" /></strong></h5>
 
 					<p>
-						<aui:a href="<%= wikiInfoPanelDisplayContext.getPageRSSURL(wikiPage) %>" target="_blank">
+						<aui:a href="<%= wikiPageInfoPanelDisplayContext.getPageRSSURL(wikiPage) %>" target="_blank">
 							<liferay-ui:message key="feed" />
 						</aui:a>
 					</p>
@@ -242,26 +171,26 @@ if (wikiInfoPanelDisplayContext.isSinglePageSelection()) {
 						</div>
 					</c:if>
 				</c:when>
-				<c:when test="<%= wikiInfoPanelDisplayContext.isMultipleItemSelection() %>">
-					<h5><liferay-ui:message arguments="<%= wikiInfoPanelDisplayContext.getSelectedItemsCount() %>" key="x-items-are-selected" /></h5>
+				<c:when test="<%= wikiPageInfoPanelDisplayContext.isMultiplePageSelection() %>">
+					<h5><liferay-ui:message arguments="<%= wikiPageInfoPanelDisplayContext.getSelectedPagesCount() %>" key="x-items-are-selected" /></h5>
 				</c:when>
 				<c:otherwise>
 					<h5><liferay-ui:message key="num-of-items" /></h5>
 
 					<p>
-						<%= wikiInfoPanelDisplayContext.getItemsCount() %>
+						<%= wikiPageInfoPanelDisplayContext.getPagesCount() %>
 					</p>
 				</c:otherwise>
 			</c:choose>
 		</div>
 	</liferay-ui:section>
 
-	<c:if test="<%= wikiInfoPanelDisplayContext.isSinglePageSelection() %>">
+	<c:if test="<%= wikiPageInfoPanelDisplayContext.isSinglePageSelection() %>">
 		<liferay-ui:section>
 			<div class="sidebar-body">
 
 				<%
-				WikiPage wikiPage = wikiInfoPanelDisplayContext.getFirstPage();
+				WikiPage wikiPage = wikiPageInfoPanelDisplayContext.getFirstPage();
 
 				List<WikiPage> pages = WikiPageLocalServiceUtil.getPages(wikiPage.getNodeId(), wikiPage.getTitle(), QueryUtil.ALL_POS, QueryUtil.ALL_POS, new PageVersionComparator());
 
@@ -273,7 +202,7 @@ if (wikiInfoPanelDisplayContext.isSinglePageSelection()) {
 							<li>
 
 								<%
-								request.setAttribute("info_panel.jsp-wikiPage", curPage);
+								request.setAttribute("page_info_panel.jsp-wikiPage", curPage);
 								%>
 
 								<liferay-util:include page="/wiki/page_history_action.jsp" servletContext="<%= application %>" />
@@ -300,7 +229,7 @@ if (wikiInfoPanelDisplayContext.isSinglePageSelection()) {
 				<%
 				WikiSocialActivityHelper wikiSocialActivityHelper = new WikiSocialActivityHelper(wikiRequestHelper);
 
-				WikiPage wikiPage = wikiInfoPanelDisplayContext.getFirstPage();
+				WikiPage wikiPage = wikiPageInfoPanelDisplayContext.getFirstPage();
 
 				List<SocialActivity> socialActivities = SocialActivityLocalServiceUtil.getActivities(0, WikiPage.class.getName(), wikiPage.getResourcePrimKey(), QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 
@@ -316,7 +245,7 @@ if (wikiInfoPanelDisplayContext.isSinglePageSelection()) {
 								<li>
 
 									<%
-									request.setAttribute("info_panel.jsp-socialActivity", socialActivity);
+									request.setAttribute("page_info_panel.jsp-socialActivity", socialActivity);
 									request.setAttribute(WikiWebKeys.WIKI_PAGE, wikiPage);
 									%>
 

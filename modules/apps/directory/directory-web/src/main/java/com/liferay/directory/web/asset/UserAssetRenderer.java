@@ -20,7 +20,11 @@ import com.liferay.portal.kernel.portlet.PortletProvider;
 import com.liferay.portal.kernel.portlet.PortletProviderUtil;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.util.AggregateResourceBundleLoader;
+import com.liferay.portal.kernel.util.ClassResourceBundleLoader;
+import com.liferay.portal.kernel.util.ResourceBundleLoader;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.language.LanguageResources;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.permission.UserPermissionUtil;
 import com.liferay.portal.theme.ThemeDisplay;
@@ -184,6 +188,15 @@ public class UserAssetRenderer extends BaseJSPAssetRenderer<User> {
 	@Override
 	public boolean isPrintable() {
 		return false;
+	}
+
+	@Override
+	protected ResourceBundleLoader getResourceBundleLoader() {
+		return new AggregateResourceBundleLoader(
+			new ClassResourceBundleLoader(
+				"content.Language",
+				UserAssetRenderer.class.getClassLoader()),
+			LanguageResources.RESOURCE_BUNDLE_LOADER);
 	}
 
 	private final User _user;

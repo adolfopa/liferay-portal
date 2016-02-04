@@ -27,8 +27,12 @@ import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.trash.TrashRenderer;
+import com.liferay.portal.kernel.util.AggregateResourceBundleLoader;
+import com.liferay.portal.kernel.util.ClassResourceBundleLoader;
 import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.ResourceBundleLoader;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.language.LanguageResources;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.asset.model.AssetRendererFactory;
 import com.liferay.portlet.asset.model.BaseJSPAssetRenderer;
@@ -252,6 +256,15 @@ public class CalendarBookingAssetRenderer
 
 		return false;
 	};
+
+	@Override
+	protected ResourceBundleLoader getResourceBundleLoader() {
+		return new AggregateResourceBundleLoader(
+			new ClassResourceBundleLoader(
+				"content.Language",
+				CalendarBookingAssetRenderer.class.getClassLoader()),
+			LanguageResources.RESOURCE_BUNDLE_LOADER);
+	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		CalendarBookingAssetRenderer.class);

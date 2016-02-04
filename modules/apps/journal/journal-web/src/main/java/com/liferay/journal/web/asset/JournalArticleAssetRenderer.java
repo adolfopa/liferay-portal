@@ -33,14 +33,18 @@ import com.liferay.portal.kernel.portlet.PortletRequestModel;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.trash.TrashRenderer;
+import com.liferay.portal.kernel.util.AggregateResourceBundleLoader;
+import com.liferay.portal.kernel.util.ClassResourceBundleLoader;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.ResourceBundleLoader;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.language.LanguageResources;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.service.GroupLocalServiceUtil;
@@ -511,6 +515,15 @@ public class JournalArticleAssetRenderer
 			JavaConstants.JAVAX_PORTLET_RESPONSE);
 
 		return new PortletRequestModel(portletRequest, portletResponse);
+	}
+
+	@Override
+	protected ResourceBundleLoader getResourceBundleLoader() {
+		return new AggregateResourceBundleLoader(
+			new ClassResourceBundleLoader(
+				"content.Language",
+				JournalArticleAssetRenderer.class.getClassLoader()),
+			LanguageResources.RESOURCE_BUNDLE_LOADER);
 	}
 
 	private final JournalArticle _article;

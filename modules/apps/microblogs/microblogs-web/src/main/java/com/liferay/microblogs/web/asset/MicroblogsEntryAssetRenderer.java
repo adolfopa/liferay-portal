@@ -22,6 +22,10 @@ import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.util.AggregateResourceBundleLoader;
+import com.liferay.portal.kernel.util.ClassResourceBundleLoader;
+import com.liferay.portal.kernel.util.ResourceBundleLoader;
+import com.liferay.portal.language.LanguageResources;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.GroupLocalServiceUtil;
@@ -177,6 +181,15 @@ public class MicroblogsEntryAssetRenderer
 		request.setAttribute(WebKeys.MICROBLOGS_ENTRY, _entry);
 
 		return super.include(request, response, template);
+	}
+
+	@Override
+	protected ResourceBundleLoader getResourceBundleLoader() {
+		return new AggregateResourceBundleLoader(
+			new ClassResourceBundleLoader(
+				"content.Language",
+				MicroblogsEntryAssetRenderer.class.getClassLoader()),
+			LanguageResources.RESOURCE_BUNDLE_LOADER);
 	}
 
 	private final MicroblogsEntry _entry;

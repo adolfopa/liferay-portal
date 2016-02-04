@@ -17,9 +17,13 @@ package com.liferay.layout.admin.web.asset;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
+import com.liferay.portal.kernel.util.AggregateResourceBundleLoader;
+import com.liferay.portal.kernel.util.ClassResourceBundleLoader;
+import com.liferay.portal.kernel.util.ResourceBundleLoader;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.language.LanguageResources;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
@@ -138,6 +142,15 @@ public class LayoutAssetRenderer extends BaseJSPAssetRenderer<Layout> {
 		request.setAttribute(WebKeys.LAYOUT, _layout);
 
 		return super.include(request, response, template);
+	}
+
+	@Override
+	protected ResourceBundleLoader getResourceBundleLoader() {
+		return new AggregateResourceBundleLoader(
+			new ClassResourceBundleLoader(
+				"content.Language",
+				LayoutAssetRenderer.class.getClassLoader()),
+			LanguageResources.RESOURCE_BUNDLE_LOADER);
 	}
 
 	private final Layout _layout;

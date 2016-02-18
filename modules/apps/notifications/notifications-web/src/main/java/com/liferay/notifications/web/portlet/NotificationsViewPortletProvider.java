@@ -41,7 +41,7 @@ public class NotificationsViewPortletProvider implements ViewPortletProvider {
 
 	@Override
 	public String getPortletId() {
-		return null;
+		return NotificationsPortletKeys.NOTIFICATIONS;
 	}
 
 	@Override

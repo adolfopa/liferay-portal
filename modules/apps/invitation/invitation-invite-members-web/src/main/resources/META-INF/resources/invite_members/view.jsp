@@ -37,7 +37,7 @@ Group group = GroupLocalServiceUtil.getGroup(scopeGroupId);
 				'<portlet:namespace />openInviteMembers',
 				function(url) {
 					var title = '';
-					var titleNode = A.one('.so-portlet-invite-members .portlet-title-default');
+					var titleNode = A.one('.portlet-invite-members .portlet-title-default');
 
 					if (titleNode) {
 						title = titleNode.get('innerHTML');
@@ -50,7 +50,7 @@ Group group = GroupLocalServiceUtil.getGroup(scopeGroupId);
 									node: null,
 									points: ['tc', 'tc']
 								},
-								cssClass: 'so-portlet-invite-members',
+								cssClass: 'portlet-invite-members',
 								destroyOnClose: true,
 								modal: true,
 								resizable: false,

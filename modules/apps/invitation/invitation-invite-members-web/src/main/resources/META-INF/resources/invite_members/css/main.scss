@@ -1,7 +1,7 @@
 @import "bourbon";
 @import "mixins";
 
-.so-portlet-invite-members {
+.portlet-invite-members {
 	.email-invited h2 span {
 		color: #999;
 		font-size: 0.8em;
@@ -176,11 +176,11 @@
 	}
 }
 
-.ie .so-portlet-invite-members .invite-to select {
+.ie .portlet-invite-members .invite-to select {
 	width: 300px;
 }
 
-.ie6 .so-portlet-invite-members {
+.ie6 .portlet-invite-members {
 	.search {
 		background-image: none;
 	}
@@ -194,7 +194,7 @@
 /* ---------- Responsive ---------- */
 
 @include respond-to(phone) {
-	.so-portlet-invite-members.modal {
+	.portlet-invite-members.modal {
 		.user-search-wrapper {
 			float: none;
 			margin-top: 10px;

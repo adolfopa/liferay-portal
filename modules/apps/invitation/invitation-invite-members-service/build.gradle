@@ -1,13 +1,13 @@
 apply plugin: "com.liferay.portal.tools.upgrade.table.builder"
 
 buildService {
-		apiDir = "../invitation-invite-members-api/src/main/java"
-		autoNamespaceTables = false
-		testDir = "../invitation-invite-members-test/src/testIntegration/java"
+	apiDir = "../invitation-invite-members-api/src/main/java"
+	autoNamespaceTables = false
+	testDir = "../invitation-invite-members-test/src/testIntegration/java"
 }
 
 buildUpgradeTable {
-		upgradeTableDir = "src/main/java/com/liferay/invitation/invite/members/upgrade/v1_0_0/util"
+	upgradeTableDir = "src/main/java/com/liferay/invitation/invite/members/upgrade/v1_0_0/util"
 }
 
 dependencies {

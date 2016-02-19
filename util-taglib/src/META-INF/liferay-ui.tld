@@ -3253,6 +3253,13 @@
 		<tag-class>com.liferay.taglib.ui.OrganizationSearchContainerResultsTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
+			<description>Whether to force use the database for search. The default value is <![CDATA[<code>false</code>]]>.</description>
+			<name>forceDatabase</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
+		</attribute>
+		<attribute>
 			<name>organizationParams</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -3261,13 +3268,6 @@
 			<name>parentOrganizationId</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<description>Whether to use the indexer for search. The default value is <![CDATA[<code>true</code>]]>.</description>
-			<name>useIndexer</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>boolean</type>
 		</attribute>
 	</tag>
 	<tag>

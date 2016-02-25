@@ -227,7 +227,7 @@ if (showSource) {
 
 		editorConfig = A.merge(
  			{
- 				title: '<%= LanguageUtil.get(request, "rich-text-editor") %>'
+ 				title: '<%= LanguageUtil.get(resourceBundle, "rich-text-editor") %>'
  			},
  			editorConfig
  		);

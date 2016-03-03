@@ -30,10 +30,6 @@ AUI.add(
 
 		var Scroll = A.Component.create(
 			{
-				NAME: SCROLL,
-
-				NS: SCROLL,
-
 				ATTRS: {
 					delay: {
 						validator: isNumber,
@@ -68,6 +64,10 @@ AUI.add(
 				},
 
 				EXTENDS: A.Plugin.Base,
+
+				NAME: SCROLL,
+
+				NS: SCROLL,
 
 				prototype: {
 					initializer: function(config) {
@@ -117,8 +117,8 @@ AUI.add(
 
 						var state = {
 							availableScrollY: availableScrollY,
-							scrollTop: scrollTop,
-							scrolledDown: scrolledDown
+							scrolledDown: scrolledDown,
+							scrollTop: scrollTop
 						};
 
 						if (scrolledDown) {

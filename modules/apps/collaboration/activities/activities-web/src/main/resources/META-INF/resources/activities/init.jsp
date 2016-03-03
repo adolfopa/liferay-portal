@@ -29,6 +29,3 @@ page import="com.liferay.social.kernel.model.SocialActivitySet" %>
 ActivitiesRequestHelper activitiesRequestHelper = new ActivitiesRequestHelper(request);
 ActivitiesDisplayContext activitiesDisplayContext = new DefaultActivitiesDisplayContext(activitiesRequestHelper);
 %>
-
-<%!
-%>

@@ -81,17 +81,15 @@ public class UpgradeSocialActivitySets extends UpgradeProcess {
 
 	protected void insertSocialActivitySets(long delta) throws Exception {
 		try (Statement s = connection.createStatement()) {
-			StringBundler sb = new StringBundler(6);
+			StringBundler sb = new StringBundler(7);
 
 			sb.append("INSERT INTO SocialActivitySet ");
 			sb.append("SELECT (activityId + ");
 			sb.append(delta);
-			sb.append(") AS activitySetId, groupId ");
-			sb.append("companyId, userId, createDate, ");
-			sb.append(
-				"createDate AS modifiedDate, classNameId, classPK, type_, ");
-			sb.append("extraData, 1 as activityCount FROM SocialActivity ");
-			sb.append("WHERE mirrorActivityId = 0");
+			sb.append(") AS activitySetId, groupId, companyId, userId, ");
+			sb.append("createDate, createDate AS modifiedDate, classNameId, ");
+			sb.append("classPK, type_, extraData, 1 as activityCount ");
+			sb.append("FROM SocialActivity WHERE mirrorActivityId = 0");
 
 			s.execute(sb.toString());
 		}

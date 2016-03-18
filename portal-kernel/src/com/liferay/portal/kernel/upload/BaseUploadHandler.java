@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
@@ -34,6 +35,7 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StreamUtil;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.TextFormatter;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.io.IOException;
@@ -194,6 +196,10 @@ public abstract class BaseUploadHandler implements UploadHandler {
 		}
 	}
 
+	protected long getMaxFileSize() {
+		return 0;
+	}
+
 	protected abstract String getParameterName();
 
 	/**
@@ -275,6 +281,15 @@ public abstract class BaseUploadHandler implements UploadHandler {
 			}
 			else if (pe instanceof FileSizeException) {
 				errorType = ServletResponseConstants.SC_FILE_SIZE_EXCEPTION;
+
+				errorMessage = LanguageUtil.format(
+					portletRequest.getLocale(),
+					"please-enter-a-file-with-a-valid-file-size-no-" +
+						"larger-than-x",
+					TextFormatter.formatStorageSize(
+						getMaxFileSize(),
+						portletRequest.getLocale()),
+					false);
 			}
 			else if (pe instanceof UploadRequestSizeException) {
 				errorType =

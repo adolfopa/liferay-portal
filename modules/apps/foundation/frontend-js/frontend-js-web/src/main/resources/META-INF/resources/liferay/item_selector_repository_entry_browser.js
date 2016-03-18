@@ -33,10 +33,6 @@ AUI.add(
 						validator: Lang.isString,
 						value: ''
 					},
-					maxFileSize: {
-						setter: Lang.toInt,
-						value: Liferay.PropsValues.UPLOAD_SERVLET_REQUEST_IMPL_MAX_SIZE
-					},
 					uploadItemReturnType: {
 						validator: Lang.isString,
 						value: ''

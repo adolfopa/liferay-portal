@@ -2560,13 +2560,22 @@ public class JavaSourceProcessor extends BaseSourceProcessor {
 				fileName, absolutePath, content, className, packagePath);
 		}
 
-		if (!absolutePath.contains("/modules/core/") &&
-			!absolutePath.contains("/test/") &&
-			!absolutePath.contains("/testIntegration/") &&
-			content.contains("import com.liferay.registry.Registry")) {
+		// LPS-62989
 
-			processErrorMessage(
-				fileName, "Do not use Registry in modules: " + fileName);
+		if (!absolutePath.contains("/modules/core/jaxws-osgi-bridge") &&
+			!absolutePath.contains("/modules/core/portal-bootstrap") &&
+			!absolutePath.contains("/modules/core/registry-") &&
+			!absolutePath.contains("/test/") &&
+			!absolutePath.contains("/testIntegration/")) {
+
+			Matcher matcher = _registryImportPattern.matcher(content);
+
+			if (matcher.find()) {
+				processErrorMessage(
+					fileName,
+					"Do not use com.liferay.registry classes in modules: " +
+						fileName);
+			}
 		}
 
 		// LPS-60186
@@ -4144,6 +4153,8 @@ public class JavaSourceProcessor extends BaseSourceProcessor {
 	private Pattern _referenceMethodPattern = Pattern.compile(
 		"\n\t@Reference([\\s\\S]*?)\\s+((protected|public) void (\\w+?))\\(" +
 			"\\s*([ ,<>\\w]+)\\s+\\w+\\) \\{\\s+([\\s\\S]*?)\\s*?\n\t\\}\n");
+	private Pattern _registryImportPattern = Pattern.compile(
+		"\nimport (com\\.liferay\\.registry\\..+);");
 	private List<String> _secureDeserializationExcludes;
 	private List<String> _secureRandomExcludes;
 	private List<String> _secureXmlExcludes;

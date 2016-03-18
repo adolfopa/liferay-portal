@@ -194,6 +194,10 @@ public abstract class BaseUploadHandler implements UploadHandler {
 		}
 	}
 
+	protected long getMaxFileSize() {
+		return 0;
+	}
+
 	protected abstract String getParameterName();
 
 	/**
@@ -256,6 +260,8 @@ public abstract class BaseUploadHandler implements UploadHandler {
 			pe instanceof FileSizeException ||
 			pe instanceof UploadRequestSizeException) {
 
+			JSONObject errorJSONObject = JSONFactoryUtil.createJSONObject();
+
 			String errorMessage = StringPool.BLANK;
 			int errorType = 0;
 
@@ -275,13 +281,13 @@ public abstract class BaseUploadHandler implements UploadHandler {
 			}
 			else if (pe instanceof FileSizeException) {
 				errorType = ServletResponseConstants.SC_FILE_SIZE_EXCEPTION;
+
+				errorJSONObject.put("maxFileSize", getMaxFileSize());
 			}
 			else if (pe instanceof UploadRequestSizeException) {
 				errorType =
 					ServletResponseConstants.SC_UPLOAD_REQUEST_SIZE_EXCEPTION;
 			}
-
-			JSONObject errorJSONObject = JSONFactoryUtil.createJSONObject();
 
 			errorJSONObject.put("errorType", errorType);
 			errorJSONObject.put("message", errorMessage);

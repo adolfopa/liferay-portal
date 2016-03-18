@@ -14,6 +14,7 @@
 
 package com.liferay.blogs.web.upload;
 
+import com.liferay.blogs.configuration.BlogsGroupServiceOverriddenConfiguration;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -29,6 +30,12 @@ import java.io.InputStream;
  * @author Roberto Díaz
  */
 public class TempImageBlogsUploadHandler extends BaseBlogsUploadHandler {
+
+	public TempImageBlogsUploadHandler(
+		BlogsGroupServiceOverriddenConfiguration configurationProvider) {
+
+		super(configurationProvider);
+	}
 
 	@Override
 	protected FileEntry addFileEntry(
@@ -57,6 +64,10 @@ public class TempImageBlogsUploadHandler extends BaseBlogsUploadHandler {
 
 			return null;
 		}
+	}
+
+	private TempImageBlogsUploadHandler() {
+		this(null);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

@@ -33,6 +33,7 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.util.PrefsPropsUtil;
+import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.documentlibrary.service.permission.DLFolderPermission;
 
 import java.io.InputStream;
@@ -81,6 +82,11 @@ public class FileEntryDLUploadHandler extends BaseUploadHandler {
 	@Override
 	protected long getFolderId(UploadPortletRequest uploadPortletRequest) {
 		return ParamUtil.getLong(uploadPortletRequest, "folderId");
+	}
+
+	@Override
+	protected long getMaxFileSize() {
+		return PropsValues.DL_FILE_MAX_SIZE;
 	}
 
 	@Override

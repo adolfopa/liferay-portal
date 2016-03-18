@@ -14,6 +14,7 @@
 
 package com.liferay.blogs.web.upload;
 
+import com.liferay.blogs.configuration.BlogsGroupServiceOverriddenConfiguration;
 import com.liferay.blogs.kernel.exception.EntryImageNameException;
 import com.liferay.blogs.kernel.exception.EntryImageSizeException;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -24,12 +25,16 @@ import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.ResourcePermissionCheckerUtil;
 import com.liferay.portal.kernel.servlet.ServletResponseConstants;
+import com.liferay.portal.kernel.settings.GroupServiceSettingsLocator;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.upload.BaseUploadHandler;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.util.PrefsPropsUtil;
 import com.liferay.portal.util.PropsValues;
+import com.liferay.portlet.blogs.constants.BlogsConstants;
 import com.liferay.portlet.blogs.service.permission.BlogsPermission;
 
 import javax.portlet.PortletRequest;
@@ -40,6 +45,14 @@ import javax.portlet.PortletResponse;
  * @author Adolfo Pérez
  */
 public abstract class BaseBlogsUploadHandler extends BaseUploadHandler {
+
+	public BaseBlogsUploadHandler(
+		BlogsGroupServiceOverriddenConfiguration
+			blogsGroupServiceOverriddenConfiguration) {
+
+		_blogsGroupServiceOverriddenConfiguration =
+			blogsGroupServiceOverriddenConfiguration;
+	}
 
 	@Override
 	public void validateFile(String fileName, String contentType, long size)
@@ -94,18 +107,29 @@ public abstract class BaseBlogsUploadHandler extends BaseUploadHandler {
 		if (pe instanceof EntryImageNameException ||
 			pe instanceof EntryImageSizeException) {
 
+			JSONObject errorJSONObject = JSONFactoryUtil.createJSONObject();
+
 			String errorMessage = StringPool.BLANK;
 			int errorType = 0;
 
 			if (pe instanceof EntryImageNameException) {
 				errorType =
 					ServletResponseConstants.SC_FILE_EXTENSION_EXCEPTION;
+
+				ThemeDisplay themeDisplay =
+					(ThemeDisplay)portletRequest.getAttribute(
+						WebKeys.THEME_DISPLAY);
+
+				errorJSONObject.put(
+					"validExtensions",
+					_blogsGroupServiceOverriddenConfiguration.
+						blogsImageExtensions());
 			}
 			else if (pe instanceof EntryImageSizeException) {
 				errorType = ServletResponseConstants.SC_FILE_SIZE_EXCEPTION;
-			}
 
-			JSONObject errorJSONObject = JSONFactoryUtil.createJSONObject();
+				errorJSONObject.put("maxFileSize", getMaxFileSize());
+			}
 
 			errorJSONObject.put("errorType", errorType);
 			errorJSONObject.put("message", errorMessage);
@@ -117,6 +141,7 @@ public abstract class BaseBlogsUploadHandler extends BaseUploadHandler {
 		}
 	}
 
+	@Override
 	protected long getMaxFileSize() {
 		return PropsValues.BLOGS_IMAGE_MAX_SIZE;
 	}
@@ -125,5 +150,7 @@ public abstract class BaseBlogsUploadHandler extends BaseUploadHandler {
 	protected String getParameterName() {
 		return "imageSelectorFileName";
 	}
+
+	private final BlogsGroupServiceOverriddenConfiguration _blogsGroupServiceOverriddenConfiguration;
 
 }

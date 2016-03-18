@@ -32,6 +32,12 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 )
 public interface BlogsGroupServiceConfiguration {
 
+	@Meta.AD(
+		deflt = "${server-property://com.liferay.portal/blogs.image.extensions}",
+		required = false
+	)
+	public String blogsImageExtensions();
+
 	@Meta.AD(deflt = "true", required = false)
 	public boolean enableRss();
 

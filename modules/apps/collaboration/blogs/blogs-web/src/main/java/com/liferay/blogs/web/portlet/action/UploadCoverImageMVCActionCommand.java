@@ -14,16 +14,23 @@
 
 package com.liferay.blogs.web.portlet.action;
 
+import com.liferay.blogs.configuration.BlogsGroupServiceOverriddenConfiguration;
 import com.liferay.blogs.web.constants.BlogsPortletKeys;
 import com.liferay.blogs.web.upload.TempImageBlogsUploadHandler;
+import com.liferay.portal.kernel.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
+import com.liferay.portal.kernel.settings.GroupServiceSettingsLocator;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.upload.UploadHandler;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 
+import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portlet.blogs.constants.BlogsConstants;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Sergio González
@@ -44,10 +51,31 @@ public class UploadCoverImageMVCActionCommand extends BaseMVCActionCommand {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		_uploadHandler.upload(actionRequest, actionResponse);
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)actionRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+		BlogsGroupServiceOverriddenConfiguration
+			blogsGroupServiceOverridenConfiguration =
+			_configurationProvider.getConfiguration(
+				BlogsGroupServiceOverriddenConfiguration.class,
+				new GroupServiceSettingsLocator(
+					themeDisplay.getSiteGroupId(),
+					BlogsConstants.SERVICE_NAME));
+
+		UploadHandler uploadHandler = new TempImageBlogsUploadHandler(
+			blogsGroupServiceOverridenConfiguration);
+
+		uploadHandler.upload(actionRequest, actionResponse);
 	}
 
-	private final UploadHandler _uploadHandler =
-		new TempImageBlogsUploadHandler();
+	@Reference(unbind = "-")
+	protected void setConfigurationProvider(
+		ConfigurationProvider configurationProvider) {
+
+		_configurationProvider = configurationProvider;
+	}
+
+	private ConfigurationProvider _configurationProvider;
 
 }

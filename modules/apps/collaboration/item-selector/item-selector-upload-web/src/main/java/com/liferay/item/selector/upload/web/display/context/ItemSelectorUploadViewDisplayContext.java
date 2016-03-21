@@ -38,10 +38,6 @@ public class ItemSelectorUploadViewDisplayContext {
 		return _itemSelectedEventName;
 	}
 
-	public long getMaxFileSize() {
-		return _uploadItemSelectorCriterion.getMaxFileSize();
-	}
-
 	public String getRepositoryName() {
 		return _uploadItemSelectorCriterion.getRepositoryName();
 	}

@@ -19,6 +19,7 @@ import com.liferay.blogs.kernel.exception.EntryImageSizeException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
@@ -28,6 +29,8 @@ import com.liferay.portal.kernel.upload.BaseUploadHandler;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.TextFormatter;
 import com.liferay.portal.util.PrefsPropsUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.blogs.service.permission.BlogsPermission;
@@ -100,9 +103,23 @@ public abstract class BaseBlogsUploadHandler extends BaseUploadHandler {
 			if (pe instanceof EntryImageNameException) {
 				errorType =
 					ServletResponseConstants.SC_FILE_EXTENSION_EXCEPTION;
+
+				errorMessage = LanguageUtil.format(
+					portletRequest.getLocale(),
+					"please-enter-a-file-with-a-valid-extension-x",
+					StringUtil.merge(PropsValues.BLOGS_IMAGE_EXTENSIONS),
+					false);
 			}
 			else if (pe instanceof EntryImageSizeException) {
 				errorType = ServletResponseConstants.SC_FILE_SIZE_EXCEPTION;
+
+				errorMessage = LanguageUtil.format(
+					portletRequest.getLocale(),
+					"please-enter-a-file-with-a-valid-file-size-no-" +
+						"larger-than-x",
+					TextFormatter.formatStorageSize(
+						getMaxFileSize(), portletRequest.getLocale()),
+					false);
 			}
 
 			JSONObject errorJSONObject = JSONFactoryUtil.createJSONObject();
@@ -117,6 +134,7 @@ public abstract class BaseBlogsUploadHandler extends BaseUploadHandler {
 		}
 	}
 
+	@Override
 	protected long getMaxFileSize() {
 		return PropsValues.BLOGS_IMAGE_MAX_SIZE;
 	}

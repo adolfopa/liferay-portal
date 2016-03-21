@@ -61,11 +61,6 @@ AUI.add(
 						validator: Lang.isString
 					},
 
-					maxFileSize: {
-						setter: Lang.toInt,
-						value: Liferay.PropsValues.UPLOAD_SERVLET_REQUEST_IMPL_MAX_SIZE
-					},
-
 					paramName: {
 						validator: Lang.isString
 					},
@@ -76,10 +71,6 @@ AUI.add(
 					},
 
 					uploadURL: {
-						validator: Lang.isString
-					},
-
-					validExtensions: {
 						validator: Lang.isString
 					}
 				},
@@ -437,13 +428,13 @@ AUI.add(
 							message = error.message;
 						}
 						else if (errorType === STATUS_CODE.SC_FILE_EXTENSION_EXCEPTION) {
-							message = Lang.sub(Liferay.Language.get('please-enter-a-file-with-a-valid-extension-x'), [instance.get('validExtensions')]);
+							message = Lang.sub(Liferay.Language.get('please-enter-a-file-with-a-valid-extension-x'), [error.validExtensions]);
 						}
 						else if (errorType === STATUS_CODE.SC_FILE_NAME_EXCEPTION) {
 							message = Liferay.Language.get('please-enter-a-file-with-a-valid-file-name');
 						}
 						else if (errorType === STATUS_CODE.SC_FILE_SIZE_EXCEPTION) {
-							message = Lang.sub(Liferay.Language.get('please-enter-a-file-with-a-valid-file-size-no-larger-than-x'), [instance.formatStorage(instance.get('maxFileSize'))]);
+							message = Lang.sub(Liferay.Language.get('please-enter-a-file-with-a-valid-file-size-no-larger-than-x'), [instance.formatStorage(error.maxFileSize)]);
 						}
 						else if (errorType === STATUS_CODE.SC_UPLOAD_REQUEST_SIZE_EXCEPTION) {
 							var maxUploadRequestSize = Liferay.PropsValues.UPLOAD_SERVLET_REQUEST_IMPL_MAX_SIZE;

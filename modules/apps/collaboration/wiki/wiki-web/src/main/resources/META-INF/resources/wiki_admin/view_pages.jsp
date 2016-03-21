@@ -51,7 +51,11 @@ if (Validator.isNull(keywords)) {
 	wikiPagesSearchContainer.setOrderByCol(orderByCol);
 }
 
-wikiPagesSearchContainer.setRowChecker(new PagesChecker(liferayPortletRequest, liferayPortletResponse));
+PagesChecker pagesChecker = new PagesChecker(liferayPortletRequest, liferayPortletResponse);
+
+pagesChecker.setRememberCheckBoxStateURLRegex("^(?!.*" + liferayPortletResponse.getNamespace() + "redirect).*(nodeId=" + String.valueOf(node.getNodeId()) + ")");
+
+wikiPagesSearchContainer.setRowChecker(pagesChecker);
 
 wikiListPagesDisplayContext.populateResultsAndTotal(wikiPagesSearchContainer);
 

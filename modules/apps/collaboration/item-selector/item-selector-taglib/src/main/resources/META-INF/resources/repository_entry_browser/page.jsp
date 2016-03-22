@@ -46,6 +46,8 @@ if (Validator.isNotNull(keywords)) {
 	<link href="<%= ServletContextUtil.getContextPath() + "/repository_entry_browser/css/main.css" %>" rel="stylesheet" type="text/css" />
 </liferay-util:html-top>
 
+<div class="lfr-alert-container"></div>
+
 <c:if test="<%= !showSearchInfo %>">
 	<liferay-frontend:management-bar>
 		<liferay-frontend:management-bar-buttons>

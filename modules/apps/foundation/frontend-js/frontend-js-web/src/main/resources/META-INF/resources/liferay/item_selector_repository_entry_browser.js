@@ -185,28 +185,29 @@ AUI.add(
 							message = Lang.sub(Liferay.Language.get('request-is-larger-than-x-and-could-not-be-processed'), [instance.formatStorage(maxUploadRequestSize)]);
 						}
 
-						message += '<button class="close" type="button">&times;</button>';
+						var alert = instance._alert;
 
-						var notice = instance._notice;
-
-						if (!notice) {
-							notice = new Liferay.Notice(
+						if (!alert) {
+							alert = new Liferay.Alert(
 								{
-									closeText: false,
-									content: message,
-									noticeClass: 'hide',
-									toggleText: false,
-									type: 'warning',
-									useAnimation: false
+									closeable: true,
+									delay: {
+										hide: 5000,
+										show: 0
+									},
+									duration: 500,
+									message: message,
+									title: Liferay.Language.get('danger'),
+									type: 'danger'
 								}
-							);
-
-							instance._notice = notice;
-						} else {
-							notice.set('content', message);
+							).render();
+							instance._alert = alert;
+						}
+						else {
+							alert.set('message', message);
 						}
 
-						return notice;
+						return alert;
 					},
 
 					_getUploadFileMetadata: function(file) {
@@ -349,6 +350,6 @@ AUI.add(
 	},
 	'',
 	{
-		requires: ['liferay-item-selector-uploader', 'liferay-item-viewer', 'liferay-notice', 'liferay-portlet-base', 'liferay-storage-formatter']
+		requires: ['liferay-alert', 'liferay-item-selector-uploader', 'liferay-item-viewer', 'liferay-portlet-base', 'liferay-storage-formatter']
 	}
 );

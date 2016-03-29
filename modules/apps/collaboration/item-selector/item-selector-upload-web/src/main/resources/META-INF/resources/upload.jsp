@@ -20,6 +20,7 @@
 ItemSelectorUploadViewDisplayContext itemSelectorUploadViewDisplayContext = (ItemSelectorUploadViewDisplayContext)request.getAttribute(ItemSelectorUploadView.ITEM_SELECTOR_UPLOAD_VIEW_DISPLAY_CONTEXT);
 %>
 
+<div class="lfr-alert-container"></div>
 <div class="container-fluid-1280 lfr-item-viewer" id="itemSelectorUploadContainer">
 	<div class="drop-enabled drop-zone upload-view">
 		<div id="uploadDescription">
@@ -42,7 +43,6 @@ ItemSelectorUploadViewDisplayContext itemSelectorUploadViewDisplayContext = (Ite
 	new Liferay.ItemSelectorRepositoryEntryBrowser(
 		{
 			closeCaption: '<%= itemSelectorUploadViewDisplayContext.getTitle(locale) %>',
-			maxFileSize: '<%= itemSelectorUploadViewDisplayContext.getMaxFileSize() %>',
 			on: {
 				selectedItem: function(event) {
 					Liferay.Util.getOpener().Liferay.fire('<%= itemSelectorUploadViewDisplayContext.getItemSelectedEventName() %>', event);

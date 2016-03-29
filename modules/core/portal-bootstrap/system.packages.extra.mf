@@ -1,11 +1,11 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1459221232693
+Bnd-LastModified: 1459264709909
 Bundle-ManifestVersion: 2
 Bundle-Name: portal-bootstrap
 Bundle-SymbolicName: portal-bootstrap
 Bundle-Vendor: Liferay, Inc.
 Bundle-Version: 1.0.0
-Created-By: 1.7.0_71 (Oracle Corporation)
+Created-By: 1.8.0_74 (Oracle Corporation)
 Export-Package: com.liferay.ibm.icu;version="4.0.1",com.liferay.ibm.ic
  u.impl;version="4.0.1";uses:="com.liferay.ibm.icu.math,com.liferay.ib
  m.icu.text,com.liferay.ibm.icu.util",com.liferay.ibm.icu.impl.coll;ve
@@ -2141,7 +2141,7 @@ Export-Package: com.liferay.ibm.icu;version="4.0.1",com.liferay.ibm.ic
  feray.portal.kernel.util",com.liferay.blogs.kernel.util.comparator;ve
  rsion="1.0.0";uses:="com.liferay.blogs.kernel.model,com.liferay.porta
  l.kernel.util",com.liferay.counter;version="1.0.0",com.liferay.counte
- r.kernel;version="2.2.0",com.liferay.counter.kernel.exception;version
+ r.kernel;version="2.3.0",com.liferay.counter.kernel.exception;version
  ="1.0.0";uses:="com.liferay.portal.kernel.exception",com.liferay.coun
  ter.kernel.model;version="1.0.0";uses:="com.liferay.expando.kernel.mo
  del,com.liferay.portal.kernel.annotation,com.liferay.portal.kernel.be
@@ -3000,7 +3000,7 @@ Export-Package: com.liferay.ibm.icu;version="4.0.1",com.liferay.ibm.ic
  .liferay.portal.kernel.model,com.liferay.portal.kernel.upgrade",com.l
  iferay.portal.kernel.upgrade.v6_2_0;version="7.0.0";uses:="com.lifera
  y.portal.kernel.upgrade",com.liferay.portal.kernel.upload;version="6.
- 3.0";uses:="com.liferay.portal.kernel.exception,com.liferay.portal.ke
+ 4.0";uses:="com.liferay.portal.kernel.exception,com.liferay.portal.ke
  rnel.json,com.liferay.portal.kernel.repository.model,com.liferay.port
  al.kernel.security.permission,com.liferay.portal.kernel.service,com.l
  iferay.portal.kernel.theme,javax.portlet,javax.servlet.http",com.life
@@ -3630,7 +3630,7 @@ Export-Package: com.liferay.ibm.icu;version="4.0.1",com.liferay.ibm.ic
  ray.portal.kernel.service.persistence,com.liferay.portal.kernel.servi
  ce.persistence.impl,com.liferay.portal.kernel.util,com.liferay.portle
  t.announcements.model.impl";version="1.0.0",com.liferay.portlet.asset
- ;version="2.2.0",com.liferay.portlet.asset.action;uses:="com.liferay.
+ ;version="2.3.0",com.liferay.portlet.asset.action;uses:="com.liferay.
  asset.kernel.model,com.liferay.portal.struts,javax.servlet.http,org.a
  pache.struts.action";version="1.0.0",com.liferay.portlet.asset.model;
  version="1.0.2";uses:="com.liferay.asset.kernel.model,com.liferay.por
@@ -4069,7 +4069,7 @@ Export-Package: com.liferay.ibm.icu;version="4.0.1",com.liferay.ibm.ic
  til;uses:="com.liferay.portal.kernel.service,com.liferay.portal.kerne
  l.theme,com.liferay.portal.kernel.util,com.liferay.social.kernel.mode
  l,com.liferay.social.kernel.util,javax.servlet.http";version="1.0.0",
- com.liferay.portlet.trash;version="2.2.0",com.liferay.portlet.trash.m
+ com.liferay.portlet.trash;version="2.3.0",com.liferay.portlet.trash.m
  odel.impl;uses:="com.liferay.expando.kernel.model,com.liferay.portal.
  kernel.json,com.liferay.portal.kernel.model,com.liferay.portal.kernel
  .model.impl,com.liferay.portal.kernel.service,com.liferay.portal.kern

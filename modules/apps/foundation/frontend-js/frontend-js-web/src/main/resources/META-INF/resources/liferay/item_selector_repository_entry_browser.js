@@ -33,10 +33,6 @@ AUI.add(
 						validator: Lang.isString,
 						value: ''
 					},
-					maxFileSize: {
-						setter: Lang.toInt,
-						value: Liferay.PropsValues.UPLOAD_SERVLET_REQUEST_IMPL_MAX_SIZE
-					},
 					uploadItemReturnType: {
 						validator: Lang.isString,
 						value: ''
@@ -167,46 +163,51 @@ AUI.add(
 					_getUploadErrorMessage: function(error) {
 						var instance = this;
 
-						var notice = instance._notice;
+						var errorType = error.errorType;
 
-						if (!notice) {
-							var errorType = error.errorType;
+						var message = Liferay.Language.get('an-unexpected-error-occurred-while-uploading-your-file');
 
-							var message = Liferay.Language.get('an-unexpected-error-occurred-while-uploading-your-file');
+						if (errorType === STATUS_CODE.SC_FILE_ANTIVIRUS_EXCEPTION) {
+							message = error.message;
+						}
+						else if (errorType === STATUS_CODE.SC_FILE_EXTENSION_EXCEPTION) {
+							message = Lang.sub(Liferay.Language.get('please-enter-a-file-with-a-valid-extension-x'), [error.validExtensions]);
+						}
+						else if (errorType === STATUS_CODE.SC_FILE_NAME_EXCEPTION) {
+							message = Liferay.Language.get('please-enter-a-file-with-a-valid-file-name');
+						}
+						else if (errorType === STATUS_CODE.SC_FILE_SIZE_EXCEPTION || errorType === STATUS_CODE.SC_UPLOAD_REQUEST_CONTENT_LENGTH_EXCEPTION) {
+							message = Lang.sub(Liferay.Language.get('please-enter-a-file-with-a-valid-file-size-no-larger-than-x'), [instance.formatStorage(error.maxFileSize)]);
+						}
+						else if (errorType === STATUS_CODE.SC_UPLOAD_REQUEST_SIZE_EXCEPTION) {
+							var maxUploadRequestSize = Liferay.PropsValues.UPLOAD_SERVLET_REQUEST_IMPL_MAX_SIZE;
 
-							if (errorType === STATUS_CODE.SC_FILE_ANTIVIRUS_EXCEPTION) {
-								message = error.message;
-							}
-							else if (errorType === STATUS_CODE.SC_FILE_EXTENSION_EXCEPTION) {
-								message = Lang.sub(Liferay.Language.get('please-enter-a-file-with-a-valid-extension-x'), [instance.get('validExtensions')]);
-							}
-							else if (errorType === STATUS_CODE.SC_FILE_NAME_EXCEPTION) {
-								message = Liferay.Language.get('please-enter-a-file-with-a-valid-file-name');
-							}
-							else if (errorType === STATUS_CODE.SC_FILE_SIZE_EXCEPTION || errorType === STATUS_CODE.SC_UPLOAD_REQUEST_CONTENT_LENGTH_EXCEPTION) {
-								message = Lang.sub(Liferay.Language.get('please-enter-a-file-with-a-valid-file-size-no-larger-than-x'), [instance.formatStorage(instance.get('maxFileSize'))]);
-							}
-							else if (errorType === STATUS_CODE.SC_UPLOAD_REQUEST_SIZE_EXCEPTION) {
-								var maxUploadRequestSize = Liferay.PropsValues.UPLOAD_SERVLET_REQUEST_IMPL_MAX_SIZE;
-
-								message = Lang.sub(Liferay.Language.get('request-is-larger-than-x-and-could-not-be-processed'), [instance.formatStorage(maxUploadRequestSize)]);
-							}
-
-							notice = new Liferay.Notice(
-								{
-									closeText: false,
-									content: message + '<button class="close" type="button">&times;</button>',
-									noticeClass: 'hide',
-									toggleText: false,
-									type: 'warning',
-									useAnimation: false
-								}
-							);
-
-							instance._notice = notice;
+							message = Lang.sub(Liferay.Language.get('request-is-larger-than-x-and-could-not-be-processed'), [instance.formatStorage(maxUploadRequestSize)]);
 						}
 
-						return notice;
+						var alert = instance._alert;
+
+						if (!alert) {
+							alert = new Liferay.Alert(
+								{
+									closeable: true,
+									delay: {
+										hide: 5000,
+										show: 0
+									},
+									duration: 500,
+									message: message,
+									title: Liferay.Language.get('danger'),
+									type: 'danger'
+								}
+							).render();
+							instance._alert = alert;
+						}
+						else {
+							alert.set('message', message);
+						}
+
+						return alert;
 					},
 
 					_getUploadFileMetadata: function(file) {
@@ -349,6 +350,6 @@ AUI.add(
 	},
 	'',
 	{
-		requires: ['liferay-item-selector-uploader', 'liferay-item-viewer', 'liferay-notice', 'liferay-portlet-base', 'liferay-storage-formatter']
+		requires: ['liferay-alert', 'liferay-item-selector-uploader', 'liferay-item-viewer', 'liferay-portlet-base', 'liferay-storage-formatter']
 	}
 );

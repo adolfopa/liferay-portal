@@ -35,6 +35,7 @@ import com.liferay.portal.test.mock.AutoDeployMockServletContext;
 import com.liferay.portal.util.InitUtil;
 import com.liferay.portal.util.PropsUtil;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import java.net.MalformedURLException;
@@ -212,9 +213,38 @@ public class PACLTestRule implements TestRule {
 			return;
 		}
 
-		Method method = _testClass.getMethod(description.getMethodName());
+		try {
+			Method method = _testClass.getMethod(description.getMethodName());
 
-		method.invoke(_instance);
+			System.err.printf("method = %s; description = %s; instance = %s%n", method == null ? "null" : method, description.getMethodName(), _instance == null ? "null" : _instance);
+
+			method.invoke(_instance);
+		}
+		catch (NoSuchMethodException e) {
+			e.printStackTrace();
+
+			throw e;
+		}
+		catch (SecurityException e) {
+			e.printStackTrace();
+
+			throw e;
+		}
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+
+			throw e;
+		}
+		catch (IllegalArgumentException e) {
+			e.printStackTrace();
+
+			throw e;
+		}
+		catch (InvocationTargetException e) {
+			e.printStackTrace();
+
+			throw e;
+		}
 	}
 
 	private static Class<?> _loadTestClass(Class<?> clazz)

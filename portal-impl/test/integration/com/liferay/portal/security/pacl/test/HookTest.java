@@ -50,8 +50,21 @@ public class HookTest {
 
 	@Test
 	public void testLanguage1() throws Exception {
-		Assert.assertEquals(
-			"Estrellas", LanguageUtil.get(LocaleUtil.SPAIN, "stars"));
+		try {
+			System.out.println("starting test testLanguage1");
+			System.out.flush();
+
+			String stars = LanguageUtil.get(LocaleUtil.SPAIN, "stars");
+
+			System.out.printf("start == %s%n", stars == null ? "(null)" : stars);
+			System.out.flush();
+
+			Assert.assertEquals(
+				"Estrellas", stars);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test

@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
+import com.liferay.portal.upgrade.v7_0_0.util.UserNotificationEventTable;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -368,6 +369,10 @@ public class UpgradePortletId extends UpgradeProcess {
 	protected void updateUserNotificationEvent(
 			String oldPortletId, String newPortletId)
 		throws Exception {
+
+		alter(
+			UserNotificationEventTable.class,
+			new AlterColumnType("type_", "VARCHAR(200) null"));
 
 		runSQL(
 			"update UserNotificationEvent set type_ = '" + newPortletId +

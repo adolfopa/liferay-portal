@@ -611,7 +611,25 @@ public class HookHotDeployListener
 
 			locale = LocaleUtil.fromLanguageId(localeKey, true, false);
 
+			System.out.printf("localeKey: %s; locale: %s%n", localeKey, locale);
+
 			if (locale == null) {
+				try {
+					Set<Locale> availableLocales =
+						LanguageUtil.getAvailableLocales();
+
+					for (Locale availableLocale : availableLocales) {
+						System.out.printf("availableLocale: %s%n", availableLocale);
+
+						if (localeKey.equals(availableLocale.getLanguage())) {
+							return availableLocale;
+						}
+					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+
 				throw new SystemException("Invalid locale " + localeKey);
 			}
 		}

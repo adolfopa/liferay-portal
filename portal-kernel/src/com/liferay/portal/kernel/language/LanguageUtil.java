@@ -18,6 +18,7 @@ import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ResourceBundleLoader;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
@@ -181,6 +182,9 @@ public class LanguageUtil {
 	}
 
 	public static String get(Locale locale, String key) {
+		if (LocaleUtil.SPAIN.equals(locale) && "stars".equals(key)) {
+			System.out.printf("getLanguage() == %s %n", getLanguage() == null ? "null" : getLanguage());
+		}
 		return getLanguage().get(locale, key);
 	}
 

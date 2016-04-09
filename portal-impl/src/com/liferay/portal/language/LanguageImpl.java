@@ -948,8 +948,20 @@ public class LanguageImpl implements Language, Serializable {
 
 		String value = LanguageResources.getMessage(locale, key);
 
+		if (LocaleUtil.SPAIN.equals(locale) && "stars".equals(key)) {
+			System.out.printf("value == %s%n", value == null ? "(null)" : value);
+			System.out.flush();
+		}
+
 		if (value != null) {
-			return LanguageResources.fixValue(value);
+			String s = LanguageResources.fixValue(value);
+
+			if (LocaleUtil.SPAIN.equals(locale) && "stars".equals(key)) {
+				System.out.printf("fixed == %s%n", s == null ? "(null)" : s);
+				System.out.flush();
+			}
+
+			return s;
 		}
 
 		if (value == null) {
@@ -964,6 +976,11 @@ public class LanguageImpl implements Language, Serializable {
 					return get(locale, key, defaultValue);
 				}
 			}
+		}
+
+		if (LocaleUtil.SPAIN.equals(locale) && "stars".equals(key)) {
+			System.out.printf("returning default value = %s%n", defaultValue == null ? "(null)" : defaultValue);
+			System.out.flush();
 		}
 
 		return defaultValue;

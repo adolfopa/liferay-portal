@@ -23,7 +23,7 @@ import aQute.bnd.osgi.JarResource;
 import aQute.bnd.osgi.Resource;
 import aQute.bnd.version.Version;
 
-import com.liferay.petra.xml.util.XMLUtil;
+import com.liferay.petra.xml.XMLUtil;
 import com.liferay.portal.events.GlobalStartupAction;
 import com.liferay.portal.kernel.deploy.auto.AutoDeployException;
 import com.liferay.portal.kernel.deploy.auto.AutoDeployListener;

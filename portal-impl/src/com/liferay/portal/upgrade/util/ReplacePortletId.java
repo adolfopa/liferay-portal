@@ -17,7 +17,7 @@ package com.liferay.portal.upgrade.util;
 /**
  * @author Adolfo Pérez
  *
- * @deprecated As of 7.0.1, replaced by {@link BaseReplacePortletId}
+ * @deprecated As of 7.0.0, replaced by {@link BaseReplacePortletId}
  */
 @Deprecated
 public class ReplacePortletId extends BaseReplacePortletId {

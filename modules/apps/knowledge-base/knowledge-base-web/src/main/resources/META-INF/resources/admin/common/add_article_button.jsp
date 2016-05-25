@@ -32,7 +32,7 @@ long parentResourcePrimKey = ParamUtil.getLong(request, "parentResourcePrimKey",
 	<portlet:param name="parentResourcePrimKey" value="<%= String.valueOf(parentResourcePrimKey) %>" />
 </liferay-portlet:renderURL>
 
-<liferay-frontend:add-menu-item title='<%= LanguageUtil.get(request, "basic-article") %>' url="<%= addBasicKBArticleURL.toString() %>" />
+<liferay-frontend:add-menu-item title='<%= LanguageUtil.get(resourceBundle, "basic-article") %>' url="<%= addBasicKBArticleURL.toString() %>" />
 
 <c:if test="<%= !kbTemplates.isEmpty() %>">
 
@@ -48,7 +48,7 @@ long parentResourcePrimKey = ParamUtil.getLong(request, "parentResourcePrimKey",
 			<portlet:param name="kbTemplateId" value="<%= String.valueOf(kbTemplate.getKbTemplateId()) %>" />
 		</liferay-portlet:renderURL>
 
-		<liferay-frontend:add-menu-item title="<%= LanguageUtil.get(request, HtmlUtil.escape(kbTemplate.getTitle())) %>" url="<%= addKBArticleURL.toString() %>" />
+		<liferay-frontend:add-menu-item title="<%= LanguageUtil.get(resourceBundle, HtmlUtil.escape(kbTemplate.getTitle())) %>" url="<%= addKBArticleURL.toString() %>" />
 
 	<%
 	}

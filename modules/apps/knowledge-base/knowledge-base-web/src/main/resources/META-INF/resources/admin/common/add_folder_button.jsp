@@ -27,4 +27,4 @@ long parentResourcePrimKey = ParamUtil.getLong(request, "parentResourcePrimKey",
 	<portlet:param name="parentResourcePrimKey" value="<%= String.valueOf(parentResourcePrimKey) %>" />
 </portlet:renderURL>
 
-<liferay-frontend:add-menu-item title='<%= LanguageUtil.get(request, "folder") %>' url="<%= addFolderURL.toString() %>" />
+<liferay-frontend:add-menu-item title='<%= LanguageUtil.get(resourceBundle, "folder") %>' url="<%= addFolderURL.toString() %>" />

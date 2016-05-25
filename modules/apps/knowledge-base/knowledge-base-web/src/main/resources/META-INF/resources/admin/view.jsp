@@ -86,34 +86,11 @@ KBArticleURLHelper kbArticleURLHelper = new KBArticleURLHelper(renderRequest, re
 					</aui:nav-item>
 				</c:if>
 
-				<%
-				boolean hasAddKBArticlePermission = false;
-				boolean hasAddKBFolderPermission = false;
-
-				if (parentResourceClassNameId == kbFolderClassNameId) {
-					hasAddKBArticlePermission = KBFolderPermission.contains(permissionChecker, scopeGroupId, parentResourcePrimKey, KBActionKeys.ADD_KB_ARTICLE);
-					hasAddKBFolderPermission = KBFolderPermission.contains(permissionChecker, scopeGroupId, parentResourcePrimKey, KBActionKeys.ADD_KB_FOLDER);
-				}
-				else {
-					hasAddKBArticlePermission = AdminPermission.contains(permissionChecker, scopeGroupId, KBActionKeys.ADD_KB_ARTICLE);
-				}
-				%>
-
-				<c:if test="<%= hasAddKBArticlePermission || hasAddKBFolderPermission %>">
-					<aui:nav-item dropdown="<%= true %>" label="add">
-						<c:if test="<%= hasAddKBArticlePermission %>">
-							<liferay-util:include page="/admin/common/add_article_button.jsp" servletContext="<%= application %>" />
-						</c:if>
-
-						<c:if test="<%= hasAddKBFolderPermission %>">
-							<liferay-util:include page="/admin/common/add_folder_button.jsp" servletContext="<%= application %>" />
-						</c:if>
-
-						<c:if test="<%= (parentResourceClassNameId == kbFolderClassNameId) && hasAddKBArticlePermission %>">
-							<liferay-util:include page="/admin/import_articles_button.jsp" servletContext="<%= application %>" />
-						</c:if>
-					</aui:nav-item>
-				</c:if>
+				<aui:nav-item dropdown="<%= true %>" label="add">
+					<c:if test="<%= (parentResourceClassNameId == kbFolderClassNameId) && AdminPermission.contains(permissionChecker, scopeGroupId, KBActionKeys.ADD_KB_ARTICLE) %>">
+						<liferay-util:include page="/admin/import_articles_button.jsp" servletContext="<%= application %>" />
+					</c:if>
+				</aui:nav-item>
 
 				<c:if test="<%= AdminPermission.contains(permissionChecker, scopeGroupId, KBActionKeys.PERMISSIONS) && GroupPermissionUtil.contains(permissionChecker, scopeGroupId, KBActionKeys.PERMISSIONS) %>">
 					<liferay-security:permissionsURL
@@ -378,6 +355,8 @@ KBArticleURLHelper kbArticleURLHelper = new KBArticleURLHelper(renderRequest, re
 		</liferay-ui:search-container>
 	</aui:fieldset>
 </aui:form>
+
+<liferay-util:include page="/admin/add_button.jsp" servletContext="<%= application %>" />
 
 <aui:script use="aui-base,liferay-util-list-fields">
 	var deleteKBArticles = A.one('#<portlet:namespace />deleteKBArticles');

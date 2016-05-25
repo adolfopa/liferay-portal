@@ -86,12 +86,6 @@ KBArticleURLHelper kbArticleURLHelper = new KBArticleURLHelper(renderRequest, re
 					</aui:nav-item>
 				</c:if>
 
-				<aui:nav-item dropdown="<%= true %>" label="add">
-					<c:if test="<%= (parentResourceClassNameId == kbFolderClassNameId) && AdminPermission.contains(permissionChecker, scopeGroupId, KBActionKeys.ADD_KB_ARTICLE) %>">
-						<liferay-util:include page="/admin/import_articles_button.jsp" servletContext="<%= application %>" />
-					</c:if>
-				</aui:nav-item>
-
 				<c:if test="<%= AdminPermission.contains(permissionChecker, scopeGroupId, KBActionKeys.PERMISSIONS) && GroupPermissionUtil.contains(permissionChecker, scopeGroupId, KBActionKeys.PERMISSIONS) %>">
 					<liferay-security:permissionsURL
 						modelResource="com.liferay.knowledge.base.admin"

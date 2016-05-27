@@ -135,29 +135,15 @@ public class MBDiscussionStagedModelDataHandler
 				discussion.getClassName(), newClassPK);
 
 		if (existingDiscussion == null) {
-			if (className.equals(Layout.class.getName()) &&
-				PropsValues.LAYOUT_COMMENTS_ENABLED) {
+			MBMessage rootMessage =
+				_mbMessageLocalService.addDiscussionMessage(
+					userId, discussion.getUserName(),
+					portletDataContext.getScopeGroupId(), className,
+					newClassPK, WorkflowConstants.ACTION_PUBLISH);
 
-				MBMessage rootMessage =
-					_mbMessageLocalService.addDiscussionMessage(
-						userId, discussion.getUserName(),
-						portletDataContext.getScopeGroupId(), className,
-						newClassPK, WorkflowConstants.ACTION_PUBLISH);
-
-				existingDiscussion =
-					_mbDiscussionLocalService.getThreadDiscussion(
-						rootMessage.getThreadId());
-			}
-			else {
-				StringBundler sb = new StringBundler(4);
-
-				sb.append("No discussion exists for class name ");
-				sb.append(discussion.getClassName());
-				sb.append(" and class PK ");
-				sb.append(newClassPK);
-
-				throw new NoSuchDiscussionException(sb.toString());
-			}
+			existingDiscussion =
+				_mbDiscussionLocalService.getThreadDiscussion(
+					rootMessage.getThreadId());
 		}
 
 		Map<Long, Long> discussionIds =

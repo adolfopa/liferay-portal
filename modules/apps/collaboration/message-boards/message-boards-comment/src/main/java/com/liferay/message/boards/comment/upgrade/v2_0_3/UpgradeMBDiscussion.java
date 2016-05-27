@@ -14,8 +14,8 @@
 
 package com.liferay.message.boards.comment.upgrade.v2_0_3;
 
-import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
+import com.liferay.portal.upgrade.AutoBatchPreparedStatementUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

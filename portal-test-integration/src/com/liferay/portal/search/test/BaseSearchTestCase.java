@@ -15,6 +15,7 @@
 package com.liferay.portal.search.test;
 
 import com.liferay.message.boards.kernel.model.MBMessage;
+import com.liferay.message.boards.kernel.model.MBMessageDisplay;
 import com.liferay.message.boards.kernel.service.MBMessageLocalServiceUtil;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.ClassedModel;
@@ -248,11 +249,13 @@ public abstract class BaseSearchTestCase {
 
 		User user = TestPropsValues.getUser();
 
-		List<MBMessage> messages = MBMessageLocalServiceUtil.getMessages(
+		MBMessageDisplay messageDisplay =
+			MBMessageLocalServiceUtil.getDiscussionMessageDisplay(
+			user.getUserId(), serviceContext.getScopeGroupId(),
 			getBaseModelClassName(), getBaseModelClassPK(classedModel),
 			WorkflowConstants.STATUS_ANY);
 
-		MBMessage message = messages.get(0);
+		MBMessage message = messageDisplay.getMessage();
 
 		MBMessageLocalServiceUtil.addDiscussionMessage(
 			user.getUserId(), user.getFullName(),

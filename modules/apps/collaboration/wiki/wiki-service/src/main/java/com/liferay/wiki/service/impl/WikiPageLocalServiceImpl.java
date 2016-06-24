@@ -228,21 +228,6 @@ public class WikiPageLocalServiceImpl extends WikiPageLocalServiceBaseImpl {
 			serviceContext.getAssetLinkEntryIds(),
 			serviceContext.getAssetPriority());
 
-		// Message boards
-
-		WikiGroupServiceOverriddenConfiguration
-			wikiGroupServiceOverriddenConfiguration =
-				configurationProvider.getConfiguration(
-					WikiGroupServiceOverriddenConfiguration.class,
-					new GroupServiceSettingsLocator(
-						node.getGroupId(), WikiConstants.SERVICE_NAME));
-
-		if (wikiGroupServiceOverriddenConfiguration.pageCommentsEnabled()) {
-			CommentManagerUtil.addDiscussion(
-				userId, page.getGroupId(), WikiPage.class.getName(),
-				resourcePrimKey, page.getUserName());
-		}
-
 		// Workflow
 
 		page = startWorkflowInstance(userId, page, serviceContext);
@@ -1270,8 +1255,8 @@ public class WikiPageLocalServiceImpl extends WikiPageLocalServiceBaseImpl {
 		boolean workflowAssetPreview = false;
 
 		if (request != null) {
-			workflowAssetPreview = (Boolean)request.getAttribute(
-				WebKeys.WORKFLOW_ASSET_PREVIEW);
+			workflowAssetPreview = GetterUtil.getBoolean(
+				request.getAttribute(WebKeys.WORKFLOW_ASSET_PREVIEW));
 		}
 
 		if (!workflowAssetPreview && page.isApproved()) {

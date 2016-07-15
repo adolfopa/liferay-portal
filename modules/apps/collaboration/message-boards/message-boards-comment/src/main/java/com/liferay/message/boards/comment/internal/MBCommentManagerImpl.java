@@ -192,7 +192,7 @@ public class MBCommentManagerImpl implements CommentManager {
 				mbMessage.getClassPK(), WorkflowConstants.STATUS_ANY,
 				new MessageThreadComparator());
 
-		return getDiscussionComment(userId, messageDisplay);
+		return getDiscussionComment(userId, mbMessage, messageDisplay);
 	}
 
 	@Override
@@ -215,7 +215,7 @@ public class MBCommentManagerImpl implements CommentManager {
 				WorkflowConstants.STATUS_ANY, new MessageThreadComparator());
 
 		DiscussionComment rootDiscussionComment = getDiscussionComment(
-			userId, messageDisplay);
+			userId, messageDisplay.getMessage(), messageDisplay);
 
 		return new MBDiscussionImpl(
 			rootDiscussionComment, messageDisplay.isDiscussionMaxComments());
@@ -332,17 +332,29 @@ public class MBCommentManagerImpl implements CommentManager {
 		return message.getMessageId();
 	}
 
+	/**
+	 * @deprecated As of 7.0.2, replaced by {@link #getDiscussionComment(long,
+	 *             MBMessage, MBMessageDisplay)}
+	 */
+	@Deprecated
 	protected DiscussionComment getDiscussionComment(
 		long userId, MBMessageDisplay messageDisplay) {
 
+		return getDiscussionComment(
+			userId, messageDisplay.getMessage(), messageDisplay);
+	}
+
+	protected DiscussionComment getDiscussionComment(
+		long userId, MBMessage mbMessage, MBMessageDisplay messageDisplay) {
+
 		MBTreeWalker treeWalker = messageDisplay.getTreeWalker();
 
-		List<MBMessage> messages = treeWalker.getMessages();
+		List<MBMessage> messages = treeWalker.getChildren(mbMessage);
 
 		List<RatingsEntry> ratingsEntries = Collections.emptyList();
 		List<RatingsStats> ratingsStats = Collections.emptyList();
 
-		if (messages.size() > 1) {
+		if (messages.size() > 0) {
 			List<Long> classPKs = new ArrayList<>();
 
 			for (MBMessage curMessage : messages) {
@@ -358,7 +370,7 @@ public class MBCommentManagerImpl implements CommentManager {
 		}
 
 		return new MBDiscussionCommentImpl(
-			treeWalker.getRoot(), treeWalker, ratingsEntries, ratingsStats);
+			mbMessage, treeWalker, ratingsEntries, ratingsStats);
 	}
 
 	@Reference(unbind = "-")

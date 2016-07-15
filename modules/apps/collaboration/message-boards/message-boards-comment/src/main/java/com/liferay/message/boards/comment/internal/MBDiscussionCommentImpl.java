@@ -140,7 +140,7 @@ public class MBDiscussionCommentImpl
 		int[] range = _treeWalker.getChildrenRange(getMessage());
 
 		return new MBDiscussionCommentIterator(
-			messages, from + 1, range[1], _treeWalker);
+			messages, range[0] + from, range[1], _treeWalker);
 	}
 
 	@Override

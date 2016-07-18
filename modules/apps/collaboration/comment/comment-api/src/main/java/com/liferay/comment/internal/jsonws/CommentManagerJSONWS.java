@@ -130,6 +130,26 @@ public class CommentManagerJSONWS extends BaseServiceImpl {
 		return _commentManager.getCommentsCount(className, classPK);
 	}
 
+	public int getTopLevelThreadCommentsCount(
+			long groupId, String className, long classPK)
+		throws PortalException {
+
+		DiscussionPermission discussionPermission =
+			_commentManager.getDiscussionPermission(getPermissionChecker());
+
+		discussionPermission.checkViewPermission(
+			getCompanyId(groupId), groupId, className, classPK);
+
+		Discussion discussion =
+			_commentManager.getDiscussion(getUserId(), groupId, className,
+				classPK, createServiceContextFunction(getCompanyId(groupId)));
+
+		DiscussionComment rootDiscussionComment =
+			discussion.getRootDiscussionComment();
+
+		return rootDiscussionComment.getThreadCommentsCount();
+	}
+
 	public boolean hasDiscussion(long groupId, String className, long classPK)
 		throws PortalException {
 

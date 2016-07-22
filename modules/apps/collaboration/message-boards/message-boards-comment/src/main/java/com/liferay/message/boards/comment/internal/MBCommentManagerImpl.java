@@ -84,6 +84,11 @@ public class MBCommentManagerImpl implements CommentManager {
 		return mbMessage.getMessageId();
 	}
 
+	/**
+	 * @deprecated As of 7.0.2, use {@link #addComment(long, long,
+	 * 		String className, long classPK, String body, Function)} )} instead
+	 */
+	@Deprecated
 	@Override
 	public long addComment(
 			long userId, long groupId, String className, long classPK,
@@ -91,22 +96,8 @@ public class MBCommentManagerImpl implements CommentManager {
 			Function<String, ServiceContext> serviceContextFunction)
 		throws PortalException {
 
-		MBMessageDisplay mbMessageDisplay =
-			_mbMessageLocalService.getDiscussionMessageDisplay(
-				userId, groupId, className, classPK,
-				WorkflowConstants.STATUS_APPROVED);
-
-		MBThread mbThread = mbMessageDisplay.getThread();
-
-		ServiceContext serviceContext = serviceContextFunction.apply(
-			MBMessage.class.getName());
-
-		MBMessage mbMessage = _mbMessageLocalService.addDiscussionMessage(
-			userId, userName, groupId, className, classPK,
-			mbThread.getThreadId(), mbThread.getRootMessageId(), subject, body,
-			serviceContext);
-
-		return mbMessage.getMessageId();
+		return addComment(userId, groupId, className,
+			classPK, body, serviceContextFunction);
 	}
 
 	@Override

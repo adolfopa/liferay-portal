@@ -14,6 +14,7 @@
 
 package com.liferay.comment.internal.jsonws;
 
+import com.liferay.portal.kernel.comment.Comment;
 import com.liferay.portal.kernel.comment.CommentManager;
 import com.liferay.portal.kernel.comment.Discussion;
 import com.liferay.portal.kernel.comment.DiscussionComment;
@@ -31,6 +32,7 @@ import com.liferay.portal.kernel.service.BaseServiceImpl;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.Function;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.util.ArrayList;
@@ -56,7 +58,7 @@ import org.osgi.service.component.annotations.Reference;
 public class CommentManagerJSONWS extends BaseServiceImpl {
 
 	public long addComment(
-			long groupId, String className, long classPK, String body)
+		long groupId, String className, long classPK, String body)
 		throws PortalException {
 
 		DiscussionPermission discussionPermission =
@@ -70,6 +72,28 @@ public class CommentManagerJSONWS extends BaseServiceImpl {
 		return _commentManager.addComment(
 			getUserId(), groupId, className, classPK, body,
 			createServiceContextFunction(companyId));
+	}
+
+	public long addComment(
+		long parentCommentId, String body)
+		throws PortalException {
+
+		DiscussionPermission discussionPermission =
+			_commentManager.getDiscussionPermission(getPermissionChecker());
+
+		Comment comment = _commentManager.fetchComment(parentCommentId);
+
+		long groupId = comment.getGroupId();
+		long companyId = getCompanyId(groupId);
+		String className = comment.getClassName();
+		long classPK = comment.getClassPK();
+
+		discussionPermission.checkAddPermission(
+			companyId, groupId, className, classPK);
+
+		return _commentManager.addComment(
+			getUserId(), className, classPK, getUserName(), parentCommentId,
+			StringPool.BLANK, body, createServiceContextFunction(companyId));
 	}
 
 	public void deleteComment(long commentId) throws PortalException {

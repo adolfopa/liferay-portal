@@ -16,6 +16,10 @@ package com.liferay.blogs.internal.util;
 
 import com.liferay.blogs.kernel.model.BlogsEntry;
 import com.liferay.blogs.kernel.service.BlogsEntryLocalService;
+import com.liferay.message.boards.kernel.model.MBMessage;
+import com.liferay.message.boards.kernel.model.MBMessageDisplay;
+import com.liferay.message.boards.kernel.model.MBThread;
+import com.liferay.message.boards.kernel.service.MBMessageLocalService;
 import com.liferay.portal.kernel.comment.CommentManager;
 import com.liferay.portal.kernel.comment.DuplicateCommentException;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -40,6 +44,7 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.xmlrpc.Method;
 import com.liferay.portal.kernel.xmlrpc.Response;
 import com.liferay.portal.kernel.xmlrpc.XmlRpcConstants;
@@ -172,6 +177,24 @@ public class PingbackMethodImpl implements Method {
 			"[...] " + getExcerpt() + " [...] [url=" + _sourceURI + "]" +
 				LanguageUtil.get(LocaleUtil.getSiteDefault(), "read-more") +
 					"[/url]";
+
+		MBMessageDisplay messageDisplay =
+			_mbMessageLocalService.getDiscussionMessageDisplay(
+				userId, groupId, className, classPK,
+				WorkflowConstants.STATUS_APPROVED);
+
+		MBThread thread = messageDisplay.getThread();
+
+		List<MBMessage> messages = _mbMessageLocalService.getThreadMessages(
+			thread.getThreadId(), WorkflowConstants.STATUS_APPROVED);
+
+		for (MBMessage message : messages) {
+			String messageBody = message.getBody();
+
+			if (messageBody.equals(body)) {
+				throw new DuplicateCommentException(body);
+			}
+		}
 
 		ServiceContext serviceContext = buildServiceContext(
 			companyId, groupId, entry.getUrlTitle());
@@ -395,6 +418,9 @@ public class PingbackMethodImpl implements Method {
 
 	@Reference
 	private CommentManager _commentManager;
+
+	@Reference
+	private MBMessageLocalService _mbMessageLocalService
 
 	private PortletLocalService _portletLocalService;
 	private String _sourceURI;

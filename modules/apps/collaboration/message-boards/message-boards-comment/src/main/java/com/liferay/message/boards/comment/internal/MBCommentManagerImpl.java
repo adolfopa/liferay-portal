@@ -73,17 +73,6 @@ public class MBCommentManagerImpl implements CommentManager {
 
 		MBThread thread = messageDisplay.getThread();
 
-		List<MBMessage> messages = _mbMessageLocalService.getThreadMessages(
-			thread.getThreadId(), WorkflowConstants.STATUS_APPROVED);
-
-		for (MBMessage message : messages) {
-			String messageBody = message.getBody();
-
-			if (messageBody.equals(body)) {
-				throw new DuplicateCommentException(body);
-			}
-		}
-
 		ServiceContext serviceContext = serviceContextFunction.apply(
 			MBMessage.class.getName());
 

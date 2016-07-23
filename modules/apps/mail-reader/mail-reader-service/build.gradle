@@ -1,6 +1,6 @@
 buildService {
-	apiDir = "../mail-api/src/main/java"
-	testDir = "../mail-test/src/testIntegration/java"
+	apiDir = "../mail-reader-api/src/main/java"
+	testDir = "../mail-reader-test/src/testIntegration/java"
 }
 
 dependencies {

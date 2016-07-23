@@ -68,7 +68,8 @@ public class FolderLocalServiceUtil {
 	* @param folderId the primary key for the new folder
 	* @return the new folder
 	*/
-	public static com.liferay.mail.reader.model.Folder createFolder(long folderId) {
+	public static com.liferay.mail.reader.model.Folder createFolder(
+		long folderId) {
 		return getService().createFolder(folderId);
 	}
 
@@ -92,17 +93,19 @@ public class FolderLocalServiceUtil {
 	* @return the folder that was removed
 	* @throws PortalException if a folder with the primary key could not be found
 	*/
-	public static com.liferay.mail.reader.model.Folder deleteFolder(long folderId)
+	public static com.liferay.mail.reader.model.Folder deleteFolder(
+		long folderId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().deleteFolder(folderId);
 	}
 
-	public static com.liferay.mail.reader.model.Folder fetchFolder(long folderId) {
+	public static com.liferay.mail.reader.model.Folder fetchFolder(
+		long folderId) {
 		return getService().fetchFolder(folderId);
 	}
 
-	public static com.liferay.mail.reader.model.Folder getFolder(long accountId,
-		java.lang.String fullName)
+	public static com.liferay.mail.reader.model.Folder getFolder(
+		long accountId, java.lang.String fullName)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().getFolder(accountId, fullName);
 	}
@@ -130,8 +133,8 @@ public class FolderLocalServiceUtil {
 		return getService().updateFolder(folder);
 	}
 
-	public static com.liferay.mail.reader.model.Folder updateFolder(long folderId,
-		java.lang.String fullName, java.lang.String displayName,
+	public static com.liferay.mail.reader.model.Folder updateFolder(
+		long folderId, java.lang.String fullName, java.lang.String displayName,
 		int remoteMessageCount)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService()

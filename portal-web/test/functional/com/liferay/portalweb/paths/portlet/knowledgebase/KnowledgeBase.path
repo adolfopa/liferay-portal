@@ -403,7 +403,7 @@
 </tr>
 <tr>
 	<td>LINK_THERE_ARE_SUGGESTIONS</td>
-	<td>//div[contains(@class,'kb-entity-body')]//following-sibling::h5[2]</td>
+	<td>//div[@class='sidenav-content']//div[contains(.,'suggestion')]</td>
 	<td></td>
 </tr>
 <tr>

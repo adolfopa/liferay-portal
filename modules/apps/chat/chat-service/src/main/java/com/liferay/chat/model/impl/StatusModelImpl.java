@@ -86,7 +86,7 @@ public class StatusModelImpl extends BaseModelImpl<Status>
 		TABLE_COLUMNS_MAP.put("playSound", Types.BOOLEAN);
 	}
 
-	public static final String TABLE_SQL_CREATE = "create table Chat_Status (statusId LONG not null primary key,userId LONG,modifiedDate LONG,online_ BOOLEAN,awake BOOLEAN,activePanelIds VARCHAR(75) null,message VARCHAR(75) null,playSound BOOLEAN)";
+	public static final String TABLE_SQL_CREATE = "create table Chat_Status (statusId LONG not null primary key,userId LONG,modifiedDate LONG,online_ BOOLEAN,awake BOOLEAN,activePanelIds STRING null,message STRING null,playSound BOOLEAN)";
 	public static final String TABLE_SQL_DROP = "drop table Chat_Status";
 	public static final String ORDER_BY_JPQL = " ORDER BY status.statusId ASC";
 	public static final String ORDER_BY_SQL = " ORDER BY Chat_Status.statusId ASC";

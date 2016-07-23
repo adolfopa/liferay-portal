@@ -53,11 +53,11 @@ public class MessageLocalServiceUtil {
 		return getService().addMessage(message);
 	}
 
-	public static com.liferay.mail.reader.model.Message addMessage(long userId,
-		long folderId, java.lang.String sender, java.lang.String to,
-		java.lang.String cc, java.lang.String bcc, java.util.Date sentDate,
-		java.lang.String subject, java.lang.String body,
-		java.lang.String flags, long remoteMessageId,
+	public static com.liferay.mail.reader.model.Message addMessage(
+		long userId, long folderId, java.lang.String sender,
+		java.lang.String to, java.lang.String cc, java.lang.String bcc,
+		java.util.Date sentDate, java.lang.String subject,
+		java.lang.String body, java.lang.String flags, long remoteMessageId,
 		java.lang.String contentType)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService()
@@ -71,7 +71,8 @@ public class MessageLocalServiceUtil {
 	* @param messageId the primary key for the new message
 	* @return the new message
 	*/
-	public static com.liferay.mail.reader.model.Message createMessage(long messageId) {
+	public static com.liferay.mail.reader.model.Message createMessage(
+		long messageId) {
 		return getService().createMessage(messageId);
 	}
 
@@ -95,17 +96,19 @@ public class MessageLocalServiceUtil {
 	* @return the message that was removed
 	* @throws PortalException if a message with the primary key could not be found
 	*/
-	public static com.liferay.mail.reader.model.Message deleteMessage(long messageId)
+	public static com.liferay.mail.reader.model.Message deleteMessage(
+		long messageId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().deleteMessage(messageId);
 	}
 
-	public static com.liferay.mail.reader.model.Message fetchMessage(long messageId) {
+	public static com.liferay.mail.reader.model.Message fetchMessage(
+		long messageId) {
 		return getService().fetchMessage(messageId);
 	}
 
-	public static com.liferay.mail.reader.model.Message getMessage(long folderId,
-		long remoteMessageId)
+	public static com.liferay.mail.reader.model.Message getMessage(
+		long folderId, long remoteMessageId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().getMessage(folderId, remoteMessageId);
 	}
@@ -117,7 +120,8 @@ public class MessageLocalServiceUtil {
 	* @return the message
 	* @throws PortalException if a message with the primary key could not be found
 	*/
-	public static com.liferay.mail.reader.model.Message getMessage(long messageId)
+	public static com.liferay.mail.reader.model.Message getMessage(
+		long messageId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().getMessage(messageId);
 	}
@@ -128,14 +132,14 @@ public class MessageLocalServiceUtil {
 		return getService().getRemoteMessage(folderId, oldest);
 	}
 
-	public static com.liferay.mail.reader.model.Message updateContent(long messageId,
-		java.lang.String body, java.lang.String flags)
+	public static com.liferay.mail.reader.model.Message updateContent(
+		long messageId, java.lang.String body, java.lang.String flags)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().updateContent(messageId, body, flags);
 	}
 
-	public static com.liferay.mail.reader.model.Message updateFlag(long messageId,
-		int flag, boolean value)
+	public static com.liferay.mail.reader.model.Message updateFlag(
+		long messageId, int flag, boolean value)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().updateFlag(messageId, flag, value);
 	}
@@ -151,11 +155,11 @@ public class MessageLocalServiceUtil {
 		return getService().updateMessage(message);
 	}
 
-	public static com.liferay.mail.reader.model.Message updateMessage(long messageId,
-		long folderId, java.lang.String sender, java.lang.String to,
-		java.lang.String cc, java.lang.String bcc, java.util.Date sentDate,
-		java.lang.String subject, java.lang.String body,
-		java.lang.String flags, long remoteMessageId)
+	public static com.liferay.mail.reader.model.Message updateMessage(
+		long messageId, long folderId, java.lang.String sender,
+		java.lang.String to, java.lang.String cc, java.lang.String bcc,
+		java.util.Date sentDate, java.lang.String subject,
+		java.lang.String body, java.lang.String flags, long remoteMessageId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService()
 				   .updateMessage(messageId, folderId, sender, to, cc, bcc,
@@ -215,9 +219,10 @@ public class MessageLocalServiceUtil {
 	}
 
 	public static int populateMessages(
-		java.util.List<com.liferay.mail.reader.model.Message> messages, long folderId,
-		java.lang.String keywords, int pageNumber, int messagesPerPage,
-		java.lang.String orderByField, java.lang.String orderByType) {
+		java.util.List<com.liferay.mail.reader.model.Message> messages,
+		long folderId, java.lang.String keywords, int pageNumber,
+		int messagesPerPage, java.lang.String orderByField,
+		java.lang.String orderByType) {
 		return getService()
 				   .populateMessages(messages, folderId, keywords, pageNumber,
 			messagesPerPage, orderByField, orderByType);

@@ -61,7 +61,8 @@ public class AttachmentLocalServiceWrapper implements AttachmentLocalService,
 	* @return the new attachment
 	*/
 	@Override
-	public com.liferay.mail.reader.model.Attachment createAttachment(long attachmentId) {
+	public com.liferay.mail.reader.model.Attachment createAttachment(
+		long attachmentId) {
 		return _attachmentLocalService.createAttachment(attachmentId);
 	}
 
@@ -85,13 +86,15 @@ public class AttachmentLocalServiceWrapper implements AttachmentLocalService,
 	* @throws PortalException if a attachment with the primary key could not be found
 	*/
 	@Override
-	public com.liferay.mail.reader.model.Attachment deleteAttachment(long attachmentId)
+	public com.liferay.mail.reader.model.Attachment deleteAttachment(
+		long attachmentId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _attachmentLocalService.deleteAttachment(attachmentId);
 	}
 
 	@Override
-	public com.liferay.mail.reader.model.Attachment fetchAttachment(long attachmentId) {
+	public com.liferay.mail.reader.model.Attachment fetchAttachment(
+		long attachmentId) {
 		return _attachmentLocalService.fetchAttachment(attachmentId);
 	}
 
@@ -103,7 +106,8 @@ public class AttachmentLocalServiceWrapper implements AttachmentLocalService,
 	* @throws PortalException if a attachment with the primary key could not be found
 	*/
 	@Override
-	public com.liferay.mail.reader.model.Attachment getAttachment(long attachmentId)
+	public com.liferay.mail.reader.model.Attachment getAttachment(
+		long attachmentId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _attachmentLocalService.getAttachment(attachmentId);
 	}

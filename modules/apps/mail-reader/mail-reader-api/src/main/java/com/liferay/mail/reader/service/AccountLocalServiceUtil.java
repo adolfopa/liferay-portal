@@ -53,8 +53,8 @@ public class AccountLocalServiceUtil {
 		return getService().addAccount(account);
 	}
 
-	public static com.liferay.mail.reader.model.Account addAccount(long userId,
-		java.lang.String address, java.lang.String personalName,
+	public static com.liferay.mail.reader.model.Account addAccount(
+		long userId, java.lang.String address, java.lang.String personalName,
 		java.lang.String protocol, java.lang.String incomingHostName,
 		int incomingPort, boolean incomingSecure,
 		java.lang.String outgoingHostName, int outgoingPort,
@@ -78,7 +78,8 @@ public class AccountLocalServiceUtil {
 	* @param accountId the primary key for the new account
 	* @return the new account
 	*/
-	public static com.liferay.mail.reader.model.Account createAccount(long accountId) {
+	public static com.liferay.mail.reader.model.Account createAccount(
+		long accountId) {
 		return getService().createAccount(accountId);
 	}
 
@@ -102,12 +103,14 @@ public class AccountLocalServiceUtil {
 	* @return the account that was removed
 	* @throws PortalException if a account with the primary key could not be found
 	*/
-	public static com.liferay.mail.reader.model.Account deleteAccount(long accountId)
+	public static com.liferay.mail.reader.model.Account deleteAccount(
+		long accountId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().deleteAccount(accountId);
 	}
 
-	public static com.liferay.mail.reader.model.Account fetchAccount(long accountId) {
+	public static com.liferay.mail.reader.model.Account fetchAccount(
+		long accountId) {
 		return getService().fetchAccount(accountId);
 	}
 
@@ -118,13 +121,14 @@ public class AccountLocalServiceUtil {
 	* @return the account
 	* @throws PortalException if a account with the primary key could not be found
 	*/
-	public static com.liferay.mail.reader.model.Account getAccount(long accountId)
+	public static com.liferay.mail.reader.model.Account getAccount(
+		long accountId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().getAccount(accountId);
 	}
 
-	public static com.liferay.mail.reader.model.Account getAccount(long userId,
-		java.lang.String address)
+	public static com.liferay.mail.reader.model.Account getAccount(
+		long userId, java.lang.String address)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().getAccount(userId, address);
 	}
@@ -140,9 +144,10 @@ public class AccountLocalServiceUtil {
 		return getService().updateAccount(account);
 	}
 
-	public static com.liferay.mail.reader.model.Account updateAccount(long accountId,
-		java.lang.String personalName, java.lang.String password,
-		boolean savePassword, java.lang.String signature, boolean useSignature,
+	public static com.liferay.mail.reader.model.Account updateAccount(
+		long accountId, java.lang.String personalName,
+		java.lang.String password, boolean savePassword,
+		java.lang.String signature, boolean useSignature,
 		java.lang.String folderPrefix, boolean defaultSender)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService()
@@ -150,9 +155,9 @@ public class AccountLocalServiceUtil {
 			savePassword, signature, useSignature, folderPrefix, defaultSender);
 	}
 
-	public static com.liferay.mail.reader.model.Account updateFolders(long accountId,
-		long inboxFolderId, long draftFolderId, long sentFolderId,
-		long trashFolderId)
+	public static com.liferay.mail.reader.model.Account updateFolders(
+		long accountId, long inboxFolderId, long draftFolderId,
+		long sentFolderId, long trashFolderId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService()
 				   .updateFolders(accountId, inboxFolderId, draftFolderId,

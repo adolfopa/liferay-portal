@@ -81,7 +81,7 @@ public class EntryModelImpl extends BaseModelImpl<Entry> implements EntryModel {
 		TABLE_COLUMNS_MAP.put("flag", Types.INTEGER);
 	}
 
-	public static final String TABLE_SQL_CREATE = "create table Chat_Entry (entryId LONG not null primary key,createDate LONG,fromUserId LONG,toUserId LONG,content VARCHAR(75) null,flag INTEGER)";
+	public static final String TABLE_SQL_CREATE = "create table Chat_Entry (entryId LONG not null primary key,createDate LONG,fromUserId LONG,toUserId LONG,content VARCHAR(1000) null,flag INTEGER)";
 	public static final String TABLE_SQL_DROP = "drop table Chat_Entry";
 	public static final String ORDER_BY_JPQL = " ORDER BY entry.createDate DESC";
 	public static final String ORDER_BY_SQL = " ORDER BY Chat_Entry.createDate DESC";

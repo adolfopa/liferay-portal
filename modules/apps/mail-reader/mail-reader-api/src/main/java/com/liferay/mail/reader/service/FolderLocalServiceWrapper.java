@@ -45,9 +45,9 @@ public class FolderLocalServiceWrapper implements FolderLocalService,
 	}
 
 	@Override
-	public com.liferay.mail.reader.model.Folder addFolder(long userId, long accountId,
-		java.lang.String fullName, java.lang.String displayName,
-		int remoteMessageCount)
+	public com.liferay.mail.reader.model.Folder addFolder(long userId,
+		long accountId, java.lang.String fullName,
+		java.lang.String displayName, int remoteMessageCount)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _folderLocalService.addFolder(userId, accountId, fullName,
 			displayName, remoteMessageCount);
@@ -271,8 +271,8 @@ public class FolderLocalServiceWrapper implements FolderLocalService,
 	* @return the range of folders
 	*/
 	@Override
-	public java.util.List<com.liferay.mail.reader.model.Folder> getFolders(int start,
-		int end) {
+	public java.util.List<com.liferay.mail.reader.model.Folder> getFolders(
+		int start, int end) {
 		return _folderLocalService.getFolders(start, end);
 	}
 

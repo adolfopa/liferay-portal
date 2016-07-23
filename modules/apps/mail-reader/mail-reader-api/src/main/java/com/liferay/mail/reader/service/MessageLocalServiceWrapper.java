@@ -121,8 +121,8 @@ public class MessageLocalServiceWrapper implements MessageLocalService,
 	}
 
 	@Override
-	public com.liferay.mail.reader.model.Message getRemoteMessage(long folderId,
-		boolean oldest)
+	public com.liferay.mail.reader.model.Message getRemoteMessage(
+		long folderId, boolean oldest)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _messageLocalService.getRemoteMessage(folderId, oldest);
 	}
@@ -135,8 +135,8 @@ public class MessageLocalServiceWrapper implements MessageLocalService,
 	}
 
 	@Override
-	public com.liferay.mail.reader.model.Message updateFlag(long messageId, int flag,
-		boolean value)
+	public com.liferay.mail.reader.model.Message updateFlag(long messageId,
+		int flag, boolean value)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _messageLocalService.updateFlag(messageId, flag, value);
 	}
@@ -228,9 +228,10 @@ public class MessageLocalServiceWrapper implements MessageLocalService,
 
 	@Override
 	public int populateMessages(
-		java.util.List<com.liferay.mail.reader.model.Message> messages, long folderId,
-		java.lang.String keywords, int pageNumber, int messagesPerPage,
-		java.lang.String orderByField, java.lang.String orderByType) {
+		java.util.List<com.liferay.mail.reader.model.Message> messages,
+		long folderId, java.lang.String keywords, int pageNumber,
+		int messagesPerPage, java.lang.String orderByField,
+		java.lang.String orderByType) {
 		return _messageLocalService.populateMessages(messages, folderId,
 			keywords, pageNumber, messagesPerPage, orderByField, orderByType);
 	}

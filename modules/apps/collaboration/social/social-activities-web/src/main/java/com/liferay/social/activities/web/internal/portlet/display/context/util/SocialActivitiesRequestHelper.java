@@ -18,12 +18,15 @@ import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.display.context.util.BaseRequestHelper;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
+import com.liferay.portal.kernel.service.PortletPreferencesLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.kernel.util.RSSUtil;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.social.activities.web.constants.SocialActivitiesPortletKeys;
 
 import javax.portlet.PortletPreferences;
 
@@ -53,12 +56,9 @@ public class SocialActivitiesRequestHelper extends BaseRequestHelper {
 			return _max;
 		}
 
-		LiferayPortletRequest liferayPortletRequest =
-			getLiferayPortletRequest();
+		PortletPreferences portletPreferences = _getPortletPreferences();
 
-		PortletPreferences preferences = liferayPortletRequest.getPreferences();
-
-		_max = GetterUtil.getInteger(preferences.getValue("max", "10"));
+		_max = GetterUtil.getInteger(portletPreferences.getValue("max", "10"));
 
 		return _max;
 	}
@@ -68,13 +68,10 @@ public class SocialActivitiesRequestHelper extends BaseRequestHelper {
 			return _rssDelta;
 		}
 
-		LiferayPortletRequest liferayPortletRequest =
-			getLiferayPortletRequest();
-
-		PortletPreferences preferences = liferayPortletRequest.getPreferences();
+		PortletPreferences portletPreferences = _getPortletPreferences();
 
 		_rssDelta = GetterUtil.getInteger(
-			preferences.getValue("rssDelta", StringPool.BLANK),
+			portletPreferences.getValue("rssDelta", StringPool.BLANK),
 			SearchContainer.DEFAULT_DELTA);
 
 		return _rssDelta;
@@ -85,12 +82,9 @@ public class SocialActivitiesRequestHelper extends BaseRequestHelper {
 			return _rssDisplayStyle;
 		}
 
-		LiferayPortletRequest liferayPortletRequest =
-			getLiferayPortletRequest();
+		PortletPreferences portletPreferences = _getPortletPreferences();
 
-		PortletPreferences preferences = liferayPortletRequest.getPreferences();
-
-		_rssDisplayStyle = preferences.getValue(
+		_rssDisplayStyle = portletPreferences.getValue(
 			"rssDisplayStyle", RSSUtil.DISPLAY_STYLE_DEFAULT);
 
 		return _rssDisplayStyle;
@@ -101,12 +95,9 @@ public class SocialActivitiesRequestHelper extends BaseRequestHelper {
 			return _rssFeedType;
 		}
 
-		LiferayPortletRequest liferayPortletRequest =
-			getLiferayPortletRequest();
+		PortletPreferences portletPreferences = _getPortletPreferences();
 
-		PortletPreferences preferences = liferayPortletRequest.getPreferences();
-
-		_rssFeedType = preferences.getValue(
+		_rssFeedType = portletPreferences.getValue(
 			"rssFeedType", RSSUtil.FEED_TYPE_DEFAULT);
 
 		return _rssFeedType;
@@ -137,20 +128,30 @@ public class SocialActivitiesRequestHelper extends BaseRequestHelper {
 			return _rssEnabled;
 		}
 
-		LiferayPortletRequest liferayPortletRequest =
-			getLiferayPortletRequest();
-
-		PortletPreferences preferences = liferayPortletRequest.getPreferences();
+		PortletPreferences portletPreferences = _getPortletPreferences();
 
 		if (PortalUtil.isRSSFeedsEnabled()) {
 			_rssEnabled = GetterUtil.getBoolean(
-				preferences.getValue("enableRss", null), true);
+				portletPreferences.getValue("enableRss", null), true);
 		}
 		else {
 			_rssEnabled = false;
 		}
 
 		return _rssEnabled;
+	}
+
+	private PortletPreferences _getPortletPreferences() {
+		LiferayPortletRequest liferayPortletRequest =
+			getLiferayPortletRequest();
+
+		ThemeDisplay themeDisplay = getThemeDisplay();
+
+		return PortletPreferencesLocalServiceUtil.getPreferences(
+			themeDisplay.getCompanyId(), PortletKeys.PREFS_OWNER_ID_DEFAULT,
+			PortletKeys.PREFS_OWNER_TYPE_LAYOUT,
+			liferayPortletRequest.getPlid(),
+			SocialActivitiesPortletKeys.SOCIAL_ACTIVITIES);
 	}
 
 	private Integer _end;

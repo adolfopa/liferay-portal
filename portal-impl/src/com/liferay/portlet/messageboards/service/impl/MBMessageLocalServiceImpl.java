@@ -2326,7 +2326,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 		String inReplyTo = null;
 
 		String messageSubject = message.getSubject();
-		String messageSubjectPrefix = "";
+		String messageSubjectPrefix = StringPool.BLANK;
 
 		if (message.getParentMessageId() !=
 				MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID) {

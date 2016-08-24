@@ -26,6 +26,51 @@ if (parentOrganizationId > 0) {
 }
 %>
 
+<c:if test="<%= false && !themeDisplay.isSignedIn() %>">
+	<aui:script use="aui-base,aui-io-request">
+		Liferay.Address = {
+			getCountries: function(callback) {
+				A.io.request(
+					'<portlet:resourceURL id="getCountries" />',
+					{
+						on: {
+							success: function(event, id, obj) {
+								var responseData = this.get('responseData');
+
+								callback(responseData);
+							}
+						},
+						data: {
+							<portlet:namespace />active: true
+						},
+						dataType: 'json'
+					}
+				);
+			},
+
+			getRegions: function(callback, selectKey) {
+				A.io.request(
+					'<portlet:resourceURL id="getRegions" />',
+					{
+						on: {
+							success: function(event, id, obj) {
+								var responseData = this.get('responseData');
+
+								callback(responseData);
+							}
+						},
+						data: {
+							<portlet:namespace />active: true,
+							<portlet:namespace />countryId: Number(selectKey)
+						},
+						dataType: 'json'
+					}
+				);
+			}
+		};
+	</aui:script>
+</c:if>
+
 <liferay-ui:search-container
 	searchContainer="<%= new OrganizationSearch(renderRequest, portletURL) %>"
 	var="organizationSearchContainer"

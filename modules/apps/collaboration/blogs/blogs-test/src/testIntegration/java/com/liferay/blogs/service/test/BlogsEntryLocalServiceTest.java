@@ -98,6 +98,28 @@ public class BlogsEntryLocalServiceTest {
 	}
 
 	@Test
+	public void testAddDraftEntryWithoutTitle() throws Exception {
+		String title = "";
+
+		int initialCount = BlogsEntryLocalServiceUtil.getGroupEntriesCount(
+			_group.getGroupId(), _statusAnyQueryDefinition);
+
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(_group, _user.getUserId());
+
+		serviceContext.setWorkflowAction(WorkflowConstants.ACTION_SAVE_DRAFT);
+
+		BlogsEntryLocalServiceUtil.addEntry(
+			_user.getUserId(), title, RandomTestUtil.randomString(),
+			serviceContext);
+
+		int actualCount = BlogsEntryLocalServiceUtil.getGroupEntriesCount(
+			_group.getGroupId(), _statusAnyQueryDefinition);
+
+		Assert.assertEquals(initialCount + 1, actualCount);
+	}
+
+	@Test
 	public void testAddEntry() throws Exception {
 		int initialCount = BlogsEntryLocalServiceUtil.getGroupEntriesCount(
 			_group.getGroupId(), _statusApprovedQueryDefinition);
@@ -510,6 +532,18 @@ public class BlogsEntryLocalServiceTest {
 	@Test
 	public void testGetOrganizationEntriesNotInTrash() throws Exception {
 		testGetOrganizationEntries(false);
+	}
+
+	@Test(expected = EntryTitleException.class)
+	public void testPublishEntryWithWithoutTitle() throws Exception {
+		String title = "";
+
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(_group, _user.getUserId());
+
+		BlogsEntryLocalServiceUtil.addEntry(
+			_user.getUserId(), title, RandomTestUtil.randomString(),
+			serviceContext);
 	}
 
 	@Test

@@ -280,7 +280,9 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 
 		long entryId = counterLocalService.increment();
 
-		validate(title, urlTitle, content);
+		int initialStatus = WorkflowConstants.STATUS_DRAFT;
+
+		validate(title, urlTitle, content, initialStatus);
 
 		BlogsEntry entry = blogsEntryPersistence.create(entryId);
 
@@ -301,7 +303,7 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 		entry.setDisplayDate(displayDate);
 		entry.setAllowPingbacks(allowPingbacks);
 		entry.setAllowTrackbacks(allowTrackbacks);
-		entry.setStatus(WorkflowConstants.STATUS_DRAFT);
+		entry.setStatus(initialStatus);
 		entry.setStatusByUserId(userId);
 		entry.setStatusDate(serviceContext.getModifiedDate(null));
 		entry.setExpandoBridgeAttributes(serviceContext);
@@ -1221,8 +1223,6 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 
 		BlogsEntry entry = blogsEntryPersistence.findByPrimaryKey(entryId);
 
-		validate(title, urlTitle, content);
-
 		String oldUrlTitle = entry.getUrlTitle();
 
 		entry.setTitle(title);
@@ -1246,6 +1246,8 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 		}
 
 		entry.setExpandoBridgeAttributes(serviceContext);
+
+		validate(title, urlTitle, content, entry.getStatus());
 
 		blogsEntryPersistence.update(entry);
 
@@ -1449,6 +1451,12 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 		Date now = new Date();
 
 		BlogsEntry entry = blogsEntryPersistence.findByPrimaryKey(entryId);
+
+		validate(
+			entry.getTitle(),
+			entry.getUrlTitle(),
+			entry.getContent(),
+			status);
 
 		int oldStatus = entry.getStatus();
 
@@ -2206,10 +2214,11 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 		}
 	}
 
-	protected void validate(String title, String urlTitle, String content)
+	protected void validate(String title, String urlTitle, String content, int status)
 		throws PortalException {
 
-		if (Validator.isNull(title)) {
+		if (WorkflowConstants.STATUS_APPROVED == status &&
+			Validator.isNull(title)) {
 			throw new EntryTitleException("Title is null");
 		}
 

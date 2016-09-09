@@ -16,9 +16,16 @@ package com.liferay.screens.service.http;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+
+import com.liferay.screens.service.ScreensCommentServiceUtil;
+
+import java.rmi.RemoteException;
+
 /**
  * Provides the SOAP utility for the
- * {@link com.liferay.screens.service.ScreensCommentServiceUtil} service utility. The
+ * {@link ScreensCommentServiceUtil} service utility. The
  * static methods of this class calls the same methods of the service utility.
  * However, the signatures are different because it is difficult for SOAP to
  * support certain types.
@@ -42,9 +49,25 @@ import aQute.bnd.annotation.ProviderType;
  *
  * @author José Manuel Navarro
  * @see ScreensCommentServiceHttp
- * @see com.liferay.screens.service.ScreensCommentServiceUtil
+ * @see ScreensCommentServiceUtil
  * @generated
  */
 @ProviderType
 public class ScreensCommentServiceSoap {
+	public static java.lang.String addComment(java.lang.String className,
+		long classPK, java.lang.String body) throws RemoteException {
+		try {
+			com.liferay.portal.kernel.json.JSONObject returnValue = ScreensCommentServiceUtil.addComment(className,
+					classPK, body);
+
+			return returnValue.toString();
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	private static Log _log = LogFactoryUtil.getLog(ScreensCommentServiceSoap.class);
 }

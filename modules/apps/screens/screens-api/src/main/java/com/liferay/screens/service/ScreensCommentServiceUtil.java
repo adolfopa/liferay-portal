@@ -41,6 +41,11 @@ public class ScreensCommentServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to {@link com.liferay.screens.service.impl.ScreensCommentServiceImpl} and rerun ServiceBuilder to regenerate this class.
 	 */
+	public static com.liferay.portal.kernel.json.JSONObject addComment(
+		java.lang.String className, long classPK, java.lang.String body)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().addComment(className, classPK, body);
+	}
 
 	/**
 	* Returns the OSGi service identifier.

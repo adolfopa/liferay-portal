@@ -18,6 +18,7 @@ import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
 import com.liferay.portal.kernel.security.access.control.AccessControlled;
 import com.liferay.portal.kernel.service.BaseService;
@@ -49,6 +50,8 @@ public interface ScreensCommentService extends BaseService {
 	 *
 	 * Never modify or reference this interface directly. Always use {@link ScreensCommentServiceUtil} to access the screens comment remote service. Add custom service methods to {@link com.liferay.screens.service.impl.ScreensCommentServiceImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
+	public JSONObject addComment(java.lang.String className, long classPK,
+		java.lang.String body) throws PortalException;
 
 	/**
 	* Returns the OSGi service identifier.

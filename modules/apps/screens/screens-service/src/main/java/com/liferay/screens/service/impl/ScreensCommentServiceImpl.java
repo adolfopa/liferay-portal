@@ -33,17 +33,14 @@ import java.util.Locale;
 /**
  * @author Alejandro Hernández Malillos
  */
-public class ScreensCommentServiceImpl
-	extends ScreensCommentServiceBaseImpl {
+public class ScreensCommentServiceImpl extends ScreensCommentServiceBaseImpl {
 
 	@Override
-	public JSONObject addComment(
-			String className, long classPK, String body)
-			throws PortalException {
+	public JSONObject addComment(String className, long classPK, String body)
+		throws PortalException {
 
-		JSONObject assetEntry =
-			screensAssetEntryService.getAssetEntry(className, classPK,
-				Locale.getDefault());
+		JSONObject assetEntry = screensAssetEntryService.getAssetEntry(
+			className, classPK, Locale.getDefault());
 
 		long groupId = assetEntry.getLong("groupId");
 
@@ -66,8 +63,7 @@ public class ScreensCommentServiceImpl
 	}
 
 	@Override
-	public JSONObject updateComment(
-		long commentId, String body)
+	public JSONObject updateComment(long commentId, String body)
 		throws PortalException {
 
 		Comment comment = commentManager.fetchComment(commentId);
@@ -118,18 +114,22 @@ public class ScreensCommentServiceImpl
 
 	protected JSONObject getJSONObject(
 			Comment comment, DiscussionPermission discussionPermission)
-			throws PortalException {
+		throws PortalException {
+
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
+
 		jsonObject.put("body", comment.getBody());
 		jsonObject.put("commentId", comment.getCommentId());
 		jsonObject.put("createDate", comment.getCreateDate().getTime());
+		jsonObject.put(
+			"deletePermission",
+			discussionPermission.hasDeletePermission(comment.getCommentId()));
 		jsonObject.put("modifiedDate", comment.getModifiedDate().getTime());
+		jsonObject.put(
+			"updatePermission",
+			discussionPermission.hasUpdatePermission(comment.getCommentId()));
 		jsonObject.put("userId", comment.getUserId());
 		jsonObject.put("userName", comment.getUserName());
-		jsonObject.put("updatePermission",
-			discussionPermission.hasUpdatePermission(comment.getCommentId()));
-		jsonObject.put("deletePermission",
-			discussionPermission.hasDeletePermission(comment.getCommentId()));
 
 		return jsonObject;
 	}
@@ -139,4 +139,5 @@ public class ScreensCommentServiceImpl
 
 	@ServiceReference(type = GroupLocalService.class)
 	protected GroupLocalService groupLocalService;
+
 }

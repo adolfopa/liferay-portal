@@ -47,6 +47,12 @@ public class ScreensCommentServiceUtil {
 		return getService().addComment(className, classPK, body);
 	}
 
+	public static com.liferay.portal.kernel.json.JSONObject updateComment(
+		long commentId, java.lang.String body)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().updateComment(commentId, body);
+	}
+
 	/**
 	* Returns the OSGi service identifier.
 	*

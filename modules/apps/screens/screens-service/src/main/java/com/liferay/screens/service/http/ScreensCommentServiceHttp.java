@@ -88,8 +88,43 @@ public class ScreensCommentServiceHttp {
 		}
 	}
 
+	public static com.liferay.portal.kernel.json.JSONObject updateComment(
+		HttpPrincipal httpPrincipal, long commentId, java.lang.String body)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		try {
+			MethodKey methodKey = new MethodKey(ScreensCommentServiceUtil.class,
+					"updateComment", _updateCommentParameterTypes1);
+
+			MethodHandler methodHandler = new MethodHandler(methodKey,
+					commentId, body);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception e) {
+				if (e instanceof com.liferay.portal.kernel.exception.PortalException) {
+					throw (com.liferay.portal.kernel.exception.PortalException)e;
+				}
+
+				throw new com.liferay.portal.kernel.exception.SystemException(e);
+			}
+
+			return (com.liferay.portal.kernel.json.JSONObject)returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException se) {
+			_log.error(se, se);
+
+			throw se;
+		}
+	}
+
 	private static Log _log = LogFactoryUtil.getLog(ScreensCommentServiceHttp.class);
 	private static final Class<?>[] _addCommentParameterTypes0 = new Class[] {
 			java.lang.String.class, long.class, java.lang.String.class
+		};
+	private static final Class<?>[] _updateCommentParameterTypes1 = new Class[] {
+			long.class, java.lang.String.class
 		};
 }

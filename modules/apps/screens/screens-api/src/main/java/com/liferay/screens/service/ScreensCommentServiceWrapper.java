@@ -40,6 +40,13 @@ public class ScreensCommentServiceWrapper implements ScreensCommentService,
 		return _screensCommentService.addComment(className, classPK, body);
 	}
 
+	@Override
+	public com.liferay.portal.kernel.json.JSONObject updateComment(
+		long commentId, java.lang.String body)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _screensCommentService.updateComment(commentId, body);
+	}
+
 	/**
 	* Returns the OSGi service identifier.
 	*

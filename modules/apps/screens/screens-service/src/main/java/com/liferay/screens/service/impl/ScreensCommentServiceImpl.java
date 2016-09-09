@@ -1,11 +1,11 @@
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- * <p>
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * <p>
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.comment.DiscussionPermission;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.Function;
@@ -39,15 +40,17 @@ public class ScreensCommentServiceImpl extends ScreensCommentServiceBaseImpl {
 	public JSONObject addComment(String className, long classPK, String body)
 		throws PortalException {
 
+		DiscussionPermission discussionPermission =
+			commentManager.getDiscussionPermission(getPermissionChecker());
+
 		JSONObject assetEntry = screensAssetEntryService.getAssetEntry(
 			className, classPK, Locale.getDefault());
 
 		long groupId = assetEntry.getLong("groupId");
 
-		DiscussionPermission discussionPermission =
-			commentManager.getDiscussionPermission(getPermissionChecker());
+		Group group = groupLocalService.getGroup(groupId);
 
-		long companyId = groupLocalService.getGroup(groupId).getCompanyId();
+		long companyId = group.getCompanyId();
 
 		discussionPermission.checkAddPermission(
 			companyId, groupId, className, classPK);
@@ -56,32 +59,30 @@ public class ScreensCommentServiceImpl extends ScreensCommentServiceBaseImpl {
 			getUserId(), groupId, className, classPK, getUser().getFullName(),
 			StringPool.BLANK, body, createServiceContextFunction());
 
-		JSONObject jsonObject = getJSONObject(
-			commentManager.fetchComment(commentId), discussionPermission);
+		Comment comment = commentManager.fetchComment(commentId);
 
-		return jsonObject;
+		return getJSONObject(comment, discussionPermission);
 	}
 
 	@Override
 	public JSONObject updateComment(long commentId, String body)
 		throws PortalException {
 
-		Comment comment = commentManager.fetchComment(commentId);
-
-		String className = comment.getClassName();
-		long classPK = comment.getClassPK();
-
 		DiscussionPermission discussionPermission =
 			commentManager.getDiscussionPermission(getPermissionChecker());
 
 		discussionPermission.checkUpdatePermission(commentId);
 
+		Comment comment = commentManager.fetchComment(commentId);
+
 		commentManager.updateComment(
-			getUserId(), className, classPK, commentId, StringPool.BLANK, body,
+			getUserId(), comment.getClassName(), comment.getClassPK(),
+			commentId, StringPool.BLANK, body,
 			createServiceContextFunction(WorkflowConstants.ACTION_PUBLISH));
 
-		return getJSONObject(
-			commentManager.fetchComment(commentId), discussionPermission);
+		comment = commentManager.fetchComment(commentId);
+
+		return getJSONObject(comment, discussionPermission);
 	}
 
 	protected Function<String, ServiceContext> createServiceContextFunction() {

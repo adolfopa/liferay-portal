@@ -14,6 +14,9 @@
 
 package com.liferay.mentions.internal.util.impl;
 
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
@@ -29,7 +32,9 @@ public class MentionsMatcher {
 	}
 
 	private static final Pattern _pattern = Pattern.compile(
-		"(?:\\s|^|\\]|>)(?:@|&#64;)((?:&(?!#64;)|[^@<>.,\\[\\]\\s])+)");
+		"(?:\\s|^|\\]|>)(?:@|&#64;)((?:&(?!#64;)|[^@<>.,\\[\\]\\s]|[" +
+			PropsUtil.get(PropsKeys.USERS_SCREEN_NAME_SPECIAL_CHARACTERS) +
+				"])+)");
 
 	private static class MentionsIterable implements Iterable<String> {
 

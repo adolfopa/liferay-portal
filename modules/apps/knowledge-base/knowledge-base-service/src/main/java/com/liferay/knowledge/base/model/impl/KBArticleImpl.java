@@ -108,6 +108,10 @@ public class KBArticleImpl extends KBArticleBaseImpl {
 
 	@Override
 	public KBArticle getParentKBArticle() throws PortalException {
+		return getParentKBArticle(WorkflowConstants.STATUS_APPROVED);
+	}
+
+	public KBArticle getParentKBArticle(int status) throws PortalException {
 		long parentResourcePrimKey = getParentResourcePrimKey();
 
 		if ((parentResourcePrimKey <= 0) ||
@@ -117,7 +121,7 @@ public class KBArticleImpl extends KBArticleBaseImpl {
 		}
 
 		return KBArticleLocalServiceUtil.getLatestKBArticle(
-			parentResourcePrimKey, WorkflowConstants.STATUS_APPROVED);
+			parentResourcePrimKey, status);
 	}
 
 	@Override

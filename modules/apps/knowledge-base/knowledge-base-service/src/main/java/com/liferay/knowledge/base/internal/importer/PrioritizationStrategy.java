@@ -181,26 +181,11 @@ public class PrioritizationStrategy {
 		return numericalPrefix;
 	}
 
-	protected KBArticle getParentKBArticle(KBArticle kbArticle)
-		throws PortalException {
-
-		long parentResourcePrimKey = kbArticle.getParentResourcePrimKey();
-
-		if ((parentResourcePrimKey <= 0) ||
-			(kbArticle.getParentResourceClassNameId() !=
-				kbArticle.getClassNameId())) {
-
-			return null;
-		}
-
-		return KBArticleLocalServiceUtil.getLatestKBArticle(
-			parentResourcePrimKey, kbArticle.getStatus());
-	}
-
 	protected String getParentKBArticleUrlTitle(KBArticle kbArticle)
 		throws PortalException {
 
-		KBArticle parentKBArticle = getParentKBArticle(kbArticle);
+		KBArticle parentKBArticle = kbArticle.getParentKBArticle(
+			kbArticle.getStatus());
 
 		if (parentKBArticle == null) {
 			return StringPool.BLANK;
@@ -222,7 +207,7 @@ public class PrioritizationStrategy {
 		if (_prioritizeByNumericalPrefix) {
 			boolean isChildArticle = true;
 
-			if (getParentKBArticle(kbArticle) == null) {
+			if (kbArticle.getParentKBArticle(kbArticle.getStatus()) == null) {
 				isChildArticle = false;
 			}
 

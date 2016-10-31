@@ -444,6 +444,12 @@ public class KBArticleWrapper implements KBArticle, ModelWrapper<KBArticle> {
 	}
 
 	@Override
+	public KBArticle getParentKBArticle(int status)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _kbArticle.getParentKBArticle(status);
+	}
+
+	@Override
 	public com.liferay.portal.kernel.model.CacheModel<KBArticle> toCacheModel() {
 		return _kbArticle.toCacheModel();
 	}

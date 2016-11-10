@@ -17,16 +17,13 @@ package com.liferay.knowledge.base.internal.commands;
 import com.liferay.knowledge.base.constants.KBActionKeys;
 import com.liferay.knowledge.base.service.permission.AdminPermission;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
-import com.liferay.portal.kernel.dao.orm.DynamicQuery;
-import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery.PerformActionMethod;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.ResourceAction;
 import com.liferay.portal.kernel.model.ResourcePermission;
 import com.liferay.portal.kernel.service.ResourceActionLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
-
-import java.util.List;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -49,26 +46,13 @@ public class KnowledgeBaseOSGiCommands {
 
 		ResourceAction importKbArticlesAction = _getImportKbArticlesAction();
 
-		ActionableDynamicQuery actionableDynamicQuery =
-			_resourcePermissionLocalService.getActionableDynamicQuery();
-
-		actionableDynamicQuery.setAddCriteriaMethod(
-			dynamicQuery -> dynamicQuery.add(
-				RestrictionsFactoryUtil.eq(
-					"name", AdminPermission.RESOURCE_NAME)));
-
-		actionableDynamicQuery.setPerformActionMethod(
-			(ResourcePermission resourcePermission) -> {
-				if (_hasResourceAction(
-					resourcePermission, addKbArticleAction)) {
-
-					_addResourceAction(
-						resourcePermission, importKbArticlesAction);
+		_forEachPermission(
+			AdminPermission.RESOURCE_NAME,
+			permission -> {
+				if (_hasResourceAction(permission, addKbArticleAction)) {
+					_addResourceAction(permission, importKbArticlesAction);
 				}
-
 			});
-
-		actionableDynamicQuery.performActions();
 	}
 
 	@Reference(unbind = "-")
@@ -92,6 +76,23 @@ public class KnowledgeBaseOSGiCommands {
 		permission.addResourceAction(action.getActionId());
 
 		_resourcePermissionLocalService.updateResourcePermission(permission);
+	}
+
+	private void _forEachPermission(
+			String resourceName,
+			PerformActionMethod<ResourcePermission> actionMethod)
+		throws PortalException {
+
+		ActionableDynamicQuery actionableDynamicQuery =
+			_resourcePermissionLocalService.getActionableDynamicQuery();
+
+		actionableDynamicQuery.setAddCriteriaMethod(
+			dynamicQuery -> dynamicQuery.add(
+				RestrictionsFactoryUtil.eq("name", resourceName)));
+
+		actionableDynamicQuery.setPerformActionMethod(actionMethod);
+
+		actionableDynamicQuery.performActions();
 	}
 
 	private ResourceAction _getAddKbArticleAction() throws PortalException {

@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.subscription.service.internal.wrapper;
+package com.liferay.subscription.internal.service;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Subscription;

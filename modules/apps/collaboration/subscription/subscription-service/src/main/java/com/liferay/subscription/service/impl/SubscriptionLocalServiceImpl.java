@@ -20,14 +20,13 @@ import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.model.Subscription;
+import com.liferay.portal.kernel.model.ClassName;
 import com.liferay.portal.kernel.model.SubscriptionConstants;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.service.persistence.SubscriptionPersistence;
 import com.liferay.portal.kernel.social.SocialActivityManagerUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 import com.liferay.social.kernel.model.SocialActivityConstants;
+import com.liferay.subscription.model.Subscription;
 import com.liferay.subscription.service.base.SubscriptionLocalServiceBaseImpl;
 
 import java.util.List;
@@ -105,7 +104,7 @@ public class SubscriptionLocalServiceImpl
 
 		// Subscription
 
-		User user = userPersistence.findByPrimaryKey(userId);
+		User user = userLocalService.getUser(userId);
 		long classNameId = classNameLocalService.getClassNameId(className);
 
 		Subscription subscription = subscriptionPersistence.fetchByC_U_C_C(
@@ -189,7 +188,7 @@ public class SubscriptionLocalServiceImpl
 	public void deleteSubscription(long userId, String className, long classPK)
 		throws PortalException {
 
-		User user = userPersistence.findByPrimaryKey(userId);
+		User user = userLocalService.getUser(userId);
 		long classNameId = classNameLocalService.getClassNameId(className);
 
 		Subscription subscription = subscriptionPersistence.fetchByC_U_C_C(
@@ -217,8 +216,11 @@ public class SubscriptionLocalServiceImpl
 
 		// Social
 
-		AssetEntry assetEntry = assetEntryPersistence.fetchByC_C(
-			subscription.getClassNameId(), subscription.getClassPK());
+		ClassName className = classNameLocalService.getClassName(
+			subscription.getClassNameId());
+
+		AssetEntry assetEntry = assetEntryLocalService.getEntry(
+			className.getClassName(), subscription.getClassPK());
 
 		if (assetEntry != null) {
 			JSONObject extraDataJSONObject = JSONFactoryUtil.createJSONObject();
@@ -281,11 +283,6 @@ public class SubscriptionLocalServiceImpl
 		for (Subscription subscription : subscriptions) {
 			deleteSubscription(subscription);
 		}
-	}
-
-	@Override
-	public Subscription fetchSubscription(long subscriptionId) {
-		return subscriptionPersistence.fetchByPrimaryKey(subscriptionId);
 	}
 
 	@Override
@@ -455,8 +452,5 @@ public class SubscriptionLocalServiceImpl
 			return false;
 		}
 	}
-
-	@ServiceReference(type = SubscriptionPersistence.class)
-	protected SubscriptionPersistence subscriptionPersistence;
 
 }

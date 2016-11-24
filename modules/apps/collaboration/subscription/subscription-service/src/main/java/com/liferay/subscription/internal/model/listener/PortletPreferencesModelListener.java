@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.model;
+package com.liferay.subscription.internal.model.listener;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutRevision;
 import com.liferay.portal.kernel.model.LayoutSetPrototype;
+import com.liferay.portal.kernel.model.ModelListener;
 import com.liferay.portal.kernel.model.PortletPreferences;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
@@ -33,10 +34,12 @@ import com.liferay.portal.servlet.filters.cache.CacheUtil;
 
 import java.util.Date;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
- * @author Alexander Chow
- * @author Raymond Augé
+ * @author Adolfo Pérez
  */
+@Component(immediate = true, service = ModelListener.class)
 public class PortletPreferencesModelListener
 	extends BaseModelListener<PortletPreferences> {
 

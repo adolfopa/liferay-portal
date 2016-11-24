@@ -16,33 +16,18 @@ package com.liferay.portal.service.impl;
 
 import com.liferay.portal.kernel.exception.MembershipRequestCommentsException;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.MembershipRequest;
 import com.liferay.portal.kernel.model.MembershipRequestConstants;
-import com.liferay.portal.kernel.model.Resource;
-import com.liferay.portal.kernel.model.ResourceConstants;
-import com.liferay.portal.kernel.model.Role;
-import com.liferay.portal.kernel.model.RoleConstants;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.model.UserGroupRole;
-import com.liferay.portal.kernel.security.permission.ActionKeys;
-import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.SubscriptionSender;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.base.MembershipRequestLocalServiceBaseImpl;
-import com.liferay.portal.util.PrefsPropsUtil;
-import com.liferay.portal.util.ResourcePermissionUtil;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Jorge Ferrer
@@ -201,172 +186,34 @@ public class MembershipRequestLocalServiceImpl
 		}
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement.
+	 */
+	@Deprecated
 	protected List<Long> getGroupAdministratorUserIds(long groupId)
 		throws PortalException {
 
-		Set<Long> userIds = new LinkedHashSet<>();
-
-		Group group = groupLocalService.getGroup(groupId);
-		String modelResource = Group.class.getName();
-
-		List<Role> roles = ListUtil.copy(
-			ResourceActionsUtil.getRoles(
-				group.getCompanyId(), group, modelResource, null));
-
-		List<Role> teamRoles = roleLocalService.getTeamRoles(groupId);
-
-		roles.addAll(teamRoles);
-
-		Resource resource = resourceLocalService.getResource(
-			group.getCompanyId(), modelResource,
-			ResourceConstants.SCOPE_INDIVIDUAL, String.valueOf(groupId));
-
-		List<String> actions = ResourceActionsUtil.getResourceActions(
-			Group.class.getName());
-
-		for (Role role : roles) {
-			String roleName = role.getName();
-
-			if (roleName.equals(RoleConstants.OWNER)) {
-				continue;
-			}
-
-			if ((roleName.equals(RoleConstants.ORGANIZATION_ADMINISTRATOR) ||
-				 roleName.equals(RoleConstants.ORGANIZATION_OWNER)) &&
-				!group.isOrganization()) {
-
-				continue;
-			}
-
-			if (roleName.equals(RoleConstants.SITE_ADMINISTRATOR) ||
-				roleName.equals(RoleConstants.SITE_OWNER) ||
-				roleName.equals(RoleConstants.ORGANIZATION_ADMINISTRATOR) ||
-				roleName.equals(RoleConstants.ORGANIZATION_OWNER)) {
-
-				Role curRole = roleLocalService.getRole(
-					group.getCompanyId(), roleName);
-
-				List<UserGroupRole> userGroupRoles =
-					userGroupRoleLocalService.getUserGroupRolesByGroupAndRole(
-						groupId, curRole.getRoleId());
-
-				for (UserGroupRole userGroupRole : userGroupRoles) {
-					userIds.add(userGroupRole.getUserId());
-				}
-			}
-
-			List<String> currentIndividualActions = new ArrayList<>();
-			List<String> currentGroupActions = new ArrayList<>();
-			List<String> currentGroupTemplateActions = new ArrayList<>();
-			List<String> currentCompanyActions = new ArrayList<>();
-
-			ResourcePermissionUtil.populateResourcePermissionActionIds(
-				groupId, role, resource, actions, currentIndividualActions,
-				currentGroupActions, currentGroupTemplateActions,
-				currentCompanyActions);
-
-			if (currentIndividualActions.contains(ActionKeys.ASSIGN_MEMBERS) ||
-				currentGroupActions.contains(ActionKeys.ASSIGN_MEMBERS) ||
-				currentGroupTemplateActions.contains(
-					ActionKeys.ASSIGN_MEMBERS) ||
-				currentCompanyActions.contains(ActionKeys.ASSIGN_MEMBERS)) {
-
-				List<UserGroupRole> currentUserGroupRoles =
-					userGroupRoleLocalService.getUserGroupRolesByGroupAndRole(
-						groupId, role.getRoleId());
-
-				for (UserGroupRole userGroupRole : currentUserGroupRoles) {
-					userIds.add(userGroupRole.getUserId());
-				}
-			}
-		}
-
-		return new ArrayList<>(userIds);
+		return Collections.emptyList();
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement.
+	 */
+	@Deprecated
 	protected void notify(
 			long userId, MembershipRequest membershipRequest,
 			String subjectProperty, String bodyProperty,
 			ServiceContext serviceContext)
 		throws PortalException {
-
-		User user = userPersistence.findByPrimaryKey(userId);
-		User requestUser = userPersistence.findByPrimaryKey(
-			membershipRequest.getUserId());
-
-		String fromName = PrefsPropsUtil.getStringFromNames(
-			membershipRequest.getCompanyId(), PropsKeys.SITES_EMAIL_FROM_NAME,
-			PropsKeys.ADMIN_EMAIL_FROM_NAME);
-
-		String fromAddress = PrefsPropsUtil.getStringFromNames(
-			membershipRequest.getCompanyId(),
-			PropsKeys.SITES_EMAIL_FROM_ADDRESS,
-			PropsKeys.ADMIN_EMAIL_FROM_ADDRESS);
-
-		String toName = user.getFullName();
-		String toAddress = user.getEmailAddress();
-
-		String subject = PrefsPropsUtil.getContent(
-			membershipRequest.getCompanyId(), subjectProperty);
-
-		String body = PrefsPropsUtil.getContent(
-			membershipRequest.getCompanyId(), bodyProperty);
-
-		final String statusKey;
-
-		if (membershipRequest.getStatusId() ==
-				MembershipRequestConstants.STATUS_APPROVED) {
-
-			statusKey = "approved";
-		}
-		else if (membershipRequest.getStatusId() ==
-					MembershipRequestConstants.STATUS_DENIED) {
-
-			statusKey = "denied";
-		}
-		else {
-			statusKey = "pending";
-		}
-
-		SubscriptionSender subscriptionSender = new SubscriptionSender();
-
-		subscriptionSender.setBody(body);
-		subscriptionSender.setCompanyId(membershipRequest.getCompanyId());
-		subscriptionSender.setContextAttributes(
-			"[$COMMENTS$]", membershipRequest.getComments(),
-			"[$REPLY_COMMENTS$]", membershipRequest.getReplyComments(),
-			"[$REQUEST_USER_ADDRESS$]", requestUser.getEmailAddress(),
-			"[$REQUEST_USER_NAME$]", requestUser.getFullName(),
-			"[$USER_ADDRESS$]", user.getEmailAddress(), "[$USER_NAME$]",
-			user.getFullName());
-		subscriptionSender.setFrom(fromAddress, fromName);
-		subscriptionSender.setHtmlFormat(true);
-		subscriptionSender.setLocalizedContextAttribute(
-			"[$STATUS$]", locale -> LanguageUtil.get(locale, statusKey));
-		subscriptionSender.setMailId(
-			"membership_request", membershipRequest.getMembershipRequestId());
-		subscriptionSender.setScopeGroupId(membershipRequest.getGroupId());
-		subscriptionSender.setServiceContext(serviceContext);
-		subscriptionSender.setSubject(subject);
-
-		subscriptionSender.addRuntimeSubscribers(toAddress, toName);
-
-		subscriptionSender.flushNotificationsAsync();
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement.
+	 */
+	@Deprecated
 	protected void notifyGroupAdministrators(
 			MembershipRequest membershipRequest, ServiceContext serviceContext)
 		throws PortalException {
-
-		List<Long> userIds = getGroupAdministratorUserIds(
-			membershipRequest.getGroupId());
-
-		for (Long userId : userIds) {
-			notify(
-				userId, membershipRequest,
-				PropsKeys.SITES_EMAIL_MEMBERSHIP_REQUEST_SUBJECT,
-				PropsKeys.SITES_EMAIL_MEMBERSHIP_REQUEST_BODY, serviceContext);
-		}
 	}
 
 	protected void validate(String comments) throws PortalException {

@@ -27,10 +27,15 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.UserGroupRole;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.MembershipRequestLocalService;
 import com.liferay.portal.kernel.service.MembershipRequestLocalServiceWrapper;
+import com.liferay.portal.kernel.service.ResourceLocalService;
+import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceWrapper;
+import com.liferay.portal.kernel.service.UserGroupRoleLocalService;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.SubscriptionSender;
@@ -43,6 +48,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Adolfo Pérez
@@ -66,18 +72,18 @@ public class ModularMembershipRequestLocalServiceWrapper
 
 		Set<Long> userIds = new LinkedHashSet<>();
 
-		Group group = groupLocalService.getGroup(groupId);
+		Group group = _groupLocalService.getGroup(groupId);
 		String modelResource = Group.class.getName();
 
 		List<Role> roles = ListUtil.copy(
 			ResourceActionsUtil.getRoles(
 				group.getCompanyId(), group, modelResource, null));
 
-		List<Role> teamRoles = roleLocalService.getTeamRoles(groupId);
+		List<Role> teamRoles = _roleLocalService.getTeamRoles(groupId);
 
 		roles.addAll(teamRoles);
 
-		Resource resource = resourceLocalService.getResource(
+		Resource resource = _resourceLocalService.getResource(
 			group.getCompanyId(), modelResource,
 			ResourceConstants.SCOPE_INDIVIDUAL, String.valueOf(groupId));
 
@@ -103,11 +109,11 @@ public class ModularMembershipRequestLocalServiceWrapper
 				roleName.equals(RoleConstants.ORGANIZATION_ADMINISTRATOR) ||
 				roleName.equals(RoleConstants.ORGANIZATION_OWNER)) {
 
-				Role curRole = roleLocalService.getRole(
+				Role curRole = _roleLocalService.getRole(
 					group.getCompanyId(), roleName);
 
 				List<UserGroupRole> userGroupRoles =
-					userGroupRoleLocalService.getUserGroupRolesByGroupAndRole(
+					_userGroupRoleLocalService.getUserGroupRolesByGroupAndRole(
 						groupId, curRole.getRoleId());
 
 				for (UserGroupRole userGroupRole : userGroupRoles) {
@@ -132,7 +138,7 @@ public class ModularMembershipRequestLocalServiceWrapper
 				currentCompanyActions.contains(ActionKeys.ASSIGN_MEMBERS)) {
 
 				List<UserGroupRole> currentUserGroupRoles =
-					userGroupRoleLocalService.getUserGroupRolesByGroupAndRole(
+					_userGroupRoleLocalService.getUserGroupRolesByGroupAndRole(
 						groupId, role.getRoleId());
 
 				for (UserGroupRole userGroupRole : currentUserGroupRoles) {
@@ -150,8 +156,8 @@ public class ModularMembershipRequestLocalServiceWrapper
 			ServiceContext serviceContext)
 		throws PortalException {
 
-		User user = userPersistence.findByPrimaryKey(userId);
-		User requestUser = userPersistence.findByPrimaryKey(
+		User user = _userLocalService.getUser(userId);
+		User requestUser = _userLocalService.getUser(
 			membershipRequest.getUserId());
 
 		String fromName = PrefsPropsUtil.getStringFromNames(
@@ -228,5 +234,40 @@ public class ModularMembershipRequestLocalServiceWrapper
 				PropsKeys.SITES_EMAIL_MEMBERSHIP_REQUEST_BODY, serviceContext);
 		}
 	}
+
+	@Reference(unbind = "-")
+	protected void setGroupLocalService(GroupLocalService groupLocalService) {
+		_groupLocalService = groupLocalService;
+	}
+
+	@Reference(unbind = "-")
+	protected void setResourceLocalService(
+		ResourceLocalService resourceLocalService) {
+
+		_resourceLocalService = resourceLocalService;
+	}
+
+	@Reference(unbind = "-")
+	protected void setRoleLocalService(RoleLocalService roleLocalService) {
+		_roleLocalService = roleLocalService;
+	}
+
+	@Reference(unbind = "-")
+	protected void setUserGroupRoleLocalService(
+		UserGroupRoleLocalService userGroupRoleLocalService) {
+
+		_userGroupRoleLocalService = userGroupRoleLocalService;
+	}
+
+	@Reference(unbind = "-")
+	protected void setUserLocalService(UserLocalService userLocalService) {
+		_userLocalService = userLocalService;
+	}
+
+	private GroupLocalService _groupLocalService;
+	private ResourceLocalService _resourceLocalService;
+	private RoleLocalService _roleLocalService;
+	private UserGroupRoleLocalService _userGroupRoleLocalService;
+	private UserLocalService _userLocalService;
 
 }

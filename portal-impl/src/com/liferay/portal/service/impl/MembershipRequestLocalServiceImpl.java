@@ -21,7 +21,6 @@ import com.liferay.portal.kernel.model.MembershipRequestConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.base.MembershipRequestLocalServiceBaseImpl;
 
@@ -59,8 +58,6 @@ public class MembershipRequestLocalServiceImpl
 			MembershipRequestConstants.STATUS_PENDING);
 
 		membershipRequestPersistence.update(membershipRequest);
-
-		notifyGroupAdministrators(membershipRequest, serviceContext);
 
 		return membershipRequest;
 	}
@@ -176,13 +173,6 @@ public class MembershipRequestLocalServiceImpl
 
 			userLocalService.addGroupUsers(
 				membershipRequest.getGroupId(), addUserIds);
-		}
-
-		if (replierUserId != 0) {
-			notify(
-				membershipRequest.getUserId(), membershipRequest,
-				PropsKeys.SITES_EMAIL_MEMBERSHIP_REPLY_SUBJECT,
-				PropsKeys.SITES_EMAIL_MEMBERSHIP_REPLY_BODY, serviceContext);
 		}
 	}
 

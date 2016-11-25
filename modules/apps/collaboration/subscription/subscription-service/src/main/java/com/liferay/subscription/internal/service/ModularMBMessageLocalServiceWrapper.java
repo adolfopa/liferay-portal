@@ -20,11 +20,14 @@ import com.liferay.message.boards.kernel.model.MBDiscussion;
 import com.liferay.message.boards.kernel.model.MBMessage;
 import com.liferay.message.boards.kernel.model.MBMessageConstants;
 import com.liferay.message.boards.kernel.model.MBThread;
+import com.liferay.message.boards.kernel.service.MBDiscussionLocalService;
 import com.liferay.message.boards.kernel.service.MBMessageLocalService;
 import com.liferay.message.boards.kernel.service.MBMessageLocalServiceWrapper;
 import com.liferay.portal.kernel.comment.Comment;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
@@ -32,8 +35,11 @@ import com.liferay.portal.kernel.notifications.UserNotificationDefinition;
 import com.liferay.portal.kernel.parsers.bbcode.BBCodeTranslatorUtil;
 import com.liferay.portal.kernel.portlet.PortletProvider;
 import com.liferay.portal.kernel.portlet.PortletProviderUtil;
+import com.liferay.portal.kernel.service.CompanyLocalService;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceWrapper;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.settings.LocalizedValuesMap;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HttpUtil;
@@ -246,7 +252,8 @@ public class ModularMBMessageLocalServiceWrapper
 		}
 
 		MBDiscussion mbDiscussion =
-			mbDiscussionLocalService.getThreadDiscussion(message.getThreadId());
+			_mbDiscussionLocalService.getThreadDiscussion(
+				message.getThreadId());
 
 		String contentURL = (String)serviceContext.getAttribute("contentURL");
 
@@ -359,10 +366,10 @@ public class ModularMBMessageLocalServiceWrapper
 			return;
 		}
 
-		Company company = companyPersistence.findByPrimaryKey(
+		Company company = _companyLocalService.getCompany(
 			message.getCompanyId());
 
-		User user = userPersistence.findByPrimaryKey(userId);
+		User user = _userLocalService.getUser(userId);
 
 		String emailAddress = user.getEmailAddress();
 		String fullName = user.getFullName();
@@ -446,7 +453,7 @@ public class ModularMBMessageLocalServiceWrapper
 		if (message.getParentMessageId() !=
 				MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID) {
 
-			MBMessage parentMessage = mbMessageLocalService.getMessage(
+			MBMessage parentMessage = _mbMessageLocalService.getMessage(
 				message.getParentMessageId());
 
 			Date modifiedDate = parentMessage.getModifiedDate();
@@ -510,15 +517,46 @@ public class ModularMBMessageLocalServiceWrapper
 	}
 
 	@Reference(unbind = "-")
+	protected void setCompanyLocalService(
+		CompanyLocalService companyLocalService) {
+
+		_companyLocalService = companyLocalService;
+	}
+
+	@Reference(unbind = "-")
+	protected void setGroupLocalService(GroupLocalService groupLocalService) {
+		_groupLocalService = groupLocalService;
+	}
+
+	@Reference(unbind = "-")
+	protected void setMbDiscussionLocalService(
+		MBDiscussionLocalService mbDiscussionLocalService) {
+
+		_mbDiscussionLocalService = mbDiscussionLocalService;
+	}
+
+	@Reference(unbind = "-")
+	protected void setMbMessageLocalService(
+		MBMessageLocalService mbMessageLocalService) {
+
+		_mbMessageLocalService = mbMessageLocalService;
+	}
+
+	@Reference(unbind = "-")
 	protected void setSubscriptionLocalService(
 		SubscriptionLocalService subscriptionLocalService) {
 
 		_subscriptionLocalService = subscriptionLocalService;
 	}
 
+	@Reference(unbind = "-")
+	protected void setUserLocalService(UserLocalService userLocalService) {
+		_userLocalService = userLocalService;
+	}
+
 	private String _getLocalizedRootCategoryName(long groupId, Locale locale) {
 		try {
-			Group group = groupPersistence.findByPrimaryKey(groupId);
+			Group group = _groupLocalService.getGroup(groupId);
 
 			return LanguageUtil.get(locale, "message-boards-home") + " - " +
 				group.getDescriptiveName(locale);
@@ -531,6 +569,14 @@ public class ModularMBMessageLocalServiceWrapper
 		}
 	}
 
+	private static final Log _log = LogFactoryUtil.getLog(
+		ModularMBMessageLocalServiceWrapper.class);
+
+	private CompanyLocalService _companyLocalService;
+	private GroupLocalService _groupLocalService;
+	private MBDiscussionLocalService _mbDiscussionLocalService;
+	private MBMessageLocalService _mbMessageLocalService;
 	private SubscriptionLocalService _subscriptionLocalService;
+	private UserLocalService _userLocalService;
 
 }

@@ -22,6 +22,8 @@ import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.service.DLAppHelperLocalService;
 import com.liferay.document.library.kernel.service.DLAppHelperLocalServiceWrapper;
+import com.liferay.document.library.kernel.service.DLAppLocalService;
+import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalService;
 import com.liferay.document.library.kernel.util.DLAppHelperThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -257,12 +259,26 @@ public class ModularDLAppHelperLocalServiceWrapper
 	}
 
 	@Reference(unbind = "-")
+	protected void setDlAppLocalService(DLAppLocalService dlAppLocalService) {
+		_dlAppLocalService = dlAppLocalService;
+	}
+
+	@Reference(unbind = "-")
+	protected void setDlFileEntryTypeLocalService(
+		DLFileEntryTypeLocalService dlFileEntryTypeLocalService) {
+
+		_dlFileEntryTypeLocalService = dlFileEntryTypeLocalService;
+	}
+
+	@Reference(unbind = "-")
 	protected void setSubscriptionLocalService(
 		SubscriptionLocalService subscriptionLocalService) {
 
 		_subscriptionLocalService = subscriptionLocalService;
 	}
 
+	private DLAppLocalService _dlAppLocalService;
+	private DLFileEntryTypeLocalService _dlFileEntryTypeLocalService;
 	private SubscriptionLocalService _subscriptionLocalService;
 
 }

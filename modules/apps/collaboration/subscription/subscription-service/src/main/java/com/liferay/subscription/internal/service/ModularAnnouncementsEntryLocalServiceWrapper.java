@@ -11,6 +11,7 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
+
 package com.liferay.subscription.internal.service;
 
 import com.liferay.announcements.kernel.model.AnnouncementsDelivery;
@@ -18,6 +19,8 @@ import com.liferay.announcements.kernel.model.AnnouncementsEntry;
 import com.liferay.announcements.kernel.service.AnnouncementsDeliveryLocalService;
 import com.liferay.announcements.kernel.service.AnnouncementsEntryLocalService;
 import com.liferay.announcements.kernel.service.AnnouncementsEntryLocalServiceWrapper;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.interval.IntervalActionProcessor;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -32,6 +35,12 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.UserGroup;
 import com.liferay.portal.kernel.portlet.PortletProvider;
 import com.liferay.portal.kernel.portlet.PortletProviderUtil;
+import com.liferay.portal.kernel.service.CompanyLocalService;
+import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.service.OrganizationLocalService;
+import com.liferay.portal.kernel.service.RoleLocalService;
+import com.liferay.portal.kernel.service.ServiceWrapper;
+import com.liferay.portal.kernel.service.UserGroupLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -49,11 +58,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 
+import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Adolfo Pérez
  */
+@Component(immediate = true, service = ServiceWrapper.class)
 public class ModularAnnouncementsEntryLocalServiceWrapper
 	extends AnnouncementsEntryLocalServiceWrapper {
 
@@ -76,8 +87,13 @@ public class ModularAnnouncementsEntryLocalServiceWrapper
 				now.getTime() - _ANNOUNCEMENTS_ENTRY_CHECK_INTERVAL);
 		}
 
-		List<AnnouncementsEntry> entries =
-			announcementsEntryFinder.findByDisplayDate(now, _previousCheckDate);
+		DynamicQuery dynamicQuery = dynamicQuery();
+
+		dynamicQuery.add(
+			RestrictionsFactoryUtil.between(
+				"checkDate", now, _previousCheckDate));
+
+		List<AnnouncementsEntry> entries = dynamicQuery(dynamicQuery);
 
 		if (_log.isDebugEnabled()) {
 			_log.debug("Processing " + entries.size() + " entries");
@@ -93,8 +109,7 @@ public class ModularAnnouncementsEntryLocalServiceWrapper
 	protected void notifyUsers(AnnouncementsEntry entry)
 		throws PortalException {
 
-		Company company = companyPersistence.findByPrimaryKey(
-			entry.getCompanyId());
+		Company company = _companyLocalService.getCompany(entry.getCompanyId());
 
 		String className = entry.getClassName();
 		long classPK = entry.getClassPK();
@@ -110,7 +125,7 @@ public class ModularAnnouncementsEntryLocalServiceWrapper
 
 		if (classPK > 0) {
 			if (className.equals(Group.class.getName())) {
-				Group group = groupPersistence.findByPrimaryKey(classPK);
+				Group group = _groupLocalService.getGroup(classPK);
 
 				toName = group.getDescriptiveName();
 
@@ -119,7 +134,7 @@ public class ModularAnnouncementsEntryLocalServiceWrapper
 			}
 			else if (className.equals(Organization.class.getName())) {
 				Organization organization =
-					organizationPersistence.findByPrimaryKey(classPK);
+					_organizationLocalService.getOrganization(classPK);
 
 				toName = organization.getName();
 
@@ -128,7 +143,7 @@ public class ModularAnnouncementsEntryLocalServiceWrapper
 					ListUtil.fromArray(new Organization[] {organization}));
 			}
 			else if (className.equals(Role.class.getName())) {
-				Role role = rolePersistence.findByPrimaryKey(classPK);
+				Role role = _roleLocalService.getRole(classPK);
 
 				toName = role.getName();
 
@@ -145,7 +160,7 @@ public class ModularAnnouncementsEntryLocalServiceWrapper
 				}
 			}
 			else if (className.equals(UserGroup.class.getName())) {
-				UserGroup userGroup = userGroupPersistence.findByPrimaryKey(
+				UserGroup userGroup = _userGroupLocalService.getUserGroup(
 					classPK);
 
 				toName = userGroup.getName();
@@ -155,7 +170,7 @@ public class ModularAnnouncementsEntryLocalServiceWrapper
 		}
 
 		if (className.equals(User.class.getName())) {
-			User user = userPersistence.findByPrimaryKey(classPK);
+			User user = _userLocalService.getUser(classPK);
 
 			if (Validator.isNull(user.getEmailAddress())) {
 				return;
@@ -180,10 +195,10 @@ public class ModularAnnouncementsEntryLocalServiceWrapper
 		int total = 0;
 
 		if (teamId > 0) {
-			total = userLocalService.getTeamUsersCount(teamId);
+			total = _userLocalService.getTeamUsersCount(teamId);
 		}
 		else {
-			total = userLocalService.searchCount(
+			total = _userLocalService.searchCount(
 				company.getCompanyId(), null, WorkflowConstants.STATUS_APPROVED,
 				params);
 		}
@@ -201,11 +216,11 @@ public class ModularAnnouncementsEntryLocalServiceWrapper
 					List<User> users = null;
 
 					if (teamId > 0) {
-						users = userLocalService.getTeamUsers(
+						users = _userLocalService.getTeamUsers(
 							teamId, start, end);
 					}
 					else {
-						users = userLocalService.search(
+						users = _userLocalService.search(
 							company.getCompanyId(), null,
 							WorkflowConstants.STATUS_APPROVED, params, start,
 							end, (OrderByComparator<User>)null);
@@ -239,7 +254,7 @@ public class ModularAnnouncementsEntryLocalServiceWrapper
 
 		for (User user : users) {
 			AnnouncementsDelivery announcementsDelivery =
-				announcementsDeliveryLocalService.getUserDelivery(
+				_announcementsDeliveryLocalService.getUserDelivery(
 					user.getUserId(), entry.getType());
 
 			if (announcementsDelivery.isEmail()) {
@@ -314,6 +329,37 @@ public class ModularAnnouncementsEntryLocalServiceWrapper
 	}
 
 	@Reference(unbind = "-")
+	protected void setCompanyLocalService(
+		CompanyLocalService companyLocalService) {
+
+		_companyLocalService = companyLocalService;
+	}
+
+	@Reference(unbind = "-")
+	protected void setGroupLocalService(GroupLocalService groupLocalService) {
+		_groupLocalService = groupLocalService;
+	}
+
+	@Reference(unbind = "-")
+	protected void setOrganizationLocalService(
+		OrganizationLocalService organizationLocalService) {
+
+		_organizationLocalService = organizationLocalService;
+	}
+
+	@Reference(unbind = "-")
+	protected void setRoleLocalService(RoleLocalService roleLocalService) {
+		_roleLocalService = roleLocalService;
+	}
+
+	@Reference(unbind = "-")
+	protected void setUserGroupLocalService(
+		UserGroupLocalService userGroupLocalService) {
+
+		_userGroupLocalService = userGroupLocalService;
+	}
+
+	@Reference(unbind = "-")
 	protected void setUserLocalService(UserLocalService userLocalService) {
 		_userLocalService = userLocalService;
 	}
@@ -326,7 +372,12 @@ public class ModularAnnouncementsEntryLocalServiceWrapper
 
 	private AnnouncementsDeliveryLocalService
 		_announcementsDeliveryLocalService;
+	private CompanyLocalService _companyLocalService;
+	private GroupLocalService _groupLocalService;
+	private OrganizationLocalService _organizationLocalService;
 	private Date _previousCheckDate;
+	private RoleLocalService _roleLocalService;
+	private UserGroupLocalService _userGroupLocalService;
 	private UserLocalService _userLocalService;
 
 }

@@ -1872,13 +1872,6 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 				}
 			}
 
-			// Subscriptions
-
-			notifySubscribers(
-				userId, (MBMessage)message.clone(),
-				(String)workflowContext.get(WorkflowConstants.CONTEXT_URL),
-				serviceContext);
-
 			// Indexer
 
 			indexer.reindex(message);

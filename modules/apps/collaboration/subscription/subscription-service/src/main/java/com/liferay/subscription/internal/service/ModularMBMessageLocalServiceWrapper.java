@@ -55,10 +55,13 @@ import com.liferay.portlet.messageboards.util.MBUtil;
 import com.liferay.portlet.messageboards.util.MailingListThreadLocal;
 import com.liferay.subscription.service.SubscriptionLocalService;
 
+import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -121,6 +124,26 @@ public class ModularMBMessageLocalServiceWrapper
 
 		_subscriptionLocalService.deleteSubscription(
 			userId, MBThread.class.getName(), message.getThreadId());
+	}
+
+	@Override
+	public MBMessage updateStatus(
+			long userId, long messageId, int status,
+			ServiceContext serviceContext,
+			Map<String, Serializable> workflowContext)
+		throws PortalException {
+
+		MBMessage message = super.updateStatus(
+			userId, messageId, status, serviceContext, workflowContext);
+
+		if (status == WorkflowConstants.STATUS_APPROVED) {
+			notifySubscribers(
+				userId, (MBMessage)message.clone(),
+				(String)workflowContext.get(WorkflowConstants.CONTEXT_URL),
+				serviceContext);
+		}
+
+		return message;
 	}
 
 	protected MBSubscriptionSender getSubscriptionSender(

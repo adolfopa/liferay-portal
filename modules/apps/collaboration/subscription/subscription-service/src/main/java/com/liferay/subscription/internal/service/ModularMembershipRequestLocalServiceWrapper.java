@@ -67,6 +67,42 @@ public class ModularMembershipRequestLocalServiceWrapper
 		super(membershipRequestLocalService);
 	}
 
+	@Override
+	public MembershipRequest addMembershipRequest(
+			long userId, long groupId, String comments,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		MembershipRequest membershipRequest = super.addMembershipRequest(
+			userId, groupId, comments, serviceContext);
+
+		notifyGroupAdministrators(membershipRequest, serviceContext);
+
+		return membershipRequest;
+	}
+
+	@Override
+	public void updateStatus(
+			long replierUserId, long membershipRequestId, String replyComments,
+			long statusId, boolean addUserToGroup,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		super.updateStatus(
+			replierUserId, membershipRequestId, replyComments, statusId,
+			addUserToGroup, serviceContext);
+
+		MembershipRequest membershipRequest = getMembershipRequest(
+			membershipRequestId);
+
+		if (replierUserId != 0) {
+			notify(
+				membershipRequest.getUserId(), membershipRequest,
+				PropsKeys.SITES_EMAIL_MEMBERSHIP_REPLY_SUBJECT,
+				PropsKeys.SITES_EMAIL_MEMBERSHIP_REPLY_BODY, serviceContext);
+		}
+	}
+
 	protected List<Long> getGroupAdministratorUserIds(long groupId)
 		throws PortalException {
 

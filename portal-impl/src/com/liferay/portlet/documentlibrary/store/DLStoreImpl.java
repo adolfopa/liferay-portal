@@ -209,7 +209,8 @@ public class DLStoreImpl implements DLStore {
 
 	@Override
 	public void deleteDirectory(
-		long companyId, long repositoryId, String dirName) {
+			long companyId, long repositoryId, String dirName)
+		throws PortalException {
 
 		Store store = _storeFactory.getStore();
 
@@ -395,7 +396,7 @@ public class DLStoreImpl implements DLStore {
 	}
 
 	@Override
-	public void move(String srcDir, String destDir) {
+	public void move(String srcDir, String destDir) throws PortalException {
 		Store store = _storeFactory.getStore();
 
 		store.move(srcDir, destDir);

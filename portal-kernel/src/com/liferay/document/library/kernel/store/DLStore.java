@@ -67,7 +67,8 @@ public interface DLStore {
 		throws PortalException;
 
 	public void deleteDirectory(
-		long companyId, long repositoryId, String dirName);
+			long companyId, long repositoryId, String dirName)
+		throws PortalException;
 
 	public void deleteFile(long companyId, long repositoryId, String fileName)
 		throws PortalException;
@@ -124,7 +125,7 @@ public interface DLStore {
 
 	public boolean isValidName(String name);
 
-	public void move(String srcDir, String destDir);
+	public void move(String srcDir, String destDir) throws PortalException;
 
 	public void updateFile(
 			long companyId, long repositoryId, long newRepositoryId,

@@ -129,20 +129,24 @@ public class IgnoreDuplicatesStore implements Store {
 
 	@Override
 	public void deleteDirectory(
-		long companyId, long repositoryId, String dirName) {
+			long companyId, long repositoryId, String dirName)
+		throws PortalException {
 
 		_store.deleteDirectory(companyId, repositoryId, dirName);
 	}
 
 	@Override
-	public void deleteFile(long companyId, long repositoryId, String fileName) {
+	public void deleteFile(long companyId, long repositoryId, String fileName)
+		throws PortalException {
+
 		_store.deleteFile(companyId, repositoryId, fileName);
 	}
 
 	@Override
 	public void deleteFile(
-		long companyId, long repositoryId, String fileName,
-		String versionLabel) {
+			long companyId, long repositoryId, String fileName,
+			String versionLabel)
+		throws PortalException {
 
 		_store.deleteFile(companyId, repositoryId, fileName, versionLabel);
 	}
@@ -239,7 +243,7 @@ public class IgnoreDuplicatesStore implements Store {
 	}
 
 	@Override
-	public void move(String srcDir, String destDir) {
+	public void move(String srcDir, String destDir) throws PortalException {
 		_store.move(srcDir, destDir);
 	}
 

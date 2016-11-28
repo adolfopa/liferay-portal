@@ -128,7 +128,8 @@ public class S3Store extends BaseStore {
 
 	@Override
 	public void deleteDirectory(
-		long companyId, long repositoryId, String dirName) {
+			long companyId, long repositoryId, String dirName)
+		throws PortalException {
 
 		String key = _s3KeyTransformer.getDirectoryKey(
 			companyId, repositoryId, dirName);
@@ -137,7 +138,9 @@ public class S3Store extends BaseStore {
 	}
 
 	@Override
-	public void deleteFile(long companyId, long repositoryId, String fileName) {
+	public void deleteFile(long companyId, long repositoryId, String fileName)
+		throws PortalException {
+
 		String key = _s3KeyTransformer.getFileKey(
 			companyId, repositoryId, fileName);
 
@@ -146,8 +149,9 @@ public class S3Store extends BaseStore {
 
 	@Override
 	public void deleteFile(
-		long companyId, long repositoryId, String fileName,
-		String versionLabel) {
+			long companyId, long repositoryId, String fileName,
+			String versionLabel)
+		throws PortalException {
 
 		try {
 			String key = _s3KeyTransformer.getFileVersionKey(

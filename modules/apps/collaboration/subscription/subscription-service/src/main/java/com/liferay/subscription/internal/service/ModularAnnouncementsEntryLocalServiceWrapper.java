@@ -19,6 +19,7 @@ import com.liferay.announcements.kernel.model.AnnouncementsEntry;
 import com.liferay.announcements.kernel.service.AnnouncementsDeliveryLocalService;
 import com.liferay.announcements.kernel.service.AnnouncementsEntryLocalService;
 import com.liferay.announcements.kernel.service.AnnouncementsEntryLocalServiceWrapper;
+import com.liferay.petra.content.ContentUtil;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -44,6 +45,7 @@ import com.liferay.portal.kernel.service.UserGroupLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.SubscriptionSender;
 import com.liferay.portal.kernel.util.Time;
@@ -51,7 +53,6 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.util.PrefsPropsUtil;
 import com.liferay.portal.util.PropsValues;
-import com.liferay.util.ContentUtil;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -278,7 +279,9 @@ public class ModularAnnouncementsEntryLocalServiceWrapper
 			return;
 		}
 
-		String body = ContentUtil.get(PropsValues.ANNOUNCEMENTS_EMAIL_BODY);
+		String body = ContentUtil.get(
+			PortalClassLoaderUtil.getClassLoader(),
+			PropsValues.ANNOUNCEMENTS_EMAIL_BODY);
 		String fromAddress = PrefsPropsUtil.getStringFromNames(
 			entry.getCompanyId(), PropsKeys.ANNOUNCEMENTS_EMAIL_FROM_ADDRESS,
 			PropsKeys.ADMIN_EMAIL_FROM_ADDRESS);
@@ -286,6 +289,7 @@ public class ModularAnnouncementsEntryLocalServiceWrapper
 			entry.getCompanyId(), PropsKeys.ANNOUNCEMENTS_EMAIL_FROM_NAME,
 			PropsKeys.ADMIN_EMAIL_FROM_NAME);
 		String subject = ContentUtil.get(
+			PortalClassLoaderUtil.getClassLoader(),
 			PropsValues.ANNOUNCEMENTS_EMAIL_SUBJECT);
 
 		subscriptionSender.setBody(body);

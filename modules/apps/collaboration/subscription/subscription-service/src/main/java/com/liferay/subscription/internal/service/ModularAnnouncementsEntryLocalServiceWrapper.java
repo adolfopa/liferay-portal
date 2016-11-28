@@ -92,7 +92,7 @@ public class ModularAnnouncementsEntryLocalServiceWrapper
 
 		dynamicQuery.add(
 			RestrictionsFactoryUtil.between(
-				"checkDate", now, _previousCheckDate));
+				"displayDate", now, _previousCheckDate));
 
 		List<AnnouncementsEntry> entries = dynamicQuery(dynamicQuery);
 

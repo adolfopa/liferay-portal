@@ -76,6 +76,7 @@ import com.liferay.trash.kernel.util.TrashUtil;
 import com.liferay.util.dao.orm.CustomSQLUtil;
 
 import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;

@@ -12,25 +12,24 @@
  * details.
  */
 
-package com.liferay.portal.subscription;
+package com.liferay.subscription.internal.upgrade;
 
-import com.liferay.portal.kernel.messaging.BaseMessageListener;
-import com.liferay.portal.kernel.messaging.Message;
-import com.liferay.portal.kernel.service.SubscriptionLocalServiceUtil;
+import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
+import com.liferay.subscription.internal.upgrade.v1_0_0.UpgradeClassNames;
+
+import org.osgi.service.component.annotations.Component;
 
 /**
- * @author Raymond Augé
+ * @author Adolfo Pérez
  */
-public class CleanUpSubscriptionMessageListener extends BaseMessageListener {
+@Component(immediate = true, service = UpgradeStepRegistrator.class)
+public class SubscriptionServiceUpgrade implements UpgradeStepRegistrator {
 
 	@Override
-	protected void doReceive(Message message) throws Exception {
-		long groupId = (Long)message.get("groupId");
-		long[] userIds = (long[])message.get("userIds");
-
-		for (long userId : userIds) {
-			SubscriptionLocalServiceUtil.deleteSubscriptions(userId, groupId);
-		}
+	public void register(Registry registry) {
+		registry.register(
+			"com.liferay.subscription.service", "0.0.1", "1.0.0",
+			new UpgradeClassNames());
 	}
 
 }

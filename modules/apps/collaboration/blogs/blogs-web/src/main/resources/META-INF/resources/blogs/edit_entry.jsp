@@ -55,24 +55,35 @@ if (portletTitleBasedNavigation) {
 %>
 
 <liferay-util:buffer var="saveStatus">
-	<small class="text-capitalize text-muted" id="<portlet:namespace />saveStatus">
-		<c:if test="<%= entry != null %>">
-			<aui:workflow-status markupView="lexicon" showHelpMessage="<%= false %>" showIcon="<%= false %>" showLabel="<%= false %>" status="<%= entry.getStatus() %>" />
+	<small class="text-capitalize text-muted" id="<portlet:namespace />saveStatus"><c:if test="<%= entry != null %>">
+		<aui:workflow-status markupView="lexicon" showHelpMessage="<%= false %>" showIcon="<%= false %>" showLabel="<%= false %>" status="<%= entry.getStatus() %>" />
 
-			<liferay-ui:message arguments="<%= LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - entry.getStatusDate().getTime(), true) %>" key="x-ago" translateArguments="<%= false %>" />
-		</c:if>
-	</small>
+		<liferay-ui:message arguments="<%= LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - entry.getStatusDate().getTime(), true) %>" key="x-ago" translateArguments="<%= false %>" />
+	</c:if></small>
+</liferay-util:buffer>
+
+<liferay-util:buffer var="readingTime">
+
+	<%
+	int readingTimeInMinutes = (entry == null ? 0 : com.liferay.blogs.web.internal.util.BlogsUtil.getReadingTimeMinutes(entry.getContent()));
+	%>
+
+	<small class="text-capitalize text-muted" id="<portlet:namespace />readingTime"><c:if test="<%= readingTimeInMinutes > 0 %>">
+		<liferay-ui:message arguments="<%= readingTimeInMinutes %>" key="x-minutes-read" translateArguments="<%= false %>" />
+	</c:if></small>
 </liferay-util:buffer>
 
 <c:if test="<%= portletTitleBasedNavigation %>">
-	<liferay-frontend:info-bar>
+	<liferay-frontend:info-bar fixed="<%= true %>">
 		<%= saveStatus %>
+		<%= readingTime %>
 	</liferay-frontend:info-bar>
 </c:if>
 
 <portlet:actionURL name="/blogs/edit_entry" var="editEntryURL" />
+<portlet:actionURL name="/blogs/calculate_reading_time" var="calculateReadingTimeURL" />
 
-<div class="container-fluid-1280">
+<div class="container-fluid-1280 entry-body">
 	<aui:form action="<%= editEntryURL %>" cssClass="edit-entry" enctype="multipart/form-data" method="post" name="fm" onSubmit="event.preventDefault();">
 		<aui:input name="<%= Constants.CMD %>" type="hidden" />
 		<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
@@ -84,6 +95,7 @@ if (portletTitleBasedNavigation) {
 			<div class="entry-options">
 				<div class="status">
 					<%= saveStatus %>
+					<%= readingTime %>
 				</div>
 			</div>
 		</c:if>
@@ -381,6 +393,7 @@ if (portletTitleBasedNavigation) {
 
 		if (blogs) {
 			blogs.setDescription(html);
+			blogs.updateReadingTime(html);
 		}
 	}
 
@@ -408,13 +421,15 @@ if (portletTitleBasedNavigation) {
 		'<portlet:namespace />Blogs',
 		new Liferay.Blogs(
 			{
+				calculateReadingTimeURL: '<%= calculateReadingTimeURL %>',
 				constants: {
 					'ACTION_PUBLISH': '<%= WorkflowConstants.ACTION_PUBLISH %>',
 					'ACTION_SAVE_DRAFT': '<%= WorkflowConstants.ACTION_SAVE_DRAFT %>',
 					'ADD': '<%= Constants.ADD %>',
 					'CMD': '<%= Constants.CMD %>',
 					'STATUS_DRAFT': '<%= WorkflowConstants.STATUS_DRAFT %>',
-					'UPDATE': '<%= Constants.UPDATE %>'
+					'UPDATE': '<%= Constants.UPDATE %>',
+					'X_MINUTES_READ': '<%= ResourceBundleUtil.getString(resourceBundle, "x-minutes-read") %>'
 				},
 				descriptionLength: '<%= pageAbstractLength %>',
 				editEntryURL: '<%= editEntryURL %>',

@@ -225,7 +225,8 @@ public class DLStoreUtil {
 	 * @param dirName the directory's name
 	 */
 	public static void deleteDirectory(
-		long companyId, long repositoryId, String dirName) {
+			long companyId, long repositoryId, String dirName)
+		throws PortalException {
 
 		getStore().deleteDirectory(companyId, repositoryId, dirName);
 	}
@@ -522,7 +523,9 @@ public class DLStoreUtil {
 	 * @param srcDir the original directory's name
 	 * @param destDir the new directory's name
 	 */
-	public static void move(String srcDir, String destDir) {
+	public static void move(String srcDir, String destDir)
+		throws PortalException {
+
 		getStore().move(srcDir, destDir);
 	}
 

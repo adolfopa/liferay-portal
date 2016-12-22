@@ -57,7 +57,7 @@ public class UpgradeDocumentLibrary extends UpgradeProcess {
 		}
 	}
 
-	protected void deleteTempDirectory() {
+	protected void deleteTempDirectory() throws Exception {
 		try (LoggingTimer loggingTimer = new LoggingTimer()) {
 			DLStoreUtil.deleteDirectory(0, 0, "liferay_temp/");
 		}

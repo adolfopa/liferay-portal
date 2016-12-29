@@ -146,7 +146,8 @@ public class FileSystemStore extends BaseStore {
 
 	@Override
 	public void deleteDirectory(
-		long companyId, long repositoryId, String dirName) {
+			long companyId, long repositoryId, String dirName)
+		throws PortalException {
 
 		File dirNameDir = getDirNameDir(companyId, repositoryId, dirName);
 
@@ -169,7 +170,9 @@ public class FileSystemStore extends BaseStore {
 	}
 
 	@Override
-	public void deleteFile(long companyId, long repositoryId, String fileName) {
+	public void deleteFile(long companyId, long repositoryId, String fileName)
+		throws PortalException {
+
 		File fileNameDir = getFileNameDir(companyId, repositoryId, fileName);
 
 		if (!fileNameDir.exists()) {
@@ -187,8 +190,9 @@ public class FileSystemStore extends BaseStore {
 
 	@Override
 	public void deleteFile(
-		long companyId, long repositoryId, String fileName,
-		String versionLabel) {
+			long companyId, long repositoryId, String fileName,
+			String versionLabel)
+		throws PortalException {
 
 		File fileNameVersionFile = getFileNameVersionFile(
 			companyId, repositoryId, fileName, versionLabel);

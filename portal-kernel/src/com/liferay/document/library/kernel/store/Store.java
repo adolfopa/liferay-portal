@@ -53,13 +53,16 @@ public interface Store {
 		throws PortalException;
 
 	public void deleteDirectory(
-		long companyId, long repositoryId, String dirName);
+			long companyId, long repositoryId, String dirName)
+		throws PortalException;
 
-	public void deleteFile(long companyId, long repositoryId, String fileName);
+	public void deleteFile(long companyId, long repositoryId, String fileName)
+		throws PortalException;
 
 	public void deleteFile(
-		long companyId, long repositoryId, String fileName,
-		String versionLabel);
+			long companyId, long repositoryId, String fileName,
+			String versionLabel)
+		throws PortalException;
 
 	public File getFile(long companyId, long repositoryId, String fileName)
 		throws PortalException;
@@ -104,7 +107,7 @@ public interface Store {
 		long companyId, long repositoryId, String fileName,
 		String versionLabel);
 
-	public void move(String srcDir, String destDir);
+	public void move(String srcDir, String destDir) throws PortalException;
 
 	public void updateFile(
 			long companyId, long repositoryId, long newRepositoryId,

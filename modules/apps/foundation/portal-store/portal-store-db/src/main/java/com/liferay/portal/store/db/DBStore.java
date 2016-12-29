@@ -106,22 +106,26 @@ public class DBStore extends BaseStore {
 
 	@Override
 	public void deleteDirectory(
-		long companyId, long repositoryId, String dirName) {
+			long companyId, long repositoryId, String dirName)
+		throws PortalException {
 
 		_dlContentLocalService.deleteContentsByDirectory(
 			companyId, repositoryId, dirName);
 	}
 
 	@Override
-	public void deleteFile(long companyId, long repositoryId, String fileName) {
+	public void deleteFile(long companyId, long repositoryId, String fileName)
+		throws PortalException {
+
 		_dlContentLocalService.deleteContents(
 			companyId, repositoryId, fileName);
 	}
 
 	@Override
 	public void deleteFile(
-		long companyId, long repositoryId, String fileName,
-		String versionLabel) {
+			long companyId, long repositoryId, String fileName,
+			String versionLabel)
+		throws PortalException {
 
 		try {
 			_dlContentLocalService.deleteContent(

@@ -14,10 +14,12 @@
 
 package com.liferay.portal.store.safe.file.name.wrapper;
 
+import com.liferay.document.library.kernel.exception.AccessDeniedException;
 import com.liferay.document.library.kernel.model.DLFileEntryConstants;
 import com.liferay.document.library.kernel.store.Store;
 import com.liferay.document.library.kernel.store.StoreWrapper;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.util.FileUtil;
 
 import java.io.File;
@@ -102,7 +104,12 @@ public class SafeFileNameStoreWrapper implements StoreWrapper {
 
 			renameUnsafeFile(companyId, repositoryId, fileName, safeFileName);
 
-			_store.addFile(companyId, repositoryId, safeFileName, is);
+			try {
+				_store.addFile(companyId, repositoryId, safeFileName, is);
+			}
+			catch (AccessDeniedException ade) {
+				throw new PrincipalException(ade);
+			}
 		}
 
 		@Override
@@ -127,7 +134,8 @@ public class SafeFileNameStoreWrapper implements StoreWrapper {
 
 		@Override
 		public void deleteDirectory(
-			long companyId, long repositoryId, String dirName) {
+				long companyId, long repositoryId, String dirName)
+			throws PortalException {
 
 			String safeDirName = FileUtil.encodeSafeFileName(dirName);
 
@@ -146,7 +154,8 @@ public class SafeFileNameStoreWrapper implements StoreWrapper {
 
 		@Override
 		public void deleteFile(
-			long companyId, long repositoryId, String fileName) {
+				long companyId, long repositoryId, String fileName)
+			throws PortalException {
 
 			String safeFileName = FileUtil.encodeSafeFileName(fileName);
 
@@ -163,8 +172,9 @@ public class SafeFileNameStoreWrapper implements StoreWrapper {
 
 		@Override
 		public void deleteFile(
-			long companyId, long repositoryId, String fileName,
-			String versionLabel) {
+				long companyId, long repositoryId, String fileName,
+				String versionLabel)
+			throws PortalException {
 
 			String safeFileName = FileUtil.encodeSafeFileName(fileName);
 
@@ -172,14 +182,24 @@ public class SafeFileNameStoreWrapper implements StoreWrapper {
 				_store.hasFile(
 					companyId, repositoryId, fileName, versionLabel)) {
 
-				_store.deleteFile(
-					companyId, repositoryId, fileName, versionLabel);
+				try {
+					_store.deleteFile(
+						companyId, repositoryId, fileName, versionLabel);
+				}
+				catch (AccessDeniedException ade) {
+					throw new PrincipalException(ade);
+				}
 
 				return;
 			}
 
-			_store.deleteFile(
-				companyId, repositoryId, safeFileName, versionLabel);
+			try {
+				_store.deleteFile(
+					companyId, repositoryId, safeFileName, versionLabel);
+			}
+			catch (AccessDeniedException ade) {
+				throw new PrincipalException(ade);
+			}
 		}
 
 		@Override
@@ -389,7 +409,7 @@ public class SafeFileNameStoreWrapper implements StoreWrapper {
 		}
 
 		@Override
-		public void move(String srcDir, String destDir) {
+		public void move(String srcDir, String destDir) throws PortalException {
 			_store.move(srcDir, destDir);
 		}
 
@@ -467,8 +487,13 @@ public class SafeFileNameStoreWrapper implements StoreWrapper {
 
 			renameUnsafeFile(companyId, repositoryId, fileName, safeFileName);
 
-			_store.updateFile(
-				companyId, repositoryId, safeFileName, versionLabel, is);
+			try {
+				_store.updateFile(
+					companyId, repositoryId, safeFileName, versionLabel, is);
+			}
+			catch (AccessDeniedException ade) {
+				throw new PrincipalException(ade);
+			}
 		}
 
 		@Override

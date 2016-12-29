@@ -526,7 +526,7 @@ public abstract class BaseStoreTestCase {
 		level = "WARN", loggerClass = BaseStore.class
 	)
 	@Test
-	public void testLogFailedDeletion() {
+	public void testLogFailedDeletion() throws Exception {
 		store.deleteFile(
 			companyId, repositoryId, RandomTestUtil.randomString());
 	}
@@ -541,7 +541,7 @@ public abstract class BaseStoreTestCase {
 		level = "WARN", loggerClass = BaseStore.class
 	)
 	@Test
-	public void testLogFailedDeletionWithVersionLabel() {
+	public void testLogFailedDeletionWithVersionLabel() throws Exception {
 		store.deleteFile(
 			companyId, repositoryId, RandomTestUtil.randomString(),
 			Store.VERSION_DEFAULT);

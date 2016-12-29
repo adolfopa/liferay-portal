@@ -39,6 +39,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.StorageClass;
 
+import com.liferay.document.library.kernel.exception.AccessDeniedException;
 import com.liferay.document.library.kernel.exception.DuplicateFileException;
 import com.liferay.document.library.kernel.exception.NoSuchFileException;
 import com.liferay.document.library.kernel.store.BaseStore;
@@ -48,6 +49,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.StreamUtil;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -127,26 +129,40 @@ public class S3Store extends BaseStore {
 
 	@Override
 	public void deleteDirectory(
-		long companyId, long repositoryId, String dirName) {
+			long companyId, long repositoryId, String dirName)
+		throws PortalException {
 
 		String key = _s3KeyTransformer.getDirectoryKey(
 			companyId, repositoryId, dirName);
 
-		deleteObjects(key);
+		try {
+			deleteObjects(key);
+		}
+		catch (AccessDeniedException ade) {
+			throw new PrincipalException(ade);
+		}
 	}
 
 	@Override
-	public void deleteFile(long companyId, long repositoryId, String fileName) {
+	public void deleteFile(long companyId, long repositoryId, String fileName)
+		throws PortalException {
+
 		String key = _s3KeyTransformer.getFileKey(
 			companyId, repositoryId, fileName);
 
-		deleteObjects(key);
+		try {
+			deleteObjects(key);
+		}
+		catch (AccessDeniedException ade) {
+			throw new PrincipalException(ade);
+		}
 	}
 
 	@Override
 	public void deleteFile(
-		long companyId, long repositoryId, String fileName,
-		String versionLabel) {
+			long companyId, long repositoryId, String fileName,
+			String versionLabel)
+		throws PortalException {
 
 		try {
 			String key = _s3KeyTransformer.getFileVersionKey(
@@ -178,6 +194,9 @@ public class S3Store extends BaseStore {
 
 			return file;
 		}
+		catch (AccessDeniedException ade) {
+			throw new PrincipalException(ade);
+		}
 		catch (IOException ioe) {
 			throw new SystemException(ioe);
 		}
@@ -189,10 +208,15 @@ public class S3Store extends BaseStore {
 			String versionLabel)
 		throws PortalException {
 
-		S3Object s3Object = getS3Object(
-			companyId, repositoryId, fileName, versionLabel);
+		try {
+			S3Object s3Object = getS3Object(
+				companyId, repositoryId, fileName, versionLabel);
 
-		return s3Object.getObjectContent();
+			return s3Object.getObjectContent();
+		}
+		catch (AccessDeniedException ade) {
+			throw new PrincipalException(ade);
+		}
 	}
 
 	@Override
@@ -695,10 +719,12 @@ public class S3Store extends BaseStore {
 			AmazonServiceException amazonServiceException =
 				(AmazonServiceException)amazonClientException;
 
+			String errorCode = amazonServiceException.getErrorCode();
+
 			StringBundler sb = new StringBundler(11);
 
 			sb.append("{errorCode=");
-			sb.append(amazonServiceException.getErrorCode());
+			sb.append(errorCode);
 			sb.append(", errorType=");
 			sb.append(amazonServiceException.getErrorType());
 			sb.append(", message=");
@@ -708,6 +734,10 @@ public class S3Store extends BaseStore {
 			sb.append(", statusCode=");
 			sb.append(amazonServiceException.getStatusCode());
 			sb.append("}");
+
+			if (errorCode.equals("AccessDenied")) {
+				return new AccessDeniedException(sb.toString());
+			}
 
 			return new SystemException(sb.toString());
 		}

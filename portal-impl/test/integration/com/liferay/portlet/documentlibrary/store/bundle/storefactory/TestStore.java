@@ -16,6 +16,7 @@ package com.liferay.portlet.documentlibrary.store.bundle.storefactory;
 
 import com.liferay.document.library.kernel.store.BaseStore;
 import com.liferay.document.library.kernel.store.Store;
+import com.liferay.portal.kernel.exception.PortalException;
 
 import java.io.InputStream;
 
@@ -45,17 +46,20 @@ public class TestStore extends BaseStore {
 
 	@Override
 	public void deleteDirectory(
-		long companyId, long repositoryId, String dirName) {
+			long companyId, long repositoryId, String dirName)
+		throws PortalException {
 	}
 
 	@Override
-	public void deleteFile(long companyId, long repositoryId, String fileName) {
+	public void deleteFile(long companyId, long repositoryId, String fileName)
+		throws PortalException {
 	}
 
 	@Override
 	public void deleteFile(
-		long companyId, long repositoryId, String fileName,
-		String versionLabel) {
+			long companyId, long repositoryId, String fileName,
+			String versionLabel)
+		throws PortalException {
 	}
 
 	@Override
@@ -101,7 +105,7 @@ public class TestStore extends BaseStore {
 	}
 
 	@Override
-	public void move(String srcDir, String destDir) {
+	public void move(String srcDir, String destDir) throws PortalException {
 	}
 
 	@Override

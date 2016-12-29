@@ -222,8 +222,13 @@ public class TrashImpl implements Trash {
 			long timestamp = GetterUtil.getLong(trashTime);
 
 			if (timestamp < date.getTime()) {
-				DLStoreUtil.deleteDirectory(
-					companyId, repositoryId, attachmentFileName);
+				try {
+					DLStoreUtil.deleteDirectory(
+						companyId, repositoryId, attachmentFileName);
+				}
+				catch (PortalException pe) {
+					_log.error(pe);
+				}
 			}
 		}
 	}

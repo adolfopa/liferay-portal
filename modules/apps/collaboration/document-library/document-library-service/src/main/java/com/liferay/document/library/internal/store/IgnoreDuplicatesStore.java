@@ -14,11 +14,13 @@
 
 package com.liferay.document.library.internal.store;
 
+import com.liferay.document.library.kernel.exception.AccessDeniedException;
 import com.liferay.document.library.kernel.exception.DuplicateFileException;
 import com.liferay.document.library.kernel.store.Store;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.security.auth.PrincipalException;
 
 import java.io.File;
 import java.io.InputStream;
@@ -90,7 +92,12 @@ public class IgnoreDuplicatesStore implements Store {
 
 				@Override
 				public void execute() throws PortalException {
-					_store.addFile(companyId, repositoryId, fileName, is);
+					try {
+						_store.addFile(companyId, repositoryId, fileName, is);
+					}
+					catch (AccessDeniedException ade) {
+						throw new PrincipalException(ade);
+					}
 				}
 
 			});
@@ -129,22 +136,31 @@ public class IgnoreDuplicatesStore implements Store {
 
 	@Override
 	public void deleteDirectory(
-		long companyId, long repositoryId, String dirName) {
+			long companyId, long repositoryId, String dirName)
+		throws PortalException {
 
 		_store.deleteDirectory(companyId, repositoryId, dirName);
 	}
 
 	@Override
-	public void deleteFile(long companyId, long repositoryId, String fileName) {
+	public void deleteFile(long companyId, long repositoryId, String fileName)
+		throws PortalException {
+
 		_store.deleteFile(companyId, repositoryId, fileName);
 	}
 
 	@Override
 	public void deleteFile(
-		long companyId, long repositoryId, String fileName,
-		String versionLabel) {
+			long companyId, long repositoryId, String fileName,
+			String versionLabel)
+		throws PortalException {
 
-		_store.deleteFile(companyId, repositoryId, fileName, versionLabel);
+		try {
+			_store.deleteFile(companyId, repositoryId, fileName, versionLabel);
+		}
+		catch (AccessDeniedException ade) {
+			throw new PrincipalException(ade);
+		}
 	}
 
 	@Override
@@ -239,7 +255,7 @@ public class IgnoreDuplicatesStore implements Store {
 	}
 
 	@Override
-	public void move(String srcDir, String destDir) {
+	public void move(String srcDir, String destDir) throws PortalException {
 		_store.move(srcDir, destDir);
 	}
 
@@ -344,8 +360,14 @@ public class IgnoreDuplicatesStore implements Store {
 
 				@Override
 				public void execute() throws PortalException {
-					_store.updateFile(
-						companyId, repositoryId, fileName, versionLabel, is);
+					try {
+						_store.updateFile(
+							companyId, repositoryId, fileName, versionLabel,
+							is);
+					}
+					catch (AccessDeniedException ade) {
+						throw new PrincipalException(ade);
+					}
 				}
 
 			});
@@ -394,8 +416,13 @@ public class IgnoreDuplicatesStore implements Store {
 
 			@Override
 			public void execute() throws PortalException {
-				_store.deleteFile(
-					companyId, repositoryId, fileName, versionLabel);
+				try {
+					_store.deleteFile(
+						companyId, repositoryId, fileName, versionLabel);
+				}
+				catch (AccessDeniedException ade) {
+					throw new PrincipalException(ade);
+				}
 			}
 
 		};

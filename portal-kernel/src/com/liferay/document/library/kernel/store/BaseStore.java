@@ -14,12 +14,14 @@
 
 package com.liferay.document.library.kernel.store;
 
+import com.liferay.document.library.kernel.exception.AccessDeniedException;
 import com.liferay.document.library.kernel.exception.NoSuchFileException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
@@ -70,8 +72,14 @@ public abstract class BaseStore implements Store {
 		try (UnsyncByteArrayInputStream unsyncByteArrayInputStream =
 				new UnsyncByteArrayInputStream(bytes)) {
 
-			addFile(
-				companyId, repositoryId, fileName, unsyncByteArrayInputStream);
+			try {
+				addFile(
+					companyId, repositoryId, fileName,
+					unsyncByteArrayInputStream);
+			}
+			catch (AccessDeniedException ade) {
+				throw new PrincipalException(ade);
+			}
 		}
 		catch (IOException ioe) {
 			throw new SystemException("Unable to read bytes", ioe);
@@ -94,6 +102,9 @@ public abstract class BaseStore implements Store {
 
 		try (InputStream is = new FileInputStream(file)) {
 			addFile(companyId, repositoryId, fileName, is);
+		}
+		catch (AccessDeniedException ade) {
+			throw new PrincipalException(ade);
 		}
 		catch (FileNotFoundException fnfe) {
 			throw new SystemException(fnfe);
@@ -155,7 +166,12 @@ public abstract class BaseStore implements Store {
 			is = new UnsyncByteArrayInputStream(new byte[0]);
 		}
 
-		updateFile(companyId, repositoryId, fileName, toVersionLabel, is);
+		try {
+			updateFile(companyId, repositoryId, fileName, toVersionLabel, is);
+		}
+		catch (AccessDeniedException ade) {
+			throw new PrincipalException(ade);
+		}
 	}
 
 	/**
@@ -168,7 +184,8 @@ public abstract class BaseStore implements Store {
 	 */
 	@Override
 	public abstract void deleteDirectory(
-		long companyId, long repositoryId, String dirName);
+			long companyId, long repositoryId, String dirName)
+		throws PortalException;
 
 	/**
 	 * Deletes a file. If a file has multiple versions, all versions will be
@@ -181,7 +198,8 @@ public abstract class BaseStore implements Store {
 	 */
 	@Override
 	public abstract void deleteFile(
-		long companyId, long repositoryId, String fileName);
+			long companyId, long repositoryId, String fileName)
+		throws PortalException;
 
 	/**
 	 * Deletes a file at a particular version.
@@ -194,8 +212,9 @@ public abstract class BaseStore implements Store {
 	 */
 	@Override
 	public abstract void deleteFile(
-		long companyId, long repositoryId, String fileName,
-		String versionLabel);
+			long companyId, long repositoryId, String fileName,
+			String versionLabel)
+		throws PortalException;
 
 	/**
 	 * Returns the file as a {@link File} object.
@@ -419,7 +438,7 @@ public abstract class BaseStore implements Store {
 	 * @param destDir the new directory's name
 	 */
 	@Override
-	public void move(String srcDir, String destDir) {
+	public void move(String srcDir, String destDir) throws PortalException {
 	}
 
 	/**
@@ -455,9 +474,14 @@ public abstract class BaseStore implements Store {
 		try (UnsyncByteArrayInputStream unsyncByteArrayInputStream =
 				new UnsyncByteArrayInputStream(bytes)) {
 
-			updateFile(
-				companyId, repositoryId, fileName, versionLabel,
-				unsyncByteArrayInputStream);
+			try {
+				updateFile(
+					companyId, repositoryId, fileName, versionLabel,
+					unsyncByteArrayInputStream);
+			}
+			catch (AccessDeniedException ade) {
+				throw new PrincipalException(ade);
+			}
 		}
 		catch (IOException ioe) {
 			throw new SystemException("Unable to read bytes", ioe);
@@ -482,6 +506,9 @@ public abstract class BaseStore implements Store {
 
 		try (InputStream is = new FileInputStream(file)) {
 			updateFile(companyId, repositoryId, fileName, versionLabel, is);
+		}
+		catch (AccessDeniedException ade) {
+			throw new PrincipalException(ade);
 		}
 		catch (FileNotFoundException fnfe) {
 			throw new NoSuchFileException(
@@ -533,9 +560,14 @@ public abstract class BaseStore implements Store {
 			is = new UnsyncByteArrayInputStream(new byte[0]);
 		}
 
-		updateFile(companyId, repositoryId, fileName, toVersionLabel, is);
+		try {
+			updateFile(companyId, repositoryId, fileName, toVersionLabel, is);
 
-		deleteFile(companyId, repositoryId, fileName, fromVersionLabel);
+			deleteFile(companyId, repositoryId, fileName, fromVersionLabel);
+		}
+		catch (AccessDeniedException ade) {
+			throw new PrincipalException(ade);
+		}
 	}
 
 	protected void logFailedDeletion(

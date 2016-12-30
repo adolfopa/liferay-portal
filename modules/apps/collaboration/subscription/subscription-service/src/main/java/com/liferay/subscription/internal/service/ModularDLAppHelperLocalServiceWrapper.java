@@ -184,7 +184,7 @@ public class ModularDLAppHelperLocalServiceWrapper
 				"[$FOLDER_NAME$]", folder.getName(), true);
 		}
 		else {
-			subscriptionSender.setLocalizedContextAttribute(
+			subscriptionSender.setLocalizedContextAttributeWithFunction(
 				"[$FOLDER_NAME$]", locale -> LanguageUtil.get(locale, "home"));
 		}
 
@@ -201,7 +201,7 @@ public class ModularDLAppHelperLocalServiceWrapper
 		subscriptionSender.setHtmlFormat(true);
 		subscriptionSender.setLocalizedBodyMap(
 			LocalizationUtil.getMap(bodyLocalizedValuesMap));
-		subscriptionSender.setLocalizedContextAttribute(
+		subscriptionSender.setLocalizedContextAttributeWithFunction(
 			"[$DOCUMENT_TYPE$]", locale -> dlFileEntryType.getName(locale));
 		subscriptionSender.setLocalizedSubjectMap(
 			LocalizationUtil.getMap(subjectLocalizedValuesMap));

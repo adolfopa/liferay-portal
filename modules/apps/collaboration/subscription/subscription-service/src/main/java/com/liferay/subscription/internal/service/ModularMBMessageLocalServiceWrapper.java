@@ -182,7 +182,7 @@ public class ModularMBMessageLocalServiceWrapper
 				"[$CATEGORY_NAME$]", category.getName(), true);
 		}
 		else {
-			subscriptionSender.setLocalizedContextAttribute(
+			subscriptionSender.setLocalizedContextAttributeWithFunction(
 				"[$CATEGORY_NAME$]",
 				locale -> _getLocalizedRootCategoryName(groupId, locale));
 		}

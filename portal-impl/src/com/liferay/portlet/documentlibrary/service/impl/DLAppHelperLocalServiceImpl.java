@@ -222,11 +222,11 @@ public class DLAppHelperLocalServiceImpl
 		}
 
 		// Subscriptions
-
+/*
 		subscriptionLocalService.deleteSubscriptions(
 			folder.getCompanyId(), DLFolderConstants.getClassName(),
 			folder.getFolderId());
-
+*/
 		// Asset
 
 		assetEntryLocalService.deleteEntry(

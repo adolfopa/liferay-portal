@@ -12,42 +12,38 @@
  * details.
  */
 
-package com.liferay.portal.model;
+package com.liferay.subscription.internal.service;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.BaseModelListener;
-import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutRevision;
-import com.liferay.portal.kernel.model.LayoutSetPrototype;
 import com.liferay.portal.kernel.model.PortletPreferences;
-import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
-import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
-import com.liferay.portal.kernel.service.LayoutSetPrototypeLocalServiceUtil;
+import com.liferay.portal.kernel.service.ServiceWrapper;
+import com.liferay.portal.kernel.service.SubscriptionLocalServiceUtil;
 import com.liferay.portal.kernel.service.persistence.LayoutRevisionUtil;
 import com.liferay.portal.kernel.service.persistence.LayoutUtil;
-import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.servlet.filters.cache.CacheUtil;
 
-import java.util.Date;
+import org.osgi.service.component.annotations.Component;
 
 /**
- * @author Alexander Chow
- * @author Raymond Augé
+ * @author Adolfo Pérez
  */
-public class PortletPreferencesModelListener
+@Component(immediate = true, service = ServiceWrapper.class)
+public class SubscriptionPortletPreferencesModelListener
 	extends BaseModelListener<PortletPreferences> {
 
 	@Override
-	public void onAfterUpdate(PortletPreferences portletPreferences) {
+	public void onAfterRemove(PortletPreferences portletPreferences) {
 		clearCache(portletPreferences);
 
-		updateLayout(portletPreferences);
+		deleteSubscriptions(portletPreferences);
 	}
 
 	/**
-	 * @see com.liferay.subscription.internal.service.SubscriptionPortletPreferencesModelListener#clearCache(
+	 * @see com.liferay.portal.model.PortletPreferencesModelListener#clearCache(
 	 *      PortletPreferences)
 	 */
 	protected void clearCache(PortletPreferences portletPreferences) {
@@ -85,60 +81,23 @@ public class PortletPreferencesModelListener
 		}
 	}
 
-	protected void updateLayout(PortletPreferences portletPreferences) {
+	protected void deleteSubscriptions(PortletPreferences portletPreferences) {
+		if (portletPreferences == null) {
+			return;
+		}
+
 		try {
-			if ((portletPreferences.getOwnerType() ==
-					PortletKeys.PREFS_OWNER_TYPE_GROUP) &&
-				(portletPreferences.getOwnerId() > 0)) {
-
-				Group group = GroupLocalServiceUtil.fetchGroup(
-					portletPreferences.getOwnerId());
-
-				if (group == null) {
-					return;
-				}
-
-				String className = group.getClassName();
-
-				if (!className.equals(LayoutSetPrototype.class.getName())) {
-					return;
-				}
-
-				LayoutSetPrototype layoutSetPrototype =
-					LayoutSetPrototypeLocalServiceUtil.fetchLayoutSetPrototype(
-						group.getClassPK());
-
-				if (layoutSetPrototype == null) {
-					return;
-				}
-
-				layoutSetPrototype.setModifiedDate(new Date());
-
-				LayoutSetPrototypeLocalServiceUtil.updateLayoutSetPrototype(
-					layoutSetPrototype);
-			}
-			else if ((portletPreferences.getOwnerType() ==
-						PortletKeys.PREFS_OWNER_TYPE_LAYOUT) &&
-					 (portletPreferences.getPlid() > 0)) {
-
-				Layout layout = LayoutLocalServiceUtil.fetchLayout(
-					portletPreferences.getPlid());
-
-				if (layout == null) {
-					return;
-				}
-
-				layout.setModifiedDate(new Date());
-
-				LayoutLocalServiceUtil.updateLayout(layout);
-			}
+			SubscriptionLocalServiceUtil.deleteSubscriptions(
+				portletPreferences.getCompanyId(),
+				portletPreferences.getModelClassName(),
+				portletPreferences.getPortletPreferencesId());
 		}
 		catch (Exception e) {
-			_log.error("Unable to update the layout's modified date", e);
+			_log.error("Unable to delete subscriptions", e);
 		}
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		PortletPreferencesModelListener.class);
+		SubscriptionPortletPreferencesModelListener.class);
 
 }

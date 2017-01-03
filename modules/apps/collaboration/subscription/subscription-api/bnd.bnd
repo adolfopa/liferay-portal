@@ -6,6 +6,7 @@ Export-Package:\
 	com.liferay.subscription.exception,\
 	com.liferay.subscription.model,\
 	com.liferay.subscription.service,\
-	com.liferay.subscription.service.persistence
+	com.liferay.subscription.service.persistence,\
+	com.liferay.subscription.util.comparator
 Liferay-Releng-Module-Group-Description:
 Liferay-Releng-Module-Group-Title: Subscription

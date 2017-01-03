@@ -38,8 +38,8 @@ page import="com.liferay.portal.kernel.util.StringBundler" %><%@
 page import="com.liferay.portal.kernel.util.StringPool" %><%@
 page import="com.liferay.portal.kernel.util.Validator" %><%@
 page import="com.liferay.portal.kernel.util.WebKeys" %><%@
-page import="com.liferay.subscription.util.comparator.SubscriptionClassNameIdComparator" %><%@
 page import="com.liferay.subscription.service.SubscriptionLocalServiceUtil" %><%@
+page import="com.liferay.subscription.util.comparator.SubscriptionClassNameIdComparator" %><%@
 page import="com.liferay.taglib.search.ResultRow" %>
 
 <%@ page import="java.util.List" %>

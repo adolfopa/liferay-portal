@@ -226,7 +226,8 @@ public class ModularSubscriptionLocalServiceWrapper
 
 	private static class SubscriptionOrderByComparatorAdapter
 		extends
-		OrderByComparatorAdapter<com.liferay.subscription.model.Subscription, Subscription> {
+			OrderByComparatorAdapter
+				<com.liferay.subscription.model.Subscription, Subscription> {
 
 		public SubscriptionOrderByComparatorAdapter(
 			OrderByComparator<Subscription> orderByComparator) {

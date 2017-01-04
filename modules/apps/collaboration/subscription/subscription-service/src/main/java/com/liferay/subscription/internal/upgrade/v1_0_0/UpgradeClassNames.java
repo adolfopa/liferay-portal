@@ -14,7 +14,11 @@
 
 package com.liferay.subscription.internal.upgrade.v1_0_0;
 
+import com.liferay.portal.kernel.dao.orm.WildcardMode;
 import com.liferay.portal.upgrade.v7_0_0.UpgradeKernelPackage;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 /**
  * @author Adolfo Pérez

@@ -35,6 +35,7 @@ public class UpgradeClassNames extends UpgradeKernelPackage {
 		return _RESOURCE_NAMES;
 	}
 
+	/*
 	@Override
 	protected void upgradeTable(
 			String tableName, String columnName, String[][] names,
@@ -65,7 +66,7 @@ public class UpgradeClassNames extends UpgradeKernelPackage {
 
 		super.upgradeTable(tableName, columnName, names, wildcardMode);
 	}
-
+*/
 	private static final String[][] _CLASS_NAMES = new String[][] {
 		{
 			"com.liferay.portal.kernel.model.Subscription",

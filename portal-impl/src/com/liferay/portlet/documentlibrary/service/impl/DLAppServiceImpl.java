@@ -1560,10 +1560,8 @@ public class DLAppServiceImpl extends DLAppServiceBaseImpl {
 			boolean includeMountFolders)
 		throws PortalException {
 
-		Repository repository = getRepository(repositoryId);
-
-		return repository.getFoldersAndFileEntriesAndFileShortcutsCount(
-			folderId, status, mimeTypes, includeMountFolders);
+		return getFoldersAndFileEntriesAndFileShortcutsCount(
+			repositoryId, folderId, mimeTypes, includeMountFolders, null);
 	}
 
 	@Override

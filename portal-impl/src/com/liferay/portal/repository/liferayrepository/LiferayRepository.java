@@ -649,8 +649,8 @@ public class LiferayRepository
 		QueryDefinition<Object> queryDefinition = new QueryDefinition<>(
 			status, PrincipalThreadLocal.getUserId(), true);
 
-		return dlFolderService.getFoldersAndFileEntriesAndFileShortcutsCount(
-			getGroupId(), toFolderId(folderId), mimeTypes, includeMountFolders,
+		return getFoldersAndFileEntriesAndFileShortcutsCount(
+			toFolderId(folderId), mimeTypes, includeMountFolders,
 			queryDefinition);
 	}
 

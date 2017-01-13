@@ -124,19 +124,7 @@ public class ActionUtil {
 
 		long messageId = ParamUtil.getLong(request, "messageId");
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		PermissionChecker permissionChecker =
-			themeDisplay.getPermissionChecker();
-
-		int status = WorkflowConstants.STATUS_APPROVED;
-
-		if (permissionChecker.isContentReviewer(
-				themeDisplay.getUserId(), themeDisplay.getScopeGroupId())) {
-
-			status = WorkflowConstants.STATUS_ANY;
-		}
+		int status = WorkflowConstants.STATUS_ANY;
 
 		MBMessageDisplay messageDisplay =
 			MBMessageServiceUtil.getMessageDisplay(messageId, status);

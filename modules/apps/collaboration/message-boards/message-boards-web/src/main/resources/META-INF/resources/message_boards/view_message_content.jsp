@@ -271,6 +271,12 @@ if (portletTitleBasedNavigation) {
 
 			rootIndexPage = mbMessageIterator.getIndexPage();
 
+			MBMessage curMessage = mbMessageIterator.next();
+
+			if (!MBUtil.isViewableMessage(themeDisplay, messages.get(index))) {
+				continue;
+			}
+
 			if (messageFound && ((index + 1) > PropsValues.DISCUSSION_COMMENTS_DELTA_VALUE)) {
 				moreMessagesPagination = true;
 
@@ -279,7 +285,7 @@ if (portletTitleBasedNavigation) {
 
 			request.setAttribute(WebKeys.MESSAGE_BOARDS_TREE_WALKER, treeWalker);
 			request.setAttribute(WebKeys.MESSAGE_BOARDS_TREE_WALKER_CATEGORY, category);
-			request.setAttribute(WebKeys.MESSAGE_BOARDS_TREE_WALKER_CUR_MESSAGE, mbMessageIterator.next());
+			request.setAttribute(WebKeys.MESSAGE_BOARDS_TREE_WALKER_CUR_MESSAGE, curMessage);
 			request.setAttribute(WebKeys.MESSAGE_BOARDS_TREE_WALKER_DEPTH, Integer.valueOf(0));
 			request.setAttribute(WebKeys.MESSAGE_BOARDS_TREE_WALKER_LAST_NODE, Boolean.valueOf(false));
 			request.setAttribute(WebKeys.MESSAGE_BOARDS_TREE_WALKER_SEL_MESSAGE, message);

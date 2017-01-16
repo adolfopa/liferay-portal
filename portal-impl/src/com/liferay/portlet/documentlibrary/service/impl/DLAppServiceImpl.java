@@ -22,6 +22,7 @@ import com.liferay.document.library.kernel.util.comparator.FolderNameComparator;
 import com.liferay.document.library.kernel.util.comparator.RepositoryModelModifiedDateComparator;
 import com.liferay.document.library.kernel.util.comparator.RepositoryModelTitleComparator;
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.NoSuchGroupException;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -1559,10 +1560,21 @@ public class DLAppServiceImpl extends DLAppServiceBaseImpl {
 			boolean includeMountFolders)
 		throws PortalException {
 
+		return getFoldersAndFileEntriesAndFileShortcutsCount(
+			repositoryId, folderId, mimeTypes, includeMountFolders, null);
+	}
+
+	@Override
+	public int getFoldersAndFileEntriesAndFileShortcutsCount(
+			long repositoryId, long folderId, String[] mimeTypes,
+			boolean includeMountFolders,
+			QueryDefinition<Object> queryDefinition)
+		throws PortalException {
+
 		Repository repository = getRepository(repositoryId);
 
 		return repository.getFoldersAndFileEntriesAndFileShortcutsCount(
-			folderId, status, mimeTypes, includeMountFolders);
+			folderId, mimeTypes, includeMountFolders, queryDefinition);
 	}
 
 	/**

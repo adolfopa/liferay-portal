@@ -649,6 +649,17 @@ public class LiferayRepository
 		QueryDefinition<Object> queryDefinition = new QueryDefinition<>(
 			status, PrincipalThreadLocal.getUserId(), true);
 
+		return getFoldersAndFileEntriesAndFileShortcutsCount(
+			toFolderId(folderId), mimeTypes, includeMountFolders,
+			queryDefinition);
+	}
+
+	@Override
+	public int getFoldersAndFileEntriesAndFileShortcutsCount(
+			long folderId, String[] mimeTypes, boolean includeMountFolders,
+			QueryDefinition<Object> queryDefinition)
+		throws PortalException {
+
 		return dlFolderService.getFoldersAndFileEntriesAndFileShortcutsCount(
 			getGroupId(), toFolderId(folderId), mimeTypes, includeMountFolders,
 			queryDefinition);

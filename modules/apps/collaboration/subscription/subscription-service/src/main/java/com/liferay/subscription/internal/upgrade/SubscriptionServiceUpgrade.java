@@ -31,23 +31,6 @@ public class SubscriptionServiceUpgrade implements UpgradeStepRegistrator {
 
 	@Override
 	public void register(Registry registry) {
-		try {
-			BaseUpgradeServiceModuleRelease upgradeServiceModuleRelease =
-				new BaseUpgradeServiceModuleRelease() {
-
-					@Override
-					protected String getNewBundleSymbolicName() {
-						return "com.liferay.subscription.service";
-					}
-
-				};
-
-			upgradeServiceModuleRelease.upgrade();
-		}
-		catch (UpgradeException ue) {
-			throw new RuntimeException(ue);
-		}
-
 		registry.register(
 			"com.liferay.subscription.service", "0.0.1", "1.0.0",
 			new UpgradeClassNames());

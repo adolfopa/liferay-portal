@@ -17,7 +17,6 @@ package com.liferay.subscription.model.impl;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.portal.kernel.model.CacheModel;
-import com.liferay.portal.kernel.model.MVCCModel;
 import com.liferay.portal.kernel.util.HashUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
@@ -40,7 +39,7 @@ import java.util.Date;
  */
 @ProviderType
 public class SubscriptionCacheModel implements CacheModel<Subscription>,
-	Externalizable, MVCCModel {
+	Externalizable {
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -53,8 +52,7 @@ public class SubscriptionCacheModel implements CacheModel<Subscription>,
 
 		SubscriptionCacheModel subscriptionCacheModel = (SubscriptionCacheModel)obj;
 
-		if ((subscriptionId == subscriptionCacheModel.subscriptionId) &&
-				(mvccVersion == subscriptionCacheModel.mvccVersion)) {
+		if (subscriptionId == subscriptionCacheModel.subscriptionId) {
 			return true;
 		}
 
@@ -63,28 +61,14 @@ public class SubscriptionCacheModel implements CacheModel<Subscription>,
 
 	@Override
 	public int hashCode() {
-		int hashCode = HashUtil.hash(0, subscriptionId);
-
-		return HashUtil.hash(hashCode, mvccVersion);
-	}
-
-	@Override
-	public long getMvccVersion() {
-		return mvccVersion;
-	}
-
-	@Override
-	public void setMvccVersion(long mvccVersion) {
-		this.mvccVersion = mvccVersion;
+		return HashUtil.hash(0, subscriptionId);
 	}
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(23);
+		StringBundler sb = new StringBundler(21);
 
-		sb.append("{mvccVersion=");
-		sb.append(mvccVersion);
-		sb.append(", subscriptionId=");
+		sb.append("{subscriptionId=");
 		sb.append(subscriptionId);
 		sb.append(", groupId=");
 		sb.append(groupId);
@@ -113,7 +97,6 @@ public class SubscriptionCacheModel implements CacheModel<Subscription>,
 	public Subscription toEntityModel() {
 		SubscriptionImpl subscriptionImpl = new SubscriptionImpl();
 
-		subscriptionImpl.setMvccVersion(mvccVersion);
 		subscriptionImpl.setSubscriptionId(subscriptionId);
 		subscriptionImpl.setGroupId(groupId);
 		subscriptionImpl.setCompanyId(companyId);
@@ -157,8 +140,6 @@ public class SubscriptionCacheModel implements CacheModel<Subscription>,
 
 	@Override
 	public void readExternal(ObjectInput objectInput) throws IOException {
-		mvccVersion = objectInput.readLong();
-
 		subscriptionId = objectInput.readLong();
 
 		groupId = objectInput.readLong();
@@ -179,8 +160,6 @@ public class SubscriptionCacheModel implements CacheModel<Subscription>,
 	@Override
 	public void writeExternal(ObjectOutput objectOutput)
 		throws IOException {
-		objectOutput.writeLong(mvccVersion);
-
 		objectOutput.writeLong(subscriptionId);
 
 		objectOutput.writeLong(groupId);
@@ -211,7 +190,6 @@ public class SubscriptionCacheModel implements CacheModel<Subscription>,
 		}
 	}
 
-	public long mvccVersion;
 	public long subscriptionId;
 	public long groupId;
 	public long companyId;

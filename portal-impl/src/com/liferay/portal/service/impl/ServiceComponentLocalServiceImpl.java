@@ -339,6 +339,9 @@ public class ServiceComponentLocalServiceImpl
 		if (previousServiceComponent == null) {
 			if (_log.isInfoEnabled()) {
 				_log.info("Running " + buildNamespace + " SQL scripts");
+				_log.info(tablesSQL);
+				_log.info(sequencesSQL);
+				_log.info(indexesSQL);
 			}
 
 			db.runSQLTemplateString(tablesSQL, true, false);

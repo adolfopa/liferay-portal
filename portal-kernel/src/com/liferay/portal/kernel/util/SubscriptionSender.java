@@ -93,6 +93,10 @@ public class SubscriptionSender implements Serializable {
 		fileAttachments.add(attachment);
 	}
 
+	public <T> void addHook(Hook.Event event, Class<T> clazz, Hook<T> hook) {
+		_getHooks(event, clazz).add(hook);
+	}
+
 	public void addPersistedSubscribers(String className, long classPK) {
 		ObjectValuePair<String, Long> ovp = new ObjectValuePair<>(
 			className, classPK);
@@ -224,6 +228,10 @@ public class SubscriptionSender implements Serializable {
 			});
 	}
 
+	public long getCompanyId() {
+		return companyId;
+	}
+
 	public Object getContextAttribute(String key) {
 		return _context.get(key);
 	}
@@ -234,6 +242,10 @@ public class SubscriptionSender implements Serializable {
 
 	public String getMailId() {
 		return mailId;
+	}
+
+	public ServiceContext getServiceContext() {
+		return serviceContext;
 	}
 
 	/**
@@ -286,6 +298,10 @@ public class SubscriptionSender implements Serializable {
 
 		mailId = PortalUtil.getMailId(
 			company.getMx(), _mailIdPopPortletPrefix, _mailIdIds);
+	}
+
+	public boolean isBulk() {
+		return bulk;
 	}
 
 	public void setBody(String body) {
@@ -481,6 +497,18 @@ public class SubscriptionSender implements Serializable {
 		setCurrentUserId(userId);
 	}
 
+	public interface Hook<T> {
+
+		public void process(T payload);
+
+		public enum Event {
+
+			NOTIFY, PROCESS
+
+		}
+
+	}
+
 	protected void deleteSubscription(Subscription subscription)
 		throws Exception {
 
@@ -615,6 +643,8 @@ public class SubscriptionSender implements Serializable {
 			return;
 		}
 
+		_notifyHooks(Hook.Event.NOTIFY, Subscription.class, subscription);
+
 		sendNotification(user);
 	}
 
@@ -697,6 +727,8 @@ public class SubscriptionSender implements Serializable {
 			locale, mailTemplateContext);
 
 		mailMessage.setBody(processedBody);
+
+		_notifyHooks(Hook.Event.PROCESS, MailMessage.class, mailMessage);
 	}
 
 	/**
@@ -928,6 +960,18 @@ public class SubscriptionSender implements Serializable {
 			_getBasicMailTemplateContext(locale));
 	}
 
+	private List<Hook> _getHooks(Hook.Event event, Class<?> clazz) {
+		if (!_hooks.containsKey(event)) {
+			_hooks.put(event, new HashMap<>());
+		}
+
+		if (!_hooks.get(event).containsKey(clazz)) {
+			_hooks.get(event).put(clazz, new ArrayList<>());
+		}
+
+		return _hooks.get(event).get(clazz);
+	}
+
 	private String _getLocalizedValue(
 		Map<Locale, String> localizedValueMap, Locale locale,
 		String defaultValue) {
@@ -949,6 +993,10 @@ public class SubscriptionSender implements Serializable {
 	private String _getPortletTitle(String portletName, Locale locale) {
 		return _getLocalizedValue(
 			localizedPortletTitleMap, locale, portletName);
+	}
+
+	private <T> void _notifyHooks(Hook.Event event, Class<T> clazz, T payload) {
+		_getHooks(event, clazz).forEach(hook -> hook.process(payload));
 	}
 
 	private void readObject(ObjectInputStream objectInputStream)
@@ -989,6 +1037,8 @@ public class SubscriptionSender implements Serializable {
 	private String _contextCreatorUserPrefix;
 	private String _entryTitle;
 	private String _entryURL;
+	private final Map<Hook.Event, Map<Class<?>, List<Hook>>> _hooks =
+		new HashMap<>();
 	private boolean _initialized;
 	private final Map<String, EscapableLocalizableFunction> _localizedContext =
 		new HashMap<>();

@@ -1,0 +1,7 @@
+Bundle-SymbolicName: com.liferay.portal.impl.subscription.compat
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.liferay.portal.model.impl,\
+	com.liferay.portal.service.base,\
+	com.liferay.portal.service.impl,\
+	com.liferay.portal.service.persistence.impl

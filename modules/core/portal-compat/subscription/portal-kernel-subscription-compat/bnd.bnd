@@ -1,0 +1,8 @@
+Bundle-SymbolicName: com.liferay.portal.kernel.subscription.compat
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.liferay.portal.kernel.exception,\
+	com.liferay.portal.kernel.model,\
+	com.liferay.portal.kernel.service,\
+	com.liferay.portal.kernel.service.persistence,\
+	com.liferay.portal.kernel.util.comparator

@@ -80,6 +80,7 @@ public class AlloyEditorCreoleConfigContributor
 		JSONObject linkEditJSONObject = JSONFactoryUtil.createJSONObject();
 
 		linkEditJSONObject.put("showTargetSelector", false);
+		linkEditJSONObject.put("appendProtocol", false);
 
 		buttonCfgJSONObject.put("linkEdit", linkEditJSONObject);
 

@@ -51,6 +51,8 @@ public abstract class BaseWikiAttachmentEditorConfigContributor
 		ThemeDisplay themeDisplay,
 		RequestBackedPortletURLFactory requestBackedPortletURLFactory) {
 
+		jsonObject.put("appendProtocol", Boolean.FALSE);
+
 		boolean allowBrowseDocuments = GetterUtil.getBoolean(
 			inputEditorTaglibAttributes.get(
 				"liferay-ui:input-editor:allowBrowseDocuments"));

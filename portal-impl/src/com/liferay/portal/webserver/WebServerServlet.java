@@ -1480,23 +1480,21 @@ public class WebServerServlet extends HttpServlet {
 
 						Image image = getImage(request, true);
 
-						if ((image != null) &&
-							(image.getCompanyId() != user.getCompanyId()) &&
-							_processCompanyInactiveRequest(
-								request, response, image.getCompanyId())) {
-
-							return null;
-						}
-
 						if (image != null) {
+							if ((image.getCompanyId() != user.getCompanyId()) &&
+								_processCompanyInactiveRequest(
+									request, response, image.getCompanyId())) {
+
+								return null;
+							}
+
 							writeImage(image, request, response);
 						}
 						else {
 							sendDocumentLibrary(
 								request, response, user,
 								request.getServletPath() + StringPool.SLASH +
-									path,
-								pathArray);
+									path, pathArray);
 						}
 					}
 				}

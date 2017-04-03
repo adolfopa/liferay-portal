@@ -1340,14 +1340,7 @@ public class WebServerServlet extends HttpServlet {
 	private static void _checkDirectoryIndexingEnabled(Group group)
 		throws Exception {
 
-		UnicodeProperties typeSettingsProperties =
-			group.getTypeSettingsProperties();
-
-		boolean directoryIndexingEnabled = GetterUtil.getBoolean(
-			typeSettingsProperties.getProperty("directoryIndexingEnabled"),
-			PropsValues.WEB_SERVER_SERVLET_DIRECTORY_INDEXING_ENABLED);
-
-		if (!directoryIndexingEnabled) {
+		if (!_isDirectoryIndexingEnabled(group)) {
 			if (_log.isDebugEnabled()) {
 				_log.debug(
 					"Directory Indexing is not enabled for groupId: " +
@@ -1456,6 +1449,15 @@ public class WebServerServlet extends HttpServlet {
 		}
 
 		return user;
+	}
+
+	private static boolean _isDirectoryIndexingEnabled(Group group) {
+		UnicodeProperties typeSettingsProperties =
+			group.getTypeSettingsProperties();
+
+		return GetterUtil.getBoolean(
+			typeSettingsProperties.getProperty("directoryIndexingEnabled"),
+			PropsValues.WEB_SERVER_SERVLET_DIRECTORY_INDEXING_ENABLED);
 	}
 
 	private Callable<Void> _createFileServingCallable(

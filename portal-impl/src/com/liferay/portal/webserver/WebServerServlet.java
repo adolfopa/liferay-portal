@@ -1209,13 +1209,15 @@ public class WebServerServlet extends HttpServlet {
 		List<Group> groups = WebDAVUtil.getGroups(user);
 
 		for (Group group : groups) {
-			String name = HttpUtil.fixPath(group.getFriendlyURL());
+			if (_isDirectoryIndexingEnabled(group)) {
+				String name = HttpUtil.fixPath(group.getFriendlyURL());
 
-			WebServerEntry webServerEntry = new WebServerEntry(
-				path, name + StringPool.SLASH, null, null,
-				group.getDescription(), 0);
+				WebServerEntry webServerEntry = new WebServerEntry(
+					path, name + StringPool.SLASH, null, null,
+					group.getDescription(), 0);
 
-			webServerEntries.add(webServerEntry);
+				webServerEntries.add(webServerEntry);
+			}
 		}
 
 		sendHTML(response, path, webServerEntries);

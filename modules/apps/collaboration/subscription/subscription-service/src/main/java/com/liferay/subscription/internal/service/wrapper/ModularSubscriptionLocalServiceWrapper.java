@@ -132,6 +132,15 @@ public class ModularSubscriptionLocalServiceWrapper
 	}
 
 	@Override
+	public Subscription getSubscription(long subscriptionId)
+		throws PortalException {
+
+		return ModelAdapterUtil.adapt(
+			Subscription.class,
+			_subscriptionLocalService.getSubscription(subscriptionId));
+	}
+
+	@Override
 	public Subscription getSubscription(
 			long companyId, long userId, String className, long classPK)
 		throws PortalException {

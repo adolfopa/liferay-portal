@@ -29,9 +29,8 @@ String eventName = ParamUtil.getString(request, "eventName", liferayPortletRespo
 	</aui:fieldset-group>
 </aui:form>
 
-<aui:script require="journal-web/js/CardsTreeView.es,metal-dom/src/dom">
+<aui:script require="journal-web/js/CardsTreeView.es">
 	var CardsTreeView = journalWebJsCardsTreeViewEs.default;
-	var dom = metalDomSrcDom.default;
 
 	new CardsTreeView(
 		{

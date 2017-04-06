@@ -21,7 +21,7 @@ KBNavigationDisplayContext kbNavigationDisplayContext = (KBNavigationDisplayCont
 
 List<Long> ancestorResourcePrimaryKeys = kbNavigationDisplayContext.getAncestorResourcePrimaryKeys();
 
-long parentResourcePrimKey = GetterUtil.getLong(portletPreferences.getValue("resourcePrimKey", null));
+long parentResourcePrimKey = kbNavigationDisplayContext.getRootResourcePrimKey();
 
 String pageTitle = kbNavigationDisplayContext.getPageTitle();
 

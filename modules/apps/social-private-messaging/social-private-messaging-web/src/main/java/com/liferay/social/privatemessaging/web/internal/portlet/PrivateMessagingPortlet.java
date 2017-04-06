@@ -17,6 +17,7 @@ package com.liferay.social.privatemessaging.web.internal.portlet;
 import com.liferay.document.library.kernel.exception.FileExtensionException;
 import com.liferay.document.library.kernel.exception.FileNameException;
 import com.liferay.document.library.kernel.exception.FileSizeException;
+import com.liferay.document.library.kernel.util.DLValidator;
 import com.liferay.message.boards.kernel.model.MBMessage;
 import com.liferay.message.boards.kernel.service.MBMessageLocalService;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
@@ -342,13 +343,7 @@ public class PrivateMessagingPortlet extends MVCPortlet {
 				portletRequest, "please-enter-a-file-with-a-valid-file-name");
 		}
 		else if (key instanceof FileSizeException) {
-			long fileMaxSize = PrefsPropsUtil.getLong(
-				PropsKeys.DL_FILE_MAX_SIZE);
-
-			if (fileMaxSize == 0) {
-				fileMaxSize = PrefsPropsUtil.getLong(
-					PropsKeys.UPLOAD_SERVLET_REQUEST_IMPL_MAX_SIZE);
-			}
+			long fileMaxSize = _dlValidator.getMaxAllowableSize();
 
 			fileMaxSize /= 1024;
 
@@ -519,6 +514,9 @@ public class PrivateMessagingPortlet extends MVCPortlet {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		PrivateMessagingPortlet.class);
+
+	@Reference
+	private DLValidator _dlValidator;
 
 	@Reference
 	private MBMessageLocalService _mBMessageLocalService;

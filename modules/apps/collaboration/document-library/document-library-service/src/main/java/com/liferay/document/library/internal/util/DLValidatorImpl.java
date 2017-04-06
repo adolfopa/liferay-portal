@@ -23,12 +23,12 @@ import com.liferay.document.library.kernel.exception.SourceFileNameException;
 import com.liferay.document.library.kernel.util.DLUtil;
 import com.liferay.document.library.kernel.util.DLValidator;
 import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.PrefsProps;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeFormatter;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.util.PrefsPropsUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.documentlibrary.webdav.DLWebDAVUtil;
 
@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Adolfo Pérez
@@ -62,10 +63,10 @@ public final class DLValidatorImpl implements DLValidator {
 
 	@Override
 	public long getMaxAllowableSize() {
-		long fileMaxSize = PrefsPropsUtil.getLong(PropsKeys.DL_FILE_MAX_SIZE);
+		long fileMaxSize = _prefsProps.getLong(PropsKeys.DL_FILE_MAX_SIZE);
 
 		if (fileMaxSize == 0) {
-			fileMaxSize = PrefsPropsUtil.getLong(
+			fileMaxSize = _prefsProps.getLong(
 				PropsKeys.UPLOAD_SERVLET_REQUEST_IMPL_MAX_SIZE);
 		}
 
@@ -123,7 +124,7 @@ public final class DLValidatorImpl implements DLValidator {
 
 		boolean validFileExtension = false;
 
-		String[] fileExtensions = PrefsPropsUtil.getStringArray(
+		String[] fileExtensions = _prefsProps.getStringArray(
 			PropsKeys.DL_FILE_EXTENSIONS, StringPool.COMMA);
 
 		for (String fileExtension : fileExtensions) {
@@ -195,7 +196,7 @@ public final class DLValidatorImpl implements DLValidator {
 	public void validateFileSize(String fileName, long size)
 		throws FileSizeException {
 
-		long maxSize = PrefsPropsUtil.getLong(PropsKeys.DL_FILE_MAX_SIZE);
+		long maxSize = _prefsProps.getLong(PropsKeys.DL_FILE_MAX_SIZE);
 
 		if ((maxSize > 0) && (size > maxSize)) {
 			throw new FileSizeException(
@@ -278,5 +279,8 @@ public final class DLValidatorImpl implements DLValidator {
 
 		return title;
 	}
+
+	@Reference
+	private PrefsProps _prefsProps;
 
 }

@@ -237,8 +237,16 @@ public class JournalContentImpl
 		PortletRequestModel portletRequestModel, ThemeDisplay themeDisplay) {
 
 		try {
-			JournalArticle article = _journalArticleLocalService.getArticle(
-				groupId, articleId, version);
+			JournalArticle article;
+
+			if (version == 0.0) {
+				article = _journalArticleLocalService.getLatestArticle(
+					groupId, articleId);
+			}
+			else {
+				article = _journalArticleLocalService.getArticle(
+					groupId, articleId, version);
+			}
 
 			return getDisplay(
 				article, ddmTemplateKey, viewMode, languageId, page,

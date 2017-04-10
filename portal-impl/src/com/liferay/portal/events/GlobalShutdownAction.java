@@ -39,7 +39,6 @@ import com.liferay.portal.struts.AuthPublicPathRegistry;
 import com.liferay.portal.util.PropsUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portal.zip.TrueZIPHelperUtil;
-import com.liferay.portlet.documentlibrary.util.DocumentConversionUtil;
 import com.liferay.util.ThirdPartyThreadLocalRegistry;
 
 import java.sql.Connection;
@@ -103,10 +102,6 @@ public class GlobalShutdownAction extends SimpleAction {
 		// Javadoc
 
 		JavadocManagerUtil.unload(StringPool.BLANK);
-
-		// OpenOffice
-
-		DocumentConversionUtil.disconnect();
 
 		// Plugins
 

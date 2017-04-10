@@ -15,6 +15,7 @@
 package com.liferay.journal.content.asset.addon.entry.conversions.internal;
 
 import com.liferay.journal.content.asset.addon.entry.common.UserToolAssetAddonEntry;
+import com.liferay.portal.kernel.util.DocumentConversion;
 
 import javax.servlet.ServletContext;
 
@@ -47,6 +48,14 @@ public class PDFConvertionUserToolAssetAddonEntry
 	@Override
 	public Double getWeight() {
 		return 3.0;
+	}
+
+	@Override
+	@Reference(unbind = "-")
+	protected void setDocumentConversion(
+		DocumentConversion documentConversion) {
+
+		super.setDocumentConversion(documentConversion);
 	}
 
 	@Override

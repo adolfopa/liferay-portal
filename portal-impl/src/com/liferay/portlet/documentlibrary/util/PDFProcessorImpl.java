@@ -36,6 +36,7 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.DocumentConversionUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
@@ -57,7 +58,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -187,16 +187,15 @@ public class PDFProcessorImpl
 			return true;
 		}
 
-		if (DocumentConversionUtil.isEnabled()) {
+		if (DocumentConversionUtil.hasEnabledConverter()) {
 			Set<String> extensions = MimeTypesUtil.getExtensions(mimeType);
 
 			for (String extension : extensions) {
 				extension = extension.substring(1);
 
-				String[] targetExtensions =
-					DocumentConversionUtil.getConversions(extension);
+				if (DocumentConversionUtil.hasEnabledConverter(
+						extension, "pdf")) {
 
-				if (Arrays.binarySearch(targetExtensions, "pdf") >= 0) {
 					return true;
 				}
 			}
@@ -358,7 +357,7 @@ public class PDFProcessorImpl
 					PropsValues.DL_FILE_ENTRY_PREVIEW_DOCUMENT_MAX_HEIGHT);
 		}
 		else if ((PropsValues.DL_FILE_ENTRY_PREVIEW_DOCUMENT_MAX_WIDTH != 0) &&
-				 (PropsValues.DL_FILE_ENTRY_PREVIEW_DOCUMENT_MAX_HEIGHT == 0)) {
+				(PropsValues.DL_FILE_ENTRY_PREVIEW_DOCUMENT_MAX_HEIGHT == 0)) {
 
 			arguments.add(
 				"-dDEVICEWIDTH=" +
@@ -367,7 +366,7 @@ public class PDFProcessorImpl
 			arguments.add("-dDEVICEHEIGHT=" + scaledDimensions.get("height"));
 		}
 		else if ((PropsValues.DL_FILE_ENTRY_PREVIEW_DOCUMENT_MAX_WIDTH == 0) &&
-				 (PropsValues.DL_FILE_ENTRY_PREVIEW_DOCUMENT_MAX_HEIGHT != 0)) {
+				(PropsValues.DL_FILE_ENTRY_PREVIEW_DOCUMENT_MAX_HEIGHT != 0)) {
 
 			arguments.add("-dDEVICEWIDTH=" + scaledDimensions.get("width"));
 
@@ -433,7 +432,9 @@ public class PDFProcessorImpl
 
 				_generateImages(destinationFileVersion, inputStream);
 			}
-			else if (DocumentConversionUtil.isEnabled()) {
+			else if (DocumentConversionUtil.hasEnabledConverter(
+					extension, "pdf")) {
+
 				inputStream = destinationFileVersion.getContentStream(false);
 
 				String tempFileId = DLUtil.getTempFileId(
@@ -969,17 +970,8 @@ public class PDFProcessorImpl
 		if (extension.equals("pdf")) {
 			generateImages = true;
 		}
-		else if (DocumentConversionUtil.isEnabled()) {
-			String[] conversions = DocumentConversionUtil.getConversions(
-				extension);
-
-			for (String conversion : conversions) {
-				if (conversion.equals("pdf")) {
-					generateImages = true;
-
-					break;
-				}
-			}
+		else if (DocumentConversionUtil.hasEnabledConverter(extension, "pdf")) {
+			generateImages = true;
 		}
 
 		if (generateImages) {

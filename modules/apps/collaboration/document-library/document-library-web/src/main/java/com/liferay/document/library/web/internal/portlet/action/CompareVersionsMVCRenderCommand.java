@@ -26,12 +26,12 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.util.DocumentConversion;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portlet.documentlibrary.util.DocumentConversionUtil;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -126,28 +126,26 @@ public class CompareVersionsMVCRenderCommand implements MVCRenderCommand {
 				targetContent.getBytes(StringPool.UTF8));
 		}
 
-		if (DocumentConversionUtil.isEnabled()) {
-			if (DocumentConversionUtil.isConvertBeforeCompare(
-					sourceExtension)) {
+		if (_documentConversion.hasEnabledConverter()) {
+			if (_documentConversion.isConvertBeforeCompare(sourceExtension)) {
 
 				String sourceTempFileId = DLUtil.getTempFileId(
 					sourceFileVersion.getFileEntryId(),
 					sourceFileVersion.getVersion());
 
 				sourceIs = new FileInputStream(
-					DocumentConversionUtil.convert(
+					_documentConversion.convert(
 						sourceTempFileId, sourceIs, sourceExtension, "txt"));
 			}
 
-			if (DocumentConversionUtil.isConvertBeforeCompare(
-					targetExtension)) {
+			if (_documentConversion.isConvertBeforeCompare(targetExtension)) {
 
 				String targetTempFileId = DLUtil.getTempFileId(
 					targetFileVersion.getFileEntryId(),
 					targetFileVersion.getVersion());
 
 				targetIs = new FileInputStream(
-					DocumentConversionUtil.convert(
+					_documentConversion.convert(
 						targetTempFileId, targetIs, targetExtension, "txt"));
 			}
 		}
@@ -177,7 +175,15 @@ public class CompareVersionsMVCRenderCommand implements MVCRenderCommand {
 		_dlAppService = dlAppService;
 	}
 
+	@Reference(unbind = "-")
+	protected void setDocumentConversion(
+		DocumentConversion documentConversion) {
+
+		_documentConversion = documentConversion;
+	}
+
 	private DLAppLocalService _dlAppLocalService;
 	private DLAppService _dlAppService;
+	private DocumentConversion _documentConversion;
 
 }

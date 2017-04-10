@@ -61,8 +61,8 @@ com.liferay.portal.kernel.lock.Lock lock = fileEntry.getLock();
 
 String[] conversions = new String[0];
 
-if (PropsValues.DL_FILE_ENTRY_CONVERSIONS_ENABLED && PrefsPropsUtil.getBoolean(PropsKeys.OPENOFFICE_SERVER_ENABLED, PropsValues.OPENOFFICE_SERVER_ENABLED)) {
-	conversions = (String[])DocumentConversionUtil.getConversions(fileVersion.getExtension());
+if (PropsValues.DL_FILE_ENTRY_CONVERSIONS_ENABLED) {
+	conversions = DocumentConversionUtil.getConversions(fileVersion.getExtension());
 }
 
 long assetClassPK = 0;

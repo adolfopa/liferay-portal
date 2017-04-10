@@ -16,6 +16,8 @@
 
 <%@ include file="/init.jsp" %>
 
+<%@page import="com.liferay.portal.kernel.util.DocumentConversionUtil"%>
+
 <%
 PortletURL configurationRenderURL = (PortletURL)request.getAttribute("configuration.jsp-configurationRenderURL");
 %>
@@ -92,7 +94,10 @@ String helpMessage2 = "<em>" + LanguageUtil.format(request, "content-with-tag-x"
 	<aui:input helpMessage="set-as-the-default-asset-publisher-for-this-page-help" label="set-as-the-default-asset-publisher-for-this-page" name="defaultAssetPublisher" type="toggle-switch" value="<%= AssetUtil.isDefaultAssetPublisher(layout, portletDisplay.getId(), assetPublisherDisplayContext.getPortletResource()) %>" />
 </c:if>
 
-<aui:field-wrapper helpMessage='<%= !assetPublisherDisplayContext.isOpenOfficeServerEnabled() ? "enabling-openoffice-integration-provides-document-conversion-functionality" : StringPool.BLANK %>' label="enable-conversion-to">
+<%
+boolean hasEnabledConverter = DocumentConversionUtil.hasEnabledConverter("html");
+%>
+<aui:field-wrapper helpMessage='<%= !hasEnabledConverter ? "enabling-openoffice-integration-provides-document-conversion-functionality" : StringPool.BLANK %>' label="enable-conversion-to">
 	<div class="field-row">
 
 		<%
@@ -101,7 +106,7 @@ String helpMessage2 = "<em>" + LanguageUtil.format(request, "content-with-tag-x"
 		for (String conversion : conversions) {
 		%>
 
-			<aui:input checked="<%= ArrayUtil.contains(assetPublisherDisplayContext.getExtensions(), conversion) %>" disabled="<%= !assetPublisherDisplayContext.isOpenOfficeServerEnabled() %>" id='<%= "extensions" + conversion %>' inlineField="<%= true %>" label="<%= StringUtil.toUpperCase(conversion) %>" name="extensions" type="toggle-switch" value="<%= conversion %>" />
+			<aui:input checked="<%= ArrayUtil.contains(assetPublisherDisplayContext.getExtensions(), conversion) %>" disabled="<%= !hasEnabledConverter %>" id='<%= "extensions" + conversion %>' inlineField="<%= true %>" label="<%= StringUtil.toUpperCase(conversion) %>" name="extensions" type="toggle-switch" value="<%= conversion %>" />
 
 		<%
 		}

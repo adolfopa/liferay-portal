@@ -1,0 +1,6 @@
+Bundle-Name: Liferay Document Conversion API
+Bundle-SymbolicName: com.liferay.document.conversion.api
+Bundle-Version: 1.0.0
+Liferay-Releng-Module-Group-Description:
+Liferay-Releng-Module-Group-Title: Document Conversion
+Export-Package: com.liferay.document.conversion

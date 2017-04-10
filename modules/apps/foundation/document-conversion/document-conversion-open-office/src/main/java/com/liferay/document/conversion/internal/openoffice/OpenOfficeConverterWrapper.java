@@ -12,7 +12,20 @@
  * details.
  */
 
-package com.liferay.portlet.documentlibrary.util;
+package com.liferay.document.conversion.internal.openoffice;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
 
 import com.artofsolving.jodconverter.DefaultDocumentFormatRegistry;
 import com.artofsolving.jodconverter.DocumentConverter;
@@ -22,7 +35,8 @@ import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
 import com.artofsolving.jodconverter.openoffice.connection.SocketOpenOfficeConnection;
 import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConverter;
 import com.artofsolving.jodconverter.openoffice.converter.StreamOpenOfficeDocumentConverter;
-
+import com.liferay.document.conversion.BaseConverterWrapper;
+import com.liferay.document.conversion.ConverterWrapper;
 import com.liferay.portal.kernel.configuration.Filter;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayOutputStream;
@@ -30,115 +44,49 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.SortedArrayList;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.SystemProperties;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.util.PrefsPropsUtil;
-import com.liferay.portal.util.PropsUtil;
 import com.liferay.portal.util.PropsValues;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Bruno Farache
  * @author Alexander Chow
+ * @author Mauro Mariuzzo
  */
-public class DocumentConversionUtil {
+@Component(immediate = true, service = ConverterWrapper.class)
+public class OpenOfficeConverterWrapper extends BaseConverterWrapper {
 
-	public static File convert(
+	@Override
+	public File convert(
 			String id, InputStream inputStream, String sourceExtension,
 			String targetExtension)
 		throws IOException {
 
-		return _instance._convert(
-			id, inputStream, sourceExtension, targetExtension);
+		return _convert(id, inputStream, sourceExtension, targetExtension);
 	}
 
-	public static void disconnect() {
-		_instance._disconnect();
+	@Override
+	public boolean canConvert(String extension) {
+		return _getConversions(extension).length > 0;
 	}
 
-	public static String[] getConversions(String extension) {
-		return _instance._getConversions(extension);
+	@Override
+	public boolean canConvert(String sourceExtension, String targetExtension) {
+		String[] conversions = _getConversions(sourceExtension);
+
+		return ArrayUtil.contains(conversions, targetExtension);
 	}
 
-	public static String getFilePath(String id, String targetExtension) {
-		StringBundler sb = new StringBundler(5);
-
-		sb.append(SystemProperties.get(SystemProperties.TMP_DIR));
-		sb.append("/liferay/document_conversion/");
-		sb.append(id);
-		sb.append(StringPool.PERIOD);
-		sb.append(targetExtension);
-
-		return sb.toString();
+	@Override
+	public String[] getConversions(String extension) {
+		return _getConversions(extension);
 	}
 
-	public static boolean isComparableVersion(String extension) {
-		boolean enabled = false;
-
-		String periodAndExtension = StringPool.PERIOD.concat(extension);
-
-		for (int i = 0; i < _COMPARABLE_FILE_EXTENSIONS.length; i++) {
-			if (StringPool.STAR.equals(_COMPARABLE_FILE_EXTENSIONS[i]) ||
-				periodAndExtension.equals(_COMPARABLE_FILE_EXTENSIONS[i])) {
-
-				enabled = true;
-
-				break;
-			}
-		}
-
-		if (!enabled) {
-			return false;
-		}
-
-		if (extension.equals("css") || extension.equals("htm") ||
-			extension.equals("html") || extension.equals("js") ||
-			extension.equals("txt") || extension.equals("xml")) {
-
-			return true;
-		}
-
-		try {
-			if (isEnabled() && isConvertBeforeCompare(extension)) {
-				return true;
-			}
-		}
-		catch (Exception e) {
-			_log.error(e, e);
-		}
-
-		return false;
-	}
-
-	public static boolean isConvertBeforeCompare(String extension) {
-		if (extension.equals("txt")) {
-			return false;
-		}
-
-		String[] conversions = getConversions(extension);
-
-		for (int i = 0; i < conversions.length; i++) {
-			if (conversions[i].equals("txt")) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	public static boolean isEnabled() {
+	@Override
+	public boolean isEnabled() {
 		try {
 			return PrefsPropsUtil.getBoolean(
 				PropsKeys.OPENOFFICE_SERVER_ENABLED,
@@ -150,11 +98,20 @@ public class DocumentConversionUtil {
 		return false;
 	}
 
-	private DocumentConversionUtil() {
+	@Modified
+	@Activate
+	protected void activate() {
 		_populateConversionsMap("drawing");
 		_populateConversionsMap("presentation");
 		_populateConversionsMap("spreadsheet");
 		_populateConversionsMap("text");
+	}
+
+	@Deactivate
+	protected void deactivate() {
+		if (_openOfficeConnection != null) {
+			_openOfficeConnection.disconnect();
+		}
 	}
 
 	private File _convert(
@@ -224,12 +181,6 @@ public class DocumentConversionUtil {
 		return file;
 	}
 
-	private void _disconnect() {
-		if (_openOfficeConnection != null) {
-			_openOfficeConnection.disconnect();
-		}
-	}
-
 	private String _fixExtension(String extension) {
 		if (extension.equals("htm")) {
 			extension = "html";
@@ -265,6 +216,7 @@ public class DocumentConversionUtil {
 
 		return conversions;
 	}
+
 
 	private DocumentConverter _getDocumentConverter() {
 		if ((_openOfficeConnection != null) && (_documentConverter != null)) {
@@ -380,9 +332,6 @@ public class DocumentConversionUtil {
 		}
 	}
 
-	private static final String[] _COMPARABLE_FILE_EXTENSIONS =
-		PropsValues.DL_COMPARABLE_FILE_EXTENSIONS;
-
 	private static final String[] _DEFAULT_CONVERSIONS = new String[0];
 
 	private static final String _LOCALHOST = "localhost";
@@ -390,10 +339,7 @@ public class DocumentConversionUtil {
 	private static final String _LOCALHOST_IP = "127.0.0.1";
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		DocumentConversionUtil.class);
-
-	private static final DocumentConversionUtil _instance =
-		new DocumentConversionUtil();
+		OpenOfficeConverterWrapper.class);
 
 	private final Map<String, String[]> _conversionsMap = new HashMap<>();
 	private DocumentConverter _documentConverter;

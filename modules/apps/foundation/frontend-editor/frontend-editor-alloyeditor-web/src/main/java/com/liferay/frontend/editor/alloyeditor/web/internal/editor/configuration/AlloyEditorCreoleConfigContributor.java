@@ -81,6 +81,7 @@ public class AlloyEditorCreoleConfigContributor
 
 		linkEditJSONObject.put("appendProtocol", false);
 		linkEditJSONObject.put("showTargetSelector", false);
+		linkEditJSONObject.put("appendProtocol", false);
 
 		buttonCfgJSONObject.put("linkEdit", linkEditJSONObject);
 

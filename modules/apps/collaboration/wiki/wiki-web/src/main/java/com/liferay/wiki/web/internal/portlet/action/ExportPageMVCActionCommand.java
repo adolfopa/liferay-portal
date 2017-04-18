@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.servlet.ServletResponseUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.DocumentConversion;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
@@ -32,7 +33,6 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.util.PrefsPropsUtil;
-import com.liferay.portlet.documentlibrary.util.DocumentConversionUtil;
 import com.liferay.wiki.constants.WikiPortletKeys;
 import com.liferay.wiki.engine.impl.WikiEngineRenderer;
 import com.liferay.wiki.model.WikiPage;
@@ -203,7 +203,7 @@ public class ExportPageMVCActionCommand extends BaseMVCActionCommand {
 		if (Validator.isNotNull(targetExtension)) {
 			String id = page.getUuid();
 
-			File convertedFile = DocumentConversionUtil.convert(
+			File convertedFile = _documentConversion.convert(
 				id, is, sourceExtension, targetExtension);
 
 			if (convertedFile != null) {
@@ -218,6 +218,13 @@ public class ExportPageMVCActionCommand extends BaseMVCActionCommand {
 
 		ServletResponseUtil.sendFile(
 			request, response, fileName, is, contentType);
+	}
+
+	@Reference(unbind = "-")
+	protected void setDocumentConversion(
+			DocumentConversion documentConversion) {
+
+		_documentConversion = documentConversion;
 	}
 
 	@Reference(unbind = "-")
@@ -242,6 +249,7 @@ public class ExportPageMVCActionCommand extends BaseMVCActionCommand {
 	@Reference
 	private Portal _portal;
 
+	private DocumentConversion _documentConversion;
 	private WikiEngineRenderer _wikiEngineRenderer;
 	private WikiPageService _wikiPageService;
 

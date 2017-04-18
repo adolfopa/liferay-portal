@@ -84,6 +84,7 @@ import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.DigesterUtil;
+import com.liferay.portal.kernel.util.DocumentConversionUtil;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -106,7 +107,6 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.impl.ImageImpl;
 import com.liferay.portal.util.PortalInstances;
 import com.liferay.portal.util.PropsValues;
-import com.liferay.portlet.documentlibrary.util.DocumentConversionUtil;
 import com.liferay.trash.kernel.model.TrashEntry;
 import com.liferay.trash.kernel.util.TrashUtil;
 import com.liferay.users.admin.kernel.file.uploads.UserFileUploadsSettings;
@@ -514,8 +514,8 @@ public class WebServerServlet extends HttpServlet {
 				}
 			}
 			else if (path.startsWith("/user_female_portrait") ||
-					 path.startsWith("/user_male_portrait") ||
-					 path.startsWith("/user_portrait")) {
+					path.startsWith("/user_male_portrait") ||
+					path.startsWith("/user_portrait")) {
 
 				image = getUserPortraitImageResized(image, imageId);
 			}
@@ -729,9 +729,9 @@ public class WebServerServlet extends HttpServlet {
 		int usersImageMaxWidth = _userFileUploadsSettings.getImageMaxWidth();
 
 		if (((usersImageMaxHeight > 0) &&
-			 (image.getHeight() > usersImageMaxHeight)) ||
+			(image.getHeight() > usersImageMaxHeight)) ||
 			((usersImageMaxWidth > 0) &&
-			 (image.getWidth() > usersImageMaxWidth))) {
+			(image.getWidth() > usersImageMaxWidth))) {
 
 			User user = UserLocalServiceUtil.getUserByPortraitId(imageId);
 
@@ -1116,7 +1116,9 @@ public class WebServerServlet extends HttpServlet {
 			inputStream = fileVersion.getContentStream(true);
 			contentLength = fileVersion.getSize();
 
-			if (Validator.isNotNull(targetExtension)) {
+			if (DocumentConversionUtil.hasEnabledConverter(
+					fileVersion.getExtension(), targetExtension)) {
+
 				File convertedFile = DocumentConversionUtil.convert(
 					tempFileId, inputStream, fileVersion.getExtension(),
 					targetExtension);

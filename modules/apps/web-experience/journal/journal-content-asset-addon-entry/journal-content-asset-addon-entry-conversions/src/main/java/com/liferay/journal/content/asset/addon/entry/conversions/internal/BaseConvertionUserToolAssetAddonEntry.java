@@ -17,10 +17,9 @@ package com.liferay.journal.content.asset.addon.entry.conversions.internal;
 import com.liferay.journal.content.asset.addon.entry.common.UserToolAssetAddonEntry;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.servlet.taglib.ui.BaseJSPAssetAddonEntry;
-import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.DocumentConversion;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portlet.documentlibrary.util.DocumentConversionUtil;
 
 import java.io.IOException;
 
@@ -65,18 +64,23 @@ public abstract class BaseConvertionUserToolAssetAddonEntry
 
 	@Override
 	public boolean isEnabled() {
-		if (!DocumentConversionUtil.isEnabled()) {
-			return false;
-		}
-
-		if (!ArrayUtil.contains(
-				DocumentConversionUtil.getConversions("html"),
-				getExtension())) {
-
+		if (!_documentConversion.hasEnabledConverter(getExtension(), "html")) {
 			return false;
 		}
 
 		return super.isEnabled();
 	}
+
+	protected DocumentConversion getDocumentConversion() {
+		return _documentConversion;
+	}
+
+	protected void setDocumentConversion(
+		DocumentConversion documentConversion) {
+
+		_documentConversion = documentConversion;
+	}
+
+	private DocumentConversion _documentConversion;
 
 }

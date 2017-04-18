@@ -1,0 +1,13 @@
+Bundle-ClassPath:\
+	.,\
+	lib/jodconverter.jar
+Bundle-Name: Liferay Document Conversion with OpenOffice
+Bundle-SymbolicName: com.liferay.document.conversion.openoffice
+Bundle-Version: 1.0.0
+Import-Package:\
+	!com.sun.star.lib.unoloader,\
+	*
+Liferay-Releng-Module-Group-Description:
+Liferay-Releng-Module-Group-Title: Document Conversion
+-includeresource:\
+	@jodconverter.jar

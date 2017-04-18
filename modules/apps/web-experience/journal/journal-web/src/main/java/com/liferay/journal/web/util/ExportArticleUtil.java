@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.servlet.ServletResponseUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.DocumentConversion;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
@@ -32,7 +33,6 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portlet.documentlibrary.util.DocumentConversionUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -151,7 +151,7 @@ public class ExportArticleUtil {
 			articleDisplay.getId(), String.valueOf(articleDisplay.getVersion()),
 			languageId);
 
-		File convertedFile = DocumentConversionUtil.convert(
+		File convertedFile = _documentConversion.convert(
 			id, is, sourceExtension, targetExtension);
 
 		if (convertedFile != null) {
@@ -169,10 +169,18 @@ public class ExportArticleUtil {
 	}
 
 	@Reference(unbind = "-")
+	protected void setDocumentConversion(
+		DocumentConversion documentConversion) {
+
+		_documentConversion = documentConversion;
+	}
+
+	@Reference(unbind = "-")
 	protected void setJournalContent(JournalContent journalContent) {
 		_journalContent = journalContent;
 	}
 
+	private DocumentConversion _documentConversion;
 	private JournalContent _journalContent;
 
 	@Reference

@@ -928,6 +928,7 @@ public class AssetPublisherDisplayContext {
 		return _mergeURLTags;
 	}
 
+	@Deprecated
 	public boolean isOpenOfficeServerEnabled() {
 		if (_openOfficeServerEnabled == null) {
 			_openOfficeServerEnabled = PrefsPropsUtil.getBoolean(

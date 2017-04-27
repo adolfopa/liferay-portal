@@ -14,17 +14,20 @@
 
 package com.liferay.item.selector.taglib;
 
+import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.util.DLUtil;
 import com.liferay.item.selector.ItemSelectorReturnType;
 import com.liferay.item.selector.criteria.FileEntryItemSelectorReturnType;
 import com.liferay.item.selector.criteria.URLItemSelectorReturnType;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ClassUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.Validator;
 
 import java.util.Iterator;
 import java.util.List;
@@ -57,6 +60,22 @@ public class ItemSelectorRepositoryEntryBrowserReturnTypeUtil
 			return getFileEntryValue(fileEntry, themeDisplay);
 		}
 		else if (className.equals(URLItemSelectorReturnType.class.getName())) {
+			Object fileEntryModel = fileEntry.getModel();
+
+			if (fileEntryModel instanceof DLFileEntry) {
+				DLFileEntry dlFileEntry = (DLFileEntry)fileEntryModel;
+
+				String dlFileEntryClassName = dlFileEntry.getClassName();
+				long dlFileEntryClassPK = dlFileEntry.getClassPK();
+
+				if (Validator.isNotNull(dlFileEntryClassName) &&
+					(dlFileEntryClassPK != 0)) {
+
+					return PortletFileRepositoryUtil.getPortletFileEntryURL(
+						themeDisplay, fileEntry, StringPool.BLANK, false);
+				}
+			}
+
 			return DLUtil.getPreviewURL(
 				fileEntry, fileEntry.getFileVersion(), themeDisplay,
 				StringPool.BLANK, false, false);
@@ -75,11 +94,30 @@ public class ItemSelectorRepositoryEntryBrowserReturnTypeUtil
 		fileEntryJSONObject.put("groupId", fileEntry.getGroupId());
 		fileEntryJSONObject.put("title", fileEntry.getTitle());
 		fileEntryJSONObject.put("type", "document");
-		fileEntryJSONObject.put(
-			"url",
-			DLUtil.getPreviewURL(
-				fileEntry, fileEntry.getFileVersion(), themeDisplay,
-				StringPool.BLANK, false, false));
+
+		Object fileEntryModel = fileEntry.getModel();
+
+		if (fileEntryModel instanceof DLFileEntry) {
+			DLFileEntry dlFileEntry = (DLFileEntry)fileEntryModel;
+
+			String className = dlFileEntry.getClassName();
+			long classPK = dlFileEntry.getClassPK();
+
+			if (Validator.isNotNull(className) && (classPK != 0)) {
+				fileEntryJSONObject.put(
+					"url",
+					PortletFileRepositoryUtil.getPortletFileEntryURL(
+						themeDisplay, fileEntry, StringPool.BLANK, false));
+			}
+		}
+		else {
+			fileEntryJSONObject.put(
+				"url",
+				DLUtil.getPreviewURL(
+					fileEntry, fileEntry.getFileVersion(), themeDisplay,
+					StringPool.BLANK, false, false));
+		}
+
 		fileEntryJSONObject.put("uuid", fileEntry.getUuid());
 
 		return fileEntryJSONObject.toString();

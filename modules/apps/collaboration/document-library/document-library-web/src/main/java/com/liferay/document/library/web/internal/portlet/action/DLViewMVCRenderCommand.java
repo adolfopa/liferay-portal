@@ -21,6 +21,7 @@ import com.liferay.document.library.kernel.service.DLFolderLocalService;
 import com.liferay.document.library.web.constants.DLPortletKeys;
 import com.liferay.document.library.web.constants.DLWebKeys;
 import com.liferay.document.library.web.internal.portlet.toolbar.contributor.DLPortletToolbarContributor;
+import com.liferay.document.library.web.internal.util.DLTrashUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -54,6 +55,9 @@ public class DLViewMVCRenderCommand extends GetFolderMVCRenderCommand {
 		renderRequest.setAttribute(
 			DLWebKeys.DOCUMENT_LIBRARY_PORTLET_TOOLBAR_CONTRIBUTOR,
 			_dlPortletToolbarContributor);
+
+		renderRequest.setAttribute(
+			DLWebKeys.DOCUMENT_LIBRARY_TRASH_UTIL, _dlTrashUtil);
 
 		try {
 			pingFolderRepository(renderRequest);
@@ -120,5 +124,8 @@ public class DLViewMVCRenderCommand extends GetFolderMVCRenderCommand {
 	private DLAppService _dlAppService;
 	private DLFolderLocalService _dlFolderLocalService;
 	private DLPortletToolbarContributor _dlPortletToolbarContributor;
+
+	@Reference
+	private DLTrashUtil _dlTrashUtil;
 
 }

@@ -71,7 +71,7 @@ public class DLUploadResponseHandler implements UploadResponseHandler {
 
 			return DLUtil.getPreviewURL(
 				fileEntry, fileEntry.getLatestFileVersion(), themeDisplay,
-				StringPool.BLANK);
+				StringPool.BLANK, false, true);
 		}
 		catch (PortalException pe) {
 			if (_log.isWarnEnabled()) {

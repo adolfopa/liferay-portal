@@ -12,16 +12,20 @@
  * details.
  */
 
-package com.liferay.document.library.kernel.document.conversion;
+package com.liferay.document.library.document.conversion.wrapper;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * @author Pei-Jung Lan
+ * @author Mauro Mariuzzo
  */
-public interface DocumentConversion {
+public interface ConverterWrapper {
+
+	public boolean canConvert(String extension);
+
+	public boolean canConvert(String sourceExtension, String targetExtension);
 
 	public File convert(
 			String id, InputStream inputStream, String sourceExtension,
@@ -31,17 +35,6 @@ public interface DocumentConversion {
 	public void disconnect();
 
 	public String[] getConversions(String extension);
-
-	public String getFilePath(String id, String targetExtension);
-
-	public boolean hasEnabledConverter(String extension);
-
-	public boolean hasEnabledConverter(
-		String sourceExtension, String targetExtension);
-
-	public boolean isComparableVersion(String extension);
-
-	public boolean isConvertBeforeCompare(String extension);
 
 	public boolean isEnabled();
 

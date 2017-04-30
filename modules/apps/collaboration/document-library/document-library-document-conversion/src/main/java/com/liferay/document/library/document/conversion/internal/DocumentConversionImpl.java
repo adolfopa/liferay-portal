@@ -24,7 +24,10 @@ import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConv
 import com.artofsolving.jodconverter.openoffice.converter.StreamOpenOfficeDocumentConverter;
 
 import com.liferay.document.library.document.conversion.configuration.OpenOfficeConfiguration;
+import com.liferay.document.library.document.conversion.wrapper.BaseConverterWrapper;
+import com.liferay.document.library.document.conversion.wrapper.ConverterWrapper;
 import com.liferay.document.library.kernel.document.conversion.DocumentConversion;
+import com.liferay.osgi.util.ServiceTrackerFactory;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.configuration.Filter;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -48,12 +51,15 @@ import java.io.InputStream;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * @author Bruno Farache
@@ -71,115 +77,68 @@ public class DocumentConversionImpl implements DocumentConversion {
 			String targetExtension)
 		throws IOException {
 
-		if (!isEnabled()) {
+		ConverterWrapper converterWrapper = getEnabledConverter(
+			sourceExtension, targetExtension);
+
+		if (converterWrapper != null) {
+			return converterWrapper.convert(
+				id, inputStream, sourceExtension, targetExtension);
+		}
+		else {
 			return null;
 		}
-
-		sourceExtension = _fixExtension(sourceExtension);
-		targetExtension = _fixExtension(targetExtension);
-
-		_validate(targetExtension, id);
-
-		String fileName = getFilePath(id, targetExtension);
-
-		File file = new File(fileName);
-
-		if (_openOfficeConfiguration.cacheEnabled() && file.exists()) {
-			return file;
-		}
-
-		DocumentFormatRegistry documentFormatRegistry =
-			new DefaultDocumentFormatRegistry();
-
-		DocumentFormat inputDocumentFormat =
-			documentFormatRegistry.getFormatByFileExtension(sourceExtension);
-		DocumentFormat outputDocumentFormat =
-			documentFormatRegistry.getFormatByFileExtension(targetExtension);
-
-		if (inputDocumentFormat == null) {
-			throw new SystemException(
-				"Conversion is not supported from ." + sourceExtension);
-		}
-		else if (!inputDocumentFormat.isImportable()) {
-			throw new SystemException(
-				"Conversion is not supported from " +
-					inputDocumentFormat.getName());
-		}
-		else if (outputDocumentFormat == null) {
-			throw new SystemException(
-				"Conversion is not supported from " +
-					inputDocumentFormat.getName() + " to ." + targetExtension);
-		}
-		else if (!inputDocumentFormat.isExportableTo(outputDocumentFormat)) {
-			throw new SystemException(
-				"Conversion is not supported from " +
-					inputDocumentFormat.getName() + " to " +
-						outputDocumentFormat.getName());
-		}
-
-		UnsyncByteArrayOutputStream unsyncByteArrayOutputStream =
-			new UnsyncByteArrayOutputStream();
-
-		DocumentConverter documentConverter = _getDocumentConverter();
-
-		documentConverter.convert(
-			inputStream, inputDocumentFormat, unsyncByteArrayOutputStream,
-			outputDocumentFormat);
-
-		FileUtil.write(
-			file, unsyncByteArrayOutputStream.unsafeGetByteArray(), 0,
-			unsyncByteArrayOutputStream.size());
-
-		return file;
 	}
 
 	@Override
 	public void disconnect() {
-		if (_openOfficeConnection != null) {
-			_openOfficeConnection.disconnect();
+		_log.info("disconnect");
+
+		for (ConverterWrapper converterWrapper : _getConverterWrappers()) {
+			if (converterWrapper.isEnabled()) {
+				converterWrapper.disconnect();
+			}
 		}
 	}
 
 	@Override
 	public String[] getConversions(String extension) {
-		extension = _fixExtension(extension);
+		Set<String> result = new HashSet<String>();
 
-		String[] conversions = _conversionsMap.get(extension);
+		for (ConverterWrapper converterWrapper : _getConverterWrappers()) {
+			if (!converterWrapper.isEnabled()) {
+				continue;
+			}
 
-		if (conversions == null) {
-			conversions = _DEFAULT_CONVERSIONS;
-		}
-		else {
-			if (ArrayUtil.contains(conversions, extension)) {
-				List<String> conversionsList = new ArrayList<>();
+			for (String conversion : converterWrapper.getConversions(
+					extension)) {
 
-				for (int i = 0; i < conversions.length; i++) {
-					String conversion = conversions[i];
-
-					if (!conversion.equals(extension)) {
-						conversionsList.add(conversion);
-					}
-				}
-
-				conversions = conversionsList.toArray(
-					new String[conversionsList.size()]);
+				result.add(conversion);
 			}
 		}
 
-		return conversions;
+		return result.toArray(new String[result.size()]);
 	}
 
 	@Override
 	public String getFilePath(String id, String targetExtension) {
-		StringBundler sb = new StringBundler(5);
+		return BaseConverterWrapper.getFilePath(id, targetExtension);
+	}
 
-		sb.append(SystemProperties.get(SystemProperties.TMP_DIR));
-		sb.append("/liferay/document_conversion/");
-		sb.append(id);
-		sb.append(StringPool.PERIOD);
-		sb.append(targetExtension);
+	@Override
+	public boolean hasEnabledConverter(String extension) {
+		ConverterWrapper converterWrapper = getEnabledConverter(extension);
 
-		return sb.toString();
+		return converterWrapper != null;
+	}
+
+	@Override
+	public boolean hasEnabledConverter(
+		String sourceExtension, String targetExtension) {
+
+		ConverterWrapper converterWrapper = getEnabledConverter(
+			sourceExtension, targetExtension);
+
+		return converterWrapper != null;
 	}
 
 	@Override
@@ -240,155 +199,52 @@ public class DocumentConversionImpl implements DocumentConversion {
 
 	@Override
 	public boolean isEnabled() {
-		return _openOfficeConfiguration.serverEnabled();
-	}
-
-	@Activate
-	@Modified
-	protected void activate(Map<String, Object> properties) {
-		_openOfficeConfiguration = ConfigurableUtil.createConfigurable(
-			OpenOfficeConfiguration.class, properties);
-
-		_populateConversionsMap("drawing");
-		_populateConversionsMap("presentation");
-		_populateConversionsMap("spreadsheet");
-		_populateConversionsMap("text");
-	}
-
-	private String _fixExtension(String extension) {
-		if (extension.equals("htm")) {
-			extension = "html";
-		}
-
-		return extension;
-	}
-
-	private DocumentConverter _getDocumentConverter() {
-		if ((_openOfficeConnection != null) && (_documentConverter != null)) {
-			return _documentConverter;
-		}
-
-		String host = _openOfficeConfiguration.serverHost();
-		int port = _openOfficeConfiguration.serverPort();
-
-		if (_isRemoteOpenOfficeHost(host)) {
-			_openOfficeConnection = new SocketOpenOfficeConnection(host, port);
-
-			_documentConverter = new StreamOpenOfficeDocumentConverter(
-				_openOfficeConnection);
-		}
-		else {
-			_openOfficeConnection = new SocketOpenOfficeConnection(port);
-
-			_documentConverter = new OpenOfficeDocumentConverter(
-				_openOfficeConnection);
-		}
-
-		return _documentConverter;
-	}
-
-	private boolean _isRemoteOpenOfficeHost(String host) {
-		if (Validator.isNotNull(host) && !host.equals(_LOCALHOST_IP) &&
-			!host.startsWith(_LOCALHOST)) {
-
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-
-	private void _populateConversionsMap(String documentFamily) {
-		Filter filter = new Filter(documentFamily);
-
-		DocumentFormatRegistry documentFormatRegistry =
-			new DefaultDocumentFormatRegistry();
-
-		String[] sourceExtensions = PropsUtil.getArray(
-			PropsKeys.OPENOFFICE_CONVERSION_SOURCE_EXTENSIONS, filter);
-		String[] targetExtensions = PropsUtil.getArray(
-			PropsKeys.OPENOFFICE_CONVERSION_TARGET_EXTENSIONS, filter);
-
-		for (String sourceExtension : sourceExtensions) {
-			List<String> conversions = new SortedArrayList<>();
-
-			DocumentFormat sourceDocumentFormat =
-				documentFormatRegistry.getFormatByFileExtension(
-					sourceExtension);
-
-			if (sourceDocumentFormat == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn("Invalid source extension " + sourceExtension);
-				}
-
-				continue;
-			}
-
-			for (String targetExtension : targetExtensions) {
-				DocumentFormat targetDocumentFormat =
-					documentFormatRegistry.getFormatByFileExtension(
-						targetExtension);
-
-				if (targetDocumentFormat == null) {
-					if (_log.isWarnEnabled()) {
-						_log.warn(
-							"Invalid target extension " + targetDocumentFormat);
-					}
-
-					continue;
-				}
-
-				if (sourceDocumentFormat.isExportableTo(targetDocumentFormat)) {
-					conversions.add(targetExtension);
-				}
-			}
-
-			if (conversions.isEmpty()) {
-				if (_log.isInfoEnabled()) {
-					_log.info(
-						"There are no conversions supported from " +
-							sourceExtension);
-				}
-			}
-			else {
-				if (_log.isInfoEnabled()) {
-					_log.info(
-						"Conversions supported from " + sourceExtension +
-							" to " + conversions);
-				}
-
-				_conversionsMap.put(
-					sourceExtension,
-					conversions.toArray(new String[conversions.size()]));
+		for (ConverterWrapper converterWrapper : _getConverterWrappers()) {
+			if (converterWrapper.isEnabled()) {
+				return true;
 			}
 		}
+
+		return false;
 	}
 
-	private void _validate(String targetExtension, String id) {
-		if (!Validator.isFileExtension(targetExtension)) {
-			throw new SystemException("Invalid extension: " + targetExtension);
+	protected ConverterWrapper getEnabledConverter(String extension) {
+		for (ConverterWrapper converterWrapper : _getConverterWrappers()) {
+			if (converterWrapper.isEnabled() &&
+					converterWrapper.canConvert(extension)) {
+
+				return converterWrapper;
+			}
 		}
 
-		if (!Validator.isFileName(id)) {
-			throw new SystemException("Invalid file name: " + id);
+		return null;
+	}
+
+	protected ConverterWrapper getEnabledConverter(
+		String sourceExtension, String targetExtension) {
+
+		for (ConverterWrapper converterWrapper : _getConverterWrappers()) {
+			if (converterWrapper.isEnabled() &&
+				converterWrapper.canConvert(sourceExtension, targetExtension)) {
+
+				return converterWrapper;
+			}
 		}
+
+		return null;
+	}
+	private ConverterWrapper[] _getConverterWrappers() {
+		return _serviceTracker.getServices(new ConverterWrapper[0]);
 	}
 
 	private static final String[] _COMPARABLE_FILE_EXTENSIONS =
 		PropsValues.DL_COMPARABLE_FILE_EXTENSIONS;
 
-	private static final String[] _DEFAULT_CONVERSIONS = new String[0];
-
-	private static final String _LOCALHOST = "localhost";
-
-	private static final String _LOCALHOST_IP = "127.0.0.1";
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		DocumentConversionImpl.class);
 
-	private final Map<String, String[]> _conversionsMap = new HashMap<>();
-	private DocumentConverter _documentConverter;
-	private volatile OpenOfficeConfiguration _openOfficeConfiguration;
-	private OpenOfficeConnection _openOfficeConnection;
+	private static ServiceTracker<ConverterWrapper, ConverterWrapper>
+		_serviceTracker = ServiceTrackerFactory.open(ConverterWrapper.class);
 
 }

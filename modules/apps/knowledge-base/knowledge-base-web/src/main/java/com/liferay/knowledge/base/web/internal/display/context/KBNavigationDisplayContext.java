@@ -323,10 +323,6 @@ public class KBNavigationDisplayContext {
 			scopeGroupId, rootResourcePrimKey,
 			WorkflowConstants.STATUS_APPROVED);
 
-		if (!isFolderResource()) {
-			kbArticlesCount++;
-		}
-
 		if (kbArticlesCount == 0) {
 			showNavigation = false;
 		}

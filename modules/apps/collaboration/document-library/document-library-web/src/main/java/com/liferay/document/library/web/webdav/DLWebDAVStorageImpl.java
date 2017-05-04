@@ -503,6 +503,8 @@ public class DLWebDAVStorageImpl extends BaseWebDAVStorageImpl {
 					DL.MANUAL_CHECK_IN_REQUIRED,
 					webDAVRequest.isManualCheckInRequired());
 
+				populateServiceContext(serviceContext, fileEntry);
+
 				_dlAppService.checkOutFileEntry(
 					fileEntry.getFileEntryId(), owner, timeout, serviceContext);
 
@@ -729,6 +731,8 @@ public class DLWebDAVStorageImpl extends BaseWebDAVStorageImpl {
 
 					file = FileUtil.createTempFile(is);
 
+					populateServiceContext(serviceContext, destFileEntry);
+
 					_dlAppService.updateFileEntry(
 						destFileEntry.getFileEntryId(),
 						destFileEntry.getTitle(), destFileEntry.getMimeType(),
@@ -746,6 +750,8 @@ public class DLWebDAVStorageImpl extends BaseWebDAVStorageImpl {
 					}
 				}
 			}
+
+			populateServiceContext(serviceContext, fileEntry);
 
 			_dlAppService.updateFileEntry(
 				fileEntry.getFileEntryId(), title, fileEntry.getMimeType(),
@@ -1204,6 +1210,11 @@ public class DLWebDAVStorageImpl extends BaseWebDAVStorageImpl {
 
 		serviceContext.setExpandoBridgeAttributes(
 			expandoBridge.getAttributes());
+
+		DLFileEntry dlFileEntry = (DLFileEntry)fileEntry.getModel();
+
+		serviceContext.setAttribute(
+			"fileEntryTypeId", dlFileEntry.getFileEntryTypeId());
 	}
 
 	@Reference(unbind = "-")

@@ -544,14 +544,22 @@ public class DLFileEntryLocalServiceImpl
 				dlFileEntry.getName(), version,
 				DLFileEntryConstants.PRIVATE_WORKING_COPY_VERSION);
 
-			serviceContext.setAttribute("validateDDMFormValues", Boolean.FALSE);
+			long fileEntryTypeId = ParamUtil.getLong(
+				serviceContext, "fileEntryTypeId");
 
-			copyFileEntryMetadata(
-				dlFileEntry.getCompanyId(), dlFileVersion.getFileEntryTypeId(),
-				fileEntryId, dlFileVersionId, dlFileVersion.getFileVersionId(),
-				serviceContext);
+			if (fileEntryTypeId == dlFileVersion.getFileEntryTypeId()) {
+				serviceContext.setAttribute(
+					"validateDDMFormValues", Boolean.FALSE);
 
-			serviceContext.setAttribute("validateDDMFormValues", Boolean.TRUE);
+				copyFileEntryMetadata(
+					dlFileEntry.getCompanyId(),
+					dlFileVersion.getFileEntryTypeId(), fileEntryId,
+					dlFileVersionId, dlFileVersion.getFileVersionId(),
+					serviceContext);
+
+				serviceContext.setAttribute(
+					"validateDDMFormValues", Boolean.TRUE);
+			}
 		}
 
 		return dlFileEntry;
@@ -2349,17 +2357,12 @@ public class DLFileEntryLocalServiceImpl
 		throws PortalException {
 
 		for (DDMStructure ddmStructure : ddmStructures) {
-			DLFileEntryMetadata dlFileEntryMetadata =
-				dlFileEntryMetadataLocalService.fetchFileEntryMetadata(
-					ddmStructure.getStructureId(), fromFileVersionId);
+			DDMFormValues ddmFormValues = getDDFormValues(
+				fromFileVersionId, ddmStructure);
 
-			if (dlFileEntryMetadata == null) {
+			if (ddmFormValues == null) {
 				continue;
 			}
-
-			DDMFormValues ddmFormValues =
-				StorageEngineManagerUtil.getDDMFormValues(
-					dlFileEntryMetadata.getDDMStorageId());
 
 			ddmFormValuesMap.put(ddmStructure.getStructureKey(), ddmFormValues);
 		}
@@ -2369,6 +2372,24 @@ public class DLFileEntryLocalServiceImpl
 				companyId, ddmStructures, fileEntryId, toFileVersionId,
 				ddmFormValuesMap, serviceContext);
 		}
+	}
+
+	protected DDMFormValues getDDFormValues(
+			long fileVersionId, DDMStructure ddmStructure)
+		throws PortalException {
+
+		DLFileEntryMetadata dlFileEntryMetadata =
+			dlFileEntryMetadataLocalService.fetchFileEntryMetadata(
+				ddmStructure.getStructureId(), fileVersionId);
+
+		if (dlFileEntryMetadata == null) {
+			return null;
+		}
+
+		DDMFormValues ddmFormValues = StorageEngineManagerUtil.getDDMFormValues(
+			dlFileEntryMetadata.getDDMStorageId());
+
+		return ddmFormValues;
 	}
 
 	protected RepositoryEventTrigger getFolderRepositoryEventTrigger(
@@ -2565,6 +2586,30 @@ public class DLFileEntryLocalServiceImpl
 		if (checkedOut || autoCheckIn) {
 			dlFileVersion = dlFileVersionLocalService.getLatestFileVersion(
 				fileEntryId, false);
+		}
+
+		String command = serviceContext.getCommand();
+
+		if ((fileEntryTypeId > 0) && Validator.isNotNull(command) &&
+			command.equals(Constants.UPDATE_WEBDAV)) {
+
+			DLFileEntryType dlFileEntryType =
+				dlFileEntryTypeLocalService.getFileEntryType(fileEntryTypeId);
+
+			List<DDMStructure> ddmStructures =
+				dlFileEntryType.getDDMStructures();
+
+			for (DDMStructure ddmStructure : ddmStructures) {
+				DDMFormValues ddmFormValues = getDDFormValues(
+					dlFileVersion.getFileVersionId(), ddmStructure);
+
+				if (ddmFormValues == null) {
+					continue;
+				}
+
+				ddmFormValuesMap.put(
+					ddmStructure.getStructureKey(), ddmFormValues);
+			}
 		}
 
 		try {

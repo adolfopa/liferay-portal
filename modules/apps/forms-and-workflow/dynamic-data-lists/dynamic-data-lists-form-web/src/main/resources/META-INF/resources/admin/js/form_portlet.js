@@ -253,7 +253,8 @@ AUI.add(
 								trigger: '.publish-icon',
 								triggerHideEvent: ['blur', 'mouseleave'],
 								triggerShowEvent: ['focus', 'mouseover'],
-								visible: false
+								visible: false,
+								zIndex: 900
 							}
 						);
 					},

@@ -253,8 +253,6 @@ public class FlatNPMBundleProcessor implements JSBundleProcessor {
 
 		_processDependencies(flatJSPackage, jsonObject, PEER_DEPENDENCIES);
 
-		// TODO: parse module aliases
-
 		_processModules(flatJSPackage, location);
 
 		flatJSBundle.addJSPackage(flatJSPackage);

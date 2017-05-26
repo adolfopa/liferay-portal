@@ -290,8 +290,6 @@ public class JSLoaderModulesServlet extends HttpServlet {
 			delimiter = ",\n";
 		}
 
-		// TODO: honor module aliases???
-
 		printWriter.println("\n};");
 
 		printWriter.println(

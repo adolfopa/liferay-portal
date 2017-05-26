@@ -153,6 +153,10 @@ public interface AssetRenderer<T> extends Renderer {
 	public boolean hasViewPermission(PermissionChecker permissionChecker)
 		throws PortalException;
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	public default boolean isCategorizable(long groupId) {
 		return true;
 	}

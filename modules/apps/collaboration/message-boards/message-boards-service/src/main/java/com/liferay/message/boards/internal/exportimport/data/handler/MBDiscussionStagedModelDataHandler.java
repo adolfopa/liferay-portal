@@ -20,6 +20,7 @@ import com.liferay.exportimport.data.handler.base.BaseStagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandler;
+import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerRegistryUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelModifiedDateComparator;
 import com.liferay.message.boards.kernel.model.MBDiscussion;
 import com.liferay.message.boards.kernel.model.MBMessage;
@@ -27,7 +28,14 @@ import com.liferay.message.boards.kernel.model.MBThread;
 import com.liferay.message.boards.kernel.service.MBDiscussionLocalService;
 import com.liferay.message.boards.kernel.service.MBMessageLocalService;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.PersistedModel;
+import com.liferay.portal.kernel.model.StagedModel;
+import com.liferay.portal.kernel.service.PersistedModelLocalService;
+import com.liferay.portal.kernel.service.PersistedModelLocalServiceRegistryUtil;
 import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.xml.Element;
 
@@ -106,6 +114,24 @@ public class MBDiscussionStagedModelDataHandler
 		Element discussionElement = portletDataContext.getExportDataElement(
 			discussion);
 
+		PersistedModelLocalService persistedModelLocalService =
+			PersistedModelLocalServiceRegistryUtil.
+				getPersistedModelLocalService(discussion.getClassName());
+
+		PersistedModel persistedModel =
+			persistedModelLocalService.getPersistedModel(
+				discussion.getClassPK());
+
+		if (!(persistedModel instanceof StagedModel)) {
+			return;
+		}
+
+		StagedModel stagedModel = (StagedModel)persistedModel;
+
+		String relatedModelUUID = stagedModel.getUuid();
+
+		discussionElement.addAttribute("relatedModelUUID", relatedModelUUID);
+
 		portletDataContext.addClassedModel(
 			discussionElement, ExportImportPathUtil.getModelPath(discussion),
 			discussion);
@@ -124,7 +150,34 @@ public class MBDiscussionStagedModelDataHandler
 			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(className);
 
 		long newClassPK = MapUtil.getLong(
-			relatedClassPKs, discussion.getClassPK(), discussion.getClassPK());
+			relatedClassPKs, discussion.getClassPK(), 0);
+
+		if (newClassPK == 0) {
+			Element discussionElement = portletDataContext.getImportDataElement(
+				discussion);
+
+			String relatedModelUUID = discussionElement.attributeValue(
+				"relatedModelUUID", StringPool.BLANK);
+
+			if (Validator.isNull(relatedModelUUID)) {
+				throw new PortalException(
+					"Missing related model UUID while importing discussion " +
+						discussion);
+			}
+
+			StagedModel stagedModel = _getRelatedStagedModel(
+				portletDataContext.getScopeGroupId(), className,
+				relatedModelUUID);
+
+			if (stagedModel == null) {
+				throw new PortalException(
+					"Couldn't find related model with className " + className +
+						", UUID " + relatedModelUUID + " in group " +
+							portletDataContext.getScopeGroupId());
+			}
+
+			newClassPK = (long)stagedModel.getPrimaryKeyObj();
+		}
 
 		MBDiscussion existingDiscussion =
 			_mbDiscussionLocalService.fetchDiscussion(
@@ -174,6 +227,17 @@ public class MBDiscussionStagedModelDataHandler
 		MBMessageLocalService mbMessageLocalService) {
 
 		_mbMessageLocalService = mbMessageLocalService;
+	}
+
+	private StagedModel _getRelatedStagedModel(
+		long groupId, String className, String uuid) {
+
+		StagedModelDataHandler<?> stagedModelDataHandler =
+			StagedModelDataHandlerRegistryUtil.getStagedModelDataHandler(
+				className);
+
+		return stagedModelDataHandler.fetchStagedModelByUuidAndGroupId(
+			uuid, groupId);
 	}
 
 	private AssetEntryLocalService _assetEntryLocalService;

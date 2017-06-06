@@ -17,7 +17,7 @@
 <%
 String backURL = PortalUtil.getCurrentURL(request);
 
-boolean showPortletPermissions = CalendarPortletPermission.contains(permissionChecker, scopeGroupId, ActionKeys.PERMISSIONS);
+boolean containsCalendarsPermissionsAction = CalendarPortletPermission.contains(permissionChecker, scopeGroupId, ActionKeys.PERMISSIONS);
 %>
 
 <aui:script use="aui-toggler,calendar,liferay-calendar-simple-menu,liferay-calendar-simple-color-picker,liferay-calendar-util,liferay-store">
@@ -149,7 +149,7 @@ boolean showPortletPermissions = CalendarPortletPermission.contains(permissionCh
 					if (instance.calendarResourceId !== '<%= groupCalendarResource.getCalendarResourceId() %>') {
 						hiddenItems.push('permissions');
 					}
-					<c:if test="<%= !showPortletPermissions%>">
+					<c:if test="<%= !containsCalendarsPermissionsAction %>">
 						hiddenItems.push('permissions');
 					</c:if>
 

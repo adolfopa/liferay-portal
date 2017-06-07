@@ -1309,6 +1309,10 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 			ServiceTrackerCollections.openSingleValueMap(
 				AggregateAssetEntryValidatorFactory.class, "model.class.name");
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	private final ServiceTrackerMap
 		<String, List<AssetEntryValidatorExclusionRule>>
 		_assetEntryValidatorExclusionRuleServiceTrackerMap =

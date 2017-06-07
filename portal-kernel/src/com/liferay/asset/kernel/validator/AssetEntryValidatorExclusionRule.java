@@ -16,7 +16,9 @@ package com.liferay.asset.kernel.validator;
 
 /**
  * @author Adolfo Pérez
+ * @deprecated As of 7.0.0, with no direct replacement
  */
+@Deprecated
 public interface AssetEntryValidatorExclusionRule {
 
 	public boolean isValidationExcluded(

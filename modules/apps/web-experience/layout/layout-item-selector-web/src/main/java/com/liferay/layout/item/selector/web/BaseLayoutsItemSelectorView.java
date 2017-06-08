@@ -44,9 +44,6 @@ public abstract class BaseLayoutsItemSelectorView
 	implements ItemSelectorView<LayoutItemSelectorCriterion>,
 			   LayoutItemSelectorView {
 
-	public static final String LAYOUT_ITEM_SELECTOR_VIEW_DISPLAY_CONTEXT =
-		"LAYOUT_ITEM_SELECTOR_VIEW_DISPLAY_CONTEXT";
-
 	@Override
 	public Class<LayoutItemSelectorCriterion> getItemSelectorCriterionClass() {
 		return LayoutItemSelectorCriterion.class;
@@ -81,7 +78,8 @@ public abstract class BaseLayoutsItemSelectorView
 					itemSelectedEventName, isPrivateLayout());
 
 		request.setAttribute(
-			LAYOUT_ITEM_SELECTOR_VIEW_DISPLAY_CONTEXT,
+			LayoutsItemSelectorWebKeys.
+				LAYOUT_ITEM_SELECTOR_VIEW_DISPLAY_CONTEXT,
 			layoutItemSelectorViewDisplayContext);
 
 		ServletContext servletContext = getServletContext();

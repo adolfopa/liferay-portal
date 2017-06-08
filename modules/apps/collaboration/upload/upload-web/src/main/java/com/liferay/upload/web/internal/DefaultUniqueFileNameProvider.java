@@ -19,6 +19,8 @@ import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.upload.UniqueFileNameProvider;
 
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -34,7 +36,7 @@ public class DefaultUniqueFileNameProvider implements UniqueFileNameProvider {
 
 		String uniqueFileName = fileName;
 
-		int tries = 1;
+		int tries = 0;
 
 		while (predicate.test(uniqueFileName)) {
 			if (tries >= _UNIQUE_FILE_NAME_TRIES) {
@@ -44,12 +46,29 @@ public class DefaultUniqueFileNameProvider implements UniqueFileNameProvider {
 
 			tries++;
 
+			Matcher matcher = _PARENTHETICAL_SUFFIX_REGEX.matcher(
+				uniqueFileName);
+
+			if (matcher.matches()) {
+				String name = matcher.group("name");
+				String extension = matcher.group("extension");
+
+				uniqueFileName = name;
+
+				if (extension != null) {
+					uniqueFileName += "." + extension;
+				}
+			}
+
 			uniqueFileName = FileUtil.appendParentheticalSuffix(
-				fileName, String.valueOf(tries));
+				uniqueFileName, String.valueOf(tries));
 		}
 
 		return uniqueFileName;
 	}
+
+	private static final Pattern _PARENTHETICAL_SUFFIX_REGEX = Pattern.compile(
+		"(?<name>.+) \\(\\d+\\)(\\.(?<extension>[^.]+))?");
 
 	private static final int _UNIQUE_FILE_NAME_TRIES = 50;
 

@@ -14,15 +14,16 @@
 
 package com.liferay.asset.kernel.validator;
 
-/**
- * @author Adolfo Pérez
- * @deprecated As of 7.0.0, with no direct replacement
- */
-@Deprecated
-public interface AssetEntryValidatorExclusionRule {
+import com.liferay.portal.kernel.exception.PortalException;
 
-	public boolean isValidationExcluded(
-		long groupId, String className, long classPK, long classTypePK,
-		long[] categoryIds, String[] tagNames);
+/**
+ * @author Roberto Díaz
+ */
+public interface AggregateAssetEntryValidatorFactory {
+
+	public AggregateAssetEntryValidator getAggregateAssetEntryValidator(
+			long groupId, String className, long classPK, long classTypePK,
+			long[] categoryIds, String[] entryNames)
+		throws PortalException;
 
 }

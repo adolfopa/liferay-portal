@@ -24,6 +24,8 @@ import com.liferay.asset.kernel.model.AssetLinkConstants;
 import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.asset.kernel.model.AssetTag;
 import com.liferay.asset.kernel.service.persistence.AssetEntryQuery;
+import com.liferay.asset.kernel.validator.AggregateAssetEntryValidator;
+import com.liferay.asset.kernel.validator.AggregateAssetEntryValidatorFactory;
 import com.liferay.asset.kernel.validator.AssetEntryValidator;
 import com.liferay.asset.kernel.validator.AssetEntryValidatorExclusionRule;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
@@ -139,7 +141,8 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 	public void destroy() {
 		super.destroy();
 
-		_serviceTrackerMap.close();
+		_aggregateAssetEntryValidatorFactoryServiceTrackerMap.close();
+		_assetEntryValidatorExclusionRuleServiceTrackerMap.close();
 	}
 
 	@Override
@@ -1000,7 +1003,8 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 		}
 
 		List<AssetEntryValidatorExclusionRule> exclusionRules =
-			_serviceTrackerMap.getService(className);
+			_assetEntryValidatorExclusionRuleServiceTrackerMap.getService(
+				className);
 
 		if (exclusionRules != null) {
 			for (AssetEntryValidatorExclusionRule exclusionRule :
@@ -1015,13 +1019,35 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 			}
 		}
 
-		for (AssetEntryValidator assetEntryValidator :
-				assetEntryValidatorRegistry.getAssetEntryValidators(
-					className)) {
+		AggregateAssetEntryValidatorFactory
+			aggregateAssetEntryValidatorFactory =
+				_aggregateAssetEntryValidatorFactoryServiceTrackerMap.
+					getService(className);
 
-			assetEntryValidator.validate(
+		if (aggregateAssetEntryValidatorFactory != null) {
+			AggregateAssetEntryValidator aggregateAssetEntryValidator =
+				aggregateAssetEntryValidatorFactory.
+					getAggregateAssetEntryValidator(
+						groupId, className, classPK, classTypePK, categoryIds,
+						tagNames);
+
+			if (aggregateAssetEntryValidator == null) {
+				return;
+			}
+
+			aggregateAssetEntryValidator.validate(
 				groupId, className, classPK, classTypePK, categoryIds,
 				tagNames);
+		}
+		else {
+			for (AssetEntryValidator assetEntryValidator :
+					assetEntryValidatorRegistry.getAssetEntryValidators(
+						className)) {
+
+				assetEntryValidator.validate(
+					groupId, className, classPK, classTypePK, categoryIds,
+					tagNames);
+			}
 		}
 	}
 
@@ -1278,9 +1304,19 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 	@BeanReference(type = AssetEntryValidatorRegistry.class)
 	protected AssetEntryValidatorRegistry assetEntryValidatorRegistry;
 
+	private final ServiceTrackerMap<String, AggregateAssetEntryValidatorFactory>
+		_aggregateAssetEntryValidatorFactoryServiceTrackerMap =
+			ServiceTrackerCollections.openSingleValueMap(
+				AggregateAssetEntryValidatorFactory.class, "model.class.name");
+
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	private final ServiceTrackerMap
 		<String, List<AssetEntryValidatorExclusionRule>>
-			_serviceTrackerMap = ServiceTrackerCollections.openMultiValueMap(
-				AssetEntryValidatorExclusionRule.class, "model.class.name");
+			_assetEntryValidatorExclusionRuleServiceTrackerMap =
+				ServiceTrackerCollections.openMultiValueMap(
+					AssetEntryValidatorExclusionRule.class, "model.class.name");
 
 }

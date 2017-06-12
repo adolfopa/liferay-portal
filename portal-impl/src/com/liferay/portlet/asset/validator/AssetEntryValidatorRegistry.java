@@ -15,6 +15,7 @@
 package com.liferay.portlet.asset.validator;
 
 import com.liferay.asset.kernel.validator.AssetEntryValidator;
+import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.registry.collections.ServiceTrackerCollections;
@@ -26,6 +27,7 @@ import java.util.List;
 /**
  * @author Julio Camarero
  */
+@OSGiBeanProperties(service = AssetEntryValidatorRegistry.class)
 public class AssetEntryValidatorRegistry {
 
 	public void afterPropertiesSet() {

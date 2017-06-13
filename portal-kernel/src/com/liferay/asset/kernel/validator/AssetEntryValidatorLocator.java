@@ -19,7 +19,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 /**
  * @author Roberto Díaz
  */
-public interface AggregateAssetEntryValidatorFactory {
+public interface AssetEntryValidatorLocator {
 
 	public AssetEntryValidator getAssetEntryValidator(
 			long groupId, String className, long classPK, long classTypePK,

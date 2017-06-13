@@ -15,7 +15,7 @@
 package com.liferay.document.library.internal.asset.categories.validator;
 
 import com.liferay.asset.kernel.validator.AggregateAssetEntryValidator;
-import com.liferay.asset.kernel.validator.AggregateAssetEntryValidatorFactory;
+import com.liferay.asset.kernel.validator.AssetEntryValidatorLocator;
 import com.liferay.asset.kernel.validator.AssetEntryValidator;
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
@@ -42,10 +42,10 @@ import org.osgi.service.component.annotations.Reference;
 		"model.class.name=com.liferay.document.library.kernel.model.DLFileEntry",
 		"model.class.name=com.liferay.portal.kernel.repository.model.FileEntry"
 	},
-	service = AggregateAssetEntryValidatorFactory.class
+	service = AssetEntryValidatorLocator.class
 )
-public class DLFileEntryAggregateAssetEntryValidatorFactory
-	implements AggregateAssetEntryValidatorFactory {
+public class DLFileEntryAssetEntryValidatorLocator
+	implements AssetEntryValidatorLocator {
 
 	@Activate
 	@Modified

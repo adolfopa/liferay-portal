@@ -24,7 +24,7 @@ import com.liferay.asset.kernel.model.AssetLinkConstants;
 import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.asset.kernel.model.AssetTag;
 import com.liferay.asset.kernel.service.persistence.AssetEntryQuery;
-import com.liferay.asset.kernel.validator.AggregateAssetEntryValidatorFactory;
+import com.liferay.asset.kernel.validator.AssetEntryValidatorLocator;
 import com.liferay.asset.kernel.validator.AssetEntryValidator;
 import com.liferay.asset.kernel.validator.AssetEntryValidatorExclusionRule;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
@@ -1018,14 +1018,14 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 			}
 		}
 
-		AggregateAssetEntryValidatorFactory
-			aggregateAssetEntryValidatorFactory =
+		AssetEntryValidatorLocator
+			assetEntryValidatorLocator =
 				_aggregateAssetEntryValidatorFactoryServiceTrackerMap.
 					getService(className);
 
-		if (aggregateAssetEntryValidatorFactory != null) {
+		if (assetEntryValidatorLocator != null) {
 			AssetEntryValidator assetEntryValidator =
-				aggregateAssetEntryValidatorFactory.
+				assetEntryValidatorLocator.
 					getAssetEntryValidator(
 						groupId, className, classPK, classTypePK, categoryIds,
 						tagNames);
@@ -1303,10 +1303,10 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 	@BeanReference(type = AssetEntryValidatorRegistry.class)
 	protected AssetEntryValidatorRegistry assetEntryValidatorRegistry;
 
-	private final ServiceTrackerMap<String, AggregateAssetEntryValidatorFactory>
+	private final ServiceTrackerMap<String, AssetEntryValidatorLocator>
 		_aggregateAssetEntryValidatorFactoryServiceTrackerMap =
 			ServiceTrackerCollections.openSingleValueMap(
-				AggregateAssetEntryValidatorFactory.class, "model.class.name");
+				AssetEntryValidatorLocator.class, "model.class.name");
 
 	/**
 	 * @deprecated As of 7.0.0, with no direct replacement

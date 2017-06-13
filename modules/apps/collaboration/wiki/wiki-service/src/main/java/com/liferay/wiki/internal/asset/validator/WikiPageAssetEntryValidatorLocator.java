@@ -51,10 +51,7 @@ public class WikiPageAssetEntryValidatorLocator
 
 	@Activate
 	@Modified
-	public void activate(ComponentContext componentContext) {
-		Dictionary<String, Object> properties =
-			componentContext.getProperties();
-
+	public void activate(Map<String, Object> properties) {
 		_wikiGroupServiceConfiguration = ConfigurableUtil.createConfigurable(
 			WikiGroupServiceConfiguration.class, properties);
 	}

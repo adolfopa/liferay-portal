@@ -75,40 +75,12 @@ public class WikiPageAssetEntryValidatorLocator
 	}
 
 	@Override
-	public AssetEntryValidator getAssetEntryValidator(
-		long groupId, String className, long classPK, long classTypePK,
-		long[] categoryIds, String[] tagNames) {
-
-		WikiPage wikiPage = _wikiPageLocalService.fetchWikiPage(classPK);
-
-		if (wikiPage == null) {
-			wikiPage = _wikiPageLocalService.fetchPage(classPK);
-		}
-
-		if (wikiPage == null) {
-			try {
-				wikiPage = _wikiPageLocalService.getPage(classPK, false);
-
-				if (StringUtil.equals(
-						wikiPage.getTitle(),
-						_wikiGroupServiceConfiguration.frontPageName()) &&
-					(wikiPage.getVersion() ==
-						WikiPageConstants.VERSION_DEFAULT)) {
-
-					return null;
-				}
-			}
-			catch (PortalException pe) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(pe, pe);
-				}
-			}
-		}
-
+	public AssetEntryValidator getAssetEntryValidator() {
 		List<AssetEntryValidator> assetEntryValidators =
-			_assetEntryValidatorRegistry.getAssetEntryValidators(className);
+			_assetEntryValidatorRegistry.getAssetEntryValidators(
+				WikiPage.class.getName());
 
-		return new AggregateAssetEntryValidator(
+		return new WikiPageAggregateAssetEntryValidator(
 			assetEntryValidators.toArray(
 				new AssetEntryValidator[assetEntryValidators.size()]));
 	}
@@ -125,5 +97,50 @@ public class WikiPageAssetEntryValidatorLocator
 
 	@Reference(unbind = "-")
 	private WikiPageLocalService _wikiPageLocalService;
+
+	private class WikiPageAggregateAssetEntryValidator
+		extends AggregateAssetEntryValidator {
+
+		public WikiPageAggregateAssetEntryValidator(
+			AssetEntryValidator... assetEntryValidators) {
+
+			super(assetEntryValidators);
+		}
+
+		@Override
+		protected boolean skipValidation(
+			long groupId, String className, long classPK, long classTypePK,
+			long[] categoryIds, String[] entryNames) {
+
+			WikiPage wikiPage = _wikiPageLocalService.fetchWikiPage(classPK);
+
+			if (wikiPage == null) {
+				wikiPage = _wikiPageLocalService.fetchPage(classPK);
+			}
+
+			if (wikiPage == null) {
+				try {
+					wikiPage = _wikiPageLocalService.getPage(classPK, false);
+
+					if (StringUtil.equals(
+							wikiPage.getTitle(),
+							_wikiGroupServiceConfiguration.frontPageName()) &&
+						(wikiPage.getVersion() ==
+							WikiPageConstants.VERSION_DEFAULT)) {
+
+						return true;
+					}
+				}
+				catch (PortalException pe) {
+					if (_log.isWarnEnabled()) {
+						_log.warn(pe, pe);
+					}
+				}
+			}
+
+			return false;
+		}
+
+	}
 
 }

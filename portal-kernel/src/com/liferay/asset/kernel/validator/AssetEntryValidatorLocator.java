@@ -14,16 +14,11 @@
 
 package com.liferay.asset.kernel.validator;
 
-import com.liferay.portal.kernel.exception.PortalException;
-
 /**
  * @author Roberto Díaz
  */
 public interface AssetEntryValidatorLocator {
 
-	public AssetEntryValidator getAssetEntryValidator(
-			long groupId, String className, long classPK, long classTypePK,
-			long[] categoryIds, String[] entryNames)
-		throws PortalException;
+	public AssetEntryValidator getAssetEntryValidator();
 
 }

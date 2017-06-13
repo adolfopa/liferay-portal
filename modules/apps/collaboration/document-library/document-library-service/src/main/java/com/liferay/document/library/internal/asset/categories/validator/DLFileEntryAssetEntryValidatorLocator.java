@@ -18,6 +18,7 @@ import com.liferay.asset.kernel.validator.AggregateAssetEntryValidator;
 import com.liferay.asset.kernel.validator.AssetEntryValidator;
 import com.liferay.asset.kernel.validator.AssetEntryValidatorLocator;
 import com.liferay.document.library.kernel.model.DLFileEntry;
+import com.liferay.document.library.kernel.model.DLFileEntryConstants;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
@@ -60,23 +61,12 @@ public class DLFileEntryAssetEntryValidatorLocator
 	}
 
 	@Override
-	public AssetEntryValidator getAssetEntryValidator(
-		long groupId, String className, long classPK, long classTypePK,
-		long[] categoryIds, String[] tagNames) {
-
-		DLFileEntry dlFileEntry = _dlFileEntryLocalService.fetchDLFileEntry(
-			classPK);
-
-		if ((dlFileEntry == null) ||
-			(dlFileEntry.getRepositoryId() != groupId)) {
-
-			return null;
-		}
-
+	public AssetEntryValidator getAssetEntryValidator() {
 		List<AssetEntryValidator> assetEntryValidators =
-			_assetEntryValidatorRegistry.getAssetEntryValidators(className);
+			_assetEntryValidatorRegistry.getAssetEntryValidators(
+				DLFileEntryConstants.getClassName());
 
-		return new AggregateAssetEntryValidator(
+		return new DLFileEntryAggregateAssetEntryValidator(
 			assetEntryValidators.toArray(
 				new AssetEntryValidator[assetEntryValidators.size()]));
 	}
@@ -89,5 +79,33 @@ public class DLFileEntryAssetEntryValidatorLocator
 
 	private ServiceTrackerMap<String, List<AssetEntryValidator>>
 		_serviceTrackerMap;
+
+	private class DLFileEntryAggregateAssetEntryValidator
+		extends AggregateAssetEntryValidator {
+
+		public DLFileEntryAggregateAssetEntryValidator(
+			AssetEntryValidator... assetEntryValidators) {
+
+			super(assetEntryValidators);
+		}
+
+		@Override
+		protected boolean skipValidation(
+			long groupId, String className, long classPK, long classTypePK,
+			long[] categoryIds, String[] entryNames) {
+
+			DLFileEntry dlFileEntry = _dlFileEntryLocalService.fetchDLFileEntry(
+				classPK);
+
+			if ((dlFileEntry == null) ||
+				(dlFileEntry.getRepositoryId() != groupId)) {
+
+				return true;
+			}
+
+			return false;
+		}
+
+	}
 
 }

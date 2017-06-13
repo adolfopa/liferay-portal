@@ -19,7 +19,8 @@ import com.liferay.portal.kernel.exception.PortalException;
 /**
  * @author Roberto Díaz
  */
-public class AggregateAssetEntryValidator implements AssetEntryValidator {
+public abstract class AggregateAssetEntryValidator
+	implements AssetEntryValidator {
 
 	public AggregateAssetEntryValidator(
 		AssetEntryValidator... assetEntryValidators) {
@@ -32,6 +33,13 @@ public class AggregateAssetEntryValidator implements AssetEntryValidator {
 			long groupId, String className, long classPK, long classTypePK,
 			long[] categoryIds, String[] entryNames)
 		throws PortalException {
+
+		if (skipValidation(
+				groupId, className, classPK, classTypePK, categoryIds,
+				entryNames)) {
+
+			return;
+		}
 
 		for (AssetEntryValidator assetEntryValidator : _assetEntryValidators) {
 			assetEntryValidator.validate(
@@ -46,11 +54,21 @@ public class AggregateAssetEntryValidator implements AssetEntryValidator {
 			long[] categoryIds, String[] entryNames)
 		throws PortalException {
 
+		if (skipValidation(
+				groupId, className, 0L, classTypePK, categoryIds, entryNames)) {
+
+			return;
+		}
+
 		for (AssetEntryValidator assetEntryValidator : _assetEntryValidators) {
 			assetEntryValidator.validate(
 				groupId, className, classTypePK, categoryIds, entryNames);
 		}
 	}
+
+	protected abstract boolean skipValidation(
+		long groupId, String className, long classPK, long classTypePK,
+		long[] categoryIds, String[] entryNames);
 
 	private final AssetEntryValidator[] _assetEntryValidators;
 

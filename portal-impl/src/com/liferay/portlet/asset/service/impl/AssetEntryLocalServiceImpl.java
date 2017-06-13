@@ -1019,15 +1019,12 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 		}
 
 		AssetEntryValidatorLocator assetEntryValidatorLocator =
-			_aggregateAssetEntryValidatorFactoryServiceTrackerMap.
-				getService(className);
+			_aggregateAssetEntryValidatorFactoryServiceTrackerMap.getService(
+				className);
 
 		if (assetEntryValidatorLocator != null) {
 			AssetEntryValidator assetEntryValidator =
-				assetEntryValidatorLocator.
-					getAssetEntryValidator(
-						groupId, className, classPK, classTypePK, categoryIds,
-						tagNames);
+				assetEntryValidatorLocator.getAssetEntryValidator();
 
 			if (assetEntryValidator == null) {
 				return;

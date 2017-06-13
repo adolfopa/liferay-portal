@@ -75,7 +75,7 @@ public class WikiPageAggregateAssetEntryValidatorFactory
 	}
 
 	@Override
-	public AssetEntryValidator getAggregateAssetEntryValidator(
+	public AssetEntryValidator getAssetEntryValidator(
 		long groupId, String className, long classPK, long classTypePK,
 		long[] categoryIds, String[] tagNames) {
 

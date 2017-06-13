@@ -1026,7 +1026,7 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 		if (aggregateAssetEntryValidatorFactory != null) {
 			AssetEntryValidator assetEntryValidator =
 				aggregateAssetEntryValidatorFactory.
-					getAggregateAssetEntryValidator(
+					getAssetEntryValidator(
 						groupId, className, classPK, classTypePK, categoryIds,
 						tagNames);
 

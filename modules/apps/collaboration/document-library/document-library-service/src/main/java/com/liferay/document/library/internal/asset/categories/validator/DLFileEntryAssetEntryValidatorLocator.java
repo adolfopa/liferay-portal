@@ -15,8 +15,8 @@
 package com.liferay.document.library.internal.asset.categories.validator;
 
 import com.liferay.asset.kernel.validator.AggregateAssetEntryValidator;
-import com.liferay.asset.kernel.validator.AssetEntryValidatorLocator;
 import com.liferay.asset.kernel.validator.AssetEntryValidator;
+import com.liferay.asset.kernel.validator.AssetEntryValidatorLocator;
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;

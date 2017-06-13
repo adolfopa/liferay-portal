@@ -15,8 +15,8 @@
 package com.liferay.wiki.internal.asset.validator;
 
 import com.liferay.asset.kernel.validator.AggregateAssetEntryValidator;
-import com.liferay.asset.kernel.validator.AssetEntryValidatorLocator;
 import com.liferay.asset.kernel.validator.AssetEntryValidator;
+import com.liferay.asset.kernel.validator.AssetEntryValidatorLocator;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;

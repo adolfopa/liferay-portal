@@ -24,9 +24,9 @@ import com.liferay.asset.kernel.model.AssetLinkConstants;
 import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.asset.kernel.model.AssetTag;
 import com.liferay.asset.kernel.service.persistence.AssetEntryQuery;
-import com.liferay.asset.kernel.validator.AssetEntryValidatorLocator;
 import com.liferay.asset.kernel.validator.AssetEntryValidator;
 import com.liferay.asset.kernel.validator.AssetEntryValidatorExclusionRule;
+import com.liferay.asset.kernel.validator.AssetEntryValidatorLocator;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
@@ -1018,10 +1018,9 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 			}
 		}
 
-		AssetEntryValidatorLocator
-			assetEntryValidatorLocator =
-				_aggregateAssetEntryValidatorFactoryServiceTrackerMap.
-					getService(className);
+		AssetEntryValidatorLocator assetEntryValidatorLocator =
+			_aggregateAssetEntryValidatorFactoryServiceTrackerMap.
+				getService(className);
 
 		if (assetEntryValidatorLocator != null) {
 			AssetEntryValidator assetEntryValidator =

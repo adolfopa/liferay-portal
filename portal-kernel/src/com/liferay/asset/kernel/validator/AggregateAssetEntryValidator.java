@@ -48,8 +48,7 @@ public class AggregateAssetEntryValidator implements AssetEntryValidator {
 
 		for (AssetEntryValidator assetEntryValidator : _assetEntryValidators) {
 			assetEntryValidator.validate(
-				groupId, className, classTypePK, categoryIds,
-				entryNames);
+				groupId, className, classTypePK, categoryIds, entryNames);
 		}
 	}
 

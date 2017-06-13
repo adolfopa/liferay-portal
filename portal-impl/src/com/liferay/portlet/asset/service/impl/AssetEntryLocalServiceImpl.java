@@ -140,7 +140,7 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 	public void destroy() {
 		super.destroy();
 
-		_aggregateAssetEntryValidatorFactoryServiceTrackerMap.close();
+		_assetEntryValidatorLocatorServiceTrackerMap.close();
 		_assetEntryValidatorExclusionRuleServiceTrackerMap.close();
 	}
 
@@ -1019,7 +1019,7 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 		}
 
 		AssetEntryValidatorLocator assetEntryValidatorLocator =
-			_aggregateAssetEntryValidatorFactoryServiceTrackerMap.getService(
+			_assetEntryValidatorLocatorServiceTrackerMap.getService(
 				className);
 
 		if (assetEntryValidatorLocator != null) {
@@ -1300,7 +1300,7 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 	protected AssetEntryValidatorRegistry assetEntryValidatorRegistry;
 
 	private final ServiceTrackerMap<String, AssetEntryValidatorLocator>
-		_aggregateAssetEntryValidatorFactoryServiceTrackerMap =
+		_assetEntryValidatorLocatorServiceTrackerMap =
 			ServiceTrackerCollections.openSingleValueMap(
 				AssetEntryValidatorLocator.class, "model.class.name");
 

@@ -20,17 +20,11 @@ import com.liferay.asset.kernel.validator.AssetEntryValidatorLocator;
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFileEntryConstants;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
-import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
-import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portlet.asset.validator.AssetEntryValidatorRegistry;
 
 import java.util.List;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -48,18 +42,6 @@ import org.osgi.service.component.annotations.Reference;
 public class DLFileEntryAssetEntryValidatorLocator
 	implements AssetEntryValidatorLocator {
 
-	@Activate
-	@Modified
-	public void activate(BundleContext bundleContext) {
-		_serviceTrackerMap = ServiceTrackerMapFactory.openMultiValueMap(
-			bundleContext, AssetEntryValidator.class, "model.class.name");
-	}
-
-	@Deactivate
-	public void deactivate() {
-		_serviceTrackerMap.close();
-	}
-
 	@Override
 	public AssetEntryValidator getAssetEntryValidator() {
 		List<AssetEntryValidator> assetEntryValidators =
@@ -76,9 +58,6 @@ public class DLFileEntryAssetEntryValidatorLocator
 
 	@Reference(unbind = "-")
 	private DLFileEntryLocalService _dlFileEntryLocalService;
-
-	private ServiceTrackerMap<String, List<AssetEntryValidator>>
-		_serviceTrackerMap;
 
 	private class DLFileEntryAggregateAssetEntryValidator
 		extends AggregateAssetEntryValidator {

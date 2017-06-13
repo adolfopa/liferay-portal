@@ -17,8 +17,6 @@ package com.liferay.wiki.internal.asset.validator;
 import com.liferay.asset.kernel.validator.AggregateAssetEntryValidator;
 import com.liferay.asset.kernel.validator.AssetEntryValidator;
 import com.liferay.asset.kernel.validator.AssetEntryValidatorLocator;
-import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
-import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
@@ -30,15 +28,12 @@ import com.liferay.wiki.model.WikiPage;
 import com.liferay.wiki.model.WikiPageConstants;
 import com.liferay.wiki.service.WikiPageLocalService;
 
-import java.util.Dictionary;
 import java.util.List;
+import java.util.Map;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
@@ -57,21 +52,11 @@ public class WikiPageAssetEntryValidatorLocator
 	@Activate
 	@Modified
 	public void activate(ComponentContext componentContext) {
-		BundleContext bundleContext = componentContext.getBundleContext();
-
-		_serviceTrackerMap = ServiceTrackerMapFactory.openMultiValueMap(
-			bundleContext, AssetEntryValidator.class, "model.class.name");
-
 		Dictionary<String, Object> properties =
 			componentContext.getProperties();
 
 		_wikiGroupServiceConfiguration = ConfigurableUtil.createConfigurable(
 			WikiGroupServiceConfiguration.class, properties);
-	}
-
-	@Deactivate
-	public void deactivate() {
-		_serviceTrackerMap.close();
 	}
 
 	@Override
@@ -91,8 +76,6 @@ public class WikiPageAssetEntryValidatorLocator
 	@Reference(unbind = "-")
 	private AssetEntryValidatorRegistry _assetEntryValidatorRegistry;
 
-	private ServiceTrackerMap<String, List<AssetEntryValidator>>
-		_serviceTrackerMap;
 	private WikiGroupServiceConfiguration _wikiGroupServiceConfiguration;
 
 	@Reference(unbind = "-")

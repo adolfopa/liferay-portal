@@ -59,6 +59,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portlet.asset.service.base.AssetEntryLocalServiceBaseImpl;
 import com.liferay.portlet.asset.service.permission.AssetCategoryPermission;
 import com.liferay.portlet.asset.util.AssetSearcher;
+import com.liferay.portlet.asset.validator.AssetEntryValidatorLocatorRegistry;
 import com.liferay.portlet.asset.validator.AssetEntryValidatorRegistry;
 import com.liferay.registry.collections.ServiceTrackerCollections;
 import com.liferay.registry.collections.ServiceTrackerMap;
@@ -140,7 +141,6 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 	public void destroy() {
 		super.destroy();
 
-		_assetEntryValidatorLocatorServiceTrackerMap.close();
 		_assetEntryValidatorExclusionRuleServiceTrackerMap.close();
 	}
 
@@ -1019,7 +1019,7 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 		}
 
 		AssetEntryValidatorLocator assetEntryValidatorLocator =
-			_assetEntryValidatorLocatorServiceTrackerMap.getService(
+			assetEntryValidatorLocatorRegistry.getAssetEntryValidatorLocator(
 				className);
 
 		if (assetEntryValidatorLocator != null) {
@@ -1292,13 +1292,12 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 		indexer.reindex(className, entry.getClassPK());
 	}
 
+	@BeanReference(type = AssetEntryValidatorLocatorRegistry.class)
+	protected AssetEntryValidatorLocatorRegistry
+		assetEntryValidatorLocatorRegistry;
+
 	@BeanReference(type = AssetEntryValidatorRegistry.class)
 	protected AssetEntryValidatorRegistry assetEntryValidatorRegistry;
-
-	private final ServiceTrackerMap<String, AssetEntryValidatorLocator>
-		_assetEntryValidatorLocatorServiceTrackerMap =
-			ServiceTrackerCollections.openSingleValueMap(
-				AssetEntryValidatorLocator.class, "model.class.name");
 
 	/**
 	 * @deprecated As of 7.0.0, with no direct replacement

@@ -1026,10 +1026,6 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 			AssetEntryValidator assetEntryValidator =
 				assetEntryValidatorLocator.getAssetEntryValidator();
 
-			if (assetEntryValidator == null) {
-				return;
-			}
-
 			assetEntryValidator.validate(
 				groupId, className, classPK, classTypePK, categoryIds,
 				tagNames);

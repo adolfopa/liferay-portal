@@ -60,7 +60,6 @@ import com.liferay.portlet.asset.service.base.AssetEntryLocalServiceBaseImpl;
 import com.liferay.portlet.asset.service.permission.AssetCategoryPermission;
 import com.liferay.portlet.asset.util.AssetSearcher;
 import com.liferay.portlet.asset.validator.AssetEntryValidatorLocatorRegistry;
-import com.liferay.portlet.asset.validator.AssetEntryValidatorRegistry;
 import com.liferay.registry.collections.ServiceTrackerCollections;
 import com.liferay.registry.collections.ServiceTrackerMap;
 import com.liferay.social.kernel.model.SocialActivityConstants;
@@ -1022,24 +1021,11 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 			assetEntryValidatorLocatorRegistry.getAssetEntryValidatorLocator(
 				className);
 
-		if (assetEntryValidatorLocator != null) {
-			AssetEntryValidator assetEntryValidator =
-				assetEntryValidatorLocator.getAssetEntryValidator();
+		AssetEntryValidator assetEntryValidator =
+			assetEntryValidatorLocator.getAssetEntryValidator();
 
-			assetEntryValidator.validate(
-				groupId, className, classPK, classTypePK, categoryIds,
-				tagNames);
-		}
-		else {
-			for (AssetEntryValidator assetEntryValidator :
-					assetEntryValidatorRegistry.getAssetEntryValidators(
-						className)) {
-
-				assetEntryValidator.validate(
-					groupId, className, classPK, classTypePK, categoryIds,
-					tagNames);
-			}
-		}
+		assetEntryValidator.validate(
+			groupId, className, classPK, classTypePK, categoryIds, tagNames);
 	}
 
 	@Override
@@ -1295,9 +1281,6 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 	@BeanReference(type = AssetEntryValidatorLocatorRegistry.class)
 	protected AssetEntryValidatorLocatorRegistry
 		assetEntryValidatorLocatorRegistry;
-
-	@BeanReference(type = AssetEntryValidatorRegistry.class)
-	protected AssetEntryValidatorRegistry assetEntryValidatorRegistry;
 
 	/**
 	 * @deprecated As of 7.0.0, with no direct replacement

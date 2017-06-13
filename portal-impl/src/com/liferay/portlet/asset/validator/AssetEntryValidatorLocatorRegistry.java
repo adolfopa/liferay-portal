@@ -14,7 +14,10 @@
 
 package com.liferay.portlet.asset.validator;
 
+import com.liferay.asset.kernel.validator.AssetEntryValidator;
 import com.liferay.asset.kernel.validator.AssetEntryValidatorLocator;
+import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
 import com.liferay.registry.collections.ServiceTrackerCollections;
 import com.liferay.registry.collections.ServiceTrackerMap;
@@ -41,13 +44,35 @@ public class AssetEntryValidatorLocatorRegistry {
 			_serviceTrackerMap.getService(className);
 
 		if (assetEntryValidatorLocator == null) {
-			return null;
+			return DefaultAssetEntryValidator::new;
 		}
 
 		return assetEntryValidatorLocator;
 	}
 
+	@BeanReference(type = AssetEntryValidatorRegistry.class)
+	protected AssetEntryValidatorRegistry assetEntryValidatorRegistry;
+
 	private ServiceTrackerMap<String, AssetEntryValidatorLocator>
 		_serviceTrackerMap;
+
+	private class DefaultAssetEntryValidator implements AssetEntryValidator {
+
+		@Override
+		public void validate(
+				long groupId, String className, long classTypePK,
+				long[] categoryIds, String[] tagNames)
+			throws PortalException {
+
+			for (AssetEntryValidator assetEntryValidator :
+				assetEntryValidatorRegistry.getAssetEntryValidators(
+					className)) {
+
+				assetEntryValidator.validate(
+					groupId, className, classTypePK, categoryIds, tagNames);
+			}
+		}
+
+	}
 
 }

@@ -21,7 +21,7 @@ import com.liferay.portal.kernel.exception.PortalException;
  */
 public interface AggregateAssetEntryValidatorFactory {
 
-	public AggregateAssetEntryValidator getAggregateAssetEntryValidator(
+	public AssetEntryValidator getAggregateAssetEntryValidator(
 			long groupId, String className, long classPK, long classTypePK,
 			long[] categoryIds, String[] entryNames)
 		throws PortalException;

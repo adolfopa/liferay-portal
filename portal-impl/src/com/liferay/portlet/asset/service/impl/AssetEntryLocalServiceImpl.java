@@ -24,7 +24,6 @@ import com.liferay.asset.kernel.model.AssetLinkConstants;
 import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.asset.kernel.model.AssetTag;
 import com.liferay.asset.kernel.service.persistence.AssetEntryQuery;
-import com.liferay.asset.kernel.validator.AggregateAssetEntryValidator;
 import com.liferay.asset.kernel.validator.AggregateAssetEntryValidatorFactory;
 import com.liferay.asset.kernel.validator.AssetEntryValidator;
 import com.liferay.asset.kernel.validator.AssetEntryValidatorExclusionRule;
@@ -1025,17 +1024,17 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 					getService(className);
 
 		if (aggregateAssetEntryValidatorFactory != null) {
-			AggregateAssetEntryValidator aggregateAssetEntryValidator =
+			AssetEntryValidator assetEntryValidator =
 				aggregateAssetEntryValidatorFactory.
 					getAggregateAssetEntryValidator(
 						groupId, className, classPK, classTypePK, categoryIds,
 						tagNames);
 
-			if (aggregateAssetEntryValidator == null) {
+			if (assetEntryValidator == null) {
 				return;
 			}
 
-			aggregateAssetEntryValidator.validate(
+			assetEntryValidator.validate(
 				groupId, className, classPK, classTypePK, categoryIds,
 				tagNames);
 		}

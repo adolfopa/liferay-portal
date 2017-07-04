@@ -24,9 +24,11 @@ import com.liferay.document.library.kernel.service.DLFileVersionLocalService;
 import com.liferay.document.library.kernel.service.DLFileVersionService;
 import com.liferay.document.library.kernel.service.DLFolderLocalService;
 import com.liferay.document.library.kernel.service.DLFolderService;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.service.RepositoryLocalService;
 import com.liferay.portal.kernel.service.RepositoryService;
 import com.liferay.portal.kernel.service.ResourceLocalService;
+import com.liferay.portal.kernel.systemevent.SystemEventDynamicVariable;
 import com.liferay.portal.repository.liferayrepository.LiferayRepository;
 
 /**
@@ -57,6 +59,59 @@ public class TemporaryFileEntryRepository extends LiferayRepository {
 			dlFileShortcutService, dlFileVersionLocalService,
 			dlFileVersionService, dlFolderLocalService, dlFolderService,
 			resourceLocalService, groupId, repositoryId, dlFolderId);
+	}
+
+	@Override
+	public void deleteAll() {
+		SystemEventDynamicVariable.ENABLED.withValue(false, super::deleteAll);
+	}
+
+	@Override
+	public void deleteFileEntry(long fileEntryId) throws PortalException {
+		SystemEventDynamicVariable.ENABLED.withValue(
+			false, () -> super.deleteFileEntry(fileEntryId));
+	}
+
+	@Override
+	public void deleteFileEntry(long folderId, String title)
+		throws PortalException {
+
+		SystemEventDynamicVariable.ENABLED.withValue(
+			false, () -> super.deleteFileEntry(folderId, title));
+	}
+
+	@Override
+	public void deleteFileShortcut(long fileShortcutId) throws PortalException {
+		SystemEventDynamicVariable.ENABLED.withValue(
+			false, () -> super.deleteFileShortcut(fileShortcutId));
+	}
+
+	@Override
+	public void deleteFileShortcuts(long toFileEntryId) throws PortalException {
+		SystemEventDynamicVariable.ENABLED.withValue(
+			false, () -> super.deleteFileShortcuts(toFileEntryId));
+	}
+
+	@Override
+	public void deleteFileVersion(long fileEntryId, String version)
+		throws PortalException {
+
+		SystemEventDynamicVariable.ENABLED.withValue(
+			false, () -> super.deleteFileVersion(fileEntryId, version));
+	}
+
+	@Override
+	public void deleteFolder(long folderId) throws PortalException {
+		SystemEventDynamicVariable.ENABLED.withValue(
+			false, () -> super.deleteFolder(folderId));
+	}
+
+	@Override
+	public void deleteFolder(long parentFolderId, String name)
+		throws PortalException {
+
+		SystemEventDynamicVariable.ENABLED.withValue(
+			false, () -> super.deleteFolder(parentFolderId, name));
 	}
 
 }

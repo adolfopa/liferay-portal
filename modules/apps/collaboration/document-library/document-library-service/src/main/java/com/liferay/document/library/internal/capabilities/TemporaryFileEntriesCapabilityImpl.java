@@ -32,6 +32,7 @@ import com.liferay.portal.kernel.repository.model.BaseRepositoryModelOperation;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.systemevent.SystemEventDynamicVariable;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -107,9 +108,11 @@ public class TemporaryFileEntriesCapabilityImpl
 					System.currentTimeMillis() -
 						getTemporaryFileEntriesTimeout()));
 
-		bulkOperationCapability.execute(
-			bulkFilter,
-			new DeleteExpiredTemporaryFilesRepositoryModelOperation());
+		SystemEventDynamicVariable.ENABLED.withValue(
+			false,
+			() -> bulkOperationCapability.execute(
+				bulkFilter,
+				new DeleteExpiredTemporaryFilesRepositoryModelOperation()));
 	}
 
 	@Override
@@ -122,7 +125,10 @@ public class TemporaryFileEntriesCapabilityImpl
 			FileEntry fileEntry = getTemporaryFileEntry(
 				temporaryFileEntriesScope, fileName);
 
-			_documentRepository.deleteFileEntry(fileEntry.getFileEntryId());
+			SystemEventDynamicVariable.ENABLED.withValue(
+				false,
+				() -> _documentRepository.deleteFileEntry(
+					fileEntry.getFileEntryId()));
 		}
 		catch (NoSuchModelException nsme) {
 
@@ -142,9 +148,11 @@ public class TemporaryFileEntriesCapabilityImpl
 		try {
 			Folder folder = addTempFolder(temporaryFileEntriesScope);
 
-			return _documentRepository.getRepositoryFileEntries(
-				temporaryFileEntriesScope.getUserId(), folder.getFolderId(),
-				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+			return SystemEventDynamicVariable.ENABLED.withValue(
+				false,
+				() -> _documentRepository.getRepositoryFileEntries(
+					temporaryFileEntriesScope.getUserId(), folder.getFolderId(),
+					QueryUtil.ALL_POS, QueryUtil.ALL_POS, null));
 		}
 		catch (NoSuchModelException nsme) {
 

@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
+import com.liferay.portal.kernel.systemevent.SystemEventDynamicVariable;
 import com.liferay.portal.kernel.systemevent.SystemEventHierarchyEntry;
 import com.liferay.portal.kernel.systemevent.SystemEventHierarchyEntryThreadLocal;
 import com.liferay.portal.kernel.util.StringPool;
@@ -43,6 +44,10 @@ public class SystemEventLocalServiceImpl
 			String classUuid, String referrerClassName, int type,
 			String extraData)
 		throws PortalException {
+
+		if (!SystemEventDynamicVariable.ENABLED.getValue()) {
+			return null;
+		}
 
 		if (userId == 0) {
 			userId = PrincipalThreadLocal.getUserId();
@@ -73,6 +78,10 @@ public class SystemEventLocalServiceImpl
 			long companyId, String className, long classPK, String classUuid,
 			String referrerClassName, int type, String extraData)
 		throws PortalException {
+
+		if (!SystemEventDynamicVariable.ENABLED.getValue()) {
+			return null;
+		}
 
 		return addSystemEvent(
 			0, companyId, 0, className, classPK, classUuid, referrerClassName,

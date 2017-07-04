@@ -25,6 +25,7 @@ import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.model.TypedModel;
 import com.liferay.portal.kernel.service.SystemEventLocalServiceUtil;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
+import com.liferay.portal.kernel.systemevent.SystemEventDynamicVariable;
 import com.liferay.portal.kernel.systemevent.SystemEventHierarchyEntry;
 import com.liferay.portal.kernel.systemevent.SystemEventHierarchyEntryThreadLocal;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -47,6 +48,10 @@ public class SystemEventAdvice
 	@Override
 	public void afterReturning(MethodInvocation methodInvocation, Object result)
 		throws Throwable {
+
+		if (!SystemEventDynamicVariable.ENABLED.getValue()) {
+			return;
+		}
 
 		SystemEvent systemEvent = findAnnotation(methodInvocation);
 
@@ -113,6 +118,10 @@ public class SystemEventAdvice
 
 	@Override
 	public Object before(MethodInvocation methodInvocation) throws Throwable {
+		if (!SystemEventDynamicVariable.ENABLED.getValue()) {
+			return null;
+		}
+
 		SystemEvent systemEvent = findAnnotation(methodInvocation);
 
 		if (systemEvent == _nullSystemEvent) {

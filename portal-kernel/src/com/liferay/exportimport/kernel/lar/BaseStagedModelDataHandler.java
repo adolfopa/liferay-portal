@@ -791,6 +791,10 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 		Element stagedModelElement =
 			portletDataContext.getImportDataStagedModelElement(stagedModel);
 
+		if (stagedModelElement == null) {
+			return;
+		}
+
 		Element referencesElement = stagedModelElement.element("references");
 
 		if (referencesElement == null) {

@@ -17,6 +17,7 @@ package com.liferay.knowledge.base.util;
 import com.liferay.knowledge.base.constants.KBFolderConstants;
 import com.liferay.knowledge.base.constants.KBPortletKeys;
 import com.liferay.knowledge.base.model.KBArticle;
+import com.liferay.knowledge.base.model.KBFolder;
 import com.liferay.knowledge.base.service.KBArticleLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
@@ -91,6 +92,27 @@ public class KnowledgeBaseUtil {
 		return sb.toString();
 	}
 
+	public static String getKBArticleUrlTitle(long id, String title) {
+		if (title == null) {
+			return String.valueOf(id);
+		}
+
+		title = StringUtil.toLowerCase(title.trim());
+
+		if (Validator.isNull(title) || Validator.isNumber(title) ||
+			title.equals("rss")) {
+
+			title = String.valueOf(id);
+		}
+		else {
+			title = FriendlyURLNormalizerUtil.normalizeWithPeriodsAndSlashes(
+				title);
+		}
+
+		return ModelHintsUtil.trimString(
+			KBArticle.class.getName(), "urlTitle", title);
+	}
+
 	public static long getKBFolderId(
 			long parentResourceClassNameId, long parentResourcePrimKey)
 		throws PortalException {
@@ -106,6 +128,27 @@ public class KnowledgeBaseUtil {
 			parentResourcePrimKey, WorkflowConstants.STATUS_ANY);
 
 		return kbArticle.getKbFolderId();
+	}
+
+	public static String getKBFolderUrlTitle(long id, String title) {
+		if (title == null) {
+			return String.valueOf(id);
+		}
+
+		title = StringUtil.toLowerCase(title.trim());
+
+		if (Validator.isNull(title) || Validator.isNumber(title) ||
+			title.equals("rss")) {
+
+			title = String.valueOf(id);
+		}
+		else {
+			title = FriendlyURLNormalizerUtil.normalizeWithPeriodsAndSlashes(
+				title);
+		}
+
+		return ModelHintsUtil.trimString(
+			KBFolder.class.getName(), "urlTitle", title);
 	}
 
 	public static String getMimeType(byte[] bytes, String fileName) {
@@ -134,25 +177,13 @@ public class KnowledgeBaseUtil {
 		};
 	}
 
+	/**
+	 * @deprecated As of 4.0.0, replaced by {@link #getKBArticleUrlTitle(
+	 *             long, String)}
+	 */
+	@Deprecated
 	public static String getUrlTitle(long id, String title) {
-		if (title == null) {
-			return String.valueOf(id);
-		}
-
-		title = StringUtil.toLowerCase(title.trim());
-
-		if (Validator.isNull(title) || Validator.isNumber(title) ||
-			title.equals("rss")) {
-
-			title = String.valueOf(id);
-		}
-		else {
-			title = FriendlyURLNormalizerUtil.normalizeWithPeriodsAndSlashes(
-				title);
-		}
-
-		return ModelHintsUtil.trimString(
-			KBArticle.class.getName(), "urlTitle", title);
+		return getKBArticleUrlTitle(id, title);
 	}
 
 	public static boolean isValidUrlTitle(String urlTitle) {

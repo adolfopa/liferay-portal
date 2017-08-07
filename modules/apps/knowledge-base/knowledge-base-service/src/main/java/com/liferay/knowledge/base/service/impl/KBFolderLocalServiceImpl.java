@@ -370,7 +370,7 @@ public class KBFolderLocalServiceImpl extends KBFolderLocalServiceBaseImpl {
 	private String _getUniqueUrlTitle(KBFolder kbFolder, String name)
 		throws PortalException {
 
-		String urlTitle = KnowledgeBaseUtil.getUrlTitle(
+		String urlTitle = KnowledgeBaseUtil.getKBFolderUrlTitle(
 			kbFolder.getKbFolderId(), name);
 
 		long classNameId = classNameLocalService.getClassNameId(KBFolder.class);

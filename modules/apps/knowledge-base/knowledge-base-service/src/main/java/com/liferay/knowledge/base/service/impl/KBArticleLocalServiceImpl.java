@@ -185,7 +185,7 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		kbArticle.setTitle(title);
 
 		if (Validator.isNull(urlTitle)) {
-			urlTitle = KnowledgeBaseUtil.getUrlTitle(
+			urlTitle = KnowledgeBaseUtil.getKBArticleUrlTitle(
 				kbArticle.getKbArticleId(), title);
 		}
 

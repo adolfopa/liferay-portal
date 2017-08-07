@@ -124,6 +124,11 @@ public class KBFolderLocalServiceImpl extends KBFolderLocalServiceBaseImpl {
 
 		expandoRowLocalService.deleteRows(kbFolder.getKbFolderId());
 
+		// Friendly URL
+
+		friendlyURLEntryLocalService.deleteFriendlyURLEntry(
+			kbFolder.getGroupId(), KBFolder.class, kbFolderId);
+
 		return kbFolderPersistence.remove(kbFolder);
 	}
 

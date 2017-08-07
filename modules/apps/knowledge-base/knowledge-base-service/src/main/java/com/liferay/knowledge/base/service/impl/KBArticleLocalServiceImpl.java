@@ -391,6 +391,12 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 
 		expandoRowLocalService.deleteRows(kbArticle.getKbArticleId());
 
+		// Friendly URL
+
+		friendlyURLEntryLocalService.deleteFriendlyURLEntry(
+			kbArticle.getGroupId(), KBArticle.class,
+			kbArticle.getKbArticleId());
+
 		// Ratings
 
 		ratingsStatsLocalService.deleteStats(

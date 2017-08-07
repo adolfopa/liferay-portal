@@ -173,6 +173,15 @@ public class KBFolderLocalServiceImpl extends KBFolderLocalServiceBaseImpl {
 			long groupId, long parentKbFolderId, String urlTitle)
 		throws PortalException {
 
+		FriendlyURLEntry friendlyURLEntry =
+			friendlyURLEntryLocalService.fetchFriendlyURLEntry(
+				groupId, KBFolder.class, urlTitle);
+
+		if (friendlyURLEntry != null) {
+			return kbFolderPersistence.fetchByPrimaryKey(
+				friendlyURLEntry.getClassPK());
+		}
+
 		return kbFolderPersistence.fetchByG_P_UT(
 			groupId, parentKbFolderId, urlTitle);
 	}
@@ -181,6 +190,15 @@ public class KBFolderLocalServiceImpl extends KBFolderLocalServiceBaseImpl {
 	public KBFolder getKBFolderByUrlTitle(
 			long groupId, long parentKbFolderId, String urlTitle)
 		throws PortalException {
+
+		FriendlyURLEntry friendlyURLEntry =
+			friendlyURLEntryLocalService.fetchFriendlyURLEntry(
+				groupId, KBFolder.class, urlTitle);
+
+		if (friendlyURLEntry != null) {
+			return kbFolderPersistence.findByPrimaryKey(
+				friendlyURLEntry.getClassPK());
+		}
 
 		return kbFolderPersistence.findByG_P_UT(
 			groupId, parentKbFolderId, urlTitle);

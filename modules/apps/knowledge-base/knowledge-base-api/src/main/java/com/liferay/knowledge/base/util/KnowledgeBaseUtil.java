@@ -147,8 +147,8 @@ public class KnowledgeBaseUtil {
 			title = String.valueOf(id);
 		}
 		else {
-			title = FriendlyURLNormalizerUtil.normalize(
-				title, _normalizationFriendlyUrlPattern);
+			title = FriendlyURLNormalizerUtil.normalizeWithPeriodsAndSlashes(
+				title);
 		}
 
 		return ModelHintsUtil.trimString(

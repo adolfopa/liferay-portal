@@ -186,10 +186,12 @@ public class KnowledgeBaseUtil {
 		return getKBArticleUrlTitle(id, title);
 	}
 
+	/**
+	 * @deprecated As of 4.0.0, with not direct replacement
+	 */
+	@Deprecated
 	public static boolean isValidUrlTitle(String urlTitle) {
-		Matcher matcher = _validFriendlyUrlPattern.matcher(urlTitle);
-
-		return matcher.matches();
+		return true;
 	}
 
 	public static void setPreferredKBFolderURLTitle(
@@ -279,10 +281,5 @@ public class KnowledgeBaseUtil {
 
 	private static final int _SQL_DATA_MAX_PARAMETERS = GetterUtil.getInteger(
 		PropsUtil.get(PropsKeys.SQL_DATA_MAX_PARAMETERS));
-
-	private static final Pattern _normalizationFriendlyUrlPattern =
-		Pattern.compile("[^a-z0-9_-]");
-	private static final Pattern _validFriendlyUrlPattern = Pattern.compile(
-		"/[a-z0-9_-]+");
 
 }

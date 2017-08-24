@@ -14,6 +14,9 @@
 
 package com.liferay.knowledge.base.service.impl;
 
+import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
+import com.liferay.friendly.url.model.FriendlyURLEntry;
+import com.liferay.friendly.url.service.FriendlyURLEntryLocalService;
 import com.liferay.knowledge.base.constants.KBFolderConstants;
 import com.liferay.knowledge.base.exception.DuplicateKBFolderNameException;
 import com.liferay.knowledge.base.exception.InvalidKBFolderNameException;
@@ -28,8 +31,8 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import java.util.Date;
 import java.util.List;
@@ -67,9 +70,19 @@ public class KBFolderLocalServiceImpl extends KBFolderLocalServiceBaseImpl {
 		kbFolder.setModifiedDate(now);
 		kbFolder.setParentKBFolderId(parentResourcePrimKey);
 		kbFolder.setName(name);
-		kbFolder.setUrlTitle(
-			getUniqueUrlTitle(
-				groupId, parentResourcePrimKey, kbFolderId, name));
+
+		String urlTitle = _getUniqueUrlTitle(kbFolder, name);
+
+		if (!ExportImportThreadLocal.isImportInProcess()) {
+			FriendlyURLEntry friendlyURLEntry =
+				friendlyURLEntryLocalService.addFriendlyURLEntry(
+					groupId, KBFolder.class, kbFolderId, urlTitle,
+					serviceContext);
+
+			urlTitle = friendlyURLEntry.getUrlTitle();
+		}
+
+		kbFolder.setUrlTitle(urlTitle);
 		kbFolder.setDescription(description);
 		kbFolder.setExpandoBridgeAttributes(serviceContext);
 
@@ -110,6 +123,11 @@ public class KBFolderLocalServiceImpl extends KBFolderLocalServiceBaseImpl {
 		// Expando
 
 		expandoRowLocalService.deleteRows(kbFolder.getKbFolderId());
+
+		// Friendly URL
+
+		friendlyURLEntryLocalService.deleteFriendlyURLEntry(
+			kbFolder.getGroupId(), KBFolder.class, kbFolderId);
 
 		return kbFolderPersistence.remove(kbFolder);
 	}
@@ -155,6 +173,15 @@ public class KBFolderLocalServiceImpl extends KBFolderLocalServiceBaseImpl {
 			long groupId, long parentKbFolderId, String urlTitle)
 		throws PortalException {
 
+		FriendlyURLEntry friendlyURLEntry =
+			friendlyURLEntryLocalService.fetchFriendlyURLEntry(
+				groupId, KBFolder.class, urlTitle);
+
+		if (friendlyURLEntry != null) {
+			return kbFolderPersistence.fetchByPrimaryKey(
+				friendlyURLEntry.getClassPK());
+		}
+
 		return kbFolderPersistence.fetchByG_P_UT(
 			groupId, parentKbFolderId, urlTitle);
 	}
@@ -163,6 +190,15 @@ public class KBFolderLocalServiceImpl extends KBFolderLocalServiceBaseImpl {
 	public KBFolder getKBFolderByUrlTitle(
 			long groupId, long parentKbFolderId, String urlTitle)
 		throws PortalException {
+
+		FriendlyURLEntry friendlyURLEntry =
+			friendlyURLEntryLocalService.fetchFriendlyURLEntry(
+				groupId, KBFolder.class, urlTitle);
+
+		if (friendlyURLEntry != null) {
+			return kbFolderPersistence.findByPrimaryKey(
+				friendlyURLEntry.getClassPK());
+		}
 
 		return kbFolderPersistence.findByG_P_UT(
 			groupId, parentKbFolderId, urlTitle);
@@ -285,25 +321,6 @@ public class KBFolderLocalServiceImpl extends KBFolderLocalServiceBaseImpl {
 			kbFolder.getKbFolderId(), groupPermissions, guestPermissions);
 	}
 
-	protected String getUniqueUrlTitle(
-		long groupId, long parentKbFolderId, long kbFolderId, String name) {
-
-		String urlTitle = KnowledgeBaseUtil.getUrlTitle(kbFolderId, name);
-
-		String uniqueUrlTitle = urlTitle;
-
-		KBFolder kbFolder = null;
-
-		for (int i = 1; kbFolder != null; i++) {
-			uniqueUrlTitle = urlTitle + StringPool.DASH + i;
-
-			kbFolder = kbFolderPersistence.fetchByG_P_UT(
-				groupId, parentKbFolderId, uniqueUrlTitle);
-		}
-
-		return uniqueUrlTitle;
-	}
-
 	protected void validateName(
 			long groupId, long parentKBFolderId, String name)
 		throws PortalException {
@@ -368,6 +385,22 @@ public class KBFolderLocalServiceImpl extends KBFolderLocalServiceBaseImpl {
 					"No KB folder found with KB folder ID %",
 					parentResourcePrimKey));
 		}
+	}
+
+	@ServiceReference(type = FriendlyURLEntryLocalService.class)
+	protected FriendlyURLEntryLocalService friendlyURLEntryLocalService;
+
+	private String _getUniqueUrlTitle(KBFolder kbFolder, String name)
+		throws PortalException {
+
+		String urlTitle = KnowledgeBaseUtil.getKBFolderUrlTitle(
+			kbFolder.getKbFolderId(), name);
+
+		long classNameId = classNameLocalService.getClassNameId(KBFolder.class);
+
+		return friendlyURLEntryLocalService.getUniqueUrlTitle(
+			kbFolder.getGroupId(), classNameId, kbFolder.getKbFolderId(),
+			urlTitle);
 	}
 
 }

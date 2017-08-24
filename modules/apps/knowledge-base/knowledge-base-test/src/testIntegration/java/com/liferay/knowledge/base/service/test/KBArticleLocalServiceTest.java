@@ -259,20 +259,23 @@ public class KBArticleLocalServiceTest {
 			_serviceContext);
 	}
 
-	@Test(expected = KBArticleUrlTitleException.class)
+	@Test
 	public void testAddKBArticleWithBlankURLTitle() throws Exception {
 		String urlTitle = StringPool.BLANK;
+
+		String title = StringUtil.randomString();
 
 		KBArticle kbArticle = KBArticleLocalServiceUtil.addKBArticle(
 			_user.getUserId(), _kbFolderClassNameId,
 			KBFolderConstants.DEFAULT_PARENT_FOLDER_ID,
-			StringUtil.randomString(), urlTitle, StringUtil.randomString(),
+			title, urlTitle, StringUtil.randomString(),
 			StringUtil.randomString(), null, null, null, _serviceContext);
 
-		Assert.assertTrue(Validator.isNotNull(kbArticle.getUrlTitle()));
+		Assert.assertEquals(
+			StringUtil.toLowerCase(title), kbArticle.getUrlTitle());
 	}
 
-	@Test(expected = KBArticleUrlTitleException.class)
+	@Test
 	public void testAddKBArticleWithDuplicateURLTitle() throws Exception {
 		String urlTitle = StringUtil.randomString();
 
@@ -282,11 +285,14 @@ public class KBArticleLocalServiceTest {
 			StringUtil.randomString(), urlTitle, StringUtil.randomString(),
 			StringUtil.randomString(), null, null, null, _serviceContext);
 
-		KBArticleLocalServiceUtil.addKBArticle(
+		KBArticle kbArticle = KBArticleLocalServiceUtil.addKBArticle(
 			_user.getUserId(), _kbFolderClassNameId,
 			KBFolderConstants.DEFAULT_PARENT_FOLDER_ID,
 			StringUtil.randomString(), urlTitle, StringUtil.randomString(),
 			StringUtil.randomString(), null, null, null, _serviceContext);
+
+		Assert.assertEquals(
+			StringUtil.toLowerCase(urlTitle) + "-1", kbArticle.getUrlTitle());
 	}
 
 	@Test(expected = KBArticleParentException.class)
@@ -314,31 +320,37 @@ public class KBArticleLocalServiceTest {
 			null, null, _serviceContext);
 	}
 
-	@Test(expected = KBArticleUrlTitleException.class)
+	@Test
 	public void testAddKBArticleWithInvalidURLTitle() throws Exception {
 		String invalidURLTitle = "#$%&/(";
 
-		KBArticleLocalServiceUtil.addKBArticle(
+		KBArticle kbArticle = KBArticleLocalServiceUtil.addKBArticle(
 			_user.getUserId(), _kbFolderClassNameId,
 			KBFolderConstants.DEFAULT_PARENT_FOLDER_ID,
 			StringUtil.randomString(), invalidURLTitle,
 			StringUtil.randomString(), StringUtil.randomString(), null, null,
 			null, _serviceContext);
+
+		Assert.assertNotNull(kbArticle.getUrlTitle());
 	}
 
-	@Test(expected = KBArticleUrlTitleException.class)
+	@Test
 	public void testAddKBArticleWithLargeURLTitle() throws Exception {
 		int urlTitleMaxSize = ModelHintsUtil.getMaxLength(
 			KBArticle.class.getName(), "urlTitle");
 
-		String invalidURLTitle = StringUtil.randomString(urlTitleMaxSize);
+		String invalidURLTitle = StringUtil.randomString(urlTitleMaxSize + 1);
 
-		KBArticleLocalServiceUtil.addKBArticle(
+		KBArticle kbArticle = KBArticleLocalServiceUtil.addKBArticle(
 			_user.getUserId(), _kbFolderClassNameId,
 			KBFolderConstants.DEFAULT_PARENT_FOLDER_ID,
 			StringUtil.randomString(), invalidURLTitle,
 			StringUtil.randomString(), StringUtil.randomString(), null, null,
 			null, _serviceContext);
+
+		String urlTitle = kbArticle.getUrlTitle();
+
+		Assert.assertEquals(urlTitleMaxSize, urlTitle.length());
 	}
 
 	@Test(expected = KBArticleContentException.class)

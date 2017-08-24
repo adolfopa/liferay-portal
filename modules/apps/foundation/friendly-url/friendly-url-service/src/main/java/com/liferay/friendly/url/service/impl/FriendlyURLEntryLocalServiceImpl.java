@@ -249,8 +249,10 @@ public class FriendlyURLEntryLocalServiceImpl
 		int maxLength = ModelHintsUtil.getMaxLength(
 			FriendlyURLEntry.class.getName(), "urlTitle");
 
-		String curUrlTitle = normalizedUrlTitle.substring(
+		String originalUrlTitle = normalizedUrlTitle.substring(
 			0, Math.min(maxLength, normalizedUrlTitle.length()));
+
+		String curUrlTitle = originalUrlTitle;
 
 		for (int i = 1;; i++) {
 			FriendlyURLEntry curFriendlyURLEntry = fetchFriendlyURLEntry(
@@ -263,6 +265,10 @@ public class FriendlyURLEntryLocalServiceImpl
 			}
 
 			String suffix = StringPool.DASH + i;
+
+			if (originalUrlTitle.endsWith(StringPool.DASH)) {
+				suffix = String.valueOf(i);
+			}
 
 			String prefix = normalizedUrlTitle.substring(
 				0,

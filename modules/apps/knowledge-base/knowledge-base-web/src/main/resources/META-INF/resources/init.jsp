@@ -45,6 +45,7 @@ page import="com.liferay.document.library.kernel.exception.DuplicateFileExceptio
 page import="com.liferay.document.library.kernel.exception.FileNameException" %><%@
 page import="com.liferay.document.library.kernel.exception.FileSizeException" %><%@
 page import="com.liferay.document.library.kernel.exception.NoSuchFileException" %><%@
+page import="com.liferay.friendly.url.exception.DuplicateFriendlyURLEntryException" %><%@
 page import="com.liferay.journal.model.JournalArticle" %><%@
 page import="com.liferay.knowledge.base.configuration.KBGroupServiceConfiguration" %><%@
 page import="com.liferay.knowledge.base.constants.KBActionKeys" %><%@

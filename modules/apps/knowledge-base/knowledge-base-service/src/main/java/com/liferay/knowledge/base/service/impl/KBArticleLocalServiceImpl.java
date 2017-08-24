@@ -18,6 +18,9 @@ import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.model.AssetLink;
 import com.liferay.asset.kernel.model.AssetLinkConstants;
 import com.liferay.expando.kernel.model.ExpandoBridge;
+import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
+import com.liferay.friendly.url.model.FriendlyURLEntry;
+import com.liferay.friendly.url.service.FriendlyURLEntryLocalService;
 import com.liferay.knowledge.base.configuration.KBGroupServiceConfiguration;
 import com.liferay.knowledge.base.constants.AdminActivityKeys;
 import com.liferay.knowledge.base.constants.KBArticleConstants;
@@ -29,7 +32,6 @@ import com.liferay.knowledge.base.exception.KBArticlePriorityException;
 import com.liferay.knowledge.base.exception.KBArticleSourceURLException;
 import com.liferay.knowledge.base.exception.KBArticleStatusException;
 import com.liferay.knowledge.base.exception.KBArticleTitleException;
-import com.liferay.knowledge.base.exception.KBArticleUrlTitleException;
 import com.liferay.knowledge.base.exception.NoSuchArticleException;
 import com.liferay.knowledge.base.internal.importer.KBArchiveFactory;
 import com.liferay.knowledge.base.internal.importer.KBArticleImporter;
@@ -61,7 +63,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
-import com.liferay.portal.kernel.model.ModelHintsUtil;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.model.User;
@@ -98,7 +99,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -141,8 +141,9 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 
 		User user = userLocalService.getUser(userId);
 		long groupId = serviceContext.getScopeGroupId();
-		urlTitle = normalizeUrlTitle(urlTitle);
+
 		double priority = getPriority(groupId, parentResourcePrimKey);
+
 		Date now = new Date();
 
 		validate(title, content, sourceURL);
@@ -151,9 +152,13 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		long kbFolderId = KnowledgeBaseUtil.getKBFolderId(
 			parentResourceClassNameId, parentResourcePrimKey);
 
-		urlTitle = StringUtil.toLowerCase(urlTitle);
+		if (Validator.isNotNull(urlTitle)) {
+			long classNameId = classNameLocalService.getClassNameId(
+				KBArticle.class);
 
-		validateUrlTitle(groupId, kbFolderId, urlTitle);
+			friendlyURLEntryLocalService.validate(
+				groupId, user.getCompanyId(), classNameId, urlTitle);
+		}
 
 		long kbArticleId = counterLocalService.increment();
 
@@ -178,9 +183,25 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		kbArticle.setKbFolderId(kbFolderId);
 		kbArticle.setVersion(KBArticleConstants.DEFAULT_VERSION);
 		kbArticle.setTitle(title);
-		kbArticle.setUrlTitle(
-			getUniqueUrlTitle(
-				groupId, kbFolderId, kbArticleId, title, urlTitle));
+
+		if (Validator.isNull(urlTitle)) {
+			urlTitle = KnowledgeBaseUtil.getKBArticleUrlTitle(
+				kbArticle.getKbArticleId(), title);
+		}
+
+		urlTitle = _getUniqueUrlTitle(kbArticle, urlTitle);
+
+		if (!ExportImportThreadLocal.isImportInProcess()) {
+			FriendlyURLEntry friendlyURLEntry =
+				friendlyURLEntryLocalService.addFriendlyURLEntry(
+					groupId, KBArticle.class, kbArticleId, urlTitle,
+					serviceContext);
+
+			urlTitle = friendlyURLEntry.getUrlTitle();
+		}
+
+		kbArticle.setUrlTitle(urlTitle);
+
 		kbArticle.setContent(content);
 		kbArticle.setDescription(description);
 		kbArticle.setPriority(priority);
@@ -369,6 +390,12 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		// Expando
 
 		expandoRowLocalService.deleteRows(kbArticle.getKbArticleId());
+
+		// Friendly URL
+
+		friendlyURLEntryLocalService.deleteFriendlyURLEntry(
+			kbArticle.getGroupId(), KBArticle.class,
+			kbArticle.getKbArticleId());
 
 		// Ratings
 
@@ -1678,65 +1705,6 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		return new Date(System.currentTimeMillis() + _TICKET_EXPIRATION);
 	}
 
-	protected String getUniqueUrlTitle(
-			long groupId, long kbFolderId, long kbArticleId, String title)
-		throws PortalException {
-
-		String urlTitle = KnowledgeBaseUtil.getUrlTitle(kbArticleId, title);
-
-		String uniqueUrlTitle = urlTitle;
-
-		if (kbFolderId == KBFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
-			int kbArticlesCount = kbArticlePersistence.countByG_KBFI_UT_ST(
-				groupId, kbFolderId, uniqueUrlTitle, _STATUSES);
-
-			for (int i = 1; kbArticlesCount > 0; i++) {
-				uniqueUrlTitle = getUniqueUrlTitle(urlTitle, i);
-
-				kbArticlesCount = kbArticlePersistence.countByG_KBFI_UT_ST(
-					groupId, kbFolderId, uniqueUrlTitle, _STATUSES);
-			}
-
-			return uniqueUrlTitle;
-		}
-
-		KBFolder kbFolder = kbFolderPersistence.findByPrimaryKey(kbFolderId);
-
-		int kbArticlesCount = kbArticleFinder.countByUrlTitle(
-			groupId, kbFolder.getUrlTitle(), uniqueUrlTitle, _STATUSES);
-
-		for (int i = 1; kbArticlesCount > 0; i++) {
-			uniqueUrlTitle = getUniqueUrlTitle(urlTitle, i);
-
-			kbArticlesCount = kbArticleFinder.countByUrlTitle(
-				groupId, kbFolder.getUrlTitle(), uniqueUrlTitle, _STATUSES);
-		}
-
-		return uniqueUrlTitle;
-	}
-
-	protected String getUniqueUrlTitle(
-			long groupId, long kbFolderId, long kbArticleId, String title,
-			String urlTitle)
-		throws PortalException {
-
-		if (Validator.isNull(urlTitle)) {
-			return getUniqueUrlTitle(groupId, kbFolderId, kbArticleId, title);
-		}
-
-		return urlTitle.substring(1);
-	}
-
-	protected String getUniqueUrlTitle(String urlTitle, int suffix) {
-		String uniqueUrlTitle = urlTitle + StringPool.DASH + suffix;
-
-		int maxLength = ModelHintsUtil.getMaxLength(
-			KBArticle.class.getName(), "urlTitle");
-
-		return StringUtil.shorten(
-			uniqueUrlTitle, maxLength, StringPool.DASH + suffix);
-	}
-
 	protected boolean isValidFileName(String name) {
 		if ((name == null) || name.contains(StringPool.BACK_SLASH) ||
 			name.contains(StringPool.SLASH)) {
@@ -1745,18 +1713,6 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		}
 
 		return true;
-	}
-
-	protected String normalizeUrlTitle(String urlTitle) {
-		if (urlTitle == null) {
-			return null;
-		}
-
-		if (StringUtil.startsWith(urlTitle, CharPool.SLASH)) {
-			return urlTitle;
-		}
-
-		return StringPool.SLASH + urlTitle;
 	}
 
 	protected void notifySubscribers(
@@ -2021,37 +1977,11 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		}
 	}
 
-	protected void validateUrlTitle(
-			long groupId, long kbFolderId, String urlTitle)
-		throws PortalException {
-
-		if (Validator.isNull(urlTitle)) {
-			return;
-		}
-
-		if (!KnowledgeBaseUtil.isValidUrlTitle(urlTitle)) {
-			throw new KBArticleUrlTitleException.
-				MustNotContainInvalidCharacters(urlTitle);
-		}
-
-		int urlTitleMaxSize = ModelHintsUtil.getMaxLength(
-			KBArticle.class.getName(), "urlTitle");
-
-		if (urlTitle.length() > urlTitleMaxSize) {
-			throw new KBArticleUrlTitleException.MustNotExceedMaximumSize(
-				urlTitle, urlTitleMaxSize);
-		}
-
-		Collection<KBArticle> kbArticles = kbArticlePersistence.findByG_KBFI_UT(
-			groupId, kbFolderId, urlTitle.substring(1));
-
-		if (!kbArticles.isEmpty()) {
-			throw new KBArticleUrlTitleException.MustNotBeDuplicate(urlTitle);
-		}
-	}
-
 	@ServiceReference(type = ConfigurationProvider.class)
 	protected ConfigurationProvider configurationProvider;
+
+	@ServiceReference(type = FriendlyURLEntryLocalService.class)
+	protected FriendlyURLEntryLocalService friendlyURLEntryLocalService;
 
 	@ServiceReference(type = IndexerRegistry.class)
 	protected IndexerRegistry indexerRegistry;
@@ -2070,6 +2000,17 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 
 	@ServiceReference(type = SubscriptionLocalService.class)
 	protected SubscriptionLocalService subscriptionLocalService;
+
+	private String _getUniqueUrlTitle(KBArticle kbArticle, String urlTitle)
+		throws PortalException {
+
+		long classNameId = classNameLocalService.getClassNameId(
+			KBArticle.class);
+
+		return friendlyURLEntryLocalService.getUniqueUrlTitle(
+			kbArticle.getGroupId(), classNameId, kbArticle.getKbArticleId(),
+			urlTitle);
+	}
 
 	private static final int[] _STATUSES =
 		{WorkflowConstants.STATUS_APPROVED, WorkflowConstants.STATUS_PENDING};

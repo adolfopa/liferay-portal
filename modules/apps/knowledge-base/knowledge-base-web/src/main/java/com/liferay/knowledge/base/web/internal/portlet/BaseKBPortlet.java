@@ -21,6 +21,7 @@ import com.liferay.document.library.kernel.exception.DuplicateFileException;
 import com.liferay.document.library.kernel.exception.FileNameException;
 import com.liferay.document.library.kernel.exception.FileSizeException;
 import com.liferay.document.library.kernel.exception.NoSuchFileException;
+import com.liferay.friendly.url.exception.DuplicateFriendlyURLEntryException;
 import com.liferay.knowledge.base.constants.KBArticleConstants;
 import com.liferay.knowledge.base.constants.KBCommentConstants;
 import com.liferay.knowledge.base.constants.KBFolderConstants;
@@ -638,6 +639,7 @@ public abstract class BaseKBPortlet extends MVCPortlet {
 		if (cause instanceof AssetCategoryException ||
 			cause instanceof AssetTagException ||
 			cause instanceof DuplicateFileException ||
+			cause instanceof DuplicateFriendlyURLEntryException ||
 			cause instanceof FileNameException ||
 			cause instanceof FileSizeException ||
 			cause instanceof KBArticleContentException ||

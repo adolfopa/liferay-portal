@@ -281,8 +281,8 @@ public class ServletResponseUtil {
 				setHeaders(
 					request, response, fileName, contentType, null, fullRange);
 
-				copyRange(
-					inputStream, outputStream, fullRange.getStart(),
+				copyOffsetRange(
+					inputStream, outputStream, fullRange.getStart(), true,
 					fullRange.getLength());
 			}
 			else if (ranges.size() == 1) {
@@ -299,8 +299,8 @@ public class ServletResponseUtil {
 
 				response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 
-				copyRange(
-					inputStream, outputStream, range.getStart(),
+				copyOffsetRange(
+					inputStream, outputStream, range.getStart(), true,
 					range.getLength());
 			}
 			else if (ranges.size() > 1) {
@@ -324,8 +324,22 @@ public class ServletResponseUtil {
 
 				response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 
+				Range previousRange = null;
+
 				for (int i = 0; i < ranges.size(); i++) {
 					Range range = ranges.get(i);
+
+					long offset;
+
+					if (previousRange == null) {
+						offset = range.getStart();
+					}
+					else {
+						offset =
+							range.getStart() - (
+								previousRange.getStart() +
+									previousRange.getLength());
+					}
 
 					servletOutputStream.println();
 					servletOutputStream.println(
@@ -337,9 +351,19 @@ public class ServletResponseUtil {
 							range.getContentRange());
 					servletOutputStream.println();
 
-					inputStream = copyRange(
-						inputStream, outputStream, range.getStart(),
-						range.getLength());
+					if (offset >= 0) {
+						inputStream = copyOffsetRange(
+							inputStream, servletOutputStream, offset, false,
+							range.getLength());
+					}
+					else {
+						response.sendError(
+							HttpServletResponse.
+								SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+						break;
+					}
+
+					previousRange = range;
 				}
 
 				servletOutputStream.println();
@@ -578,6 +602,22 @@ public class ServletResponseUtil {
 		}
 	}
 
+	protected static InputStream copyOffsetRange(
+			InputStream inputStream, OutputStream outputStream, long offset,
+			boolean cleanUp, long length)
+		throws IOException {
+
+		inputStream.skip(offset);
+		StreamUtil.transfer(
+			inputStream, outputStream, StreamUtil.BUFFER_SIZE, cleanUp, length);
+
+		return inputStream;
+	}
+
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	protected static InputStream copyRange(
 			InputStream inputStream, OutputStream outputStream, long start,
 			long length)

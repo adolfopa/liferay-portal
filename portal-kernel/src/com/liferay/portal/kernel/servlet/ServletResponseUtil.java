@@ -308,6 +308,10 @@ public class ServletResponseUtil {
 					_log.debug("Attempting to write multiple ranges");
 				}
 
+				ranges.sort(
+					(Range one, Range other) -> Long.compare(
+						one.getStart(), other.getStart()));
+
 				ServletOutputStream servletOutputStream =
 					(ServletOutputStream)outputStream;
 

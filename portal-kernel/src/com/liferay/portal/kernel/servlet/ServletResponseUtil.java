@@ -330,16 +330,16 @@ public class ServletResponseUtil {
 				Range previousRange = null;
 
 				for (int i = 0; i < ranges.size(); i++) {
-					Range range = ranges.get(i);
+					Range curRange = ranges.get(i);
 
 					long offset;
 
 					if (previousRange == null) {
-						offset = range.getStart();
+						offset = curRange.getStart();
 					}
 					else {
 						offset =
-							range.getStart() - (
+							curRange.getStart() - (
 								previousRange.getStart() +
 									previousRange.getLength());
 					}
@@ -351,13 +351,13 @@ public class ServletResponseUtil {
 						HttpHeaders.CONTENT_TYPE + ": " + contentType);
 					servletOutputStream.println(
 						HttpHeaders.CONTENT_RANGE + ": " +
-							range.getContentRange());
+							curRange.getContentRange());
 					servletOutputStream.println();
 
 					if (offset >= 0) {
 						inputStream = copyRange(
 							offset, inputStream, servletOutputStream, false,
-							range.getLength());
+							curRange.getLength());
 					}
 					else {
 						response.sendError(
@@ -367,7 +367,7 @@ public class ServletResponseUtil {
 						break;
 					}
 
-					previousRange = range;
+					previousRange = curRange;
 				}
 
 				servletOutputStream.println();

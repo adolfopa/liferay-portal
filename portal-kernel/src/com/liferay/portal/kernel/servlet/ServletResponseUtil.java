@@ -48,6 +48,7 @@ import java.nio.channels.FileChannel;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.ServletOutputStream;
@@ -281,8 +282,8 @@ public class ServletResponseUtil {
 				setHeaders(
 					request, response, fileName, contentType, null, fullRange);
 
-				copyOffsetRange(
-					inputStream, outputStream, fullRange.getStart(), true,
+				copyRange(
+					fullRange.getStart(), inputStream, outputStream, true,
 					fullRange.getLength());
 			}
 			else if (ranges.size() == 1) {
@@ -299,8 +300,8 @@ public class ServletResponseUtil {
 
 				response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 
-				copyOffsetRange(
-					inputStream, outputStream, range.getStart(), true,
+				copyRange(
+					range.getStart(), inputStream, outputStream, true,
 					range.getLength());
 			}
 			else if (ranges.size() > 1) {
@@ -308,9 +309,7 @@ public class ServletResponseUtil {
 					_log.debug("Attempting to write multiple ranges");
 				}
 
-				ranges.sort(
-					(Range one, Range other) -> Long.compare(
-						one.getStart(), other.getStart()));
+				ranges.sort(Comparator.comparingLong(Range::getStart));
 
 				ServletOutputStream servletOutputStream =
 					(ServletOutputStream)outputStream;
@@ -356,14 +355,15 @@ public class ServletResponseUtil {
 					servletOutputStream.println();
 
 					if (offset >= 0) {
-						inputStream = copyOffsetRange(
-							inputStream, servletOutputStream, offset, false,
+						inputStream = copyRange(
+							offset, inputStream, servletOutputStream, false,
 							range.getLength());
 					}
 					else {
 						response.sendError(
 							HttpServletResponse.
 								SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+
 						break;
 					}
 
@@ -606,12 +606,13 @@ public class ServletResponseUtil {
 		}
 	}
 
-	protected static InputStream copyOffsetRange(
-			InputStream inputStream, OutputStream outputStream, long offset,
+	protected static InputStream copyRange(
+			long offset, InputStream inputStream, OutputStream outputStream,
 			boolean cleanUp, long length)
 		throws IOException {
 
 		inputStream.skip(offset);
+
 		StreamUtil.transfer(
 			inputStream, outputStream, StreamUtil.BUFFER_SIZE, cleanUp, length);
 

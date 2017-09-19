@@ -122,6 +122,87 @@ public class WebServerRangeTest extends BaseWebServerTestCase {
 	}
 
 	@Test
+	public void testMultipartRangeNotOrdered() throws Exception {
+		String[] ranges = {"25-25", "70-79", "0-9"};
+
+		String rangeHeader = "bytes=";
+
+		for (int i = 0; i < ranges.length; i++) {
+			rangeHeader += ranges[i];
+
+			if (i != (ranges.length - 1)) {
+				rangeHeader += StringPool.COMMA;
+			}
+		}
+
+		MockHttpServletResponse mockHttpServletResponse = testRange(
+			rangeHeader);
+
+		String[] orderedRanges = {"0-9", "25-25", "70-79"};
+
+		String contentType = mockHttpServletResponse.getContentType();
+
+		Assert.assertTrue(contentType.startsWith(_BOUNDARY_PREFACE));
+
+		String boundary = contentType.substring(_BOUNDARY_PREFACE.length());
+
+		String responseBody = mockHttpServletResponse.getContentAsString();
+
+		Assert.assertTrue(
+			responseBody.startsWith("\r\n--" + boundary + "\r\n"));
+		Assert.assertTrue(responseBody.endsWith("--" + boundary + "--\r\n"));
+
+		String[] responseBodies = StringUtil.split(responseBody, boundary);
+
+		Assert.assertEquals(
+			Arrays.toString(responseBodies), ranges.length + 2,
+			responseBodies.length);
+		Assert.assertEquals(StringPool.DOUBLE_DASH, responseBodies[0]);
+		Assert.assertEquals(
+			StringPool.DOUBLE_DASH, responseBodies[ranges.length + 1]);
+
+		for (int i = 0; i < orderedRanges.length; i++) {
+			String[] lines = StringUtil.split(
+				responseBodies[i + 1], StringPool.RETURN_NEW_LINE);
+
+			Assert.assertEquals("Content-Type: text/plain", lines[0]);
+			Assert.assertEquals(
+				"Content-Range: bytes " + orderedRanges[i] + "/80", lines[1]);
+			Assert.assertTrue(Validator.isNull(lines[2]));
+
+			String[] rangePair = StringUtil.split(
+				orderedRanges[i], StringPool.DASH);
+
+			int start = GetterUtil.getInteger(rangePair[0]);
+			int end = GetterUtil.getInteger(rangePair[1]);
+
+			byte[] bytes = ArrayUtil.subset(
+				_SAMPLE_DATA.getBytes(), start, end + 1);
+
+			Assert.assertArrayEquals(bytes, lines[3].getBytes("UTF-8"));
+
+			Assert.assertEquals(StringPool.DOUBLE_DASH, lines[4]);
+		}
+	}
+
+	@Test
+	public void testMultipartRangeOverlapping() throws Exception {
+		String[] ranges = {"25-75", "70-79"};
+
+		String rangeHeader = "bytes=";
+
+		for (int i = 0; i < ranges.length; i++) {
+			rangeHeader += ranges[i];
+
+			if (i != (ranges.length - 1)) {
+				rangeHeader += StringPool.COMMA;
+			}
+		}
+
+		testInvalidRange(rangeHeader);
+	}
+
+	@Test
 	public void testSingleRangeByte() throws Exception {
 		MockHttpServletResponse mockHttpServletResponse = testRange(
 			"bytes=10-10");
@@ -175,6 +256,44 @@ public class WebServerRangeTest extends BaseWebServerTestCase {
 			}
 
 		};
+	}
+
+	protected MockHttpServletResponse testInvalidRange(String rangeHeader)
+		throws Exception {
+
+		String fileName = "Test Range.txt";
+
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				group.getGroupId(), TestPropsValues.getUserId());
+
+		FileEntry fileEntry = DLAppLocalServiceUtil.addFileEntry(
+			TestPropsValues.getUserId(), group.getGroupId(),
+			parentFolder.getFolderId(), fileName, ContentTypes.TEXT_PLAIN,
+			_SAMPLE_DATA.getBytes(), serviceContext);
+
+		String path =
+			fileEntry.getGroupId() + "/" + fileEntry.getFolderId() + "/" +
+				fileEntry.getTitle();
+
+		Map<String, String> headers = new HashMap<>();
+
+		if (Validator.isNotNull(rangeHeader)) {
+			headers.put(HttpHeaders.RANGE, rangeHeader);
+		}
+
+		MockHttpServletResponse mockHttpServletResponse = service(
+			Method.GET, path, headers, null, null, null);
+
+		int status = mockHttpServletResponse.getStatus();
+
+		Assert.assertTrue(
+			mockHttpServletResponse.containsHeader(HttpHeaders.ACCEPT_RANGES));
+
+		Assert.assertEquals(
+			status, HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+
+		return mockHttpServletResponse;
 	}
 
 	protected MockHttpServletResponse testRange(String rangeHeader)

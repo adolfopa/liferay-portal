@@ -339,9 +339,7 @@ public class ServletResponseUtil {
 					}
 					else {
 						offset =
-							curRange.getStart() - (
-								previousRange.getStart() +
-									previousRange.getLength());
+							curRange.getStart() - previousRange.getEnd() - 1;
 					}
 
 					servletOutputStream.println();

@@ -48,6 +48,7 @@ import java.nio.channels.FileChannel;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.ServletOutputStream;
@@ -282,7 +283,7 @@ public class ServletResponseUtil {
 					request, response, fileName, contentType, null, fullRange);
 
 				copyRange(
-					inputStream, outputStream, fullRange.getStart(),
+					fullRange.getStart(), inputStream, outputStream, true,
 					fullRange.getLength());
 			}
 			else if (ranges.size() == 1) {
@@ -300,13 +301,15 @@ public class ServletResponseUtil {
 				response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 
 				copyRange(
-					inputStream, outputStream, range.getStart(),
+					range.getStart(), inputStream, outputStream, true,
 					range.getLength());
 			}
 			else if (ranges.size() > 1) {
 				if (_log.isDebugEnabled()) {
 					_log.debug("Attempting to write multiple ranges");
 				}
+
+				ranges.sort(Comparator.comparingLong(Range::getStart));
 
 				ServletOutputStream servletOutputStream =
 					(ServletOutputStream)outputStream;
@@ -324,8 +327,20 @@ public class ServletResponseUtil {
 
 				response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 
+				Range previousRange = null;
+
 				for (int i = 0; i < ranges.size(); i++) {
-					Range range = ranges.get(i);
+					Range curRange = ranges.get(i);
+
+					long offset;
+
+					if (previousRange == null) {
+						offset = curRange.getStart();
+					}
+					else {
+						offset =
+							curRange.getStart() - previousRange.getEnd() - 1;
+					}
 
 					servletOutputStream.println();
 					servletOutputStream.println(
@@ -334,12 +349,23 @@ public class ServletResponseUtil {
 						HttpHeaders.CONTENT_TYPE + ": " + contentType);
 					servletOutputStream.println(
 						HttpHeaders.CONTENT_RANGE + ": " +
-							range.getContentRange());
+							curRange.getContentRange());
 					servletOutputStream.println();
 
-					inputStream = copyRange(
-						inputStream, outputStream, range.getStart(),
-						range.getLength());
+					if (offset >= 0) {
+						inputStream = copyRange(
+							offset, inputStream, servletOutputStream, false,
+							curRange.getLength());
+					}
+					else {
+						response.sendError(
+							HttpServletResponse.
+								SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+
+						break;
+					}
+
+					previousRange = curRange;
 				}
 
 				servletOutputStream.println();
@@ -621,6 +647,18 @@ public class ServletResponseUtil {
 		return copyRange(
 			new RandomAccessInputStream(inputStream), outputStream, start,
 			length);
+	}
+
+	protected static InputStream copyRange(
+			long offset, InputStream inputStream, OutputStream outputStream,
+			boolean cleanUp, long length)
+		throws IOException {
+
+		inputStream.skip(offset);
+		StreamUtil.transfer(
+			inputStream, outputStream, StreamUtil.BUFFER_SIZE, cleanUp, length);
+
+		return inputStream;
 	}
 
 	protected static void setContentLength(

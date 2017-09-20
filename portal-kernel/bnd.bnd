@@ -6,7 +6,5 @@ Export-Package:\
 	\
 	com.liferay.*
 Import-Package: *
-Include-Resource:\
-	classes,\
-	@../tmp/lib-pre/com.liferay.portal.kernel.blogs.compat.jar
+Include-Resource: classes
 -baseline: *;file=${project.dir}/.bnd/ant-baseline-cache/com.liferay.portal.kernel-2.47.0.jar

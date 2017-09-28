@@ -282,7 +282,7 @@ public class ServletResponseUtil {
 					request, response, fileName, contentType, null, fullRange);
 
 				copyRange(
-					inputStream, outputStream, fullRange.getStart(),
+					fullRange.getStart(), inputStream, outputStream, true,
 					fullRange.getLength());
 			}
 			else if (ranges.size() == 1) {
@@ -300,7 +300,7 @@ public class ServletResponseUtil {
 				response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 
 				copyRange(
-					inputStream, outputStream, range.getStart(),
+					range.getStart(), inputStream, outputStream, true,
 					range.getLength());
 			}
 			else if (ranges.size() > 1) {
@@ -324,8 +324,13 @@ public class ServletResponseUtil {
 
 				response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 
+				Range previousRange = null;
+
+				final boolean rangesSortedAndNotOverlapped =
+					rangesSortedAndNotOverlapped(ranges);
+
 				for (int i = 0; i < ranges.size(); i++) {
-					Range range = ranges.get(i);
+					Range curRange = ranges.get(i);
 
 					servletOutputStream.println();
 					servletOutputStream.println(
@@ -334,12 +339,29 @@ public class ServletResponseUtil {
 						HttpHeaders.CONTENT_TYPE + ": " + contentType);
 					servletOutputStream.println(
 						HttpHeaders.CONTENT_RANGE + ": " +
-							range.getContentRange());
+							curRange.getContentRange());
 					servletOutputStream.println();
 
-					inputStream = copyRange(
-						inputStream, outputStream, range.getStart(),
-						range.getLength());
+					if (rangesSortedAndNotOverlapped) {
+						long offset = curRange.getStart();
+
+						if (previousRange != null) {
+							offset =
+								curRange.getStart() -
+									previousRange.getEnd() - 1;
+						}
+
+						previousRange = curRange;
+
+						inputStream = copyRange(
+							offset, inputStream, servletOutputStream, false,
+							curRange.getLength());
+					}
+					else {
+						inputStream = copyRange(
+							inputStream, servletOutputStream,
+							curRange.getStart(), curRange.getLength());
+					}
 				}
 
 				servletOutputStream.println();
@@ -621,6 +643,34 @@ public class ServletResponseUtil {
 		return copyRange(
 			new RandomAccessInputStream(inputStream), outputStream, start,
 			length);
+	}
+
+	protected static InputStream copyRange(
+			long offset, InputStream inputStream, OutputStream outputStream,
+			boolean cleanUp, long length)
+		throws IOException {
+
+		inputStream.skip(offset);
+		StreamUtil.transfer(
+			inputStream, outputStream, StreamUtil.BUFFER_SIZE, cleanUp, length);
+
+		return inputStream;
+	}
+
+	protected static boolean rangesSortedAndNotOverlapped(List<Range> ranges) {
+		Range previousRange = null;
+
+		for (Range range : ranges) {
+			if ((previousRange != null) &&
+				(range.getStart() <= previousRange.getEnd())) {
+
+				return false;
+			}
+
+			previousRange = range;
+		}
+
+		return true;
 	}
 
 	protected static void setContentLength(

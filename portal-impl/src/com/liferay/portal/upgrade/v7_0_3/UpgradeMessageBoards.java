@@ -45,9 +45,9 @@ public class UpgradeMessageBoards extends UpgradeProcess {
 
 			sb.append("insert into ");
 			sb.append(tempTableName);
-			sb.append(" select MBMessage.threadId from MBThread, MBMessage ");
-			sb.append("where MBThread.threadId = MBMessage.threadId and ");
-			sb.append("MBThread.categoryId = ");
+			sb.append(" select MBMessage.threadId from MBMessage inner join ");
+			sb.append("MBThread on MBMessage.threadId = MBThread.threadId ");
+			sb.append("where MBThread.categoryId = ");
 			sb.append(MBCategoryConstants.DISCUSSION_CATEGORY_ID);
 			sb.append(" group by MBMessage.threadId having ");
 			sb.append("count(MBMessage.messageId) = 1");

@@ -118,6 +118,7 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 		thread.setStatusByUserId(message.getStatusByUserId());
 		thread.setStatusByUserName(message.getStatusByUserName());
 		thread.setStatusDate(message.getStatusDate());
+		thread.setTitle(message.getSubject());
 
 		mbThreadPersistence.update(thread);
 
@@ -1029,10 +1030,14 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 						curSubject, oldSubject, subject);
 				}
 
+				//
+
 				curMessage.setSubject(curSubject);
 
 				mbMessageLocalService.updateMBMessage(curMessage);
 			}
+
+			//
 
 			message.setSubject(subject);
 		}

@@ -257,16 +257,13 @@
 	<sql id="com.liferay.message.boards.service.persistence.MBThreadFinder.countByG_U_LPD">
 		<![CDATA[
 			SELECT
-				COUNT(DISTINCT MBThread.threadId) AS COUNT_VALUE
+				COUNT(DISTINCT MBMessage.threadId) AS COUNT_VALUE
 			FROM
-				MBThread
-			INNER JOIN
-				MBMessage ON
-					MBThread.threadId = MBMessage.threadId
+				MBMessage
 			WHERE
-				(MBThread.groupId = ?) AND
-				(MBThread.categoryId != -1) AND
-				(MBThread.lastPostDate > ?) AND
+				(MBMessage.groupId = ?) AND
+				(MBMessage.categoryId != -1) AND
+				(MBMessage.modifiedDate > ?) AND
 				(MBMessage.userId = ?)
 		]]>
 	</sql>

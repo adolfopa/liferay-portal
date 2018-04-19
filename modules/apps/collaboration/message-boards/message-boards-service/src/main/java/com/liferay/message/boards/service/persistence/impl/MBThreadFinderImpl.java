@@ -347,15 +347,10 @@ public class MBThreadFinderImpl
 			String sql = _customSQL.get(getClass(), COUNT_BY_G_U_LPD);
 
 			if (userId <= 0) {
-				if (includeAnonymous) {
-					sql = StringUtil.replace(
-						sql, _INNER_JOIN_SQL, StringPool.BLANK);
-				}
-
 				sql = StringUtil.replace(sql, _USER_ID_SQL, StringPool.BLANK);
 			}
 
-			sql = updateSQL(sql, queryDefinition);
+			sql = _updateSQL(sql, "MBMessage", queryDefinition);
 
 			if (!includeAnonymous) {
 				sql = _customSQL.appendCriteria(
@@ -1181,15 +1176,24 @@ public class MBThreadFinderImpl
 	protected String updateSQL(
 		String sql, QueryDefinition<MBThread> queryDefinition) {
 
+		return _updateSQL(sql, "MBThread", queryDefinition);
+	}
+
+	private String _updateSQL(
+		String sql, String tableName,
+		QueryDefinition<MBThread> queryDefinition) {
+
 		if (queryDefinition.getStatus() == WorkflowConstants.STATUS_ANY) {
 			return sql;
 		}
 
 		if (queryDefinition.isExcludeStatus()) {
-			return _customSQL.appendCriteria(sql, "AND (MBThread.status != ?)");
+			return _customSQL.appendCriteria(
+				sql, "AND (" + tableName + ".status != ?)");
 		}
 
-		return _customSQL.appendCriteria(sql, "AND (MBThread.status = ?)");
+		return _customSQL.appendCriteria(
+			sql, "AND (" + tableName + ".status = ?)");
 	}
 
 	private static final String _INNER_JOIN_SQL =

@@ -252,7 +252,9 @@ public class DefaultMBListDisplayContext implements MBListDisplayContext {
 
 			boolean includeAnonymous = false;
 
-			if (groupThreadsUserId == themeDisplay.getUserId()) {
+			if ((groupThreadsUserId == 0) ||
+				(groupThreadsUserId == themeDisplay.getUserId())) {
+
 				includeAnonymous = true;
 			}
 

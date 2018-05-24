@@ -225,35 +225,37 @@ public class PortletDataContextImpl implements PortletDataContext {
 			Class<?> clazz)
 		throws PortalException {
 
+		if (hasPrimaryKey(String.class, path)) {
+			return;
+		}
+
 		element.addAttribute("path", path);
 
 		populateClassNameAttribute(classedModel, element);
 
-		if (!hasPrimaryKey(String.class, path)) {
-			if (classedModel instanceof AuditedModel) {
-				AuditedModel auditedModel = (AuditedModel)classedModel;
+		if (classedModel instanceof AuditedModel) {
+			AuditedModel auditedModel = (AuditedModel)classedModel;
 
-				auditedModel.setUserUuid(auditedModel.getUserUuid());
-			}
-
-			if (isResourceMain(classedModel)) {
-				Serializable classPK =
-					ExportImportClassedModelUtil.getPrimaryKeyObj(classedModel);
-
-				long classNameId = ExportImportClassedModelUtil.getClassNameId(
-					classedModel);
-
-				_addAssetLinks(classNameId, GetterUtil.getLong(classPK));
-				_addAssetPriority(
-					element, classNameId, GetterUtil.getLong(classPK));
-
-				addExpando(element, path, classedModel, clazz);
-				addLocks(clazz, String.valueOf(classPK));
-				addPermissions(clazz, classPK);
-			}
-
-			_references.add(getReferenceKey(classedModel));
+			auditedModel.setUserUuid(auditedModel.getUserUuid());
 		}
+
+		if (isResourceMain(classedModel)) {
+			Serializable classPK =
+				ExportImportClassedModelUtil.getPrimaryKeyObj(classedModel);
+
+			long classNameId = ExportImportClassedModelUtil.getClassNameId(
+				classedModel);
+
+			_addAssetLinks(classNameId, GetterUtil.getLong(classPK));
+			_addAssetPriority(
+				element, classNameId, GetterUtil.getLong(classPK));
+
+			addExpando(element, path, classedModel, clazz);
+			addLocks(clazz, String.valueOf(classPK));
+			addPermissions(clazz, classPK);
+		}
+
+		_references.add(getReferenceKey(classedModel));
 
 		addZipEntry(path, classedModel);
 	}

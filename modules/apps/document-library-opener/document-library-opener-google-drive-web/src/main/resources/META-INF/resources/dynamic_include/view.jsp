@@ -17,11 +17,16 @@
 <%@ include file="/dynamic_include/init.jsp" %>
 
 <%
-DLOpenerGoogleDriveFileReference dlOpenerGoogleDriveFileReference = (DLOpenerGoogleDriveFileReference)request.getAttribute(DLOpenerGoogleDriveWebKeys.DL_OPENER_GOOGLE_DRIVE_FILE_REFERENCE);
+DLOpenerGoogleDriveFileReference googleDriveFileReference = (DLOpenerGoogleDriveFileReference)request.getAttribute(DLOpenerGoogleDriveWebKeys.DL_OPENER_GOOGLE_DRIVE_FILE_REFERENCE);
 %>
 
-<c:if test="<%= dlOpenerGoogleDriveFileReference != null %>">
+<c:if test="<%= googleDriveFileReference != null %>">
+	<portlet:renderURL var="renderURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>">
+		<portlet:param name="mvcRenderCommandName" value="/document_library/open_google_docs" />
+		<portlet:param name="fileEntryId" value="<%= String.valueOf(googleDriveFileReference.getFileEntryId()) %>" />
+	</portlet:renderURL>
+
 	<aui:script>
-		window.open('<%= dlOpenerGoogleDriveFileReference.getGoogleDocsEditURL() %>');
+		window.open('<%= renderURL %>');
 	</aui:script>
 </c:if>

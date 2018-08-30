@@ -107,16 +107,17 @@ DLOpenerGoogleDriveFileReference googleDriveFileReference = (DLOpenerGoogleDrive
 		var btn = document.getElementById("closeAndCheckinBtn");
 
 		btn.onclick = function() {
-			var xhr = new XMLHttpRequest();
-
-			xhr.onreadystatechange = function() {
-				if (this.readyState == XMLHttpRequest.DONE) {
+			fetch(
+				'<%= checkInURL %>',
+				{
+					credentials: 'include',
+					method: 'POST'
+				}
+			).then(function(response) {
+				if (response.ok) {
 					window.close();
 				}
-			};
-
-			xhr.open('POST', '<%= checkInURL %>');
-			xhr.send();
+			});
 		};
 	})();
 </script>

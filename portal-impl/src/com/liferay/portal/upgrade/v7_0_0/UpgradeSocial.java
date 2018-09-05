@@ -15,6 +15,7 @@
 package com.liferay.portal.upgrade.v7_0_0;
 
 import com.liferay.counter.kernel.model.Counter;
+import com.liferay.counter.kernel.service.CounterLocalServiceUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -73,34 +74,7 @@ public class UpgradeSocial extends UpgradeProcess {
 
 		updateSocialActivities(delta);
 
-		increment(Counter.class.getName(), getCounterIncrement());
-	}
-
-	protected int getCounterIncrement() throws Exception {
-		try (PreparedStatement ps1 = connection.prepareStatement(
-				"select currentId from Counter where name = ?")) {
-
-			ps1.setString(1, Counter.class.getName());
-
-			int counter = 0;
-
-			try (ResultSet rs = ps1.executeQuery()) {
-				if (rs.next()) {
-					counter = rs.getInt("currentId");
-				}
-			}
-
-			PreparedStatement ps2 = connection.prepareStatement(
-				"select max(activitySetId) from SocialActivitySet");
-
-			try (ResultSet rs = ps2.executeQuery()) {
-				if (rs.next()) {
-					return rs.getInt(1) - counter;
-				}
-
-				return 0;
-			}
-		}
+		incrementCounter();
 	}
 
 	protected long getDelta(long increment) throws Exception {
@@ -129,6 +103,26 @@ public class UpgradeSocial extends UpgradeProcess {
 				}
 
 				return 0;
+			}
+		}
+	}
+
+	protected void incrementCounter() throws Exception {
+		try (PreparedStatement ps = connection.prepareStatement(
+			"select max(activitySetId) from SocialActivitySet");
+			 ResultSet rs = ps.executeQuery();) {
+
+			if (rs.next()) {
+				Counter counter = CounterLocalServiceUtil.getCounter(
+					Counter.class.getName());
+
+				long lastSocialActivitySetId = rs.getLong(1);
+
+				if (counter.getCurrentId() < lastSocialActivitySetId) {
+					counter.setCurrentId(rs.getLong(1));
+
+					CounterLocalServiceUtil.updateCounter(counter);
+				}
 			}
 		}
 	}

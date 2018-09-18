@@ -34,10 +34,6 @@ public class UpgradePortletPreferences extends UpgradeProcess {
 		upgradePortletPreferences();
 	}
 
-	protected String getPortletId() {
-		return "com_liferay_announcements_web_portlet_AnnouncementsPortlet";
-	}
-
 	protected void updatePortletPreferences(
 			long portletPreferencesId, String preferences)
 		throws Exception {
@@ -67,9 +63,9 @@ public class UpgradePortletPreferences extends UpgradeProcess {
 			sb1.append("from PortletPreferences as PP1 inner join ");
 			sb1.append("PortletPreferences as PP2 on PP1.companyId = ");
 			sb1.append("PP2.ownerId where PP1.portletId = '");
-			sb1.append(getPortletId());
+			sb1.append(_PORTLET_ID);
 			sb1.append("' AND PP2.portletId = '");
-			sb1.append(getPortletId());
+			sb1.append(_PORTLET_ID);
 			sb1.append("' AND PP1.ownerType = ");
 			sb1.append(PortletKeys.PREFS_OWNER_TYPE_COMPANY);
 			sb1.append(";");
@@ -97,5 +93,8 @@ public class UpgradePortletPreferences extends UpgradeProcess {
 			}
 		}
 	}
+
+	private static final String _PORTLET_ID =
+		"com_liferay_announcements_web_portlet_AnnouncementsPortlet";
 
 }

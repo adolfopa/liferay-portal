@@ -15,7 +15,7 @@
 package com.liferay.announcements.web.internal.upgrade.v1_1_0;
 
 import com.liferay.petra.string.StringBundler;
-import com.liferay.portal.kernel.dao.jdbc.DataAccess;
+import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.model.PortletConstants;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.LoggingTimer;
@@ -34,27 +34,6 @@ public class UpgradePortletPreferences extends UpgradeProcess {
 		upgradePortletPreferences();
 	}
 
-	protected void updatePortletPreferences(
-			long portletPreferencesId, String preferences)
-		throws Exception {
-
-		PreparedStatement ps = null;
-
-		try {
-			ps = connection.prepareStatement(
-				"update PortletPreferences set preferences = ? where " +
-					"portletPreferencesId = ?");
-
-			ps.setString(1, preferences);
-			ps.setLong(2, portletPreferencesId);
-
-			ps.executeUpdate();
-		}
-		finally {
-			DataAccess.cleanUp(ps);
-		}
-	}
-
 	protected void upgradePortletPreferences() throws Exception {
 		try (LoggingTimer loggingTimer = new LoggingTimer()) {
 			try (PreparedStatement ps1 = connection.prepareStatement(
@@ -66,6 +45,11 @@ public class UpgradePortletPreferences extends UpgradeProcess {
 						"' AND PP2.portletId = '", _PORTLET_ID,
 						"' AND PP1.ownerType = ",
 						PortletKeys.PREFS_OWNER_TYPE_COMPANY, ";"));
+				PreparedStatement ps2 =
+					AutoBatchPreparedStatementUtil.autoBatch(
+						connection.prepareStatement(
+							"update PortletPreferences set preferences = ? " +
+								"where portletPreferencesId = ?"));
 				ResultSet rs1 = ps1.executeQuery()) {
 
 				while (rs1.next()) {
@@ -80,10 +64,13 @@ public class UpgradePortletPreferences extends UpgradeProcess {
 					long portletPreferencesId = rs1.getLong(
 						"portletPreferencesId");
 
-					updatePortletPreferences(
-						portletPreferencesId,
-						PortletConstants.DEFAULT_PREFERENCES);
+					ps2.setString(1, PortletConstants.DEFAULT_PREFERENCES);
+					ps2.setLong(2, portletPreferencesId);
+
+					ps2.addBatch();
 				}
+
+				ps2.executeBatch();
 			}
 		}
 	}

@@ -31,43 +31,37 @@ public class UpgradePortletPreferences extends UpgradeProcess {
 
 	@Override
 	protected void doUpgrade() throws Exception {
-		try (LoggingTimer loggingTimer = new LoggingTimer()) {
-			try (PreparedStatement ps1 = connection.prepareStatement(
-					StringBundler.concat(
-						"select PP1.portletPreferencesId, PP1.preferences ",
-						"from PortletPreferences as PP1 inner join ",
-						"PortletPreferences as PP2 on PP1.companyId = ",
-						"PP2.ownerId where PP1.portletId = '", _PORTLET_ID,
-						"' AND PP2.portletId = '", _PORTLET_ID,
-						"' AND PP1.ownerType = ",
-						PortletKeys.PREFS_OWNER_TYPE_COMPANY, ";"));
-				PreparedStatement ps2 =
-					AutoBatchPreparedStatementUtil.autoBatch(
-						connection.prepareStatement(
-							"update PortletPreferences set preferences = ? " +
-								"where portletPreferencesId = ?"));
-				ResultSet rs1 = ps1.executeQuery()) {
+		try (LoggingTimer loggingTimer = new LoggingTimer();
+			PreparedStatement ps1 = connection.prepareStatement(
+				StringBundler.concat(
+					"select PP1.portletPreferencesId, PP1.preferences from ",
+					"PortletPreferences as PP1 inner join PortletPreferences ",
+					"as PP2 on PP1.companyId = PP2.ownerId where ",
+					"PP1.portletId = '", _PORTLET_ID, "' AND PP2.portletId = '",
+					_PORTLET_ID, "' AND PP1.ownerType = ",
+					PortletKeys.PREFS_OWNER_TYPE_COMPANY, ";"));
+			PreparedStatement ps2 = AutoBatchPreparedStatementUtil.autoBatch(
+				connection.prepareStatement(
+					"update PortletPreferences set preferences = ? where " +
+						"portletPreferencesId = ?"));
+			ResultSet rs1 = ps1.executeQuery()) {
 
-				while (rs1.next()) {
-					String preferences = rs1.getString("preferences");
+			while (rs1.next()) {
+				String preferences = rs1.getString("preferences");
 
-					if (preferences.equals(
-							PortletConstants.DEFAULT_PREFERENCES)) {
-
-						continue;
-					}
-
-					long portletPreferencesId = rs1.getLong(
-						"portletPreferencesId");
-
-					ps2.setString(1, PortletConstants.DEFAULT_PREFERENCES);
-					ps2.setLong(2, portletPreferencesId);
-
-					ps2.addBatch();
+				if (preferences.equals(PortletConstants.DEFAULT_PREFERENCES)) {
+					continue;
 				}
 
-				ps2.executeBatch();
+				long portletPreferencesId = rs1.getLong("portletPreferencesId");
+
+				ps2.setString(1, PortletConstants.DEFAULT_PREFERENCES);
+				ps2.setLong(2, portletPreferencesId);
+
+				ps2.addBatch();
 			}
+
+			ps2.executeBatch();
 		}
 	}
 

@@ -14,12 +14,12 @@
 
 package com.liferay.announcements.web.internal.upgrade.v1_1_0;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.model.PortletConstants;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.LoggingTimer;
 import com.liferay.portal.kernel.util.PortletKeys;
-import com.liferay.portal.kernel.util.StringBundler;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -57,21 +57,15 @@ public class UpgradePortletPreferences extends UpgradeProcess {
 
 	protected void upgradePortletPreferences() throws Exception {
 		try (LoggingTimer loggingTimer = new LoggingTimer()) {
-			StringBundler sb1 = new StringBundler(10);
-
-			sb1.append("select PP1.portletPreferencesId, PP1.preferences ");
-			sb1.append("from PortletPreferences as PP1 inner join ");
-			sb1.append("PortletPreferences as PP2 on PP1.companyId = ");
-			sb1.append("PP2.ownerId where PP1.portletId = '");
-			sb1.append(_PORTLET_ID);
-			sb1.append("' AND PP2.portletId = '");
-			sb1.append(_PORTLET_ID);
-			sb1.append("' AND PP1.ownerType = ");
-			sb1.append(PortletKeys.PREFS_OWNER_TYPE_COMPANY);
-			sb1.append(";");
-
 			try (PreparedStatement ps1 = connection.prepareStatement(
-					sb1.toString());
+					StringBundler.concat(
+						"select PP1.portletPreferencesId, PP1.preferences ",
+						"from PortletPreferences as PP1 inner join ",
+						"PortletPreferences as PP2 on PP1.companyId = ",
+						"PP2.ownerId where PP1.portletId = '", _PORTLET_ID,
+						"' AND PP2.portletId = '", _PORTLET_ID,
+						"' AND PP1.ownerType = ",
+						PortletKeys.PREFS_OWNER_TYPE_COMPANY, ";"));
 				ResultSet rs1 = ps1.executeQuery()) {
 
 				while (rs1.next()) {

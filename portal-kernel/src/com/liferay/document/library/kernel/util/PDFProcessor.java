@@ -15,6 +15,7 @@
 package com.liferay.document.library.kernel.util;
 
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.image.ImageTool;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileVersion;
@@ -39,6 +40,9 @@ public interface PDFProcessor {
 	public void generateImages(
 			FileVersion sourceFileVersion, FileVersion destinationFileVersion)
 		throws Exception;
+
+	public int getDecryptedPreviewCount(FileVersion fileVersion)
+		throws PortalException;
 
 	public InputStream getPreviewAsStream(FileVersion fileVersion, int index)
 		throws Exception;

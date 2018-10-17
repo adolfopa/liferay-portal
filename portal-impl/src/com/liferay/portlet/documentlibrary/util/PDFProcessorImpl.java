@@ -17,6 +17,7 @@ package com.liferay.portlet.documentlibrary.util;
 import com.liferay.document.library.kernel.document.conversion.DocumentConversionUtil;
 import com.liferay.document.library.kernel.exception.NoSuchFileEntryException;
 import com.liferay.document.library.kernel.model.DLProcessorConstants;
+import com.liferay.document.library.kernel.service.DLFileEntryLocalServiceUtil;
 import com.liferay.document.library.kernel.store.DLStoreUtil;
 import com.liferay.document.library.kernel.util.DLPreviewableProcessor;
 import com.liferay.document.library.kernel.util.DLUtil;
@@ -30,6 +31,7 @@ import com.liferay.petra.process.ProcessExecutor;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.fabric.InputResource;
 import com.liferay.portal.fabric.OutputResource;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.image.GhostscriptUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -107,6 +109,20 @@ public class PDFProcessorImpl
 		throws Exception {
 
 		_generateImages(sourceFileVersion, destinationFileVersion);
+	}
+
+	public int getDecryptedPreviewCount(FileVersion fileVersion)
+		throws PortalException {
+
+		String tempFileId = DLUtil.getTempFileId(
+			fileVersion.getFileEntryId(), fileVersion.getVersion());
+
+		File file = DLFileEntryLocalServiceUtil.getFile(
+			fileVersion.getFileEntryId(), fileVersion.getVersion(), false);
+
+		File decryptedFile = getDecryptedTempFile(tempFileId);
+
+		return _getPreviewFilesCount(file, decryptedFile);
 	}
 
 	@Override

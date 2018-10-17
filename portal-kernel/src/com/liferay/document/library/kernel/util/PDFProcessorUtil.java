@@ -15,6 +15,7 @@
 package com.liferay.document.library.kernel.util;
 
 import com.liferay.document.library.kernel.model.DLProcessorConstants;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 
 import java.io.InputStream;
@@ -34,6 +35,18 @@ public class PDFProcessorUtil {
 			pdfProcessor.generateImages(
 				sourceFileVersion, destinationFileVersion);
 		}
+	}
+
+	public static int getDecryptedPreviewCount(FileVersion fileVersion)
+		throws PortalException {
+
+		PDFProcessor pdfProcessor = getPDFProcessor();
+
+		if (pdfProcessor == null) {
+			return 0;
+		}
+
+		return pdfProcessor.getDecryptedPreviewCount(fileVersion);
 	}
 
 	public static PDFProcessor getPDFProcessor() {

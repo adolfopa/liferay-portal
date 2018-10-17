@@ -28,6 +28,8 @@ import java.util.Optional;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 
+import org.apache.poi.EncryptedDocumentException;
+
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -59,6 +61,14 @@ public class PDFDLPreviewRendererProvider implements DLPreviewRendererProvider {
 							fileVersion)) {
 
 						throw new DLPreviewGenerationInProcessException();
+					}
+
+					int fileCount = PDFProcessorUtil.getDecryptedPreviewCount(
+						fileVersion);
+
+					if (fileCount == 0) {
+						throw new EncryptedDocumentException(
+							"Unable to create preview of encrypted document");
 					}
 
 					throw new DLPreviewGenerationInProcessException();

@@ -1,4 +1,9 @@
 Bundle-Name: Liferay Document Library Preview PDF
 Bundle-SymbolicName: com.liferay.document.library.preview.pdf
 Bundle-Version: 1.0.0
+Import-Package:\
+	!org.apache.poi.*,\
+	\
+	*
 Web-ContextPath: /document-library-preview-pdf
+-includeresource: @poi-[0-9]*.jar

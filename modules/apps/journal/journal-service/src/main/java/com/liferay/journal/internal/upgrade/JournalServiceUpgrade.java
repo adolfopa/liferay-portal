@@ -17,6 +17,7 @@ package com.liferay.journal.internal.upgrade;
 import com.liferay.asset.kernel.service.AssetCategoryLocalService;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.asset.kernel.service.AssetVocabularyLocalService;
+import com.liferay.comment.upgrade.UpgradeDiscussionSubscriptionClassName;
 import com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLinkLocalService;
@@ -47,7 +48,7 @@ import com.liferay.journal.internal.upgrade.v1_1_2.UpgradeCheckIntervalConfigura
 import com.liferay.journal.internal.upgrade.v1_1_3.UpgradeResourcePermissions;
 import com.liferay.journal.internal.upgrade.v1_1_4.UpgradeUrlTitle;
 import com.liferay.journal.internal.upgrade.v1_1_5.UpgradeContentImages;
-import com.liferay.journal.internal.upgrade.v1_1_6.UpgradeDiscussionSubscriptionClassName;
+import com.liferay.journal.model.JournalArticle;
 import com.liferay.portal.configuration.upgrade.PrefsPropsToConfigurationUpgradeHelper;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
@@ -177,7 +178,8 @@ public class JournalServiceUpgrade implements UpgradeStepRegistrator {
 		registry.register(
 			"1.1.5", "1.1.6",
 			new UpgradeDiscussionSubscriptionClassName(
-				_subscriptionLocalService));
+				_subscriptionLocalService, JournalArticle.class.getName(),
+				UpgradeDiscussionSubscriptionClassName.DeletionMode.KEEP_ALL));
 	}
 
 	protected void deleteTempImages() throws Exception {

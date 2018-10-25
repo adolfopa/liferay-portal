@@ -18,7 +18,8 @@ import com.liferay.blogs.internal.upgrade.v1_1_0.UpgradeClassNames;
 import com.liferay.blogs.internal.upgrade.v1_1_0.UpgradeFriendlyURL;
 import com.liferay.blogs.internal.upgrade.v1_1_1.UpgradeUrlTitle;
 import com.liferay.blogs.internal.upgrade.v1_1_2.UpgradeBlogsImages;
-import com.liferay.blogs.internal.upgrade.v1_1_3.UpgradeDiscussionSubscriptionClassName;
+import com.liferay.blogs.model.BlogsEntry;
+import com.liferay.comment.upgrade.UpgradeDiscussionSubscriptionClassName;
 import com.liferay.friendly.url.service.FriendlyURLEntryLocalService;
 import com.liferay.portal.kernel.portletfilerepository.PortletFileRepository;
 import com.liferay.portal.kernel.service.ImageLocalService;
@@ -51,7 +52,9 @@ public class BlogsServiceUpgrade implements UpgradeStepRegistrator {
 		registry.register(
 			"1.1.2", "1.1.3",
 			new UpgradeDiscussionSubscriptionClassName(
-				_subscriptionLocalService));
+				_subscriptionLocalService, BlogsEntry.class.getName(),
+				UpgradeDiscussionSubscriptionClassName.DeletionMode.
+					DELETE_OLD));
 	}
 
 	@Reference

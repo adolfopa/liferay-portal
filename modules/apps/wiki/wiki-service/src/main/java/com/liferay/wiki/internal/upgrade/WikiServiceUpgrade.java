@@ -14,6 +14,7 @@
 
 package com.liferay.wiki.internal.upgrade;
 
+import com.liferay.comment.upgrade.UpgradeDiscussionSubscriptionClassName;
 import com.liferay.portal.kernel.settings.SettingsFactory;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
 import com.liferay.subscription.service.SubscriptionLocalService;
@@ -27,7 +28,7 @@ import com.liferay.wiki.internal.upgrade.v1_0_0.UpgradeSchema;
 import com.liferay.wiki.internal.upgrade.v1_0_0.UpgradeWikiPage;
 import com.liferay.wiki.internal.upgrade.v1_0_0.UpgradeWikiPageResource;
 import com.liferay.wiki.internal.upgrade.v1_1_0.UpgradeWikiNode;
-import com.liferay.wiki.internal.upgrade.v1_2_0.UpgradeDiscussionSubscriptionClassName;
+import com.liferay.wiki.model.WikiPage;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -58,7 +59,8 @@ public class WikiServiceUpgrade implements UpgradeStepRegistrator {
 		registry.register(
 			"1.1.0", "1.2.0",
 			new UpgradeDiscussionSubscriptionClassName(
-				_subscriptionLocalService));
+				_subscriptionLocalService, WikiPage.class.getName(),
+				UpgradeDiscussionSubscriptionClassName.DeletionMode.KEEP_ALL));
 	}
 
 	@Reference

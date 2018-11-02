@@ -94,15 +94,15 @@ if (comment) {
 					<c:choose>
 						<c:when test="<%= (receiverUser != null) && receiverUser.isActive() %>">
 							<a href="<%= receiverUser.getDisplayURL(themeDisplay) %>">
-								<liferay-ui:user-portrait
-									cssClass="user-icon-xs"
+								<liferay-frontend:user-portrait
+									size="xs"
 									userId="<%= (microblogsEntry != null) ? microblogsEntry.getUserId() : 0 %>"
 								/>
 							</a>
 						</c:when>
 						<c:otherwise>
-							<liferay-ui:user-portrait
-								cssClass="user-icon-xs"
+							<liferay-frontend:user-portrait
+								size="xs"
 								userId="<%= (microblogsEntry != null) ? microblogsEntry.getUserId() : 0 %>"
 							/>
 						</c:otherwise>

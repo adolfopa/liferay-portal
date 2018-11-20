@@ -43,6 +43,8 @@ import com.liferay.portal.kernel.lock.NoSuchLockException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Repository;
 import com.liferay.portal.kernel.model.ResourceConstants;
+import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.RoleConstants;
 import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.WorkflowDefinitionLink;
@@ -54,8 +56,12 @@ import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
+import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
+import com.liferay.portal.kernel.service.ResourcePermissionLocalServiceUtil;
+import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.permission.ModelPermissions;
+import com.liferay.portal.kernel.service.permission.ModelPermissionsFactory;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.tree.TreeModelTasksAdapter;
 import com.liferay.portal.kernel.tree.TreePathUtil;
@@ -67,6 +73,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.repository.liferayrepository.model.LiferayFolder;
+import com.liferay.portal.util.PropsValues;
 import com.liferay.portal.util.RepositoryUtil;
 import com.liferay.portlet.documentlibrary.lar.FileEntryUtil;
 import com.liferay.portlet.documentlibrary.model.impl.DLFolderImpl;
@@ -77,6 +84,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -127,6 +135,15 @@ public class DLFolderLocalServiceImpl extends DLFolderLocalServiceBaseImpl {
 		dlFolderPersistence.update(dlFolder);
 
 		// Resources
+
+		if ((parentFolderId !=
+				DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) &&
+			PropsValues.DL_FOLDER_INHERIT_PERMISSIONS) {
+
+			inheritPermissions(
+				dlFolder.getCompanyId(), groupId, parentFolderId,
+				serviceContext);
+		}
 
 		if (serviceContext.isAddGroupPermissions() ||
 			serviceContext.isAddGuestPermissions()) {
@@ -1431,6 +1448,52 @@ public class DLFolderLocalServiceImpl extends DLFolderLocalServiceBaseImpl {
 		return parentDLFolder.getFolderId();
 	}
 
+	protected void inheritPermissions(
+			long companyId, long groupId, long parentFolderId,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		DLFolder parentFolder = getDLFolder(parentFolderId);
+
+		List<String> excludedRoleNames = new ArrayList<>();
+
+		excludedRoleNames.add(RoleConstants.ADMINISTRATOR);
+		excludedRoleNames.add(RoleConstants.ORGANIZATION_ADMINISTRATOR);
+		excludedRoleNames.add(RoleConstants.ORGANIZATION_OWNER);
+		excludedRoleNames.add(RoleConstants.SITE_ADMINISTRATOR);
+		excludedRoleNames.add(RoleConstants.SITE_OWNER);
+
+		List<Role> roles = RoleLocalServiceUtil.getGroupRolesAndTeamRoles(
+			companyId, StringPool.BLANK, excludedRoleNames,
+			RoleConstants.TYPES_REGULAR_AND_SITE, parentFolderId, groupId,
+			QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+
+		List<String> actionIds = ResourceActionsUtil.getModelResourceActions(
+			DLFolder.class.getName());
+
+		Map<Long, Set<String>> roleIdsToActionIds =
+			ResourcePermissionLocalServiceUtil.
+				getAvailableResourcePermissionActionIds(
+					companyId, DLFolder.class.getName(),
+					ResourceConstants.SCOPE_INDIVIDUAL,
+					String.valueOf(parentFolder.getFolderId()), actionIds);
+
+		Map<String, String[]> modelPermissionsParameterMap = new HashMap<>();
+
+		String[] groupPermissions = {};
+
+		for (Role role : roles) {
+			groupPermissions = _getRolePermissions(role, roleIdsToActionIds);
+
+			modelPermissionsParameterMap.put(role.getName(), groupPermissions);
+		}
+
+		ModelPermissions modelPermissions = ModelPermissionsFactory.create(
+			modelPermissionsParameterMap);
+
+		serviceContext.setModelPermissions(modelPermissions);
+	}
+
 	protected void validateFolder(
 			long folderId, long groupId, long parentFolderId, String name)
 		throws PortalException {
@@ -1474,6 +1537,25 @@ public class DLFolderLocalServiceImpl extends DLFolderLocalServiceBaseImpl {
 					"Folder name ", folderName,
 					" is invalid because it contains a ", StringPool.SLASH));
 		}
+	}
+
+	private static String[] _getRolePermissions(
+		Role role, Map<Long, Set<String>> roleIdsToActionIds) {
+
+		String[] rolePermissions = null;
+
+		Set<String> defaultRoleActionIds = roleIdsToActionIds.get(
+			role.getRoleId());
+
+		if (defaultRoleActionIds != null) {
+			rolePermissions = defaultRoleActionIds.toArray(
+				new String[defaultRoleActionIds.size()]);
+		}
+		else {
+			rolePermissions = new String[0];
+		}
+
+		return rolePermissions;
 	}
 
 }

@@ -68,6 +68,12 @@ public interface DLConfiguration {
 	public long fileMaxSize();
 
 	@Meta.AD(
+		deflt = "false", description = "inherit-folder-permissions-help",
+		name = "inherit-folder-permissions", required = false
+	)
+	public boolean inheritFolderPermissions();
+
+	@Meta.AD(
 		deflt = "audio|image|video", name = "multimedia-file-mime-types",
 		required = false
 	)

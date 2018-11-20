@@ -652,6 +652,8 @@ public class PropsValues {
 
 	public static final boolean DL_FOLDER_ICON_CHECK_COUNT = GetterUtil.getBoolean(PropsUtil.get(PropsKeys.DL_FOLDER_ICON_CHECK_COUNT));
 
+	public static final boolean DL_FOLDER_INHERIT_PERMISSIONS = GetterUtil.getBoolean(PropsUtil.get(PropsKeys.DL_FOLDER_INHERIT_PERMISSIONS));
+
 	public static final String[] DL_NAME_BLACKLIST = PropsUtil.getArray(PropsKeys.DL_NAME_BLACKLIST);
 
 	public static final boolean DL_PUBLISH_TO_LIVE_BY_DEFAULT = GetterUtil.getBoolean(PropsUtil.get(PropsKeys.DL_PUBLISH_TO_LIVE_BY_DEFAULT));

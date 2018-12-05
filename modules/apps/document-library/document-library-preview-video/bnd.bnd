@@ -1,4 +1,11 @@
 Bundle-Name: Liferay Document Library Preview Video
 Bundle-SymbolicName: com.liferay.document.library.preview.video
 Bundle-Version: 1.0.0
+Provide-Capability:\
+	soy;\
+		type="document-library-preview-video";\
+		version:Version="${Bundle-Version}"
+Require-Capability:\
+	osgi.extender;\
+		filter:="(&(osgi.extender=jsp.taglib)(uri=http://liferay.com/tld/soy))"
 Web-ContextPath: /document-library-preview-video

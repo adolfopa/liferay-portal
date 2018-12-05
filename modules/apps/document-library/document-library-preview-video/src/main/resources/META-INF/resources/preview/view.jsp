@@ -22,6 +22,9 @@ String videoThumbnailURL = (String)request.getAttribute(DLPreviewVideoWebKeys.VI
 List<String> previewFileURLs = (List<String>)request.getAttribute(DLPreviewVideoWebKeys.PREVIEW_FILE_URLS);
 
 String randomNamespace = PortalUtil.generateRandomKey(request, "portlet_document_library_view_file_entry_preview") + StringPool.UNDERLINE;
+String modulePath = (String)request.getAttribute(DLPreviewVideoWebKeys.MODULE_PATH);
+
+	Map<String, Object> context = new HashMap<>();
 %>
 
 <div class="lfr-preview-file lfr-preview-video" id="<portlet:namespace /><%= randomNamespace %>previewFile">
@@ -99,3 +102,10 @@ for (String previewFileURL : previewFileURLs) {
 		}
 	);
 </aui:script>
+
+<soy:component-renderer
+	componentId='<%= renderResponse.getNamespace() + randomNamespace + "previewVideo" %>'
+	context="<%= context %>"
+	module="<%= modulePath %>"
+	templateNamespace="com.liferay.document.library.preview.VideoPreviewer.render"
+/>

@@ -19,6 +19,8 @@ package com.liferay.document.library.preview.video.internal.constants;
  */
 public class DLPreviewVideoWebKeys {
 
+	public static final String MODULE_PATH = "MODULE_PATH";
+
 	public static final String PREVIEW_FILE_URLS = "PREVIEW_FILE_URLS";
 
 	public static final String VIDEO_THUMBNAIL_URL = "VIDEO_THUMBNAIL_URL";

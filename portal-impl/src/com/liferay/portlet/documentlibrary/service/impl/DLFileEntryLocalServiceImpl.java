@@ -537,10 +537,40 @@ public class DLFileEntryLocalServiceImpl
 					DLFileEntryConstants.PRIVATE_WORKING_COPY_VERSION);
 			}
 
-			DLStoreUtil.copyFileVersion(
-				user.getCompanyId(), dlFileEntry.getDataRepositoryId(),
-				dlFileEntry.getName(), version,
-				DLFileEntryConstants.PRIVATE_WORKING_COPY_VERSION);
+			if (DLStoreUtil.hasFile(
+					user.getCompanyId(), dlFileEntry.getDataRepositoryId(),
+					dlFileEntry.getName(), version)) {
+
+				DLStoreUtil.copyFileVersion(
+					user.getCompanyId(), dlFileEntry.getDataRepositoryId(),
+					dlFileEntry.getName(), version,
+					DLFileEntryConstants.PRIVATE_WORKING_COPY_VERSION);
+			}
+			else {
+				Group group = groupLocalService.getGroup(
+					dlFileEntry.getGroupId());
+
+				if (group.hasStagingGroup()) {
+					Group stagingGroup = group.getStagingGroup();
+
+					DLFileEntry stagedDLFileEntry =
+						dlFileEntryLocalService.getFileEntry(
+							stagingGroup.getGroupId(),
+							dlFileEntry.getFolderId(), dlFileEntry.getTitle());
+
+					File file = dlFileEntryLocalService.getFile(
+						stagedDLFileEntry.getFileEntryId(), version, false);
+
+					DLStoreUtil.addFile(
+						user.getCompanyId(), dlFileEntry.getRepositoryId(),
+						dlFileEntry.getName(), file);
+				}
+				else {
+					throw new NoSuchFileEntryException(
+						"Unable to locate file in file store, fileEntryId: " +
+							dlFileEntry.getFileEntryId());
+				}
+			}
 
 			Serializable validateDDMFormValues = serviceContext.getAttribute(
 				"validateDDMFormValues");

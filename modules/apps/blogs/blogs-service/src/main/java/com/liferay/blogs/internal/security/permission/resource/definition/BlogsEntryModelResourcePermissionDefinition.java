@@ -20,6 +20,8 @@ import com.liferay.blogs.model.BlogsEntry;
 import com.liferay.blogs.service.BlogsEntryLocalService;
 import com.liferay.exportimport.kernel.staging.permission.StagingPermission;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermissionLogic;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
@@ -68,9 +70,27 @@ public class BlogsEntryModelResourcePermissionDefinition
 			modelResourcePermissionLogicConsumer) {
 
 		modelResourcePermissionLogicConsumer.accept(
-			new StagedModelPermissionLogic<>(
+			new StagedModelPermissionLogic<BlogsEntry>(
 				_stagingPermission, BlogsPortletKeys.BLOGS,
-				BlogsEntry::getEntryId));
+				BlogsEntry::getEntryId) {
+
+				@Override
+				public Boolean contains(
+					PermissionChecker permissionChecker, String name,
+					BlogsEntry blogsEntry, String actionId) {
+
+					if (actionId.equals(ActionKeys.UPDATE_DISCUSSION) ||
+						actionId.equals(ActionKeys.DELETE_DISCUSSION)) {
+
+						return null;
+					}
+
+					return super.contains(
+						permissionChecker, name, blogsEntry, actionId);
+				}
+
+			});
+
 		modelResourcePermissionLogicConsumer.accept(
 			new WorkflowedModelPermissionLogic<>(
 				_workflowPermission, modelResourcePermission,

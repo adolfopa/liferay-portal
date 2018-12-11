@@ -12,21 +12,13 @@
  * details.
  */
 
-package com.liferay.bulk.rest.internal.application;
+package com.liferay.bulk.rest.internal.model;
 
-import javax.ws.rs.core.Application;
-
-import org.osgi.service.component.annotations.Component;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author Adolfo Pérez
  */
-@Component(
-	immediate = true,
-	property = {
-		"osgi.jaxrs.application.base=/bulk", "osgi.jaxrs.name=bulk-application"
-	},
-	service = Application.class
-)
-public class BulkJaxRsApplication extends Application {
+@XmlRootElement
+public class BulkAssetEntryUpdateTagsActionModel {
 }

@@ -19,7 +19,7 @@ import com.liferay.bulk.rest.internal.model.BulkAssetEntryCommonTagsModel;
 import com.liferay.bulk.rest.internal.model.BulkAssetEntryUpdateTagsActionModel;
 import com.liferay.portal.kernel.util.ContentTypes;
 
-import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -48,7 +48,8 @@ public class BulkAssetEntryResource {
 	@POST
 	@Produces(ContentTypes.APPLICATION_JSON)
 	public BulkAssetEntryCommonTagsModel getAssetEntryCommonTags(
-		@PathParam("classNameId") long classNameId, List<String> selection) {
+		@PathParam("classNameId") long classNameId,
+		Map<String, String> parameterMap) {
 
 		return new BulkAssetEntryCommonTagsModel();
 	}

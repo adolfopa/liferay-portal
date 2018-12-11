@@ -74,9 +74,30 @@ public class WikiPageModelResourcePermissionRegistrar {
 				_portletResourcePermission,
 				(modelResourcePermission, consumer) -> {
 					consumer.accept(
-						new StagedModelPermissionLogic<>(
+						new StagedModelPermissionLogic<WikiPage>(
 							_stagingPermission, WikiPortletKeys.WIKI,
-							WikiPage::getResourcePrimKey));
+							WikiPage::getResourcePrimKey) {
+
+							@Override
+							public Boolean contains(
+								PermissionChecker permissionChecker,
+								String name, WikiPage wikiPage,
+								String actionId) {
+
+								if (actionId.equals(
+										ActionKeys.UPDATE_DISCUSSION) ||
+									actionId.equals(
+										ActionKeys.DELETE_DISCUSSION)) {
+
+									return null;
+								}
+
+								return super.contains(
+									permissionChecker, name, wikiPage,
+									actionId);
+							}
+
+						});
 					consumer.accept(
 						new WorkflowedModelPermissionLogic<>(
 							_workflowPermission, modelResourcePermission,

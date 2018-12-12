@@ -39,12 +39,12 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class FileEntrySelectionFactory implements SelectionFactory<FileEntry> {
 
-	public Selection<FileEntry> create(Map<String, String[]> parameterMap) {
+	public Selection<FileEntry> create(Map<String, String> parameterMap) {
 		if (!parameterMap.containsKey("rowIdsFileEntry")) {
 			throw new IllegalArgumentException();
 		}
 
-		String[] values = parameterMap.get("rowIdsFileEntry");
+		String[] values = StringUtil.split(parameterMap.get("rowIdsFileEntry"));
 
 		if (values.length > 1) {
 			return _getFileEntrySelection(values);
@@ -60,7 +60,8 @@ public class FileEntrySelectionFactory implements SelectionFactory<FileEntry> {
 			throw new IllegalArgumentException();
 		}
 
-		String[] repositoryIds = parameterMap.get("repositoryId");
+		String[] repositoryIds = StringUtil.split(
+			parameterMap.get("repositoryId"));
 
 		long repositoryId = GetterUtil.getLong(repositoryIds[0]);
 

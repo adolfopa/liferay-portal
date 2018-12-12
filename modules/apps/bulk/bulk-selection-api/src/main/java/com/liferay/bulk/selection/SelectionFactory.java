@@ -21,6 +21,6 @@ import java.util.Map;
  */
 public interface SelectionFactory<T> {
 
-	public Selection<T> create(Map<String, String[]> parameterMap);
+	public Selection<T> create(Map<String, String> parameterMap);
 
 }

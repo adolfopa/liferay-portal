@@ -14,6 +14,9 @@
 
 package com.liferay.bulk.rest.internal.model;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -21,4 +24,33 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class BulkAssetEntryUpdateTagsActionModel {
+
+	public Map<String, String> getParameterMap() {
+		return _parameterMap;
+	}
+
+	public List<String> getToAddTagNames() {
+		return _toAddTagNames;
+	}
+
+	public List<String> getToRemoveTagNames() {
+		return _toRemoveTagNames;
+	}
+
+	public void setParameterMap(Map<String, String> parameterMap) {
+		_parameterMap = parameterMap;
+	}
+
+	public void setToAddTagNames(List<String> toAddTagNames) {
+		_toAddTagNames = toAddTagNames;
+	}
+
+	public void setToRemoveTagNames(List<String> toRemoveTagNames) {
+		_toRemoveTagNames = toRemoveTagNames;
+	}
+
+	private Map<String, String> _parameterMap;
+	private List<String> _toAddTagNames;
+	private List<String> _toRemoveTagNames;
+
 }

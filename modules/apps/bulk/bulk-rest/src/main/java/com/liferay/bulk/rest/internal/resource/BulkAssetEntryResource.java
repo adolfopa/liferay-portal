@@ -88,7 +88,7 @@ public class BulkAssetEntryResource {
 			Stream<FileEntry> fileEntryStream = selection.stream();
 
 			Set<String> commonTags = fileEntryStream.map(
-				_getFileEntryTagsSet(permissionChecker)
+				_getFileEntryTagsSet(permissionChecker, classNameId)
 			).reduce(
 				SetUtil::intersect
 			).orElse(
@@ -113,7 +113,8 @@ public class BulkAssetEntryResource {
 			bulkAssetEntryUpdateTagsActionModel) {
 
 		try {
-			return _editTags(user, bulkAssetEntryUpdateTagsActionModel);
+			return _editTags(
+				user, classNameId, bulkAssetEntryUpdateTagsActionModel);
 		}
 		catch (Exception e) {
 			return new BulkActionResponseModel(e);
@@ -121,7 +122,7 @@ public class BulkAssetEntryResource {
 	}
 
 	private BulkActionResponseModel _editTags(
-			User user,
+			User user, long classNameId,
 			BulkAssetEntryUpdateTagsActionModel
 				bulkAssetEntryUpdateTagsActionModel)
 		throws Exception {
@@ -146,8 +147,7 @@ public class BulkAssetEntryResource {
 					}
 
 					AssetEntry assetEntry = _assetEntryLocalService.fetchEntry(
-						DLFileEntryConstants.getClassName(),
-						fileEntry.getFileEntryId());
+						classNameId, fileEntry.getFileEntryId());
 
 					Collection<String> newTagNames =
 						bulkAssetEntryUpdateTagsActionModel.getToAddTagNames();
@@ -183,7 +183,7 @@ public class BulkAssetEntryResource {
 	}
 
 	private Function<FileEntry, Set<String>> _getFileEntryTagsSet(
-		PermissionChecker permissionChecker) {
+		PermissionChecker permissionChecker, long classNameId) {
 
 		return fileEntry -> {
 			try {
@@ -192,8 +192,7 @@ public class BulkAssetEntryResource {
 
 					return SetUtil.fromArray(
 						_assetTagLocalService.getTagNames(
-							DLFileEntryConstants.getClassName(),
-							fileEntry.getFileEntryId()));
+							classNameId, fileEntry.getFileEntryId()));
 				}
 
 				return Collections.emptySet();

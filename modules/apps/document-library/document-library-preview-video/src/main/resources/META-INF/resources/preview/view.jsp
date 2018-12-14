@@ -17,29 +17,29 @@
 <%@ include file="/preview/init.jsp" %>
 
 <%
-String videoThumbnailURL = (String)request.getAttribute(DLPreviewVideoWebKeys.VIDEO_THUMBNAIL_URL);
+String videoPosterURL = (String)request.getAttribute(DLPreviewVideoWebKeys.VIDEO_THUMBNAIL_URL);
 
 List<String> previewFileURLs = (List<String>)request.getAttribute(DLPreviewVideoWebKeys.PREVIEW_FILE_URLS);
 
 String randomNamespace = PortalUtil.generateRandomKey(request, "portlet_document_library_view_file_entry_preview") + StringPool.UNDERLINE;
 String modulePath = (String)request.getAttribute(DLPreviewVideoWebKeys.MODULE_PATH);
 
-List<Map<String, String>> videoURLs = new ArrayList<>();
+List<Map<String, String>> videoSources = new ArrayList<>();
 
 for (String previewFileURL : previewFileURLs) {
 	if (Validator.isNotNull(previewFileURL)) {
 		if (previewFileURL.endsWith("mp4")) {
-			videoURLs.add(MapUtil.fromArray("type", "video/mp4", "url", previewFileURL));
+			videoSources.add(MapUtil.fromArray("type", "video/mp4", "url", previewFileURL));
 		}
 		else if (previewFileURL.endsWith("ogv")) {
-			videoURLs.add(MapUtil.fromArray("type", "video/ogv", "url", previewFileURL));
+			videoSources.add(MapUtil.fromArray("type", "video/ogv", "url", previewFileURL));
 		}
 	}
 }
 
 Map<String, Object> context = new HashMap<>();
-context.put("videoURLs", videoURLs);
-context.put("videoThumbnailURL", videoThumbnailURL);
+context.put("videoSources", videoSources);
+context.put("videoPosterURL", videoPosterURL);
 %>
 
 <liferay-util:html-top

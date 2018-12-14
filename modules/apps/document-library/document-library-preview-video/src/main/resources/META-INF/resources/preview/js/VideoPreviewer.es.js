@@ -25,7 +25,7 @@ VideoPreviewer.STATE = {
 	 * @review
 	 * @type {!Array<object>}
 	 */
-	videoURLs: Config.arrayOf(
+	videoSources: Config.arrayOf(
 		Config.shapeOf(
 			{
 				type: Config.string().required(),
@@ -41,7 +41,7 @@ VideoPreviewer.STATE = {
 	 * @review
 	 * @type {String}
 	 */
-	videoThumbnailURL: Config.string()
+	videoPosterURL: Config.string()
 };
 
 Soy.register(VideoPreviewer, templates);

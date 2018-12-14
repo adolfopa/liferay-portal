@@ -79,17 +79,17 @@ public class VideoDLPreviewRendererProvider
 				ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
 					WebKeys.THEME_DISPLAY);
 
-				String videoThumbnailURL = _getVideoThumbnailURL(
+				String videoPosterURL = _getvideoPosterURL(
 					fileVersion, themeDisplay);
 
 				request.setAttribute(
 					DLPreviewVideoWebKeys.PREVIEW_FILE_URLS,
 					_getPreviewFileURLs(
-						fileVersion, videoThumbnailURL, request));
+						fileVersion, videoPosterURL, request));
 
 				request.setAttribute(
 					DLPreviewVideoWebKeys.VIDEO_THUMBNAIL_URL,
-					videoThumbnailURL);
+					videoPosterURL);
 
 				request.setAttribute(
 					DLPreviewVideoWebKeys.MODULE_PATH,
@@ -109,7 +109,7 @@ public class VideoDLPreviewRendererProvider
 	}
 
 	private List<String> _getPreviewFileURLs(
-			FileVersion fileVersion, String videoThumbnailURL,
+			FileVersion fileVersion, String videoPosterURL,
 			HttpServletRequest request)
 		throws PortalException {
 
@@ -157,11 +157,11 @@ public class VideoDLPreviewRendererProvider
 			}
 		}
 		else {
-			return Arrays.asList(videoThumbnailURL);
+			return Arrays.asList(videoPosterURL);
 		}
 	}
 
-	private String _getVideoThumbnailURL(
+	private String _getvideoPosterURL(
 			FileVersion fileVersion, ThemeDisplay themeDisplay)
 		throws PortalException {
 

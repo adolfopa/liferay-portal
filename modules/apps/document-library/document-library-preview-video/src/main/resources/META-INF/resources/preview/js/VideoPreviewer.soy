@@ -4,21 +4,21 @@
  * VideoPreviewer Component
  */
 {template .render}
-	{@param videoURLs: list<?>}
+	{@param videoSources: list<?>}
 	{@param? id: string}
-	{@param? videoThumbnailURL: string}
+	{@param? videoPosterURL: string}
 
 	<div class="preview-file" id="{$id}">
 		<div class="preview-file-container preview-file-max-height">
 			<video
 				class="preview-file-video"
 				controls
-				{if $videoThumbnailURL}
-					poster="{$videoThumbnailURL}"
+				{if $videoPosterURL}
+					poster="{$videoPosterURL}"
 				{/if}
 			>
-				{foreach $videoURL in $videoURLs}
-					<source src="{$videoURL.url}" type="{$videoURL.type}">
+				{foreach $videoSource in $videoSources}
+					<source src="{$videoSource.url}" type="{$videoSource.type}">
 				{/foreach}
 			</video>
 		</div>

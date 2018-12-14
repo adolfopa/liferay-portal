@@ -4,5 +4,23 @@
  * VideoPreviewer Component
  */
 {template .render}
-	hello, I'am video placeholder!
+	{@param videoURLs: list<?>}
+	{@param? id: string}
+	{@param? videoThumbnailURL: string}
+
+	<div class="preview-file" id="{$id}">
+		<div class="preview-file-container preview-file-max-height">
+			<video
+				class="preview-file-video"
+				controls
+				{if $videoThumbnailURL}
+					poster="{$videoThumbnailURL}"
+				{/if}
+			>
+				{foreach $videoURL in $videoURLs}
+					<source src="{$videoURL.url}" type="{$videoURL.type}">
+				{/foreach}
+			</video>
+		</div>
+	</div>
 {/template}

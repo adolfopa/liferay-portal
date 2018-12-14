@@ -24,84 +24,29 @@ List<String> previewFileURLs = (List<String>)request.getAttribute(DLPreviewVideo
 String randomNamespace = PortalUtil.generateRandomKey(request, "portlet_document_library_view_file_entry_preview") + StringPool.UNDERLINE;
 String modulePath = (String)request.getAttribute(DLPreviewVideoWebKeys.MODULE_PATH);
 
-	Map<String, Object> context = new HashMap<>();
-%>
-
-<div class="lfr-preview-file lfr-preview-video" id="<portlet:namespace /><%= randomNamespace %>previewFile">
-	<div class="lfr-preview-file-content lfr-preview-video-content">
-		<div class="lfr-preview-file-video-current-column">
-			<div id="<portlet:namespace /><%= randomNamespace %>previewFileContent"></div>
-		</div>
-	</div>
-</div>
-
-<%
-String mp4PreviewFileURL = null;
-String ogvPreviewFileURL = null;
+List<Map<String, String>> videoURLs = new ArrayList<>();
 
 for (String previewFileURL : previewFileURLs) {
 	if (Validator.isNotNull(previewFileURL)) {
 		if (previewFileURL.endsWith("mp4")) {
-			mp4PreviewFileURL = previewFileURL;
+			videoURLs.add(MapUtil.fromArray("type", "video/mp4", "url", previewFileURL));
 		}
 		else if (previewFileURL.endsWith("ogv")) {
-			ogvPreviewFileURL = previewFileURL;
+			videoURLs.add(MapUtil.fromArray("type", "video/ogv", "url", previewFileURL));
 		}
 	}
 }
+
+Map<String, Object> context = new HashMap<>();
+context.put("videoURLs", videoURLs);
+context.put("videoThumbnailURL", videoThumbnailURL);
 %>
 
-<aui:script use="aui-base,aui-video">
-	var playing = false;
-
-	var video = new A.Video(
-		{
-			contentBox: '#<portlet:namespace /><%= randomNamespace %>previewFileContent',
-			fixedAttributes: {
-				allowfullscreen: 'true',
-				bgColor: '#000000',
-				wmode: 'opaque'
-			},
-
-			on: {
-				'pause' : function() {
-				playing = false;
-			},
-			'play': function() {
-				window.parent.Liferay.fire('<portlet:namespace /><%= randomNamespace %>Video:play');
-
-				playing = true;
-			}
-		},
-
-		<c:if test="<%= Validator.isNotNull(ogvPreviewFileURL) %>">
-			ogvUrl: '<%= HtmlUtil.escapeJS(ogvPreviewFileURL) %>',
-		</c:if>
-
-		poster: '<%= HtmlUtil.escapeJS(videoThumbnailURL) %>'
-
-		<c:if test="<%= Validator.isNotNull(mp4PreviewFileURL) %>">
-			, url: '<%= HtmlUtil.escapeJS(mp4PreviewFileURL) %>'
-		</c:if>
-		}
-	).render();
-
-	window.parent.Liferay.on(
-		'<portlet:namespace /><%= randomNamespace %>ImageViewer:currentIndexChange',
-		function() {
-			if (playing) {
-				video.pause();
-			}
-		}
-	);
-
-	window.parent.Liferay.on(
-		'<portlet:namespace /><%= randomNamespace %>ImageViewer:close',
-		function() {
-			video.load();
-		}
-	);
-</aui:script>
+<liferay-util:html-top
+	outputKey="document_library_preview_video_css"
+>
+	<link href="<%= PortalUtil.getStaticResourceURL(request, application.getContextPath() + "/preview/css/main.css") %>" rel="stylesheet" type="text/css" />
+</liferay-util:html-top>
 
 <soy:component-renderer
 	componentId='<%= renderResponse.getNamespace() + randomNamespace + "previewVideo" %>'

@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -28,6 +27,9 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @XmlRootElement
 public class BulkAssetEntryCommonTagsActionModel {
+
+	public BulkAssetEntryCommonTagsActionModel() {
+	}
 
 	@XmlTransient
 	public Map<String, String[]> getParameterMap() {
@@ -46,12 +48,10 @@ public class BulkAssetEntryCommonTagsActionModel {
 		return parameterMap;
 	}
 
-	@XmlElement
 	public long getRepositoryId() {
 		return _repositoryId;
 	}
 
-	@XmlElement
 	public List<String> getSelection() {
 		return _selection;
 	}

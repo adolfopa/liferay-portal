@@ -29,6 +29,11 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 public class BulkAssetEntryUpdateTagsActionModel {
 
+	@XmlElement
+	public boolean getAppend() {
+		return _append;
+	}
+
 	@XmlTransient
 	public Map<String, String[]> getParameterMap() {
 		String[] values = _selection.toArray(new String[_selection.size()]);
@@ -44,11 +49,6 @@ public class BulkAssetEntryUpdateTagsActionModel {
 		parameterMap.put("rowIdsFileEntry", values);
 
 		return parameterMap;
-	}
-
-	@XmlElement
-	public boolean getAppend() {
-		return _append;
 	}
 
 	@XmlElement
@@ -71,6 +71,10 @@ public class BulkAssetEntryUpdateTagsActionModel {
 		return _toRemoveTagNames;
 	}
 
+	public void setAppend(boolean append) {
+		_append = append;
+	}
+
 	public void setRepositoryId(long repositoryId) {
 		_repositoryId = repositoryId;
 	}
@@ -85,10 +89,6 @@ public class BulkAssetEntryUpdateTagsActionModel {
 
 	public void setToRemoveTagNames(List<String> toRemoveTagNames) {
 		_toRemoveTagNames = toRemoveTagNames;
-	}
-
-	public void setAppend(boolean append) {
-		_append = append;
 	}
 
 	private boolean _append;

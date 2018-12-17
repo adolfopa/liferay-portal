@@ -27,11 +27,15 @@ import org.apache.cxf.message.Message;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * @author Adam Brandizzi
  */
-@Component(immediate = true, service = LocaleContextProvider.class)
+@Component(
+	property = {"osgi.jaxrs.extension=true", "osgi.jaxrs.name=locale"},
+	scope = ServiceScope.PROTOTYPE, service = ContextProvider.class
+)
 @Provider
 public class LocaleContextProvider implements ContextProvider<Locale> {
 

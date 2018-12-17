@@ -34,9 +34,9 @@ import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.util.ContentTypes;
-import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
@@ -50,6 +50,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -68,10 +69,10 @@ import org.osgi.service.component.annotations.Reference;
 @Path("/asset")
 public class BulkAssetEntryResource {
 
-	@Consumes(ContentTypes.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/tags/{classNameId}/common")
 	@POST
-	@Produces(ContentTypes.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public BulkAssetEntryCommonTagsModel getAssetEntryCommonTags(
 		@Context User user, @Context Locale locale,
 		@PathParam("classNameId") long classNameId,
@@ -96,7 +97,7 @@ public class BulkAssetEntryResource {
 			);
 
 			return new BulkAssetEntryCommonTagsModel(
-				selection.describe(locale), commonTags);
+				selection.describe(locale), new ArrayList<>(commonTags));
 		}
 		catch (Exception e) {
 			return new BulkAssetEntryCommonTagsModel(e);

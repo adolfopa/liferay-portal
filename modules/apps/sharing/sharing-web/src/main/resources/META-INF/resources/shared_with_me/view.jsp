@@ -94,7 +94,7 @@ sharedWithMeViewDisplayContext.populateResults(sharingEntriesSearchContainer);
 	</liferay-ui:search-container>
 </div>
 
-<aui:script require="sharing-web/SharedWithMe.es">
+<aui:script require='<%= sharedWithMeViewDisplayContext.getModuleName() + "/SharedWithMe.es as SharedWithMe" %>'>
 
 	<%
 	PortletURL viewAssetTypeURL = PortletURLUtil.clone(currentURLObj, liferayPortletResponse);
@@ -104,7 +104,7 @@ sharedWithMeViewDisplayContext.populateResults(sharingEntriesSearchContainer);
 
 	var component = Liferay.component(
 		'<portlet:namespace />SharedWithMe',
-		new sharingWebSharedWithMeEs.default(
+		new SharedWithMe.default(
 			{
 				namespace: '<portlet:namespace />',
 				selectAssetTypeURL: '<portlet:renderURL windowState="<%= LiferayWindowState.POP_UP.toString() %>"><portlet:param name="mvcRenderCommandName" value="/shared_with_me/select_asset_type" /><portlet:param name="className" value="<%= sharedWithMeViewDisplayContext.getClassName() %>" /></portlet:renderURL>',

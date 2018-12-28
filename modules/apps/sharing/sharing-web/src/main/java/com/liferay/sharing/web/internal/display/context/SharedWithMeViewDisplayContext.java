@@ -44,6 +44,7 @@ import com.liferay.sharing.renderer.SharingEntryEditRenderer;
 import com.liferay.sharing.security.permission.SharingEntryAction;
 import com.liferay.sharing.service.SharingEntryLocalService;
 import com.liferay.sharing.util.comparator.SharingEntryModifiedDateComparator;
+import com.liferay.sharing.web.internal.constants.SharingPortletKeys;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -129,6 +130,10 @@ public class SharedWithMeViewDisplayContext {
 					});
 			}
 		};
+	}
+
+	public String getModuleName() {
+		return (String)_request.getAttribute(SharingPortletKeys.RESOLVED_MODULE_NAME);
 	}
 
 	public List<SharedWithMeFilterItem> getSharedWithMeFilterItems() {

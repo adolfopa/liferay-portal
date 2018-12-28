@@ -14,12 +14,19 @@
 
 package com.liferay.sharing.web.internal.portlet;
 
+import com.liferay.frontend.js.loader.modules.extender.npm.NPMResolver;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.sharing.web.internal.constants.SharingPortletKeys;
 
+import java.io.IOException;
+
 import javax.portlet.Portlet;
+import javax.portlet.PortletException;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Sergio González
@@ -43,4 +50,19 @@ import org.osgi.service.component.annotations.Component;
 	service = Portlet.class
 )
 public class SharedWithMePortlet extends MVCPortlet {
+
+	@Override
+	public void render(
+			RenderRequest renderRequest, RenderResponse renderResponse)
+		throws IOException, PortletException {
+
+		renderRequest.setAttribute(SharingPortletKeys.RESOLVED_MODULE_NAME,
+			_npmResolver.resolveModuleName("sharing-web"));
+
+		super.render(renderRequest, renderResponse);
+	}
+
+	@Reference
+	private NPMResolver _npmResolver;
+
 }

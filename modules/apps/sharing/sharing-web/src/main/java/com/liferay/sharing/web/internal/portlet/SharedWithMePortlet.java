@@ -56,7 +56,8 @@ public class SharedWithMePortlet extends MVCPortlet {
 			RenderRequest renderRequest, RenderResponse renderResponse)
 		throws IOException, PortletException {
 
-		renderRequest.setAttribute(SharingPortletKeys.RESOLVED_MODULE_NAME,
+		renderRequest.setAttribute(
+			SharingPortletKeys.RESOLVED_MODULE_NAME,
 			_npmResolver.resolveModuleName("sharing-web"));
 
 		super.render(renderRequest, renderResponse);

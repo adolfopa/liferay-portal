@@ -133,7 +133,8 @@ public class SharedWithMeViewDisplayContext {
 	}
 
 	public String getModuleName() {
-		return (String)_request.getAttribute(SharingPortletKeys.RESOLVED_MODULE_NAME);
+		return (String)_request.getAttribute(
+			SharingPortletKeys.RESOLVED_MODULE_NAME);
 	}
 
 	public List<SharedWithMeFilterItem> getSharedWithMeFilterItems() {

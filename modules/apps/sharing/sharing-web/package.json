@@ -8,13 +8,21 @@
 		"metal-soy": "^2.13.2"
 	},
 	"devDependencies": {
+		"babel-cli": "^6.26.0",
+		"babel-preset-env": "^1.7.0",
 		"check-source-formatting": "^2.0.12",
-		"liferay-module-config-generator": "^1.2.1",
-		"metal-cli": "^4.0.1"
+		"cross-env": "^5.2.0",
+		"liferay-npm-bundler": "^2.6.1",
+		"liferay-npm-bundler-preset-liferay-dev": "^1.1.1",
+		"metal-tools-soy": "^4.2.9"
 	},
 	"name": "sharing-web",
 	"scripts": {
+		"build": "npm run build:soy && npm run compile && liferay-npm-bundler && npm run cleanSoy",
+		"build:soy": "metalsoy --soyDeps \"node_modules/+(clay-alert|clay-button|clay-select|clay-sticker|clay-icon)/**/*.soy\"",
 		"checkFormat": "npm run csf",
+		"cleanSoy": "rimraf src/**/*.soy.js",
+		"compile": "cross-env NODE_ENV=production babel --source-maps -d classes/META-INF/resources src/main/resources/META-INF/resources",
 		"csf": "csf src/**/*.js",
 		"format": "npm run csf -- -i"
 	},

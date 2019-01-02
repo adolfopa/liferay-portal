@@ -94,7 +94,7 @@ sharedWithMeViewDisplayContext.populateResults(sharingEntriesSearchContainer);
 	</liferay-ui:search-container>
 </div>
 
-<aui:script require='<%= sharedWithMeViewDisplayContext.getModuleName() + "/SharedWithMe.es as SharedWithMe" %>'>
+<aui:script require='<%= sharedWithMeViewDisplayContext.getResolvedModuleName() + "/SharedWithMe.es as SharedWithMe" %>'>
 
 	<%
 	PortletURL viewAssetTypeURL = PortletURLUtil.clone(currentURLObj, liferayPortletResponse);

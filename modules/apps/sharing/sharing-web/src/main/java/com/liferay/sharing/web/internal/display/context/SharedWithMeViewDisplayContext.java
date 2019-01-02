@@ -87,6 +87,10 @@ public class SharedWithMeViewDisplayContext {
 
 		_currentURLObj = PortletURLUtil.getCurrent(
 			liferayPortletRequest, liferayPortletResponse);
+
+		_resolvedModuleName = (String)_request.getAttribute(
+			SharingPortletKeys.RESOLVED_MODULE_NAME);
+
 		_themeDisplay = (ThemeDisplay)request.getAttribute(
 			WebKeys.THEME_DISPLAY);
 	}
@@ -132,9 +136,8 @@ public class SharedWithMeViewDisplayContext {
 		};
 	}
 
-	public String getModuleName() {
-		return (String)_request.getAttribute(
-			SharingPortletKeys.RESOLVED_MODULE_NAME);
+	public String getResolvedModuleName() {
+		return _resolvedModuleName;
 	}
 
 	public List<SharedWithMeFilterItem> getSharedWithMeFilterItems() {
@@ -402,6 +405,7 @@ public class SharedWithMeViewDisplayContext {
 	private final LiferayPortletRequest _liferayPortletRequest;
 	private final LiferayPortletResponse _liferayPortletResponse;
 	private final HttpServletRequest _request;
+	private final String _resolvedModuleName;
 	private final ResourceBundle _resourceBundle;
 	private final List<SharedWithMeFilterItem> _sharedWithMeFilterItems;
 	private final Function<SharingEntry, SharingEntryInterpreter>

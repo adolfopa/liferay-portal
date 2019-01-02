@@ -506,10 +506,6 @@ public class EditAssetListDisplayContext {
 		return manualAddIconDataMap;
 	}
 
-	public String getModuleName() {
-		return _resolvedModuleName;
-	}
-
 	public String getOrderByColumn1() {
 		if (_orderByColumn1 != null) {
 			return _orderByColumn1;
@@ -616,6 +612,10 @@ public class EditAssetListDisplayContext {
 				_themeDisplay.getScopeGroupId(), true);
 
 		return _referencedModelsGroupIds;
+	}
+
+	public String getResolvedModuleName() {
+		return _resolvedModuleName;
 	}
 
 	public SearchContainer getSearchContainer() {

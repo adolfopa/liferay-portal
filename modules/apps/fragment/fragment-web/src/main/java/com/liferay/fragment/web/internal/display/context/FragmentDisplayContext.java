@@ -443,10 +443,6 @@ public class FragmentDisplayContext {
 		return _jsContent;
 	}
 
-	public String getModuleName() {
-		return _resolvedModuleName;
-	}
-
 	public String getName() {
 		if (Validator.isNotNull(_name)) {
 			return _name;
@@ -501,6 +497,10 @@ public class FragmentDisplayContext {
 		}
 
 		return redirect;
+	}
+
+	public String getResolvedModuleName() {
+		return _resolvedModuleName;
 	}
 
 	public boolean isNavigationElements() {

@@ -65,7 +65,7 @@ public class SiteNavigationAdminDisplayContext {
 		SiteNavigationMenuItemTypeRegistry siteNavigationMenuItemTypeRegistry,
 		SiteNavigationMenuLocalService siteNavigationMenuLocalService,
 		SiteNavigationMenuService siteNavigationMenuService,
-		String moduleName) {
+		String resolvedModuleName) {
 
 		_liferayPortletRequest = liferayPortletRequest;
 		_liferayPortletResponse = liferayPortletResponse;
@@ -74,7 +74,7 @@ public class SiteNavigationAdminDisplayContext {
 			siteNavigationMenuItemTypeRegistry;
 		_siteNavigationMenuLocalService = siteNavigationMenuLocalService;
 		_siteNavigationMenuService = siteNavigationMenuService;
-		_moduleName = moduleName;
+		_resolvedModuleName = resolvedModuleName;
 	}
 
 	public List<DropdownItem> getActionDropdownItems() {
@@ -170,10 +170,6 @@ public class SiteNavigationAdminDisplayContext {
 		return _keywords;
 	}
 
-	public String getModuleName() {
-		return _moduleName;
-	}
-
 	public String getOrderByCol() {
 		if (_orderByCol != null) {
 			return _orderByCol;
@@ -225,6 +221,10 @@ public class SiteNavigationAdminDisplayContext {
 
 		return _siteNavigationMenuLocalService.fetchPrimarySiteNavigationMenu(
 			themeDisplay.getScopeGroupId());
+	}
+
+	public String getResolvedModuleName() {
+		return _resolvedModuleName;
 	}
 
 	public String getSearchActionURL() {
@@ -470,10 +470,10 @@ public class SiteNavigationAdminDisplayContext {
 	private String _keywords;
 	private final LiferayPortletRequest _liferayPortletRequest;
 	private final LiferayPortletResponse _liferayPortletResponse;
-	private final String _moduleName;
 	private String _orderByCol;
 	private String _orderByType;
 	private final HttpServletRequest _request;
+	private final String _resolvedModuleName;
 	private SearchContainer _searchContainer;
 	private Long _siteNavigationMenuId;
 	private final SiteNavigationMenuItemTypeRegistry

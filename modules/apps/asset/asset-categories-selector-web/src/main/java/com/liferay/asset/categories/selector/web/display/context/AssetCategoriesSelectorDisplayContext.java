@@ -105,7 +105,7 @@ public class AssetCategoriesSelectorDisplayContext {
 		return _eventName;
 	}
 
-	public String getModuleName() {
+	public String getResolvedModuleName() {
 		return _resolvedModuleName;
 	}
 

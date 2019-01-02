@@ -697,10 +697,6 @@ public class LayoutsAdminDisplayContext {
 		return markAsHomePageLayoutURL.toString();
 	}
 
-	public String getModuleName() {
-		return _resolvedModuleName;
-	}
-
 	public String getMoveLayoutColumnItemURL() {
 		PortletURL deleteLayoutURL = _liferayPortletResponse.createActionURL();
 
@@ -925,6 +921,10 @@ public class LayoutsAdminDisplayContext {
 		breadcrumbEntries.add(breadcrumbEntry);
 
 		return breadcrumbEntries;
+	}
+
+	public String getResolvedModuleName() {
+		return _resolvedModuleName;
 	}
 
 	public String getRootNodeName() {

@@ -2544,7 +2544,17 @@ public class DLFileEntryLocalServiceImpl
 			autoCheckIn = true;
 		}
 
-		if (autoCheckIn) {
+		boolean updateDLStore = false;
+
+		if ((file != null) || (is != null)) {
+			updateDLStore = true;
+		}
+
+		if (autoCheckIn && updateDLStore) {
+			dlFileEntry = _checkOutFileEntryObject(
+				userId, fileEntryId, fileEntryTypeId, serviceContext);
+		}
+		else if (autoCheckIn && !updateDLStore) {
 			dlFileEntry = checkOutFileEntry(
 				userId, fileEntryId, fileEntryTypeId, serviceContext);
 		}
@@ -2615,7 +2625,7 @@ public class DLFileEntryLocalServiceImpl
 
 			// File
 
-			if ((file != null) || (is != null)) {
+			if (updateDLStore) {
 				DLStoreUtil.deleteFile(
 					user.getCompanyId(), dlFileEntry.getDataRepositoryId(),
 					dlFileEntry.getName(), version);
@@ -2782,6 +2792,16 @@ public class DLFileEntryLocalServiceImpl
 
 	@BeanReference(type = DLFileVersionPolicy.class)
 	protected DLFileVersionPolicy dlFileVersionPolicy;
+
+	private DLFileEntry _checkOutFileEntryObject(
+			long userId, long fileEntryId, long fileEntryTypeId,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		return _checkOutFileEntryObject(
+			userId, fileEntryId, fileEntryTypeId, StringPool.BLANK,
+			DLFileEntryImpl.LOCK_EXPIRATION_TIME, serviceContext);
+	}
 
 	private DLFileEntry _checkOutFileEntryObject(
 			long userId, long fileEntryId, long fileEntryTypeId, String owner,

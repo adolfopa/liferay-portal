@@ -16,7 +16,7 @@
 	{@param? emailErrorMessage: string}
 	{@param? submitting: bool}
 
-	<div id="{$id}" class="sharing-modal-content">
+	<div class="sharing-modal-content" id="{$id}">
 		<form
 			action="{$shareActionURL}"
 			data-onsubmit="{$_handleSubmit}"
@@ -42,7 +42,7 @@
 				</div>
 
 				<div class="form-group">
-					<div class="custom-control custom-checkbox">
+					<div class="custom-checkbox custom-control">
 						<label>
 							<input
 								checked="checked"

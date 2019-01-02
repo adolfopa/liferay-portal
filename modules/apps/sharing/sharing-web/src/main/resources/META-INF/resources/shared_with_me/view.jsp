@@ -102,7 +102,7 @@ sharedWithMeViewDisplayContext.populateResults(sharingEntriesSearchContainer);
 	viewAssetTypeURL.setParameter("className", (String)null);
 	%>
 
-	var component = Liferay.component(
+	Liferay.component(
 		'<portlet:namespace />SharedWithMe',
 		new SharedWithMe.default(
 			{

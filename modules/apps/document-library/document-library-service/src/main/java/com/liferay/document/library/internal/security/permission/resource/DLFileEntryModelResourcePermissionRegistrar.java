@@ -72,30 +72,9 @@ public class DLFileEntryModelResourcePermissionRegistrar {
 				_portletResourcePermission,
 				(modelResourcePermission, consumer) -> {
 					consumer.accept(
-						new StagedModelPermissionLogic<DLFileEntry>(
+						new StagedModelPermissionLogic<>(
 							_stagingPermission, DLPortletKeys.DOCUMENT_LIBRARY,
-							DLFileEntry::getFileEntryId) {
-
-							@Override
-							public Boolean contains(
-								PermissionChecker permissionChecker,
-								String name, DLFileEntry dlFileEntry,
-								String actionId) {
-
-								if (actionId.equals(
-										ActionKeys.UPDATE_DISCUSSION) ||
-									actionId.equals(
-										ActionKeys.DELETE_DISCUSSION)) {
-
-									return null;
-								}
-
-								return super.contains(
-									permissionChecker, name, dlFileEntry,
-									actionId);
-							}
-
-						});
+							DLFileEntry::getFileEntryId));
 					consumer.accept(
 						new DLFileEntryWorkflowedModelPermissionLogic(
 							modelResourcePermission));

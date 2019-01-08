@@ -80,30 +80,9 @@ public class JournalArticleModelResourcePermissionRegistrar {
 				_portletResourcePermission,
 				(modelResourcePermission, consumer) -> {
 					consumer.accept(
-						new StagedModelPermissionLogic<JournalArticle>(
+						new StagedModelPermissionLogic<>(
 							_stagingPermission, JournalPortletKeys.JOURNAL,
-							JournalArticle::getResourcePrimKey) {
-
-							@Override
-							public Boolean contains(
-								PermissionChecker permissionChecker,
-								String name, JournalArticle journalArticle,
-								String actionId) {
-
-								if (actionId.equals(
-										ActionKeys.UPDATE_DISCUSSION) ||
-									actionId.equals(
-										ActionKeys.DELETE_DISCUSSION)) {
-
-									return null;
-								}
-
-								return super.contains(
-									permissionChecker, name, journalArticle,
-									actionId);
-							}
-
-						});
+							JournalArticle::getResourcePrimKey));
 					consumer.accept(
 						new WorkflowedModelPermissionLogic<>(
 							_workflowPermission, modelResourcePermission,

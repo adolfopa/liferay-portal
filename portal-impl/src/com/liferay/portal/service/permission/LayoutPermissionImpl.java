@@ -552,16 +552,12 @@ public class LayoutPermissionImpl
 		Group group = layout.getGroup();
 
 		if (group.hasLocalOrRemoteStagingGroup()) {
-			if (!actionId.equals(ActionKeys.DELETE_DISCUSSION) &&
-				!actionId.equals(ActionKeys.UPDATE_DISCUSSION)) {
+			Boolean hasPermission = StagingPermissionUtil.hasPermission(
+				permissionChecker, group, Layout.class.getName(),
+				layout.getGroupId(), null, actionId);
 
-				Boolean hasPermission = StagingPermissionUtil.hasPermission(
-					permissionChecker, group, Layout.class.getName(),
-					layout.getGroupId(), null, actionId);
-
-				if (hasPermission != null) {
-					return hasPermission.booleanValue();
-				}
+			if (hasPermission != null) {
+				return hasPermission.booleanValue();
 			}
 		}
 		else if (!checkViewableGroup && group.isUserGroup() &&

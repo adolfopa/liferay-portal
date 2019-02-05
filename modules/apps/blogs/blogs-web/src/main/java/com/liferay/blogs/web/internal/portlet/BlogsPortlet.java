@@ -18,11 +18,15 @@ import com.liferay.asset.constants.AssetWebKeys;
 import com.liferay.asset.util.AssetHelper;
 import com.liferay.blogs.constants.BlogsPortletKeys;
 import com.liferay.portal.kernel.model.Release;
+import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.trash.TrashHelper;
 import com.liferay.trash.util.TrashWebKeys;
 
 import java.io.IOException;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.Portlet;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
@@ -65,6 +69,21 @@ import org.osgi.service.component.annotations.Reference;
 	service = Portlet.class
 )
 public class BlogsPortlet extends BaseBlogsPortlet {
+
+	@Override
+	public void processAction(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws IOException, PortletException {
+
+		int workflowAction = ParamUtil.getInteger(
+			actionRequest, "workflowAction");
+
+		if (workflowAction == WorkflowConstants.ACTION_PUBLISH) {
+			sendRedirect(actionRequest, actionResponse);
+		}
+
+		super.processAction(actionRequest, actionResponse);
+	}
 
 	@Override
 	public void render(

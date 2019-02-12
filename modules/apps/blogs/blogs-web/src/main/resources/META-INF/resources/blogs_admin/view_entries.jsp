@@ -86,47 +86,17 @@ BlogEntriesManagementToolbarDisplayContext blogEntriesManagementToolbarDisplayCo
 	</aui:form>
 </div>
 
-<aui:script>
-	var deleteEntries = function() {
-		if (<%= trashHelper.isTrashEnabled(scopeGroupId) %> || confirm('<liferay-ui:message key="are-you-sure-you-want-to-delete-the-selected-entries" />')) {
-			var form = document.getElementById('<portlet:namespace />fm');
+<portlet:actionURL name="/blogs/edit_entry" var="editEntryURL" />
 
-			if (form) {
-				form.setAttribute('method', 'post');
+<%
+	HashMap<String, Object> context = new HashMap<>();
 
-				var cmd = form.querySelector('#<portlet:namespace /><%= Constants.CMD %>');
+	context.put("deleteEntriesURL", editEntryURL.toString());
+	context.put("trashEnabled", trashHelper.isTrashEnabled(scopeGroupId));
+%>
 
-				if (cmd) {
-					cmd.setAttribute('value', '<%= trashHelper.isTrashEnabled(scopeGroupId) ? Constants.MOVE_TO_TRASH : Constants.DELETE %>');
-				}
-
-				var deleteEntryIds = form.querySelector('#<portlet:namespace />deleteEntryIds');
-
-				if (deleteEntryIds) {
-					deleteEntryIds.setAttribute('value', Liferay.Util.listCheckedExcept(form, '<portlet:namespace />allRowIds'));
-				}
-
-				submitForm(form, '<portlet:actionURL name="/blogs/edit_entry" />');
-			}
-		}
-	};
-
-	var ACTIONS = {
-		'deleteEntries': deleteEntries
-	};
-
-	Liferay.componentReady('blogEntriesManagementToolbar').then(
-		function(managementToolbar) {
-			managementToolbar.on(
-				'actionItemClicked',
-				function(event) {
-					var itemData = event.data.item.data;
-
-					if (itemData && itemData.action && ACTIONS[itemData.action]) {
-						ACTIONS[itemData.action]();
-					}
-				}
-			);
-		}
-	);
-</aui:script>
+<liferay-frontend:component
+	componentId="<%= blogEntriesManagementToolbarDisplayContext.getDefaultEventHandler() %>"
+	context="<%= context %>"
+	module="js/ManagementToolbarDefaultEventHandler.es"
+/>

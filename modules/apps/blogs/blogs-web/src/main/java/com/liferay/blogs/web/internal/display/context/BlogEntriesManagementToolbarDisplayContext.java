@@ -65,6 +65,11 @@ public class BlogEntriesManagementToolbarDisplayContext
 	}
 
 	@Override
+	public String getDefaultEventHandler() {
+		return "BLOG_ENTRIES_MANAGEMENT_TOOLBAR_DEFAULT_EVENT_HANDLER";
+	}
+
+	@Override
 	public List<DropdownItem> getActionDropdownItems() {
 		return new DropdownItemList() {
 			{

@@ -15,16 +15,23 @@
 package com.liferay.blogs.web.internal.display.context;
 
 import com.liferay.asset.kernel.model.AssetEntry;
+import com.liferay.blogs.constants.BlogsPortletKeys;
 import com.liferay.blogs.model.BlogsEntry;
 import com.liferay.blogs.service.BlogsEntryLocalServiceUtil;
 import com.liferay.blogs.service.BlogsEntryServiceUtil;
+import com.liferay.blogs.web.internal.security.permission.resource.BlogsEntryPermission;
 import com.liferay.blogs.web.internal.util.BlogsUtil;
+import com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.dao.search.SearchContainerResults;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
+import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
+import com.liferay.portal.kernel.portlet.PortalPreferences;
+import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
+import com.liferay.portal.kernel.portlet.PortletURLUtil;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Hits;
@@ -33,6 +40,7 @@ import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.SearchContextFactory;
 import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -45,6 +53,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.portlet.PortletException;
+import javax.portlet.PortletURL;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -53,14 +64,122 @@ import javax.servlet.http.HttpServletRequest;
 public class BlogEntriesDisplayContext {
 
 	public BlogEntriesDisplayContext(
-		LiferayPortletRequest liferayPortletRequest) {
+		LiferayPortletRequest liferayPortletRequest,
+		LiferayPortletResponse liferayPortletResponse) {
 
 		_liferayPortletRequest = liferayPortletRequest;
+		_liferayPortletResponse = liferayPortletResponse;
+
+		_portalPreferences = PortletPreferencesFactoryUtil.getPortalPreferences(
+			liferayPortletRequest);
 
 		_request = _liferayPortletRequest.getHttpServletRequest();
 	}
 
-	public void populateResults(SearchContainer searchContainer)
+	public List<String> getAvailableActionDropdownItems(BlogsEntry blogsEntry)
+		throws PortalException {
+
+		List<String> availableActionDropdownItems = new ArrayList<>();
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		PermissionChecker permissionChecker =
+			themeDisplay.getPermissionChecker();
+
+		if (BlogsEntryPermission.contains(
+				permissionChecker, blogsEntry, ActionKeys.DELETE)) {
+
+			availableActionDropdownItems.add("deleteEntries");
+		}
+
+		return availableActionDropdownItems;
+	}
+
+	public String getDisplayStyle() {
+		String displayStyle = ParamUtil.getString(_request, "displayStyle");
+
+		if (Validator.isNull(displayStyle)) {
+			displayStyle = _portalPreferences.getValue(
+				BlogsPortletKeys.BLOGS_ADMIN, "entries-display-style", "icon");
+		}
+		else {
+			_portalPreferences.setValue(
+				BlogsPortletKeys.BLOGS_ADMIN, "entries-display-style",
+				displayStyle);
+
+			_request.setAttribute(
+				WebKeys.SINGLE_PAGE_APPLICATION_CLEAR_CACHE, Boolean.TRUE);
+		}
+
+		return displayStyle;
+	}
+
+	public SearchContainer getSearchContainer()
+		throws PortalException, PortletException {
+
+		PortletURL portletURL = _liferayPortletResponse.createRenderURL();
+
+		portletURL.setParameter("mvcRenderCommandName", "/blogs/view");
+
+		String entriesNavigation = ParamUtil.getString(
+			_request, "entriesNavigation");
+
+		portletURL.setParameter("entriesNavigation", entriesNavigation);
+
+		SearchContainer<BlogsEntry> entriesSearchContainer =
+			new SearchContainer<>(
+				_liferayPortletRequest,
+				PortletURLUtil.clone(portletURL, _liferayPortletResponse), null,
+				"no-entries-were-found");
+
+		String orderByCol = ParamUtil.getString(
+			_request, "orderByCol", "title");
+
+		entriesSearchContainer.setOrderByCol(orderByCol);
+
+		String orderByType = ParamUtil.getString(
+			_request, "orderByType", "asc");
+
+		entriesSearchContainer.setOrderByType(orderByType);
+
+		entriesSearchContainer.setOrderByComparator(
+			BlogsUtil.getOrderByComparator(
+				entriesSearchContainer.getOrderByCol(),
+				entriesSearchContainer.getOrderByType()));
+
+		entriesSearchContainer.setRowChecker(
+			new EmptyOnClickRowChecker(_liferayPortletResponse));
+
+		_populateResults(entriesSearchContainer);
+
+		return entriesSearchContainer;
+	}
+
+	private int _getStatus() {
+		if (_status != null) {
+			return _status;
+		}
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		PermissionChecker permissionChecker =
+			themeDisplay.getPermissionChecker();
+
+		if (permissionChecker.isContentReviewer(
+				themeDisplay.getCompanyId(), themeDisplay.getScopeGroupId())) {
+
+			_status = WorkflowConstants.STATUS_ANY;
+		}
+		else {
+			_status = WorkflowConstants.STATUS_APPROVED;
+		}
+
+		return _status;
+	}
+
+	private void _populateResults(SearchContainer searchContainer)
 		throws PortalException {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
@@ -200,33 +319,12 @@ public class BlogEntriesDisplayContext {
 		searchContainer.setResults(entriesResults);
 	}
 
-	private int _getStatus() {
-		if (_status != null) {
-			return _status;
-		}
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		PermissionChecker permissionChecker =
-			themeDisplay.getPermissionChecker();
-
-		if (permissionChecker.isContentReviewer(
-				themeDisplay.getCompanyId(), themeDisplay.getScopeGroupId())) {
-
-			_status = WorkflowConstants.STATUS_ANY;
-		}
-		else {
-			_status = WorkflowConstants.STATUS_APPROVED;
-		}
-
-		return _status;
-	}
-
 	private static final Log _log = LogFactoryUtil.getLog(
 		BlogEntriesDisplayContext.class);
 
 	private final LiferayPortletRequest _liferayPortletRequest;
+	private final LiferayPortletResponse _liferayPortletResponse;
+	private final PortalPreferences _portalPreferences;
 	private final HttpServletRequest _request;
 	private Integer _status;
 

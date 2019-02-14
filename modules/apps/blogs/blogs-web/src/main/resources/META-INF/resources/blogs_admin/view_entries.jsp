@@ -17,54 +17,19 @@
 <%@ include file="/blogs_admin/init.jsp" %>
 
 <%
-String entriesNavigation = ParamUtil.getString(request, "entriesNavigation");
+BlogEntriesDisplayContext blogEntriesDisplayContext = new BlogEntriesDisplayContext(liferayPortletRequest, liferayPortletResponse);
 
-int delta = ParamUtil.getInteger(request, SearchContainer.DEFAULT_DELTA_PARAM);
-String orderByCol = ParamUtil.getString(request, "orderByCol", "title");
-String orderByType = ParamUtil.getString(request, "orderByType", "asc");
+String displayStyle = blogEntriesDisplayContext.getDisplayStyle();
+SearchContainer entriesSearchContainer = blogEntriesDisplayContext.getSearchContainer();
 
-PortletURL portletURL = renderResponse.createRenderURL();
+PortletURL portletURL = entriesSearchContainer.getIteratorURL();
 
-portletURL.setParameter("mvcRenderCommandName", "/blogs/view");
-
-if (delta > 0) {
-	portletURL.setParameter("delta", String.valueOf(delta));
-}
-
-portletURL.setParameter("orderBycol", orderByCol);
-portletURL.setParameter("orderByType", orderByType);
-
-portletURL.setParameter("entriesNavigation", entriesNavigation);
-
-SearchContainer entriesSearchContainer = new SearchContainer(renderRequest, PortletURLUtil.clone(portletURL, liferayPortletResponse), null, "no-entries-were-found");
-
-entriesSearchContainer.setOrderByComparator(BlogsUtil.getOrderByComparator(orderByCol, orderByType));
-
-BlogEntriesDisplayContext blogEntriesDisplayContext = new BlogEntriesDisplayContext(liferayPortletRequest);
-
-blogEntriesDisplayContext.populateResults(entriesSearchContainer);
-
-BlogEntriesManagementToolbarDisplayContext blogEntriesManagementToolbarDisplayContext = new BlogEntriesManagementToolbarDisplayContext(liferayPortletRequest, liferayPortletResponse, request, currentURLObj, trashHelper);
-
-String displayStyle = blogEntriesManagementToolbarDisplayContext.getDisplayStyle();
+BlogEntriesManagementToolbarDisplayContext blogEntriesManagementToolbarDisplayContext = new BlogEntriesManagementToolbarDisplayContext(liferayPortletRequest, liferayPortletResponse, request, entriesSearchContainer, trashHelper, displayStyle);
 %>
 
 <clay:management-toolbar
-	actionDropdownItems="<%= blogEntriesManagementToolbarDisplayContext.getActionDropdownItems() %>"
-	clearResultsURL="<%= blogEntriesManagementToolbarDisplayContext.getSearchActionURL() %>"
-	componentId="blogEntriesManagementToolbar"
-	creationMenu="<%= blogEntriesManagementToolbarDisplayContext.getCreationMenu() %>"
-	disabled="<%= entriesSearchContainer.getTotal() <= 0 %>"
-	filterDropdownItems="<%= blogEntriesManagementToolbarDisplayContext.getFilterDropdownItems() %>"
-	filterLabelItems="<%= blogEntriesManagementToolbarDisplayContext.getFilterLabelItems() %>"
-	itemsTotal="<%= entriesSearchContainer.getTotal() %>"
-	searchActionURL="<%= blogEntriesManagementToolbarDisplayContext.getSearchActionURL() %>"
+	displayContext="<%= blogEntriesManagementToolbarDisplayContext %>"
 	searchContainerId="blogEntries"
-	searchFormName="searchFm"
-	showInfoButton="<%= false %>"
-	sortingOrder="<%= blogEntriesManagementToolbarDisplayContext.getOrderByType() %>"
-	sortingURL="<%= String.valueOf(blogEntriesManagementToolbarDisplayContext.getSortingURL()) %>"
-	viewTypeItems="<%= blogEntriesManagementToolbarDisplayContext.getViewTypes() %>"
 />
 
 <portlet:actionURL name="/blogs/edit_entry" var="restoreTrashEntriesURL">
@@ -88,7 +53,6 @@ String displayStyle = blogEntriesManagementToolbarDisplayContext.getDisplayStyle
 
 		<liferay-ui:search-container
 			id="blogEntries"
-			rowChecker="<%= new EmptyOnClickRowChecker(renderResponse) %>"
 			searchContainer="<%= entriesSearchContainer %>"
 		>
 			<liferay-ui:search-container-row
@@ -99,14 +63,14 @@ String displayStyle = blogEntriesManagementToolbarDisplayContext.getDisplayStyle
 			>
 				<liferay-portlet:renderURL varImpl="rowURL">
 					<portlet:param name="mvcRenderCommandName" value="/blogs/edit_entry" />
-					<portlet:param name="redirect" value="<%= entriesSearchContainer.getIteratorURL().toString() %>" />
+					<portlet:param name="redirect" value="<%= portletURL.toString() %>" />
 					<portlet:param name="entryId" value="<%= String.valueOf(entry.getEntryId()) %>" />
 				</liferay-portlet:renderURL>
 
 				<%
 				Map<String, Object> rowData = new HashMap<>();
 
-				rowData.put("actions", String.join(StringPool.COMMA, blogEntriesManagementToolbarDisplayContext.getAvailableActionDropdownItems(entry)));
+				rowData.put("actions", String.join(StringPool.COMMA, blogEntriesDisplayContext.getAvailableActionDropdownItems(entry)));
 
 				row.setData(rowData);
 				%>
@@ -122,47 +86,17 @@ String displayStyle = blogEntriesManagementToolbarDisplayContext.getDisplayStyle
 	</aui:form>
 </div>
 
-<aui:script>
-	var deleteEntries = function() {
-		if (<%= trashHelper.isTrashEnabled(scopeGroupId) %> || confirm('<liferay-ui:message key="are-you-sure-you-want-to-delete-the-selected-entries" />')) {
-			var form = document.getElementById('<portlet:namespace />fm');
+<portlet:actionURL name="/blogs/edit_entry" var="editEntryURL" />
 
-			if (form) {
-				form.setAttribute('method', 'post');
+<%
+	HashMap<String, Object> context = new HashMap<>();
 
-				var cmd = form.querySelector('#<portlet:namespace /><%= Constants.CMD %>');
+	context.put("deleteEntriesURL", editEntryURL.toString());
+	context.put("trashEnabled", trashHelper.isTrashEnabled(scopeGroupId));
+%>
 
-				if (cmd) {
-					cmd.setAttribute('value', '<%= trashHelper.isTrashEnabled(scopeGroupId) ? Constants.MOVE_TO_TRASH : Constants.DELETE %>');
-				}
-
-				var deleteEntryIds = form.querySelector('#<portlet:namespace />deleteEntryIds');
-
-				if (deleteEntryIds) {
-					deleteEntryIds.setAttribute('value', Liferay.Util.listCheckedExcept(form, '<portlet:namespace />allRowIds'));
-				}
-
-				submitForm(form, '<portlet:actionURL name="/blogs/edit_entry" />');
-			}
-		}
-	};
-
-	var ACTIONS = {
-		'deleteEntries': deleteEntries
-	};
-
-	Liferay.componentReady('blogEntriesManagementToolbar').then(
-		function(managementToolbar) {
-			managementToolbar.on(
-				'actionItemClicked',
-				function(event) {
-					var itemData = event.data.item.data;
-
-					if (itemData && itemData.action && ACTIONS[itemData.action]) {
-						ACTIONS[itemData.action]();
-					}
-				}
-			);
-		}
-	);
-</aui:script>
+<liferay-frontend:component
+	componentId="<%= blogEntriesManagementToolbarDisplayContext.getDefaultEventHandler() %>"
+	context="<%= context %>"
+	module="blogs_admin/js/ManagementToolbarDefaultEventHandler.es"
+/>

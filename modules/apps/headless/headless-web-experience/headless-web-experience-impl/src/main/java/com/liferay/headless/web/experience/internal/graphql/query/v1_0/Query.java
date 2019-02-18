@@ -54,10 +54,10 @@ return _getCommentResource().getComment( commentId );
 
 	@GraphQLField
 	@GraphQLInvokeDetached
-	public Collection<Comment> getCommentCommentsPage( @GraphQLName("comment-id") Long commentId , @GraphQLName("pageSize") int pageSize , @GraphQLName("page") int page ) throws Exception {
+	public Collection<Comment> getCommentCommentsPage( @GraphQLName("comment-id") Long commentId , @GraphQLName("filter") Filter filter , @GraphQLName("pageSize") int pageSize , @GraphQLName("page") int page , @GraphQLName("Sort[]") Sort[] sorts ) throws Exception {
 				Page paginationPage = _getCommentResource().getCommentCommentsPage(
 
-					commentId , Pagination.of(pageSize, page)
+					commentId , filter , Pagination.of(pageSize, page) , sorts
 				);
 
 				return paginationPage.getItems();
@@ -66,10 +66,10 @@ return _getCommentResource().getComment( commentId );
 
 	@GraphQLField
 	@GraphQLInvokeDetached
-	public Collection<Comment> getStructuredContentCommentsPage( @GraphQLName("structured-content-id") Long structuredContentId , @GraphQLName("pageSize") int pageSize , @GraphQLName("page") int page ) throws Exception {
+	public Collection<Comment> getStructuredContentCommentsPage( @GraphQLName("structured-content-id") Long structuredContentId , @GraphQLName("filter") Filter filter , @GraphQLName("pageSize") int pageSize , @GraphQLName("page") int page , @GraphQLName("Sort[]") Sort[] sorts ) throws Exception {
 				Page paginationPage = _getCommentResource().getStructuredContentCommentsPage(
 
-					structuredContentId , Pagination.of(pageSize, page)
+					structuredContentId , filter , Pagination.of(pageSize, page) , sorts
 				);
 
 				return paginationPage.getItems();

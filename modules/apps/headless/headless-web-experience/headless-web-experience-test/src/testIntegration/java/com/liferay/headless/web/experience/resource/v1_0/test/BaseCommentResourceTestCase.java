@@ -20,6 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liferay.headless.web.experience.dto.v1_0.Comment;
 import com.liferay.headless.web.experience.internal.dto.v1_0.CommentImpl;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.vulcan.pagination.Pagination;
@@ -86,23 +88,23 @@ public abstract class BaseCommentResourceTestCase {
 			);
 
 	}
-	protected Response invokeGetCommentCommentsPage( Long commentId , Pagination pagination ) throws Exception {
+	protected Response invokeGetCommentCommentsPage( Long commentId , Filter filter , Pagination pagination , Sort[] sorts ) throws Exception {
 		RequestSpecification requestSpecification = _createRequestSpecification();
 
 			return requestSpecification.when(
 			).get(
 				_resourceURL + "/comments/{comment-id}/comments",
-				commentId 
+				commentId , filter  , sorts
 			);
 
 	}
-	protected Response invokeGetStructuredContentCommentsPage( Long structuredContentId , Pagination pagination ) throws Exception {
+	protected Response invokeGetStructuredContentCommentsPage( Long structuredContentId , Filter filter , Pagination pagination , Sort[] sorts ) throws Exception {
 		RequestSpecification requestSpecification = _createRequestSpecification();
 
 			return requestSpecification.when(
 			).get(
 				_resourceURL + "/structured-contents/{structured-content-id}/comments",
-				structuredContentId 
+				structuredContentId , filter  , sorts
 			);
 
 	}

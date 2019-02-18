@@ -20,6 +20,8 @@ import com.liferay.headless.document.library.dto.v1_0.Folder;
 import com.liferay.headless.document.library.resource.v1_0.CommentResource;
 import com.liferay.headless.document.library.resource.v1_0.DocumentResource;
 import com.liferay.headless.document.library.resource.v1_0.FolderResource;
+import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 
@@ -50,10 +52,10 @@ return _getCommentResource().getComment( commentId );
 
 	@GraphQLField
 	@GraphQLInvokeDetached
-	public Collection<Comment> getCommentCommentsPage( @GraphQLName("comment-id") Long commentId , @GraphQLName("pageSize") int pageSize , @GraphQLName("page") int page ) throws Exception {
+	public Collection<Comment> getCommentCommentsPage( @GraphQLName("comment-id") Long commentId , @GraphQLName("filter") Filter filter , @GraphQLName("pageSize") int pageSize , @GraphQLName("page") int page , @GraphQLName("Sort[]") Sort[] sorts ) throws Exception {
 				Page paginationPage = _getCommentResource().getCommentCommentsPage(
 
-					commentId , Pagination.of(pageSize, page)
+					commentId , filter , Pagination.of(pageSize, page) , sorts
 				);
 
 				return paginationPage.getItems();
@@ -62,10 +64,10 @@ return _getCommentResource().getComment( commentId );
 
 	@GraphQLField
 	@GraphQLInvokeDetached
-	public Collection<Comment> getDocumentCommentsPage( @GraphQLName("document-id") Long documentId , @GraphQLName("pageSize") int pageSize , @GraphQLName("page") int page ) throws Exception {
+	public Collection<Comment> getDocumentCommentsPage( @GraphQLName("document-id") Long documentId , @GraphQLName("filter") Filter filter , @GraphQLName("pageSize") int pageSize , @GraphQLName("page") int page , @GraphQLName("Sort[]") Sort[] sorts ) throws Exception {
 				Page paginationPage = _getCommentResource().getDocumentCommentsPage(
 
-					documentId , Pagination.of(pageSize, page)
+					documentId , filter , Pagination.of(pageSize, page) , sorts
 				);
 
 				return paginationPage.getItems();

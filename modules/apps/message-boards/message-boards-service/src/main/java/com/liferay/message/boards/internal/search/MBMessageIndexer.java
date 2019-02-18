@@ -296,6 +296,8 @@ public class MBMessageIndexer
 		}
 
 		document.addKeyword(
+			"parentMessageId", mbMessage.getParentMessageId());
+		document.addKeyword(
 			Field.ROOT_ENTRY_CLASS_PK, mbMessage.getRootMessageId());
 
 		if (mbMessage.isAnonymous()) {

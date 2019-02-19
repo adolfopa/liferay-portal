@@ -162,6 +162,9 @@ public class SearchPermissionCheckerImpl implements SearchPermissionChecker {
 	public void updatePermissionFields(
 		String resourceName, String resourceClassPK) {
 
+		if (resourceName.contains("-")) {
+			resourceName = resourceName.split("-")[0];
+		}
 		try {
 			Indexer<?> indexer = indexerRegistry.nullSafeGetIndexer(
 				resourceName);

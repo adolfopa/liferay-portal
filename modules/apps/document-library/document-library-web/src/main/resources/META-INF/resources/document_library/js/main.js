@@ -34,6 +34,10 @@ AUI.add(
 						validator: Lang.isString
 					},
 
+					openViewMoreFileEntryTypesURL: {
+						validator: Lang.isString
+					},
+
 					pathModule: {
 						validator: Lang.isString
 					},
@@ -159,6 +163,22 @@ AUI.add(
 						if (action) {
 							instance._processAction(action, url);
 						}
+					},
+
+					handleCreationMenuMoreButtonClicked: function(event) {
+						var instance = this;
+
+						Liferay.Util.openWindow(
+							{
+								dialog: {
+									destroyOnHide: true,
+									modal: true
+								},
+								id: instance.ns('selectAddMenuItem'),
+								title: Liferay.Language.get('more'),
+								uri: instance.get('openViewMoreFileEntryTypesURL')
+							}
+						);
 					},
 
 					handleFilterItemClicked: function(event) {

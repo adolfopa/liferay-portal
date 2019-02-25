@@ -50,6 +50,10 @@ AUI.add(
 						validator: Lang.isString
 					},
 
+					selectFolderURL: {
+						validator: Lang.isString
+					},
+
 					trashEnabled: {
 						validator: Lang.isBoolean
 					},
@@ -127,17 +131,19 @@ AUI.add(
 						if (action === 'editTags') {
 							instance._openModalTags();
 
-							return;
+							action = null;
 						}
 
 						if (action === 'editCategories') {
 							instance._openModalCategories();
 
-							return;
+							action = null;
 						}
 
 						if (action === 'move' || action === 'moveEntries') {
-							url = instance.get('moveEntryUrl');
+							instance._openModalMove();
+
+							action = null;
 						}
 
 						if (action === 'download') {
@@ -300,6 +306,33 @@ AUI.add(
 							editCategories.folderId = instance.getFolderId();
 							editCategories.open();
 						}
+					},
+
+					_openModalMove: function() {
+						var instance = this;
+
+						var dialogTitle = Lang.sub(Liferay.Language.get('select-x'), ['folder']);
+
+						Liferay.Util.selectEntity(
+							{
+								dialog: {
+									constrain: true,
+									destroyOnHide: true,
+									modal: true,
+									width: 680
+								},
+								id: instance.NS + 'selectFolder',
+								title: dialogTitle,
+								uri: instance.get('selectFolderURL')
+							},
+							function(event) {
+								var form = instance.get('form').node;
+
+								form.get(instance.NS + 'newFolderId').val(event.folderid);
+
+								instance._processAction('move', location.href);
+							}
+						);
 					},
 
 					_openModalTags: function() {

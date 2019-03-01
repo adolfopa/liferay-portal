@@ -76,6 +76,11 @@ public class KBArticleURLHelper {
 				KBFolder kbFolder = KBFolderServiceUtil.getKBFolder(
 					kbArticle.getKbFolderId());
 
+				long kbFolderId = kbFolder.getKbFolderId();
+
+				portletURL.setParameter(
+					"kbFolderId", String.valueOf(kbFolderId));
+
 				portletURL.setParameter(
 					"kbFolderUrlTitle", kbFolder.getUrlTitle());
 			}

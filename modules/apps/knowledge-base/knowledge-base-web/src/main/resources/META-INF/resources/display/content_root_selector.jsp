@@ -23,10 +23,25 @@ KBNavigationDisplayContext kbNavigationDisplayContext = (KBNavigationDisplayCont
 
 String currentKBFolderURLTitle = kbNavigationDisplayContext.getCurrentKBFolderURLTitle();
 
-List<KBFolder> kbFolders = KBUtil.getAlternateRootKBFolders(scopeGroupId, kbDisplayPortletInstanceConfiguration.resourcePrimKey());
+long rootResourcePrimKey = kbDisplayPortletInstanceConfiguration.resourcePrimKey();
+
+long rootKBFolderId = KBFolderConstants.DEFAULT_PARENT_FOLDER_ID;
+
+String rootKBFolderName = LanguageUtil.get(resourceBundle, "home");
+String rootKBFolderURLTitle = StringPool.BLANK;
+
+if (rootResourcePrimKey != KBFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
+	KBFolder rootKBFolder = KBFolderServiceUtil.getKBFolder(rootResourcePrimKey);
+
+	rootKBFolderId = rootKBFolder.getKbFolderId();
+	rootKBFolderName = rootKBFolder.getName();
+	rootKBFolderURLTitle = rootKBFolder.getUrlTitle();
+}
+
+List<KBFolderSelectorItem> kbFolderSelectorItems = KBFolderSelectorItem.fromKBFolder(scopeGroupId, kbDisplayPortletInstanceConfiguration.resourcePrimKey());
 %>
 
-<c:if test="<%= kbFolders.size() > 1 %>">
+<c:if test="<%= !kbFolderSelectorItems.isEmpty() %>">
 	<liferay-portlet:actionURL name="updateRootKBFolderId" var="updateRootKBFolderIdURL">
 		<c:if test="<%= kbArticle != null %>">
 			<portlet:param name="urlTitle" value="<%= kbArticle.getUrlTitle() %>" />
@@ -36,13 +51,28 @@ List<KBFolder> kbFolders = KBUtil.getAlternateRootKBFolders(scopeGroupId, kbDisp
 	<div class="kbarticle-root-selector">
 		<aui:form action="<%= updateRootKBFolderIdURL %>" name="updateRootKBFolderIdFm">
 			<aui:select label="" name="rootKBFolderId">
+				<c:if test="<%= KBArticleServiceUtil.getKBArticlesCount(scopeGroupId, rootKBFolderId, WorkflowConstants.STATUS_APPROVED) > 0 %>">
+					<aui:option selected="<%= currentKBFolderURLTitle.equals(rootKBFolderURLTitle) %>" value="<%= rootKBFolderId %>">
+						<%= HtmlUtil.escape(kbDisplayPortletInstanceConfiguration.contentRootPrefix() + " " + rootKBFolderName) %>
+					</aui:option>
+				</c:if>
 
 				<%
-				for (KBFolder kbFolder : kbFolders) {
+				for (KBFolderSelectorItem kbFolderSelectorItem : kbFolderSelectorItems) {
+					int depth = kbFolderSelectorItem.getDepth();
+
+					StringBundler sb = new StringBundler();
+
+					for (int i = 0; i < depth; i++) {
+						sb.append(StringPool.NBSP);
+						sb.append(StringPool.NBSP);
+					}
+
+					String level = sb.toString();
 				%>
 
-					<aui:option selected="<%= currentKBFolderURLTitle.equals(kbFolder.getUrlTitle()) %>" value="<%= kbFolder.getKbFolderId() %>">
-						<%= HtmlUtil.escape(kbDisplayPortletInstanceConfiguration.contentRootPrefix() + " " + kbFolder.getName()) %>
+					<aui:option selected="<%= currentKBFolderURLTitle.equals(kbFolderSelectorItem.getKBFolder().getUrlTitle()) %>" value="<%= kbFolderSelectorItem.getKBFolder().getKbFolderId() %>">
+						<%= level + HtmlUtil.escape(kbDisplayPortletInstanceConfiguration.contentRootPrefix() + " " + kbFolderSelectorItem.getKBFolder().getName()) %>
 					</aui:option>
 
 				<%

@@ -170,6 +170,8 @@ public class DisplayPortlet extends BaseKBPortlet {
 			actionRequest, KBPortletKeys.KNOWLEDGE_BASE_DISPLAY,
 			PortletRequest.RENDER_PHASE);
 
+		redirectURL.setParameter("kbFolderId", String.valueOf(kbFolderId));
+
 		redirectURL.setParameter("kbFolderUrlTitle", kbFolderURLTitle);
 
 		if (kbArticle != null) {
@@ -377,6 +379,14 @@ public class DisplayPortlet extends BaseKBPortlet {
 		long parentResourceClassNameId = GetterUtil.getLong(
 			portletPreferences.getValue("resourceClassNameId", null),
 			kbFolderClassNameId);
+
+		long kbFolderId = ParamUtil.getLong(renderRequest, "kbFolderId");
+
+		if ((parentResourceClassNameId == kbFolderClassNameId) &&
+			(kbFolderId != KBFolderConstants.DEFAULT_PARENT_FOLDER_ID)) {
+
+			parentResourcePrimKey = kbFolderId;
+		}
 
 		KBArticleSelector kbArticleSelector =
 			_kbArticleSelectorFactory.getKBArticleSelector(

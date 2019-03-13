@@ -180,6 +180,16 @@ String navigation = ParamUtil.getString(request, "navigation");
 		selectCategoriesURL.setWindowState(LiferayWindowState.POP_UP);
 		%>
 
+		<aui:script>
+			function <portlet:namespace />move(itemsSelected, parameterName, parameterValue) {
+				var dlComponent = Liferay.component('<portlet:namespace />DocumentLibrary');
+
+				if (dlComponent) {
+					dlComponent.showFolderDialog(itemsSelected, parameterName, parameterValue);
+				}
+			}
+		</aui:script>
+
 		<aui:script use="liferay-document-library">
 
 			<%
@@ -224,7 +234,6 @@ String navigation = ParamUtil.getString(request, "navigation");
 							node: A.one(document.<portlet:namespace />fm2)
 						},
 						maxFileSize: <%= dlConfiguration.fileMaxSize() %>,
-						moveEntryUrl: '<portlet:renderURL><portlet:param name="mvcRenderCommandName" value="/document_library/move_entry" /><portlet:param name="redirect" value="<%= currentURL %>" /><portlet:param name="newFolderId" value="<%= String.valueOf(folderId) %>" /></portlet:renderURL>',
 						namespace: '<portlet:namespace />',
 						portletId: '<%= HtmlUtil.escapeJS(portletId) %>',
 						redirect: encodeURIComponent('<%= currentURL %>'),
@@ -251,6 +260,7 @@ String navigation = ParamUtil.getString(request, "navigation");
 
 						],
 						selectFileEntryTypeURL: '<portlet:renderURL windowState="<%= LiferayWindowState.POP_UP.toString() %>"><portlet:param name="mvcPath" value="/document_library/select_file_entry_type.jsp" /><portlet:param name="fileEntryTypeId" value="<%= String.valueOf(fileEntryTypeId) %>" /></portlet:renderURL>',
+						selectFolderURL: '<portlet:renderURL windowState="<%= LiferayWindowState.POP_UP.toString() %>"><portlet:param name="mvcRenderCommandName" value="/document_library/select_folder" /><portlet:param name="folderId" value="<%= String.valueOf(folderId) %>" /></portlet:renderURL>',
 						scopeGroupId: <%= scopeGroupId %>,
 						searchContainerId: 'entries',
 						trashEnabled: <%= (scopeGroupId == repositoryId) && dlTrashUtil.isTrashEnabled(scopeGroupId, repositoryId) %>,

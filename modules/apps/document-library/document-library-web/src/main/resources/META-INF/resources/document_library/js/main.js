@@ -22,15 +22,15 @@ AUI.add(
 						validator: Lang.isObject
 					},
 
-					moveEntryUrl: {
-						validator: Lang.isString
-					},
-
 					searchContainerId: {
 						validator: Lang.isString
 					},
 
 					selectFileEntryTypeURL: {
+						validator: Lang.isString
+					},
+
+					selectFolderURL: {
 						validator: Lang.isString
 					},
 
@@ -111,17 +111,19 @@ AUI.add(
 						if (action === 'editTags') {
 							instance._openModalTags();
 
-							return;
+							action = null;
 						}
 
 						if (action === 'editCategories') {
 							instance._openModalCategories();
 
-							return;
+							action = null;
 						}
 
 						if (action === 'move' || action === 'moveEntries') {
-							url = instance.get('moveEntryUrl');
+							instance._openModalMove();
+
+							action = null;
 						}
 
 						if (action === 'download') {
@@ -177,6 +179,40 @@ AUI.add(
 						}
 					},
 
+					showFolderDialog(selectedItems, parameterName, parameterValue) {
+						var instance = this;
+
+						var namespace = instance.NS;
+
+						var dialogTitle = Lang.sub(
+							Liferay.Language.get('select-destination-folder-for-x-items'),
+							[selectedItems]
+						);
+
+						Liferay.Util.selectEntity(
+							{
+								dialog: {
+									constrain: true,
+									destroyOnHide: true,
+									modal: true,
+									width: 680
+								},
+								id: namespace + 'selectFolder',
+								title: dialogTitle,
+								uri: instance.get('selectFolderURL')
+							},
+							function(event) {
+								if (parameterName && parameterValue) {
+									var form = instance.get('form').node;
+
+									form.get(namespace + parameterName).val(parameterValue);
+								}
+
+								instance._processMoveAction(event.folderid);
+							}
+						);
+					},
+
 					_handleSearchContainerRowToggled: function(event) {
 						var instance = this;
 
@@ -193,8 +229,6 @@ AUI.add(
 					_moveToFolder: function(obj) {
 						var instance = this;
 
-						var namespace = instance.NS;
-
 						var dropTarget = obj.targetItem;
 
 						var selectedItems = obj.selectedItems;
@@ -205,11 +239,7 @@ AUI.add(
 							if (!instance._searchContainer.select ||
 								selectedItems.indexOf(dropTarget.one('input[type=checkbox]'))
 							) {
-								var form = instance.get('form').node;
-
-								form.get(namespace + 'newFolderId').val(folderId);
-
-								instance._processAction('move', instance.get('moveEntryUrl'));
+								instance._processMoveAction(folderId);
 							}
 						}
 					},
@@ -253,6 +283,18 @@ AUI.add(
 
 							editCategoriesComponent.open(instance._selectedFileEntries, bulkSelection, instance.getFolderId());
 						}
+					},
+
+					_openModalMove: function() {
+						var instance = this;
+
+						var selectedItems = 0;
+
+						if (instance._searchContainer.select) {
+							selectedItems = instance._searchContainer.select.getAllSelectedElements().filter(':enabled').size();
+						}
+
+						this.showFolderDialog(selectedItems);
 					},
 
 					_openModalTags: function() {
@@ -313,6 +355,23 @@ AUI.add(
 						form.get(namespace + 'selectAll').val(bulkSelection);
 
 						submitForm(form, url, false);
+					},
+
+					_processMoveAction(newFolderId) {
+						var instance = this;
+
+						var form = instance.get('form').node;
+
+						var actionUrl = instance.get('editEntryUrl');
+
+						form.attr('action', actionUrl);
+						form.attr('method', 'POST');
+						form.attr('enctype', 'multipart/form-data');
+
+						form.get(instance.NS + 'cmd').val('move');
+						form.get(instance.NS + 'newFolderId').val(newFolderId);
+
+						submitForm(form, actionUrl, false);
 					}
 				}
 			}

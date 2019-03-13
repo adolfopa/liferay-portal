@@ -553,51 +553,25 @@ public class UIItemsBuilder {
 			return;
 		}
 
-		LiferayPortletResponse liferayPortletResponse =
-			_getLiferayPortletResponse();
+		StringBundler sb = new StringBundler(5);
 
-		PortletURL portletURL = liferayPortletResponse.createRenderURL();
-
-		portletURL.setParameter(
-			"mvcRenderCommandName", "/document_library/move_entry");
-
-		PortletURL redirectURL = liferayPortletResponse.createRenderURL();
-
-		long folderId = 0;
+		sb.append(getNamespace());
+		sb.append("move(1, ");
 
 		if (_fileShortcut != null) {
-			folderId = _fileShortcut.getFolderId();
+			sb.append("'rowIdsDLFileShortcut', ");
+			sb.append(_fileShortcut.getFileShortcutId());
 		}
 		else {
-			folderId = _fileEntry.getFolderId();
+			sb.append("'rowIdsFileEntry', ");
+			sb.append(_fileEntry.getFileEntryId());
 		}
 
-		if (folderId == DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
-			redirectURL.setParameter(
-				"mvcRenderCommandName", "/document_library/view");
-		}
-		else {
-			redirectURL.setParameter(
-				"mvcRenderCommandName", "/document_library/view_folder");
-		}
+		sb.append(");");
 
-		redirectURL.setParameter("folderId", String.valueOf(folderId));
-
-		portletURL.setParameter("redirect", redirectURL.toString());
-
-		if (_fileShortcut != null) {
-			portletURL.setParameter(
-				"rowIdsDLFileShortcut",
-				String.valueOf(_fileShortcut.getFileShortcutId()));
-		}
-		else {
-			portletURL.setParameter(
-				"rowIdsFileEntry", String.valueOf(_fileEntry.getFileEntryId()));
-		}
-
-		_addURLUIItem(
-			new URLMenuItem(), menuItems, DLUIItemKeys.MOVE, "move",
-			portletURL.toString());
+		_addJavaScriptUIItem(
+			new JavaScriptMenuItem(), menuItems, DLUIItemKeys.MOVE, "move",
+			sb.toString());
 	}
 
 	public void addMoveToolbarItem(List<ToolbarItem> toolbarItems)

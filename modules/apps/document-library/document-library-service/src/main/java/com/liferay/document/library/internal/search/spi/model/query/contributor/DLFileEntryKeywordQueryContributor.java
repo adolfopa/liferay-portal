@@ -62,6 +62,9 @@ public class DLFileEntryKeywordQueryContributor
 		queryHelper.addSearchTerm(booleanQuery, searchContext, "path", false);
 		queryHelper.addSearchLocalizedTerm(
 			booleanQuery, searchContext, Field.CONTENT, false);
+		queryHelper.addSearchLocalizedTerm(
+			booleanQuery, searchContext, Field.TITLE, false);
+
 	}
 
 	@Reference

@@ -48,9 +48,9 @@ public class GoogleCloudNaturalLanguageUtil {
 
 		String fragment = content;
 
-		for (int n = size - bytes.length; n > 0; n = size - bytes.length) {
+		for (int n = bytes.length - size; n > 0; n = bytes.length - size) {
 			fragment = fragment.substring(
-				0, fragment.length() - (n / averageBytesPerChar));
+				0, fragment.length() - Math.max(1, n / averageBytesPerChar));
 
 			bytes = fragment.getBytes();
 		}

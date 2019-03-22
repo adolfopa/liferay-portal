@@ -238,8 +238,9 @@ public class GoogleCloudNaturalLanguageDocumentAssetAutoTagProvider
 
 		throw new PortalException(
 			StringBundler.concat(
-				"Cannot generate tags with Google Natural Language service",
-				response.getResponseCode(), ": ", errorMessage));
+				"Cannot generate tags with Google Natural Language service " +
+					"(response error ",
+				response.getResponseCode(), "): ", errorMessage));
 	}
 
 	private void _processTagNames(

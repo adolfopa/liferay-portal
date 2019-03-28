@@ -157,6 +157,7 @@ public class DLAdminManagementToolbarDisplayContext {
 					add(
 						dropdownItem -> {
 							dropdownItem.putData("action", "editTags");
+							dropdownItem.putData("bulk", "enabled");
 							dropdownItem.setIcon("tag");
 							dropdownItem.setLabel(
 								LanguageUtil.get(_request, "edit-tags"));

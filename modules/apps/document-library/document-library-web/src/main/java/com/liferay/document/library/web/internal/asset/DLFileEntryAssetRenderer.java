@@ -31,6 +31,7 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.WorkflowInstanceLink;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.repository.capabilities.CommentCapability;
@@ -39,6 +40,7 @@ import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
+import com.liferay.portal.kernel.service.WorkflowInstanceLinkLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.trash.TrashRenderer;
 import com.liferay.portal.kernel.util.FileUtil;
@@ -46,6 +48,8 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.kernel.workflow.WorkflowInstance;
+import com.liferay.portal.kernel.workflow.WorkflowInstanceManagerUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.documentlibrary.asset.DLFileEntryDDMFormValuesReader;
 import com.liferay.trash.TrashHelper;
@@ -348,15 +352,18 @@ public class DLFileEntryAssetRenderer
 
 	@Override
 	public String getURLViewInContext(
-		LiferayPortletRequest liferayPortletRequest,
-		LiferayPortletResponse liferayPortletResponse,
-		String noSuchEntryRedirect) {
+			LiferayPortletRequest liferayPortletRequest,
+			LiferayPortletResponse liferayPortletResponse,
+			String noSuchEntryRedirect)
+		throws PortalException {
 
 		ThemeDisplay themeDisplay =
 			(ThemeDisplay)liferayPortletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
 
-		if (!DLUtil.hasViewInContextGroupLayout(themeDisplay)) {
+		if (_hasActiveWorkflowInstance() &&
+			DLUtil.hasViewInContextGroupLayout(themeDisplay)) {
+
 			return null;
 		}
 
@@ -467,6 +474,29 @@ public class DLFileEntryAssetRenderer
 	@Override
 	public boolean isPrintable() {
 		return false;
+	}
+
+	private boolean _hasActiveWorkflowInstance() throws PortalException {
+		WorkflowInstanceLink workflowInstanceLink =
+			WorkflowInstanceLinkLocalServiceUtil.fetchWorkflowInstanceLink(
+				_fileVersion.getCompanyId(), _fileVersion.getGroupId(),
+				DLFileEntryConstants.getClassName(),
+				_fileVersion.getFileVersionId());
+
+		if (workflowInstanceLink == null) {
+			return false;
+		}
+
+		WorkflowInstance workflowInstance =
+			WorkflowInstanceManagerUtil.getWorkflowInstance(
+				_fileVersion.getCompanyId(),
+				workflowInstanceLink.getWorkflowInstanceId());
+
+		if (workflowInstance.isComplete()) {
+			return false;
+		}
+
+		return true;
 	}
 
 	private final DLFileEntryLocalService _dlFileEntryLocalService;

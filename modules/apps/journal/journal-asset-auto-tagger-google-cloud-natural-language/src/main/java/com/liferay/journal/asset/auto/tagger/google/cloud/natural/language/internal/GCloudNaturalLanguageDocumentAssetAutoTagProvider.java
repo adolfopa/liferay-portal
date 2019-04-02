@@ -27,6 +27,7 @@ import com.liferay.journal.asset.auto.tagger.google.cloud.natural.language.inter
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.util.JournalConverter;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.module.configuration.ConfigurationException;
@@ -109,16 +110,21 @@ public class GCloudNaturalLanguageDocumentAssetAutoTagProvider
 					SERVICE_NAME));
 	}
 
+	@Reference
+	private Language _language;
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		GCloudNaturalLanguageDocumentAssetAutoTagProvider.class);
+
 	private Collection<String> _getTagNames(JournalArticle journalArticle)
 		throws Exception {
 
 		return _gCloudNaturalLanguageDocumentAssetAutoTagger.getTagNames(
 			_getConfiguration(journalArticle),
-			extractDDMContent(journalArticle), ContentTypes.TEXT_PLAIN);
+			extractDDMContent(journalArticle),
+			_language.getLocale(journalArticle.getDefaultLanguageId()),
+			ContentTypes.TEXT_PLAIN);
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		GCloudNaturalLanguageDocumentAssetAutoTagProvider.class);
 
 	@Reference
 	private ConfigurationProvider _configurationProvider;

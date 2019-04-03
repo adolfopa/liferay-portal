@@ -12,16 +12,15 @@
  * details.
  */
 
-package com.liferay.document.library.asset.auto.tagger.google.cloud.natural.language.internal.constants;
+package com.liferay.journal.asset.auto.tagger.google.cloud.natural.language.internal.constants;
 
 /**
+ * @author Cristina González
  * @author Alicia García
- * @review
  */
 public class GCloudNaturalLanguageAssetAutoTagProviderConstants {
 
 	public static final String SERVICE_NAME =
-		"com.liferay.document.library.asset.auto.tagger.google.cloud.natural." +
-			"language";
+		"com.liferay.journal.asset.auto.tagger.google.cloud.natural.language";
 
 }

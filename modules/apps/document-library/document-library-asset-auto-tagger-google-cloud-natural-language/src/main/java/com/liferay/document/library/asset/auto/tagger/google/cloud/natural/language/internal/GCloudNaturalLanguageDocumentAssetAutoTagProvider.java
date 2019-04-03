@@ -15,16 +15,10 @@
 package com.liferay.document.library.asset.auto.tagger.google.cloud.natural.language.internal;
 
 import com.liferay.asset.auto.tagger.AssetAutoTagProvider;
+import com.liferay.asset.auto.tagger.google.cloud.natural.language.api.GCloudNaturalLanguageDocumentAssetAutoTagger;
 import com.liferay.document.library.asset.auto.tagger.google.cloud.natural.language.internal.configuration.GCloudNaturalLanguageAssetAutoTagProviderCompanyConfiguration;
 import com.liferay.document.library.asset.auto.tagger.google.cloud.natural.language.internal.constants.GCloudNaturalLanguageAssetAutoTagProviderConstants;
-import com.liferay.document.library.asset.auto.tagger.google.cloud.natural.language.internal.util.GCloudNaturalLanguageUtil;
-import com.liferay.petra.string.CharPool;
-import com.liferay.petra.string.StringBundler;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
-import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.module.configuration.ConfigurationException;
@@ -35,24 +29,14 @@ import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.settings.CompanyServiceSettingsLocator;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.FileUtil;
-import com.liferay.portal.kernel.util.Http;
-import com.liferay.portal.kernel.util.StringUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import java.net.HttpURLConnection;
-
 import java.nio.charset.StandardCharsets;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -77,10 +61,6 @@ public class GCloudNaturalLanguageDocumentAssetAutoTagProvider
 
 			return Collections.emptyList();
 		}
-	}
-
-	private static <T> Predicate<T> _negate(Predicate<T> predicate) {
-		return predicate.negate();
 	}
 
 	private GCloudNaturalLanguageAssetAutoTagProviderCompanyConfiguration
@@ -118,26 +98,11 @@ public class GCloudNaturalLanguageDocumentAssetAutoTagProvider
 		}
 	}
 
-	private String _getFileEntryType(FileEntry fileEntry) {
-		if (ContentTypes.TEXT_HTML.equals(fileEntry.getMimeType())) {
-			return "HTML";
-		}
-
-		return "PLAIN_TEXT";
-	}
-
-	private String _getServiceURL(String apiKey, String endpoint) {
-		return StringBundler.concat(
-			"https://language.googleapis.com/v1/documents:", endpoint, "?key=",
-			apiKey);
-	}
-
 	private Collection<String> _getTagNames(FileEntry fileEntry)
 		throws Exception {
 
 		if (fileEntry.isRepositoryCapabilityProvided(
-				TemporaryFileEntriesCapability.class) ||
-			!_supportedContentTypes.contains(fileEntry.getMimeType())) {
+				TemporaryFileEntriesCapability.class)) {
 
 			return Collections.emptyList();
 		}
@@ -146,156 +111,19 @@ public class GCloudNaturalLanguageDocumentAssetAutoTagProvider
 			gCloudNaturalLanguageAssetAutoTagProviderCompanyConfiguration =
 				_getConfiguration(fileEntry);
 
-		if (!gCloudNaturalLanguageAssetAutoTagProviderCompanyConfiguration.
-				classificationEndpointEnabled() &&
-			!gCloudNaturalLanguageAssetAutoTagProviderCompanyConfiguration.
-				entityEndpointEnabled()) {
-
-			return Collections.emptyList();
-		}
-
-		Set<String> tagNames = new HashSet<>();
-
-		String apiKey =
-			gCloudNaturalLanguageAssetAutoTagProviderCompanyConfiguration.
-				apiKey();
-
-		String type = _getFileEntryType(fileEntry);
-
-		int size =
-			GCloudNaturalLanguageAssetAutoTagProviderConstants.
-				MAX_CHARACTERS_SERVICE - _MINIMUM_PAYLOAD_SIZE - type.length();
-
-		String truncatedContent = GCloudNaturalLanguageUtil.truncateToSize(
-			_getFileEntryContent(fileEntry), size);
-
-		String documentPayload = GCloudNaturalLanguageUtil.getDocumentPayload(
-			truncatedContent, type);
-
-		if (gCloudNaturalLanguageAssetAutoTagProviderCompanyConfiguration.
-				classificationEndpointEnabled()) {
-
-			JSONObject responseJSONObject = _post(
-				_getServiceURL(apiKey, "classifyText"), documentPayload);
-			float confidence =
-				gCloudNaturalLanguageAssetAutoTagProviderCompanyConfiguration.
-					confidence();
-
-			_processTagNames(
-				responseJSONObject.getJSONArray("categories"),
-				jsonObject -> jsonObject.getDouble("confidence") > confidence,
-				tagNames::add);
-		}
-
-		if (gCloudNaturalLanguageAssetAutoTagProviderCompanyConfiguration.
-				entityEndpointEnabled()) {
-
-			JSONObject responseJSONObject = _post(
-				_getServiceURL(apiKey, "analyzeEntities"), documentPayload);
-			float salience =
-				gCloudNaturalLanguageAssetAutoTagProviderCompanyConfiguration.
-					salience();
-
-			_processTagNames(
-				responseJSONObject.getJSONArray("entities"),
-				jsonObject -> jsonObject.getDouble("salience") > salience,
-				tagNames::add);
-		}
-
-		return tagNames;
+		return _gCloudNaturalLanguageDocumentAssetAutoTagger.getTagNames(
+			gCloudNaturalLanguageAssetAutoTagProviderCompanyConfiguration,
+			_getFileEntryContent(fileEntry), fileEntry.getMimeType());
 	}
-
-	private JSONObject _post(String serviceURL, String body) throws Exception {
-		Http.Options options = new Http.Options();
-
-		options.setBody(body, ContentTypes.APPLICATION_JSON, StringPool.UTF8);
-		options.addHeader("Content-Type", ContentTypes.APPLICATION_JSON);
-		options.setLocation(serviceURL);
-		options.setPost(true);
-
-		String responseJSON = _http.URLtoString(options);
-
-		JSONObject jsonObject = JSONFactoryUtil.createJSONObject(responseJSON);
-
-		Http.Response response = options.getResponse();
-
-		if (response.getResponseCode() == HttpURLConnection.HTTP_OK) {
-			return jsonObject;
-		}
-
-		JSONObject errorJSONObject = jsonObject.getJSONObject("error");
-
-		String errorMessage = responseJSON;
-
-		if (errorJSONObject != null) {
-			errorMessage = errorJSONObject.getString("message");
-		}
-
-		throw new PortalException(
-			StringBundler.concat(
-				"Unable to generate tags with the Google Natural Language ",
-				"service. Response code ", response.getResponseCode(), ": ",
-				errorMessage));
-	}
-
-	private void _processTagNames(
-		JSONArray jsonArray, Predicate<JSONObject> predicate,
-		Consumer<String> consumer) {
-
-		if (jsonArray == null) {
-			return;
-		}
-
-		for (int i = 0; i < jsonArray.length(); i++) {
-			JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-			if (predicate.test(jsonObject)) {
-				String tagName = StringUtil.removeChars(
-					jsonObject.getString("name"), CharPool.APOSTROPHE,
-					CharPool.DASH);
-
-				Stream.of(
-					StringUtil.split(tagName, CharPool.AMPERSAND)
-				).flatMap(
-					tagNamePart -> Stream.of(
-						StringUtil.split(tagNamePart, CharPool.FORWARD_SLASH))
-				).map(
-					String::trim
-				).filter(
-					_negate(String::isEmpty)
-				).forEach(
-					consumer
-				);
-			}
-		}
-	}
-
-	private static final int _MINIMUM_PAYLOAD_SIZE;
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		GCloudNaturalLanguageDocumentAssetAutoTagProvider.class);
-
-	private static final Set<String> _supportedContentTypes = new HashSet<>(
-		Arrays.asList(
-			"application/epub+zip", "application/vnd.apple.pages.13",
-			"application/vnd.google-apps.document",
-			"application/vnd.openxmlformats-officedocument.wordprocessingml." +
-				"document",
-			ContentTypes.APPLICATION_MSWORD, ContentTypes.APPLICATION_PDF,
-			ContentTypes.APPLICATION_TEXT, ContentTypes.TEXT_HTML,
-			ContentTypes.TEXT_PLAIN));
-
-	static {
-		String payload = GCloudNaturalLanguageUtil.getDocumentPayload(
-			StringPool.BLANK, StringPool.BLANK);
-
-		_MINIMUM_PAYLOAD_SIZE = payload.length();
-	}
 
 	@Reference
 	private ConfigurationProvider _configurationProvider;
 
 	@Reference
-	private Http _http;
+	private GCloudNaturalLanguageDocumentAssetAutoTagger
+		_gCloudNaturalLanguageDocumentAssetAutoTagger;
 
 }

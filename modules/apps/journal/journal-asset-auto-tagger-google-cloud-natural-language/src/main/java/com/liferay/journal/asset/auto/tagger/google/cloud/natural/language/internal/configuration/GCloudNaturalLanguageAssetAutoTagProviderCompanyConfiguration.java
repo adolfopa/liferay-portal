@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.document.library.asset.auto.tagger.google.cloud.natural.language.internal.configuration;
+package com.liferay.journal.asset.auto.tagger.google.cloud.natural.language.internal.configuration;
 
 import aQute.bnd.annotation.metatype.Meta;
 
@@ -21,16 +21,16 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedAttributeDe
 import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClassDefinition;
 
 /**
+ * @author Cristina González
  * @author Alicia García
- * @review
  */
 @ExtendedObjectClassDefinition(
-	category = "documents-and-media",
+	category = "web-content",
 	scope = ExtendedObjectClassDefinition.Scope.COMPANY
 )
 @Meta.OCD(
 	description = "google-cloud-natural-language-asset-auto-tag-provider-description",
-	id = "com.liferay.document.library.asset.auto.tagger.google.cloud.natural.language.internal.configuration.GCloudNaturalLanguageAssetAutoTagProviderCompanyConfiguration",
+	id = "com.liferay.journal.asset.auto.tagger.google.cloud.natural.language.internal.configuration.GCloudNaturalLanguageAssetAutoTagProviderCompanyConfiguration",
 	localization = "content/Language",
 	name = "google-cloud-natural-language-asset-auto-tag-provider-configuration-name"
 )

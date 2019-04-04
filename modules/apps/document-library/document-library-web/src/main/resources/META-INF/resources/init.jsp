@@ -104,7 +104,6 @@ page import="com.liferay.document.library.web.internal.dao.search.IGResultRowSpl
 page import="com.liferay.document.library.web.internal.display.context.DLAdminDisplayContext" %><%@
 page import="com.liferay.document.library.web.internal.display.context.DLAdminDisplayContextProvider" %><%@
 page import="com.liferay.document.library.web.internal.display.context.DLAdminManagementToolbarDisplayContext" %><%@
-page import="com.liferay.document.library.web.internal.display.context.DLAdminNavigationDisplayContext" %><%@
 page import="com.liferay.document.library.web.internal.display.context.DLSelectRestrictedFileEntryTypesDisplayContext" %><%@
 page import="com.liferay.document.library.web.internal.display.context.DLViewFileEntryTypesDisplayContext" %><%@
 page import="com.liferay.document.library.web.internal.display.context.DLViewMoreMenuItemsDisplayContext" %><%@

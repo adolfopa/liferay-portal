@@ -43,7 +43,9 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Alejandro Tardín
+ * @deprecated As of Mueller (7.2.x)
  */
+@Deprecated
 public class DLAdminNavigationDisplayContext {
 
 	public DLAdminNavigationDisplayContext(

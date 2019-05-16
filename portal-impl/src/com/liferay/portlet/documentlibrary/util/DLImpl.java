@@ -685,10 +685,10 @@ public class DLImpl implements DL {
 	public <T> OrderByComparator<T> getRepositoryModelOrderByComparator(
 		String orderByCol, String orderByType, boolean orderByModel) {
 
-		boolean orderByAsc = true;
+		boolean orderByAsc = false;
 
-		if (orderByType.equals("desc")) {
-			orderByAsc = false;
+		if (orderByType.equals("asc")) {
+			orderByAsc = true;
 		}
 
 		OrderByComparator<T> orderByComparator = null;

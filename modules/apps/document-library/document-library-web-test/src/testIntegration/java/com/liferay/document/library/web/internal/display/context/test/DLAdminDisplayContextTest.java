@@ -58,6 +58,7 @@ import java.io.Writer;
 
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -141,7 +142,7 @@ public class DLAdminDisplayContextTest {
 	@Test
 	public void testGetSearchContainer() throws Exception {
 		for (int i = 0; i < 25; i++) {
-			_addDLFileEntry("alpha_" + i + ".txt", "alpha");
+			_addDLFileEntry("alpha_" + i + ".txt", "alpha" + i, "alpha");
 		}
 
 		SearchContainer searchContainer = _getSearchContainer(
@@ -151,9 +152,111 @@ public class DLAdminDisplayContextTest {
 	}
 
 	@Test
+	public void testGetSearchContainerWithOrderByType() throws Exception {
+		_addDLFileEntry(
+			RandomTestUtil.randomString(), "aaaa",
+			RandomTestUtil.randomString());
+
+		_addDLFileEntry(
+			RandomTestUtil.randomString(), "bbbb",
+			RandomTestUtil.randomString());
+
+		SearchContainer searchContainer = _getSearchContainer(
+			_getMockHttpServletRequestWithOrderByType(""));
+
+		List results = searchContainer.getResults();
+
+		FileEntry fileEntry1 = (FileEntry)results.get(0);
+
+		Assert.assertEquals("bbbb", fileEntry1.getFileName());
+
+		FileEntry fileEntry2 = (FileEntry)results.get(1);
+
+		Assert.assertEquals("aaaa", fileEntry2.getFileName());
+	}
+
+	@Test
+	public void testGetSearchContainerWithOrderByTypeOrderAsc()
+		throws Exception {
+
+		_addDLFileEntry(
+			RandomTestUtil.randomString(), "aaaa",
+			RandomTestUtil.randomString());
+
+		_addDLFileEntry(
+			RandomTestUtil.randomString(), "bbbb",
+			RandomTestUtil.randomString());
+
+		SearchContainer searchContainer = _getSearchContainer(
+			_getMockHttpServletRequestWithOrderByType("asc"));
+
+		List results = searchContainer.getResults();
+
+		FileEntry fileEntry1 = (FileEntry)results.get(0);
+
+		Assert.assertEquals("aaaa", fileEntry1.getFileName());
+
+		FileEntry fileEntry2 = (FileEntry)results.get(1);
+
+		Assert.assertEquals("bbbb", fileEntry2.getFileName());
+	}
+
+	@Test
+	public void testGetSearchContainerWithOrderByTypeOrderDesc()
+		throws Exception {
+
+		_addDLFileEntry(
+			RandomTestUtil.randomString(), "aaaa",
+			RandomTestUtil.randomString());
+
+		_addDLFileEntry(
+			RandomTestUtil.randomString(), "bbbb",
+			RandomTestUtil.randomString());
+
+		SearchContainer searchContainer = _getSearchContainer(
+			_getMockHttpServletRequestWithOrderByType("desc"));
+
+		List results = searchContainer.getResults();
+
+		FileEntry fileEntry1 = (FileEntry)results.get(0);
+
+		Assert.assertEquals("bbbb", fileEntry1.getFileName());
+
+		FileEntry fileEntry2 = (FileEntry)results.get(1);
+
+		Assert.assertEquals("aaaa", fileEntry2.getFileName());
+	}
+
+	@Test
+	public void testGetSearchContainerWithOrderByTypeOrderNoOrder()
+		throws Exception {
+
+		_addDLFileEntry(
+			RandomTestUtil.randomString(), "aaaa",
+			RandomTestUtil.randomString());
+
+		_addDLFileEntry(
+			RandomTestUtil.randomString(), "bbbb",
+			RandomTestUtil.randomString());
+
+		SearchContainer searchContainer = _getSearchContainer(
+			_getMockHttpServletRequestWithOrderByType("noOrder"));
+
+		List results = searchContainer.getResults();
+
+		FileEntry fileEntry1 = (FileEntry)results.get(0);
+
+		Assert.assertEquals("bbbb", fileEntry1.getFileName());
+
+		FileEntry fileEntry2 = (FileEntry)results.get(1);
+
+		Assert.assertEquals("aaaa", fileEntry2.getFileName());
+	}
+
+	@Test
 	public void testGetSearchContainerWithSearch() throws Exception {
 		for (int i = 0; i < 25; i++) {
-			_addDLFileEntry("alpha_" + i + ".txt", "alpha");
+			_addDLFileEntry("alpha_" + i + ".txt", "alpha" + i, "alpha");
 		}
 
 		SearchContainer searchContainer = _getSearchContainer(
@@ -162,7 +265,8 @@ public class DLAdminDisplayContextTest {
 		Assert.assertEquals(25, searchContainer.getTotal());
 	}
 
-	private FileEntry _addDLFileEntry(String fileName, String content)
+	private FileEntry _addDLFileEntry(
+			String sourceFileName, String title, String content)
 		throws Exception {
 
 		ServiceContext serviceContext =
@@ -170,10 +274,9 @@ public class DLAdminDisplayContextTest {
 
 		return _dlAppLocalService.addFileEntry(
 			TestPropsValues.getUserId(), serviceContext.getScopeGroupId(),
-			DLFolderConstants.DEFAULT_PARENT_FOLDER_ID, fileName,
-			ContentTypes.TEXT_PLAIN, RandomTestUtil.randomString(),
-			StringPool.BLANK, StringPool.BLANK, content.getBytes(),
-			serviceContext);
+			DLFolderConstants.DEFAULT_PARENT_FOLDER_ID, sourceFileName,
+			ContentTypes.TEXT_PLAIN, title, StringPool.BLANK, StringPool.BLANK,
+			content.getBytes(), serviceContext);
 	}
 
 	private HttpServletRequest _getHttpServletRequest(
@@ -200,6 +303,20 @@ public class DLAdminDisplayContextTest {
 
 		mockHttpServletRequest.setAttribute(
 			WebKeys.THEME_DISPLAY, _getThemeDisplay());
+
+		return mockHttpServletRequest;
+	}
+
+	private MockHttpServletRequest _getMockHttpServletRequestWithOrderByType(
+			String orderByType)
+		throws PortalException {
+
+		MockHttpServletRequest mockHttpServletRequest =
+			_getMockHttpServletRequest();
+
+		mockHttpServletRequest.setParameter(
+			"mvcRenderCommandName", "/document_library/view");
+		mockHttpServletRequest.setParameter("orderByType", orderByType);
 
 		return mockHttpServletRequest;
 	}

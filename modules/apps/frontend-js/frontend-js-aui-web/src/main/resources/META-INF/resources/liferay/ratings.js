@@ -58,7 +58,7 @@ AUI.add(
 
 							var yourScore = value;
 
-							if (instance.get('type') == 'stars' && yourScore == -1.0) {
+							if ((instance.get('type') == 'stars' || instance.get('type') == 'stacked-stars') && yourScore == -1.0) {
 								yourScore = 0;
 							}
 
@@ -267,7 +267,7 @@ AUI.add(
 					if (config.type === 'like') {
 						ratings = Liferay.Ratings.LikeRating;
 					}
-					else if (config.type === 'stars') {
+					else if ((config.type === 'stars') || (config.type === 'stacked-stars')) {
 						ratings = Liferay.Ratings.StarRating;
 					}
 					else if (config.type === 'thumbs') {

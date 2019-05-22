@@ -90,7 +90,7 @@ if (!inTrash) {
 	<c:choose>
 		<c:when test="<%= type.equals(RatingsType.STACKED_STARS.getValue()) %>">
 			<div class="liferay-rating-score" id="<%= randomNamespace %>ratingScore">
-				<div id="<%= randomNamespace %>ratingScoreContent" class="liferay-rating-score-content">
+				<div id="<%= randomNamespace %>ratingScoreContent">
 					<liferay-util:whitespace-remover>
 
 						<%
@@ -124,7 +124,7 @@ if (!inTrash) {
 
 			<c:if test="<%= themeDisplay.isSignedIn() && enabled %>">
 				<div class="liferay-rating-vote" id="<%= randomNamespace %>ratingStar">
-					<div id="<%= randomNamespace %>ratingStarContent" class="liferay-rating-vote-content">
+					<div id="<%= randomNamespace %>ratingStarContent">
 						<liferay-util:whitespace-remover>
 
 							<%

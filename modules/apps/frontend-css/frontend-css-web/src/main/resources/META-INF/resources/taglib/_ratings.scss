@@ -11,27 +11,18 @@
 		}
 	}
 
-	&.stacked-stars {
-		.liferay-rating-score {
-			padding: 0;
-		}
-
-		.liferay-rating-score .rating-element {
-			padding-top: 3px;
-			color:#FFB900;
-		}
-
-		.liferay-rating-score .rating-label {
-			margin-left: 8px;
-		}
-
-		.liferay-rating-vote {
-			padding: 0;
-		}
-
-		.liferay-rating-vote-content,
-		.liferay-rating-score-content {
+	&.stacked-stars .liferay-rating-score {
+		> div {
 			display: flex;
+		}
+
+		.rating-element {
+			color:#FFB900;
+			padding-top: 3px;
+		}
+
+		.rating-label {
+			margin-left: 8px;
 		}
 	}
 

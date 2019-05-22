@@ -89,9 +89,42 @@ if (!inTrash) {
 <div class="taglib-ratings <%= type %>" id="<%= randomNamespace %>ratingContainer">
 	<c:choose>
 		<c:when test="<%= type.equals(RatingsType.STACKED_STARS.getValue()) %>">
+			<div class="liferay-rating-score" id="<%= randomNamespace %>ratingScore">
+				<div id="<%= randomNamespace %>ratingScoreContent" class="liferay-rating-score-content">
+					<liferay-util:whitespace-remover>
+
+						<%
+							for (int i = 1; i <= numberOfStars; i++) {
+								String message = StringPool.BLANK;
+
+								if (inTrash) {
+									message = LanguageUtil.get(resourceBundle, "ratings-are-disabled-because-this-entry-is-in-the-recycle-bin");
+								}
+								else if (!enabled) {
+									message = LanguageUtil.get(resourceBundle, "ratings-are-disabled-in-staging");
+								}
+								else if (i == 1) {
+									message = LanguageUtil.format(request, ((formattedAverageScore == 1.0) ? "the-average-rating-is-x-star-out-of-x" : "the-average-rating-is-x-stars-out-of-x"), new Object[] {formattedAverageScore, numberOfStars}, false);
+								}
+						%>
+
+						<span class="rating-element <%= (i <= averageIndex) ? "icon-star" : "icon-star-empty" %>" title="<%= message %>"></span>
+
+						<%
+							}
+						%>
+
+					</liferay-util:whitespace-remover>
+
+					<div class="rating-label">
+						(<%= totalEntries %> <liferay-ui:message key='<%= (totalEntries == 1) ? "vote" : "votes" %>' />)
+					</div>
+				</div>
+			</div>
+
 			<c:if test="<%= themeDisplay.isSignedIn() && enabled %>">
 				<div class="liferay-rating-vote" id="<%= randomNamespace %>ratingStar">
-					<div id="<%= randomNamespace %>ratingStarContent" style="display: flex;">
+					<div id="<%= randomNamespace %>ratingStarContent" class="liferay-rating-vote-content">
 						<liferay-util:whitespace-remover>
 
 							<%
@@ -117,39 +150,6 @@ if (!inTrash) {
 					</div>
 				</div>
 			</c:if>
-
-			<div class="liferay-rating-score" id="<%= randomNamespace %>ratingScore" style="padding:0;">
-				<div id="<%= randomNamespace %>ratingScoreContent" style="display: flex;">
-					<liferay-util:whitespace-remover>
-
-						<%
-							for (int i = 1; i <= numberOfStars; i++) {
-								String message = StringPool.BLANK;
-
-								if (inTrash) {
-									message = LanguageUtil.get(resourceBundle, "ratings-are-disabled-because-this-entry-is-in-the-recycle-bin");
-								}
-								else if (!enabled) {
-									message = LanguageUtil.get(resourceBundle, "ratings-are-disabled-in-staging");
-								}
-								else if (i == 1) {
-									message = LanguageUtil.format(request, ((formattedAverageScore == 1.0) ? "the-average-rating-is-x-star-out-of-x" : "the-average-rating-is-x-stars-out-of-x"), new Object[] {formattedAverageScore, numberOfStars}, false);
-								}
-						%>
-
-						<span class="rating-element <%= (i <= averageIndex) ? "icon-star" : "icon-star-empty" %>" title="<%= message %>" style="padding-top: 3px;color:#FFB900"></span>
-
-						<%
-							}
-						%>
-
-					</liferay-util:whitespace-remover>
-
-					<div class="rating-label" style="margin-left:8px">
-						(<%= totalEntries %> <liferay-ui:message key='<%= (totalEntries == 1) ? "vote" : "votes" %>' />)
-					</div>
-				</div>
-			</div>
 		</c:when>
 		<c:when test="<%= type.equals(RatingsType.STARS.getValue()) %>">
 			<c:if test="<%= themeDisplay.isSignedIn() && enabled %>">

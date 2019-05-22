@@ -26,6 +26,7 @@ AUI.add(
 		var STR_YOUR_SCORE = 'yourScore';
 
 		var TPL_LABEL_SCORE = '{desc} ({totalEntries} {voteLabel})';
+		var TPL_LABEL_SCORE_STACKED = '({totalEntries} {voteLabel})';
 
 		var buffer = [];
 
@@ -113,6 +114,9 @@ AUI.add(
 						var instance = this;
 
 						var voteLabel = '';
+						var tplLabel = instance.get('type') == 'stacked-stars'
+							? TPL_LABEL_SCORE_STACKED
+							: TPL_LABEL_SCORE;
 
 						if (totalEntries == 1) {
 							voteLabel = Liferay.Language.get('vote');
@@ -122,7 +126,7 @@ AUI.add(
 						}
 
 						return Lang.sub(
-							TPL_LABEL_SCORE,
+							tplLabel,
 							{
 								desc: desc,
 								totalEntries: totalEntries,

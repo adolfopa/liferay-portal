@@ -62,7 +62,6 @@ import org.hibernate.util.JDBCExceptionReporter;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -308,7 +307,6 @@ public class DLAppServiceWhenAddingAFileEntryTest extends BaseDLAppTestCase {
 		},
 		level = "ERROR", loggerClass = JDBCExceptionReporter.class
 	)
-	@Ignore
 	@Test
 	public void testShouldSucceedWithConcurrentAccess() throws Exception {
 		_users = new User[ServiceTestUtil.THREAD_COUNT];
@@ -351,7 +349,6 @@ public class DLAppServiceWhenAddingAFileEntryTest extends BaseDLAppTestCase {
 			_users.length, successCount);
 	}
 
-	@Ignore
 	@Test
 	public void testShouldSucceedWithNullBytes() throws Exception {
 		String fileName = RandomTestUtil.randomString();

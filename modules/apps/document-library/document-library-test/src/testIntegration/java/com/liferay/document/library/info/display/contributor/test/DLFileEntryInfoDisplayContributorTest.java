@@ -128,55 +128,59 @@ public class DLFileEntryInfoDisplayContributorTest {
 						fileEntry, LocaleUtil.getDefault());
 
 				Assert.assertEquals(
-					fileEntry.getUserName(),
+					"authorName", fileEntry.getUserName(),
 					infoDisplayFieldsValues.get("authorName"));
 				Assert.assertEquals(
-					StringPool.BLANK,
+					"authorProfileImage", StringPool.BLANK,
 					infoDisplayFieldsValues.get("authorProfileImage"));
 				Assert.assertEquals(
-					StringPool.BLANK,
+					"categories", StringPool.BLANK,
 					infoDisplayFieldsValues.get("categories"));
 				Assert.assertEquals(
-					fileEntry.getDescription(),
+					"description", fileEntry.getDescription(),
 					infoDisplayFieldsValues.get("description"));
 				Assert.assertEquals(
+					"downloadURL",
 					_dlurlHelper.getDownloadURL(
 						fileEntry, fileEntry.getFileVersion(), null,
 						StringPool.BLANK),
 					infoDisplayFieldsValues.get("downloadURL"));
 				Assert.assertEquals(
-					fileEntry.getFileName(),
+					"fileName", fileEntry.getFileName(),
 					infoDisplayFieldsValues.get("fileName"));
 				Assert.assertEquals(
-					fileEntry.getMimeType(),
+					"mimeType", fileEntry.getMimeType(),
 					infoDisplayFieldsValues.get("mimeType"));
 
 				JSONObject previewImageJSONObject =
 					(JSONObject)infoDisplayFieldsValues.get("previewImage");
 
 				Assert.assertEquals(
-					StringPool.BLANK, previewImageJSONObject.getString("url"));
+					"url", StringPool.BLANK,
+					previewImageJSONObject.getString("url"));
 
 				Format dateFormatDateTime =
 					FastDateFormatFactoryUtil.getDateTime(
 						LocaleUtil.getDefault());
 
 				Assert.assertEquals(
+					"publishDate",
 					dateFormatDateTime.format(fileEntry.getModifiedDate()),
 					infoDisplayFieldsValues.get("publishDate"));
 
 				Assert.assertEquals(
+					"size",
 					TextFormatter.formatStorageSize(
 						fileEntry.getSize(), LocaleUtil.getDefault()),
 					infoDisplayFieldsValues.get("size"));
 				Assert.assertEquals(
-					StringPool.BLANK, infoDisplayFieldsValues.get("summary"));
+					"tagNames", StringPool.BLANK,
+					infoDisplayFieldsValues.get("tagNames"));
 				Assert.assertEquals(
-					StringPool.BLANK, infoDisplayFieldsValues.get("tagNames"));
+					"title", fileEntry.getTitle(),
+					infoDisplayFieldsValues.get("title"));
 				Assert.assertEquals(
-					fileEntry.getTitle(), infoDisplayFieldsValues.get("title"));
-				Assert.assertEquals(
-					fileEntry.getVersion(),
+					"version", fileEntry.getVersion(),
 					infoDisplayFieldsValues.get("version"));
 			});
 	}

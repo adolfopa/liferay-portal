@@ -192,6 +192,7 @@ if (portletTitleBasedNavigation) {
 									name="titleEditor"
 									onChangeMethod="OnChangeTitle"
 									placeholder="title"
+									required="<%= true %>"
 									showSource="<%= false %>"
 								/>
 							</h1>

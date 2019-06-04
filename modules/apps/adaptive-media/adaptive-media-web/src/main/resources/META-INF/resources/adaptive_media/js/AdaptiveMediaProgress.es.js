@@ -1,8 +1,8 @@
 import 'clay-progress-bar';
 import Ajax from 'metal-ajax';
+import ClayTooltip from 'clay-tooltip';
 import PortletBase from 'frontend-js-web/liferay/PortletBase.es';
 import Soy from 'metal-soy';
-import Tooltip from 'frontend-js-web/liferay/compat/tooltip/Tooltip.es';
 import core from 'metal';
 
 import templates from './AdaptiveMediaProgress.soy';
@@ -15,6 +15,24 @@ import templates from './AdaptiveMediaProgress.soy';
  */
 
 class AdaptiveMediaProgress extends PortletBase {
+	
+	/**
+	 * @inheritDoc
+	 */
+	attached() {
+		this._instanceClayTooltip = ClayTooltip.init({});
+
+		this._instanceClayTooltip.position = 'TopCenter';
+		this._instanceClayTooltip.selectors = ['.progress-container'];
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	disposed() {
+		this._instanceClayTooltip.dispose();
+	}
+
 	/**
 	 * @inheritDoc
 	 */
@@ -102,7 +120,10 @@ class AdaptiveMediaProgress extends PortletBase {
 		this.clearInterval_();
 		this.showLoadingIndicator_ = false;
 
-		this.emit('finish', {uuid: this.uuid});
+		this.emit(
+			'finish',
+			{uuid: this.uuid}
+		);
 	}
 
 	/**
@@ -112,10 +133,8 @@ class AdaptiveMediaProgress extends PortletBase {
 	 * @protected
 	 */
 	updateProgressBar_(adaptedImages, totalImages) {
-		this.percentage_ = Math.round((adaptedImages / totalImages) * 100) || 0;
-		this.progressBarTooltip_ = this.tooltip
-			? this.tooltip
-			: adaptedImages + '/' + totalImages;
+		this.percentage_ = Math.round(adaptedImages / totalImages * 100) || 0;
+		this.progressBarTooltip_ = this.tooltip ? this.tooltip : adaptedImages + '/' + totalImages;
 	}
 }
 
@@ -126,6 +145,7 @@ class AdaptiveMediaProgress extends PortletBase {
  * @type {!Object}
  */
 AdaptiveMediaProgress.STATE = {
+
 	/**
 	 * Number of adapted images in the platform.
 	 *
@@ -252,17 +272,6 @@ AdaptiveMediaProgress.STATE = {
 	 */
 	tooltip: {
 		validator: core.isString
-	},
-
-	/**
-	 * The tooltip position in the progress bar.
-	 *
-	 * @instance
-	 * @memberof AdaptiveMediaProgress
-	 * @type {Object}
-	 */
-	tooltipPosition: {
-		value: Tooltip.Align.Top
 	},
 
 	/**

@@ -21,6 +21,8 @@ import com.liferay.portal.kernel.dao.search.SearchPaginationUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Organization;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.ClassNameLocalServiceUtil;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -28,6 +30,7 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.taglib.util.IncludeTag;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -87,9 +90,33 @@ public class GroupSelectorTag extends IncludeTag {
 		int[] startAndEnd = SearchPaginationUtil.calculateStartAndEnd(
 			cur, delta);
 
-		return GroupLocalServiceUtil.search(
+		List<Group> groups = GroupLocalServiceUtil.search(
 			themeDisplay.getCompanyId(), _CLASS_NAME_IDS, keywords, groupParams,
 			startAndEnd[0], startAndEnd[1], null);
+
+		List<Group> visibleGroups = new ArrayList<>();
+
+		PermissionChecker permissionChecker =
+			themeDisplay.getPermissionChecker();
+
+		boolean hasDocumentLibraryHomeFolderViewPermission = false;
+
+		long groupId = 0;
+
+		for (Group group : groups) {
+			groupId = group.getGroupId();
+
+			hasDocumentLibraryHomeFolderViewPermission =
+				permissionChecker.hasPermission(
+					groupId, "com.liferay.document.library", groupId,
+					ActionKeys.VIEW);
+
+			if (hasDocumentLibraryHomeFolderViewPermission) {
+				visibleGroups.add(group);
+			}
+		}
+
+		return visibleGroups;
 	}
 
 	protected int getGroupsCount(HttpServletRequest httpServletRequest) {
@@ -119,12 +146,13 @@ public class GroupSelectorTag extends IncludeTag {
 
 	@Override
 	protected void setAttributes(HttpServletRequest httpServletRequest) {
+		List<Group> groups = getGroups(httpServletRequest);
+
 		httpServletRequest.setAttribute(
-			"liferay-item-selector:group-selector:groups",
-			getGroups(httpServletRequest));
+			"liferay-item-selector:group-selector:groups", groups);
 		httpServletRequest.setAttribute(
-			"liferay-item-selector:group-selector:groupsCount",
-			getGroupsCount(httpServletRequest));
+			"liferay-item-selector:group-selector:groupsCount", groups.size());
+
 		httpServletRequest.setAttribute(
 			"liferay-item-selector:group-selector:itemSelector",
 			ItemSelectorUtil.getItemSelector());

@@ -247,6 +247,8 @@ public class DLFileEntryMetadataLocalServiceTest {
 
 	private DDMStructure _ddmStructure;
 	private DLFileEntry _dlFileEntry;
+
+	@DeleteAfterTestRun
 	private DLFileEntryType _dlFileEntryType;
 
 	@DeleteAfterTestRun

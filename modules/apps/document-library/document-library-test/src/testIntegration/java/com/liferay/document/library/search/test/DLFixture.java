@@ -17,6 +17,7 @@ package com.liferay.document.library.search.test;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
+import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
@@ -89,7 +90,9 @@ public class DLFixture {
 		return _group.getGroupId();
 	}
 
+	@DeleteAfterTestRun
 	private Group _group;
+	@DeleteAfterTestRun
 	private final List<Group> _groups;
 	private User _user;
 	private final List<User> _users;

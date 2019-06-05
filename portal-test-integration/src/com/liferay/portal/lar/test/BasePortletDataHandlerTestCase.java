@@ -179,7 +179,7 @@ public abstract class BasePortletDataHandlerTestCase {
 
 		initContext();
 
-		Group cleanGroup = GroupTestUtil.addGroup();
+		_cleanGroup = GroupTestUtil.addGroup();
 
 		UserIdStrategy testUserIdStrategy = new UserIdStrategy() {
 
@@ -203,8 +203,8 @@ public abstract class BasePortletDataHandlerTestCase {
 		portletDataContext.setZipReader(
 			ZipReaderFactoryUtil.getZipReader(exportZipWriter.getFile()));
 
-		portletDataContext.setScopeGroupId(cleanGroup.getGroupId());
-		portletDataContext.setGroupId(cleanGroup.getGroupId());
+		portletDataContext.setScopeGroupId(_cleanGroup.getGroupId());
+		portletDataContext.setGroupId(_cleanGroup.getGroupId());
 
 		portletDataContext.clearScopedPrimaryKeys();
 
@@ -225,6 +225,7 @@ public abstract class BasePortletDataHandlerTestCase {
 		}
 
 		Assert.assertEquals(exportedUuidSet, importedUuidSet);
+
 	}
 
 	@Test
@@ -687,6 +688,9 @@ public abstract class BasePortletDataHandlerTestCase {
 
 	@DeleteAfterTestRun
 	protected Group stagingGroup;
+
+	@DeleteAfterTestRun
+	protected Group _cleanGroup;
 
 	protected ZipWriter zipWriter;
 

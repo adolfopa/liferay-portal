@@ -51,10 +51,6 @@ public class SharepointServlet extends HttpServlet {
 
 		try {
 			String uri = httpServletRequest.getRequestURI();
-
-			if (uri.equals("/_vti_inf.html")) {
-				vtiInfHtml(httpServletResponse);
-			}
 		}
 		catch (Exception e) {
 			_log.error(e, e);
@@ -131,28 +127,6 @@ public class SharepointServlet extends HttpServlet {
 		catch (SharepointException se) {
 			_log.error(se, se);
 		}
-	}
-
-	protected void vtiInfHtml(HttpServletResponse httpServletResponse)
-		throws Exception {
-
-		StringBundler sb = new StringBundler(13);
-
-		sb.append("<!-- FrontPage Configuration Information");
-		sb.append(StringPool.NEW_LINE);
-		sb.append(" FPVersion=\"6.0.2.9999\"");
-		sb.append(StringPool.NEW_LINE);
-		sb.append("FPShtmlScriptUrl=\"_vti_bin/shtml.dll/_vti_rpc\"");
-		sb.append(StringPool.NEW_LINE);
-		sb.append("FPAuthorScriptUrl=\"_vti_bin/_vti_aut/author.dll\"");
-		sb.append(StringPool.NEW_LINE);
-		sb.append("FPAdminScriptUrl=\"_vti_bin/_vti_adm/admin.dll\"");
-		sb.append(StringPool.NEW_LINE);
-		sb.append("TPScriptUrl=\"_vti_bin/owssvr.dll\"");
-		sb.append(StringPool.NEW_LINE);
-		sb.append("-->");
-
-		ServletResponseUtil.write(httpServletResponse, sb.toString());
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

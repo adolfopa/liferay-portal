@@ -165,10 +165,22 @@ renderResponse.setTitle((fileEntryType == null) ? LanguageUtil.get(request, "new
 </div>
 
 <aui:script>
+
+	<%
+	PortletURL portletURL = PortletURLFactoryUtil.create(request, PortletProviderUtil.getPortletId(com.liferay.dynamic.data.mapping.model.DDMStructure.class.getName(), PortletProvider.Action.VIEW), PortletRequest.RENDER_PHASE);
+	%>
+
 	function <portlet:namespace />openDDMStructureSelector() {
+
+		var searchContainer = Liferay.SearchContainer.get('<portlet:namespace />ddmStructuresSearchContainer');
+
+		var myUrl = Liferay.PortletURL.createURL('<%= portletURL.toString() %>');
+
+		myUrl.setParameter('metadataSets', searchContainer?searchContainer.getData(false):"");
+
 		Liferay.Util.openDDMPortlet(
 			{
-				basePortletURL: '<%= PortletURLFactoryUtil.create(request, PortletProviderUtil.getPortletId(com.liferay.dynamic.data.mapping.model.DDMStructure.class.getName(), PortletProvider.Action.VIEW), PortletRequest.RENDER_PHASE) %>',
+				basePortletURL: myUrl.toString(),
 				classPK: '<%= ddmStructureId %>',
 				dialog: {
 					destroyOnHide: true

@@ -20,6 +20,7 @@
 long classPK = ParamUtil.getLong(request, "classPK");
 String displayStyle = ParamUtil.getString(request, "displayStyle", "list");
 String eventName = ParamUtil.getString(request, "eventName", "selectStructure");
+String metadataSets = ParamUtil.getString(request, "metadataSets");
 
 SearchContainer<DDMStructure> structureSearch = ddmDisplayContext.getStructureSearch();
 %>
@@ -73,9 +74,29 @@ SearchContainer<DDMStructure> structureSearch = ddmDisplayContext.getStructureSe
 						data.put("ddmstructureid", structure.getStructureId());
 						data.put("ddmstructurekey", structure.getStructureKey());
 						data.put("name", structure.getName(locale));
+
+						Boolean inMetadataSet = false;
+
+						String[] metadataSetsArray = metadataSets.split(",");
+
+						for (String metadataSet : metadataSetsArray) {
+							if (Objects.equals(metadataSet, String.valueOf(structure.getStructureId()))) {
+								inMetadataSet = true;
+								break;
+							}
+						}
+
+						String href = "javascript:;";
+
+						String mutedClass = "selector-button";
+
+						if (inMetadataSet) {
+							data.put("prevent-selection", true); href = "";
+							mutedClass = "selector-button text-muted";
+						}
 						%>
 
-						<aui:a cssClass="selector-button" data="<%= data %>" href="javascript:;">
+						<aui:a cssClass="<%= mutedClass %>" data="<%= data %>" href="<%= href %>">
 							<%= HtmlUtil.escape(structure.getUnambiguousName(structureSearch.getResults(), themeDisplay.getScopeGroupId(), locale)) %>
 						</aui:a>
 					</c:when>

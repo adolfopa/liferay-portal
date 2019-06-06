@@ -15,12 +15,10 @@
 package com.liferay.portal.sharepoint;
 
 import com.liferay.petra.string.StringBundler;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.servlet.HttpHeaders;
-import com.liferay.portal.kernel.servlet.ServletResponseUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.webdav.WebDAVUtil;
 import com.liferay.portal.sharepoint.methods.Method;
@@ -47,13 +45,6 @@ public class SharepointServlet extends HttpServlet {
 					httpServletRequest.getHeader(HttpHeaders.USER_AGENT), " ",
 					httpServletRequest.getMethod(), " ",
 					httpServletRequest.getRequestURI()));
-		}
-
-		try {
-			String uri = httpServletRequest.getRequestURI();
-		}
-		catch (Exception e) {
-			_log.error(e, e);
 		}
 	}
 

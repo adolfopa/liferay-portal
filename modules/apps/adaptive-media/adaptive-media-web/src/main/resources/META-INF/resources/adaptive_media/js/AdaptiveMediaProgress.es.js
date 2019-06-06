@@ -1,8 +1,8 @@
 import 'clay-progress-bar';
 import Ajax from 'metal-ajax';
+import ClayTooltip from 'clay-tooltip';
 import PortletBase from 'frontend-js-web/liferay/PortletBase.es';
 import Soy from 'metal-soy';
-import Tooltip from 'frontend-js-web/liferay/compat/tooltip/Tooltip.es';
 import core from 'metal';
 
 import templates from './AdaptiveMediaProgress.soy';
@@ -15,6 +15,24 @@ import templates from './AdaptiveMediaProgress.soy';
  */
 
 class AdaptiveMediaProgress extends PortletBase {
+	
+	/**
+	 * @inheritDoc
+	 */
+	attached() {
+		this._progressTooltip = ClayTooltip.init({});
+
+		this._progressTooltip.position = 'TopCenter';
+		this._progressTooltip.selectors = ['.progress-container'];
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	disposed() {
+		this._progressTooltip.dispose();
+	}
+
 	/**
 	 * @inheritDoc
 	 */
@@ -126,6 +144,18 @@ class AdaptiveMediaProgress extends PortletBase {
  * @type {!Object}
  */
 AdaptiveMediaProgress.STATE = {
+	/**
+	 * Instance of ClayTooltip for progress bar tooltip
+	 *
+	 * @default undefined
+	 * @instance
+	 * @memberOf AdaptiveMediaProgress
+	 * @type {ClayTooltip}
+	 */
+	_progressTooltip: Config.instanceOf(ClayTooltip),
+
+ 	/**
+
 	/**
 	 * Number of adapted images in the platform.
 	 *
@@ -252,17 +282,6 @@ AdaptiveMediaProgress.STATE = {
 	 */
 	tooltip: {
 		validator: core.isString
-	},
-
-	/**
-	 * The tooltip position in the progress bar.
-	 *
-	 * @instance
-	 * @memberof AdaptiveMediaProgress
-	 * @type {Object}
-	 */
-	tooltipPosition: {
-		value: Tooltip.Align.Top
 	},
 
 	/**

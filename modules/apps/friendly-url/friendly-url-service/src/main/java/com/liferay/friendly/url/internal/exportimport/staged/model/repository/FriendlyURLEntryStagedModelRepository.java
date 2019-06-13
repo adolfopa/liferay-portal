@@ -21,6 +21,7 @@ import com.liferay.exportimport.staged.model.repository.StagedModelRepositoryHel
 import com.liferay.friendly.url.model.FriendlyURLEntry;
 import com.liferay.friendly.url.model.FriendlyURLEntryLocalization;
 import com.liferay.friendly.url.service.FriendlyURLEntryLocalService;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
@@ -178,8 +179,24 @@ public class FriendlyURLEntryStagedModelRepository
 		PortletDataContext portletDataContext,
 		FriendlyURLEntry friendlyURLEntry) {
 
-		String modelPath = ExportImportPathUtil.getModelPath(
-			friendlyURLEntry, friendlyURLEntry.getUuid());
+		String modelPath = StringPool.BLANK;
+
+		if (friendlyURLEntry.getCompanyId() !=
+				portletDataContext.getSourceCompanyId()) {
+
+			FriendlyURLEntry sourceFriendlyURLEntry =
+				(FriendlyURLEntry)friendlyURLEntry.clone();
+
+			sourceFriendlyURLEntry.setCompanyId(
+				portletDataContext.getSourceCompanyId());
+
+			modelPath = ExportImportPathUtil.getModelPath(
+				sourceFriendlyURLEntry, sourceFriendlyURLEntry.getUuid());
+		}
+		else {
+			modelPath = ExportImportPathUtil.getModelPath(
+				friendlyURLEntry, friendlyURLEntry.getUuid());
+		}
 
 		Map<Locale, String> localeLocalizationMap =
 			LocalizationUtil.getLocalizationMap(

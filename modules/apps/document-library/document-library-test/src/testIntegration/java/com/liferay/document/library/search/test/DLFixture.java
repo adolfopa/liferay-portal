@@ -92,8 +92,10 @@ public class DLFixture {
 
 	@DeleteAfterTestRun
 	private Group _group;
+
 	@DeleteAfterTestRun
 	private final List<Group> _groups;
+
 	private User _user;
 	private final List<User> _users;
 

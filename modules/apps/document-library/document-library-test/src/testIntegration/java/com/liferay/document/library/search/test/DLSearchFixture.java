@@ -90,6 +90,7 @@ public class DLSearchFixture {
 
 	@DeleteAfterTestRun
 	private Group _group;
+
 	private Indexer<?> _indexer;
 	private final IndexerRegistry _indexerRegistry;
 	private User _user;

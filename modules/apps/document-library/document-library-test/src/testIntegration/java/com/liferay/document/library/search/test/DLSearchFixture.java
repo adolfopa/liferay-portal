@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistry;
 import com.liferay.portal.kernel.search.QueryConfig;
 import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.search.test.util.HitsAssert;
 
@@ -87,7 +88,9 @@ public class DLSearchFixture {
 		return _indexer.search(searchContext);
 	}
 
+	@DeleteAfterTestRun
 	private Group _group;
+
 	private Indexer<?> _indexer;
 	private final IndexerRegistry _indexerRegistry;
 	private User _user;

@@ -29,9 +29,10 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(immediate = true, service = UADAnonymizer.class)
 public class BlogsEntryUADAnonymizer extends BaseBlogsEntryUADAnonymizer {
+
 	@Override
 	public void autoAnonymize(
-		BlogsEntry blogsEntry, long userId, User anonymousUser)
+			BlogsEntry blogsEntry, long userId, User anonymousUser)
 		throws PortalException {
 
 		if (blogsEntry.getUserId() == userId) {

@@ -15,23 +15,16 @@
 package com.liferay.seo.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.model.Company;
-import com.liferay.portal.kernel.model.Group;
-import com.liferay.portal.kernel.model.Layout;
+import com.liferay.petra.function.UnsafeRunnable;
+import com.liferay.portal.configuration.test.util.ConfigurationTemporarySwapper;
 import com.liferay.portal.kernel.seo.SEO;
 import com.liferay.portal.kernel.seo.SEOLink;
-import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
-import com.liferay.portal.kernel.test.util.GroupTestUtil;
-import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.util.test.LayoutTestUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,16 +32,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import org.springframework.mock.web.MockHttpServletRequest;
 
 /**
  * @author Cristina González
@@ -62,8 +51,8 @@ public class SEOTest {
 		new LiferayIntegrationTestRule();
 
 	@Test
-	public void testGetLocalizedSEOLinks() throws Exception {
-		String  canonicalURL = "canonicalURL";
+	public void testGetClassicLocalizedSEOLinks() throws Exception {
+		String canonicalURL = "canonicalURL";
 
 		Map<Locale, String> alternateURLs = new HashMap<Locale, String>() {
 			{
@@ -72,19 +61,51 @@ public class SEOTest {
 			}
 		};
 
-		List<SEOLink> seoLinks =
-			_seo.getLocalizedSEOLinks(canonicalURL, alternateURLs);
+		_testWithClassicSEOCompanyConfiguration(
+			"classic",
+			() -> {
+				List<SEOLink> seoLinks = _seo.getLocalizedSEOLinks(
+					TestPropsValues.getCompanyId(), canonicalURL,
+					alternateURLs);
 
-		Assert.assertEquals(alternateURLs.size() + 1, seoLinks.size());
+				Assert.assertEquals(
+					alternateURLs.toString(), alternateURLs.size() + 1,
+					seoLinks.size());
 
-		_assertCanonicalSEOLink(seoLinks, canonicalURL);
+				_assertCanonicalSEOLink(seoLinks, canonicalURL);
 
-		_assertAlternateSEOLink(LocaleUtil.SPAIN, seoLinks, alternateURLs);
-		_assertAlternateSEOLink(LocaleUtil.GERMAN, seoLinks, alternateURLs);
+				_assertAlternateSEOLink(
+					LocaleUtil.SPAIN, seoLinks, alternateURLs);
+				_assertAlternateSEOLink(
+					LocaleUtil.GERMAN, seoLinks, alternateURLs);
+			});
+	}
+
+	private void _assertAlternateSEOLink(
+		Locale locale, List<SEOLink> seoLinks,
+		Map<Locale, String> alternateURLs) {
+
+		SEOLink.AlternateSEOLink spainAlternateSEOLink = _getAlternateSEOLink(
+			locale, seoLinks);
+
+		Assert.assertNotNull(spainAlternateSEOLink);
+
+		Assert.assertEquals(
+			alternateURLs.get(locale), spainAlternateSEOLink.getHref());
+		Assert.assertEquals(
+			spainAlternateSEOLink.getSEOLinkDataSennaTrack(),
+			SEOLink.SEOLinkDataSennaTrack.TEMPORARY);
+		Assert.assertEquals(
+			Optional.of(LocaleUtil.toW3cLanguageId(locale)),
+			spainAlternateSEOLink.getHrefLang());
+		Assert.assertEquals(
+			spainAlternateSEOLink.getSeoLinkRel(),
+			SEOLink.SEOLinkRel.ALTERNATE);
 	}
 
 	private void _assertCanonicalSEOLink(
 		List<SEOLink> seoLinks, String canonicalURL) {
+
 		SEOLink.CanonicalSEOLink canonicalSEOLink = _getCanonicalSEOLink(
 			seoLinks);
 
@@ -97,27 +118,6 @@ public class SEOTest {
 		Assert.assertEquals(canonicalSEOLink.getHrefLang(), Optional.empty());
 		Assert.assertEquals(
 			canonicalSEOLink.getSeoLinkRel(), SEOLink.SEOLinkRel.CANONICAL);
-	}
-
-	private void _assertAlternateSEOLink(
-		Locale locale, List<SEOLink> seoLinks, Map<Locale, String> alternateURLs) {
-
-		SEOLink.AlternateSEOLink spainAlternateSEOLink = _getAlternateSEOLink(
-			locale, seoLinks);
-
-		Assert.assertNotNull(spainAlternateSEOLink);
-
-		Assert.assertEquals(
-			alternateURLs.get(locale),
-			spainAlternateSEOLink.getHref());
-		Assert.assertEquals(
-			spainAlternateSEOLink.getSEOLinkDataSennaTrack(),
-			SEOLink.SEOLinkDataSennaTrack.TEMPORARY);
-		Assert.assertEquals(
-			Optional.of(LocaleUtil.toW3cLanguageId(locale)),
-			spainAlternateSEOLink.getHrefLang());
-		Assert.assertEquals(
-			spainAlternateSEOLink.getSeoLinkRel(), SEOLink.SEOLinkRel.ALTERNATE);
 	}
 
 	private SEOLink.AlternateSEOLink _getAlternateSEOLink(
@@ -156,6 +156,26 @@ public class SEOTest {
 
 		return null;
 	}
+
+	private void _testWithClassicSEOCompanyConfiguration(
+			String configuration, UnsafeRunnable<Exception> unsafeRunnable)
+		throws Exception {
+
+		try (ConfigurationTemporarySwapper configurationTemporarySwapper =
+				new ConfigurationTemporarySwapper(
+					_SEO_CONFIGURATION_PID,
+					new HashMapDictionary<String, Object>() {
+						{
+							put("configuration", configuration);
+						}
+					})) {
+
+			unsafeRunnable.run();
+		}
+	}
+
+	private static final String _SEO_CONFIGURATION_PID =
+		"com.liferay.seo.impl.configuration.SEOCompanyConfiguration";
 
 	@Inject
 	private SEO _seo;

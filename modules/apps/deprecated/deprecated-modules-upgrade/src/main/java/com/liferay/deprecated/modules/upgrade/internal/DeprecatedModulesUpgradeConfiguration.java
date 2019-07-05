@@ -61,4 +61,9 @@ public interface DeprecatedModulesUpgradeConfiguration {
 	)
 	public boolean removeTwitterModuleData();
 
+	@Meta.AD(
+		deflt = "false", name = "remove-wysiwyg-module-data", required = false
+	)
+	public boolean removeWYSIWYGModuleData();
+
 }

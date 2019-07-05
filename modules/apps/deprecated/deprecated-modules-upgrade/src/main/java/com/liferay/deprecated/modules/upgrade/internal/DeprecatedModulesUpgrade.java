@@ -73,6 +73,10 @@ public class DeprecatedModulesUpgrade implements UpgradeStepRegistrator {
 			_removeModuleData(
 				_deprecatedModulesUpgradeConfiguration::removeTwitterModuleData,
 				"com.liferay.twitter.service", UpgradeTwitter::new);
+
+			_removeModuleData(
+				_deprecatedModulesUpgradeConfiguration::removeWYSIWYGModuleData,
+				"com.liferay.wysiwyg.web", UpgradeWYSIWYG::new);
 		}
 		catch (UpgradeException ue) {
 			ReflectionUtil.throwException(ue);

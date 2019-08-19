@@ -91,6 +91,7 @@ import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.EscapableLocalizableFunction;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
@@ -2161,6 +2162,14 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 				message.getUserId(), StringPool.BLANK);
 		}
 
+		String commentStatus = "added a new";
+
+		if (!DateUtil.equals(
+				message.getCreateDate(), message.getModifiedDate())) {
+
+			commentStatus = "updated a";
+		}
+
 		SubscriptionSender subscriptionSender =
 			new MBDiscussionSubcriptionSender(commentGroupServiceConfiguration);
 
@@ -2172,7 +2181,8 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 			false);
 		subscriptionSender.setContextAttributes(
 			"[$COMMENTS_USER_ADDRESS$]", userAddress, "[$COMMENTS_USER_NAME$]",
-			userName, "[$CONTENT_URL$]", contentURL);
+			userName, "[$COMMENTS_STATUS$]", commentStatus, "[$CONTENT_URL$]",
+			contentURL);
 		subscriptionSender.setCurrentUserId(userId);
 		subscriptionSender.setEntryTitle(message.getBody());
 		subscriptionSender.setEntryURL(contentURL);

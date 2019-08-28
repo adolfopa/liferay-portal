@@ -641,6 +641,9 @@ public abstract class JournalArticleLocalServiceBaseImpl
 		counterLocalService;
 
 	@Reference
+	protected com.liferay.exportimport.kernel.staging.Staging staging;
+
+	@Reference
 	protected com.liferay.portal.kernel.service.ClassNameLocalService
 		classNameLocalService;
 

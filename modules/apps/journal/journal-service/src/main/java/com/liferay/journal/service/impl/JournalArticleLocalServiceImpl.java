@@ -6952,7 +6952,12 @@ public class JournalArticleLocalServiceImpl
 			action = "move_from_trash";
 		}
 
-		notifySubscribers(user.getUserId(), article, action, serviceContext);
+		Group group = groupLocalService.getGroup(article.getGroupId());
+
+		if (!group.isStaged() || group.isStagingGroup()) {
+			notifySubscribers(
+				user.getUserId(), article, action, serviceContext);
+		}
 
 		return article;
 	}

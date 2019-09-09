@@ -279,9 +279,7 @@ public class AssetTagsSelectorTag extends IncludeTag {
 			data.put("removeCallback", _getNamespace() + _removeCallback);
 		}
 
-		List<String> selectedItems = StringUtil.split(getTagNames());
-
-		data.put("selectedItems", selectedItems);
+		data.put("selectedItems", StringUtil.split(getTagNames()));
 
 		data.put("showSelectButton", _showSelectButton);
 

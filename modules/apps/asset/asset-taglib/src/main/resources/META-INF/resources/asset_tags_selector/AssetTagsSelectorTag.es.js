@@ -28,24 +28,24 @@ function AssetTagsSelectorTag({
 	removeCallback,
 	showSelectButton
 }) {
-    const [selectedItems, setSelectedItems] = useState(initialSelectedItems);
-    const [inputValue, setInputValue] = useState(initialInputValue);
+	const [selectedItems, setSelectedItems] = useState(initialSelectedItems);
+	const [inputValue, setInputValue] = useState(initialInputValue);
 
-    return (
-        <AssetTagsSelector
-            addCallback={addCallback}
-            eventName={eventName}
-            groupIds={groupIds}
-            inputName={inputName}
-            inputValue={inputValue}
-            label={label}
-            portletURL={portletURL}
-            removeCallback={removeCallback}
-            onInputValueChange={setInputValue}
-            onSelectedItemsChange={setSelectedItems}
-            selectedItems={selectedItems}
-            showSelectButton={showSelectButton}
-        />
+	return (
+		<AssetTagsSelector
+			addCallback={addCallback}
+			eventName={eventName}
+			groupIds={groupIds}
+			inputName={inputName}
+			inputValue={inputValue}
+			label={label}
+			onInputValueChange={setInputValue}
+			onSelectedItemsChange={setSelectedItems}
+			portletURL={portletURL}
+			removeCallback={removeCallback}
+			selectedItems={selectedItems}
+			showSelectButton={showSelectButton}
+		/>
 	);
 }
 
@@ -62,9 +62,11 @@ AssetTagsSelectorTag.propTypes = {
 };
 
 export default function(props) {
-    return <AssetTagsSelectorTag 
-        {...props} 
-        initialSelectedItems={props.selectedItems}
-        initialInputValue={props.inputValue}
-    />;
+	return (
+		<AssetTagsSelectorTag
+			{...props}
+			initialInputValue={props.inputValue}
+			initialSelectedItems={props.selectedItems}
+		/>
+	);
 }

@@ -12,7 +12,7 @@
  * details.
  */
 
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
 import ClayButton from '@clayui/button';
 import {ClayInputWithMultiSelect} from '@clayui/form';
@@ -51,9 +51,7 @@ function AssetTagsSelector({
 					'/assettag/search': {
 						end: 20,
 						groupIds,
-						name: `%${
-							inputValue === '*' ? '' : inputValue
-						}%`,
+						name: `%${inputValue === '*' ? '' : inputValue}%`,
 						start: 0,
 						tagProperties: ''
 					}
@@ -62,8 +60,7 @@ function AssetTagsSelector({
 			}),
 			method: 'POST'
 		},
-		link:
-			`${window.location.origin}${themeDisplay.getPathContext()}
+		link: `${window.location.origin}${themeDisplay.getPathContext()}
 				/api/jsonws/invoke`
 	});
 
@@ -74,7 +71,6 @@ function AssetTagsSelector({
 			refetch();
 		}
 	}, [inputValue, previousInputValue, refetch]);
-	
 
 	const handleItemsChange = items => {
 		const current = new Set(items);
@@ -83,19 +79,13 @@ function AssetTagsSelector({
 
 		const addedItems = items.filter(item => !selected.has(item));
 
-		const removedItems = selectedItems.filter(
-			item => !current.has(item)
-		);
+		const removedItems = selectedItems.filter(item => !current.has(item));
 
 		onSelectedItemsChange([...current]);
 
-		addedItems.forEach(item =>
-			callGlobalCallback(addCallback, item)
-		);
+		addedItems.forEach(item => callGlobalCallback(addCallback, item));
 
-		removedItems.forEach(item =>
-			callGlobalCallback(removeCallback, item)
-		);
+		removedItems.forEach(item => callGlobalCallback(removeCallback, item));
 	};
 
 	const callGlobalCallback = (callback, item) => {

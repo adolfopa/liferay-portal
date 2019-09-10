@@ -12,4 +12,4 @@
  * details.
  */
 
-export {default as AssetTagsSelector} from './asset_tags_selector/index.es';
+export {default as AssetTagsSelector} from './asset_tags_selector/AssetTagsSelector.es';

@@ -70,6 +70,6 @@ List<String> selectedItems = (List<String>)data.get("selectedItems");
 
 	<react:component
 		data="<%= data %>"
-		module="asset_tags_selector/index.es"
+		module="asset_tags_selector/AssetTagsSelectorTag.es"
 	/>
 </div>

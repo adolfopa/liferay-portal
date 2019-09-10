@@ -25,7 +25,7 @@ function usePrevious(value) {
 
 	useEffect(() => {
 		ref.current = value;
-	}, [value]); // Only re-run if value changes
+	}, [value]);
 
 	return ref.current;
 }
@@ -37,17 +37,13 @@ function AssetTagsSelector({
 	inputName,
 	inputValue,
 	label,
-	onInputValueChange,
-	onSelectedItemsChange,
+	onInputValueChange = () => {},
+	onSelectedItemsChange = () => {},
 	portletURL,
 	removeCallback,
 	selectedItems = [],
 	showSelectButton
 }) {
-	const [innerSelectedItems, setInnerSelectedItems] = useState(selectedItems);
-	const [innerInputValue, setInnerInputValue] = useState(inputValue);
-	const [sourceItems, setSourceItems] = useState([]);
-
 	const {resource, refetch} = useResource({
 		fetchOptions: {
 			body: Liferay.Util.objectToFormData({
@@ -56,7 +52,7 @@ function AssetTagsSelector({
 						end: 20,
 						groupIds,
 						name: `%${
-							innerInputValue === '*' ? '' : innerInputValue
+							inputValue === '*' ? '' : inputValue
 						}%`,
 						start: 0,
 						tagProperties: ''
@@ -67,46 +63,94 @@ function AssetTagsSelector({
 			method: 'POST'
 		},
 		link:
-			window.location.origin +
-			themeDisplay.getPathContext() +
-			'/api/jsonws/invoke'
+			`${window.location.origin}${themeDisplay.getPathContext()}
+				/api/jsonws/invoke`
 	});
 
-	const previousInnerInputValue = usePrevious(innerInputValue);
+	const previousInputValue = usePrevious(inputValue);
 
 	useEffect(() => {
-		if (innerInputValue !== previousInnerInputValue) {
-			if (onInputValueChange) {
-				onInputValueChange(innerInputValue);
-			}
-		}
-	}, [innerInputValue, onInputValueChange, previousInnerInputValue]);
-
-	const previousInnerSelectedItems = usePrevious(innerInputValue);
-
-	useEffect(() => {
-		if (innerSelectedItems !== previousInnerSelectedItems) {
-			if (onSelectedItemsChange) {
-				onSelectedItemsChange(innerSelectedItems);
-			}
-		}
-	}, [innerSelectedItems, onSelectedItemsChange, previousInnerSelectedItems]);
-
-	useEffect(() => {
-		if (innerInputValue && innerInputValue !== previousInnerInputValue) {
+		if (inputValue && inputValue !== previousInputValue) {
 			refetch();
 		}
-	}, [innerInputValue, previousInnerInputValue, refetch]);
+	}, [inputValue, previousInputValue, refetch]);
+	
 
-	useEffect(() => {
-		if (resource) {
-			setSourceItems(resource.map(tag => tag.value));
+	const handleItemsChange = items => {
+		const current = new Set(items);
+
+		const selected = new Set(selectedItems);
+
+		const addedItems = items.filter(item => !selected.has(item));
+
+		const removedItems = selectedItems.filter(
+			item => !current.has(item)
+		);
+
+		onSelectedItemsChange([...current]);
+
+		addedItems.forEach(item =>
+			callGlobalCallback(addCallback, item)
+		);
+
+		removedItems.forEach(item =>
+			callGlobalCallback(removeCallback, item)
+		);
+	};
+
+	const callGlobalCallback = (callback, item) => {
+		if (callback && typeof window[callback] === 'function') {
+			window[callback](item);
 		}
-	}, [resource]);
+	};
 
-	useEffect(() => {
-		setInnerSelectedItems(selectedItems);
-	}, [selectedItems]);
+	const handleSelectButtonClick = () => {
+		const sub = (str, obj) => str.replace(/\{([^}]+)\}/g, (_, m) => obj[m]);
+
+		const url = sub(decodeURIComponent(portletURL), {
+			selectedTagNames: selectedItems.join()
+		});
+
+		const itemSelectorDialog = new ItemSelectorDialog({
+			buttonAddLabel: Liferay.Language.get('done'),
+			eventName,
+			title: Liferay.Language.get('tags'),
+			url
+		});
+
+		itemSelectorDialog.open();
+
+		itemSelectorDialog.on('selectedItemChange', event => {
+			const dialogSelectedItems = event.selectedItem;
+
+			if (dialogSelectedItems) {
+				const newValues =
+					dialogSelectedItems.items.length > 0
+						? dialogSelectedItems.items.split(',')
+						: [];
+
+				const newValuesSet = new Set(newValues);
+
+				const addedItems = newValues.filter(
+					item => !newValuesSet.has(item)
+				);
+
+				const removedItems = selectedItems.filter(
+					item => !newValuesSet.has(item)
+				);
+
+				onSelectedItemsChange(newValues);
+
+				addedItems.forEach(item =>
+					callGlobalCallback(addCallback, item)
+				);
+
+				removedItems.forEach(item =>
+					callGlobalCallback(removeCallback, item)
+				);
+			}
+		});
+	};
 
 	/*
 	const _handleInputBlur = () => {
@@ -137,81 +181,10 @@ function AssetTagsSelector({
 		}
 	}
 */
-	const handleItemsChange = items => {
-		const current = new Set(items);
-
-		const selected = new Set(innerSelectedItems);
-
-		const addedItems = items.filter(item => !selected.has(item));
-
-		const removedItems = innerSelectedItems.filter(
-			item => !current.has(item)
-		);
-
-		setInnerSelectedItems([...current]);
-
-		callGlobalCallback(addCallback, addedItems);
-
-		callGlobalCallback(removeCallback, removedItems);
-	};
-
-	const handleSelectButtonClick = () => {
-		const sub = (str, obj) => str.replace(/\{([^}]+)\}/g, (_, m) => obj[m]);
-
-		const url = sub(decodeURIComponent(portletURL), {
-			selectedTagNames: innerSelectedItems.join()
-		});
-
-		const itemSelectorDialog = new ItemSelectorDialog({
-			buttonAddLabel: Liferay.Language.get('done'),
-			eventName,
-			title: Liferay.Language.get('tags'),
-			url
-		});
-
-		itemSelectorDialog.open();
-
-		itemSelectorDialog.on('selectedItemChange', event => {
-			const dialogSelectedItems = event.selectedItem;
-
-			if (dialogSelectedItems) {
-				const newValues =
-					dialogSelectedItems.items.length > 0
-						? dialogSelectedItems.items.split(',')
-						: [];
-
-				const newValuesSet = new Set(newValues);
-
-				const addedItems = newValues.filter(
-					item => !newValuesSet.has(item)
-				);
-
-				const removedItems = innerSelectedItems.filter(
-					item => !newValuesSet.has(item)
-				);
-
-				setInnerSelectedItems(newValues);
-
-				addedItems.forEach(item =>
-					callGlobalCallback(addCallback, item)
-				);
-
-				removedItems.forEach(item =>
-					callGlobalCallback(removeCallback, item)
-				);
-			}
-		});
-	};
-
-	const callGlobalCallback = (callback, item) => {
-		if (callback && typeof window[callback] === 'function') {
-			window[callback](item);
-		}
-	};
 
 	return (
 		<div className="lfr-tags-selector-content">
-			{innerSelectedItems.map((item, i) => {
+			{selectedItems.map((item, i) => {
 				return (
 					<input
 						key={i}
@@ -223,13 +196,13 @@ function AssetTagsSelector({
 			})}
 
 			<ClayInputWithMultiSelect
-				inputValue={innerInputValue}
-				items={innerSelectedItems}
+				inputValue={inputValue}
+				items={selectedItems}
 				label={label || Liferay.Language.get('tags')}
 				//				onInputBlur={_handleInputBlur}		//TODO IN CLAY
-				onInputChange={setInnerInputValue}
+				onInputChange={onInputValueChange}
 				onItemsChange={handleItemsChange}
-				sourceItems={sourceItems}
+				sourceItems={resource && resource.map(tag => tag.value)}
 			/>
 
 			{showSelectButton && (

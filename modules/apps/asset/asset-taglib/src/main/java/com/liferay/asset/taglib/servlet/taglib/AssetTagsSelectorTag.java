@@ -261,9 +261,6 @@ public class AssetTagsSelectorTag extends IncludeTag {
 	}
 
 	private Map<String, Object> _getData() {
-		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		Map<String, Object> data = new HashMap<>();
 
 		if (Validator.isNotNull(_addCallback)) {

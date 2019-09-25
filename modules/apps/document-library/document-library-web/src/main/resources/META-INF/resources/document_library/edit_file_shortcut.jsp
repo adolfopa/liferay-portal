@@ -249,6 +249,13 @@ if (portletTitleBasedNavigation) {
 			url += '&<portlet:namespace />fileEntryId=' + toFileEntryIdElement.value;
 		}
 
+		var scopeGroupId = <%= themeDisplay.getScopeGroupId() %>;
+		var toGroupId = toGroupIdElement.value;
+
+		if (scopeGroupId != toGroupId) {
+			url += '&<portlet:namespace />folderId=' + '<%= DLFolderConstants.DEFAULT_PARENT_FOLDER_ID %>';
+		}
+
 		return url;
 	}
 

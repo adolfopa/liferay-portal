@@ -20,7 +20,7 @@ import '../../../common/AssetSelector.es';
 import './ItemSelectorFieldDelegateTemplate.soy';
 import templates from './ItemSelectorField.soy';
 import getConnectedComponent from '../../../../store/ConnectedComponent.es';
-import {openAssetBrowser} from '../../../../utils/FragmentsEditorDialogUtils';
+import {openItemSelector} from '../../../../utils/FragmentsEditorDialogUtils';
 import {setIn} from '../../../../utils/FragmentsEditorUpdateUtils.es';
 
 /**
@@ -87,7 +87,7 @@ class ItemSelectorField extends Component {
 		);
 
 		if (itemType) {
-			this._openAssetBrowser(itemType.href, itemType.typeName);
+			this._openItemSelector(itemType.href);
 		}
 	}
 
@@ -115,36 +115,31 @@ class ItemSelectorField extends Component {
 	 * @review
 	 */
 	_handleItemTypeClick(event) {
-		const {
-			assetBrowserUrl,
-			assetBrowserWindowTitle
-		} = event.delegateTarget.dataset;
+		const {itemSelectorURL} = event.delegateTarget.dataset;
 
-		this._openAssetBrowser(assetBrowserUrl, assetBrowserWindowTitle);
+		this._openItemSelector(itemSelectorURL);
 	}
 
 	/**
-	 * Opens asset browser
-	 * @param {string} assetBrowserURL
-	 * @param {string} assetBrowserWindowTitle
+	 * Opens item selector
+	 * @param {string} itemSelectorURL
 	 * @review
 	 */
-	_openAssetBrowser(assetBrowserURL, assetBrowserWindowTitle) {
-		openAssetBrowser({
-			assetBrowserURL,
-			callback: selectedAssetEntry => {
+	_openItemSelector(itemSelectorURL) {
+		openItemSelector({
+			callback: selectedInfoItem => {
 				this.emit('fieldValueChanged', {
 					name: this.field.name,
 					value: {
-						className: selectedAssetEntry.className,
-						classNameId: selectedAssetEntry.classNameId,
-						classPK: selectedAssetEntry.classPK,
-						title: selectedAssetEntry.title
+						className: selectedInfoItem.className,
+						classNameId: selectedInfoItem.classNameId,
+						classPK: selectedInfoItem.classPK,
+						title: selectedInfoItem.title
 					}
 				});
 			},
-			eventName: `${this.portletNamespace}selectAsset`,
-			modalTitle: assetBrowserWindowTitle
+			eventName: `${this.portletNamespace}selectInfoItem`,
+			itemSelectorURL
 		});
 	}
 }

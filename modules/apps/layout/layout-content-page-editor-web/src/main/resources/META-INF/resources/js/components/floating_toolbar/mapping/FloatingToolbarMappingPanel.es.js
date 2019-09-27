@@ -29,7 +29,7 @@ import {encodeAssetId} from '../../../utils/FragmentsEditorIdUtils.es';
 import getConnectedComponent from '../../../store/ConnectedComponent.es';
 import {getMappingSourceTypes} from '../../../utils/FragmentsEditorGetUtils.es';
 import {
-	openAssetBrowser,
+	openItemSelector,
 	openCreateContentDialog
 } from '../../../utils/FragmentsEditorDialogUtils';
 import {setIn} from '../../../utils/FragmentsEditorUpdateUtils.es';
@@ -208,22 +208,18 @@ class FloatingToolbarMappingPanel extends PortletBase {
 	 * @review
 	 */
 	_handleAssetBrowserLinkClick(event) {
-		const {
-			assetBrowserUrl,
-			assetBrowserWindowTitle
-		} = event.delegateTarget.dataset;
+		const {itemSelectorURL} = event.delegateTarget.dataset;
 
-		openAssetBrowser({
-			assetBrowserURL: assetBrowserUrl,
-			callback: selectedAssetEntry => {
-				this._selectAssetEntry(selectedAssetEntry);
+		openItemSelector({
+			callback: selectedInfoItem => {
+				this._selectAssetEntry(selectedInfoItem);
 
 				requestAnimationFrame(() => {
 					this.refs.panel.focus();
 				});
 			},
-			eventName: `${this.portletNamespace}selectAsset`,
-			modalTitle: assetBrowserWindowTitle
+			eventName: `${this.portletNamespace}selectInfoItem`,
+			itemSelectorURL
 		});
 	}
 

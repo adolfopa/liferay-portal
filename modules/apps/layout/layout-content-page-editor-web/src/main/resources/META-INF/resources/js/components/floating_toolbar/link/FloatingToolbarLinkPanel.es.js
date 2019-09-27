@@ -32,7 +32,7 @@ import getConnectedComponent from '../../../store/ConnectedComponent.es';
 import {getMappingSourceTypes} from '../../../utils/FragmentsEditorGetUtils.es';
 import {setIn} from '../../../utils/FragmentsEditorUpdateUtils.es';
 import {encodeAssetId} from '../../../utils/FragmentsEditorIdUtils.es';
-import {openAssetBrowser} from '../../../utils/FragmentsEditorDialogUtils';
+import {openItemSelector} from '../../../utils/FragmentsEditorDialogUtils';
 
 /**
  * FloatingToolbarLinkPanel
@@ -238,20 +238,16 @@ class FloatingToolbarLinkPanel extends PortletBase {
 	 * @review
 	 */
 	_handleAssetBrowserLinkClick(event) {
-		const {
-			assetBrowserUrl,
-			assetBrowserWindowTitle
-		} = event.delegateTarget.dataset;
+		const {itemSelectorURL} = event.delegateTarget.dataset;
 
-		openAssetBrowser({
-			assetBrowserURL: assetBrowserUrl,
-			callback: selectedAssetEntry => {
-				this._selectAssetEntry(selectedAssetEntry);
+		openItemSelector({
+			callback: selectedInfoItem => {
+				this._selectAssetEntry(selectedInfoItem);
 
 				this._focusPanel();
 			},
-			eventName: `${this.portletNamespace}selectAsset`,
-			modalTitle: assetBrowserWindowTitle,
+			eventName: `${this.portletNamespace}selectInfoItem`,
+			itemSelectorURL,
 			portletNamespace: this.portletNamespace
 		});
 	}

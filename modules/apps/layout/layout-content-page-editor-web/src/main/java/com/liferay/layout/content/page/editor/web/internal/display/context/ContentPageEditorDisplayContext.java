@@ -37,13 +37,14 @@ import com.liferay.info.display.contributor.InfoDisplayContributor;
 import com.liferay.info.display.contributor.InfoDisplayContributorTracker;
 import com.liferay.info.item.renderer.InfoItemRenderer;
 import com.liferay.info.item.renderer.InfoItemRendererTracker;
-import com.liferay.info.item.selector.InfoItemSelector;
 import com.liferay.info.item.selector.InfoItemSelectorTracker;
 import com.liferay.item.selector.ItemSelector;
 import com.liferay.item.selector.ItemSelectorCriterion;
 import com.liferay.item.selector.criteria.DownloadFileEntryItemSelectorReturnType;
+import com.liferay.item.selector.criteria.InfoItemItemSelectorReturnType;
 import com.liferay.item.selector.criteria.URLItemSelectorReturnType;
 import com.liferay.item.selector.criteria.image.criterion.ImageItemSelectorCriterion;
+import com.liferay.item.selector.criteria.info.item.criterion.InfoItemItemSelectorCriterion;
 import com.liferay.item.selector.criteria.url.criterion.URLItemSelectorCriterion;
 import com.liferay.layout.admin.constants.LayoutAdminPortletKeys;
 import com.liferay.layout.content.page.editor.constants.ContentPageEditorPortletKeys;
@@ -497,7 +498,7 @@ public class ContentPageEditorDisplayContext {
 		return assetBrowserURL.toString();
 	}
 
-	private List<SoyContext> _getAvailableAssetsSoyContexts() throws Exception {
+	private List<SoyContext> _getAvailableAssetsSoyContexts() {
 		List<SoyContext> soyContexts = new ArrayList<>();
 
 		Set<String> classNames =
@@ -511,13 +512,17 @@ public class ContentPageEditorDisplayContext {
 				continue;
 			}
 
-			List<InfoItemSelector> infoItemSelectors =
-				_infoItemSelectorTracker.getInfoItemSelectors(className);
+			ItemSelectorCriterion itemSelectorCriterion =
+				new InfoItemItemSelectorCriterion();
 
-			InfoItemSelector infoItemSelector = infoItemSelectors.get(0);
+			itemSelectorCriterion.setDesiredItemSelectorReturnTypes(
+				new InfoItemItemSelectorReturnType());
 
 			PortletURL infoItemSelectorPortletURL =
-				infoItemSelector.getInfoItemSelectorPortletURL(request);
+				_itemSelector.getItemSelectorURL(
+					RequestBackedPortletURLFactoryUtil.create(request),
+					_renderResponse.getNamespace() + "selectInfoItem",
+					itemSelectorCriterion);
 
 			if (infoItemSelectorPortletURL == null) {
 				continue;
@@ -532,12 +537,7 @@ public class ContentPageEditorDisplayContext {
 				"className", className
 			).put(
 				"classNameId", PortalUtil.getClassNameId(className)
-			);
-
-			infoItemSelectorPortletURL.setParameter(
-				"eventName", _renderResponse.getNamespace() + "selectAsset");
-
-			soyContext.put(
+			).put(
 				"href", infoItemSelectorPortletURL.toString()
 			).put(
 				"typeName",

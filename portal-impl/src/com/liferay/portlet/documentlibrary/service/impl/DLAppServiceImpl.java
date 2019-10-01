@@ -870,6 +870,27 @@ public class DLAppServiceImpl extends DLAppServiceBaseImpl {
 	}
 
 	/**
+	 * Returns the file entry with the UUID and group.
+	 *
+	 * @param  uuid the file entry's UUID
+	 * @param  groupId the primary key of the file entry's group
+	 * @return the file entry with the UUID and group
+	 */
+	@Override
+	public FileEntry fetchFileEntryByUuidAndGroupId(String uuid, long groupId) {
+		try {
+			return getFileEntryByUuidAndGroupId(uuid, groupId);
+		}
+		catch (PortalException pe) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(pe, pe);
+			}
+
+			return null;
+		}
+	}
+
+	/**
 	 * Returns all the file entries in the folder.
 	 *
 	 * @param  repositoryId the primary key of the file entry's repository

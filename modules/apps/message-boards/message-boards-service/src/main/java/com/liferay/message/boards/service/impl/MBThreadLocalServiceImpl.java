@@ -16,6 +16,7 @@ package com.liferay.message.boards.service.impl;
 
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
+import com.liferay.expando.kernel.service.ExpandoRowLocalService;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
 import com.liferay.message.boards.constants.MBCategoryConstants;
 import com.liferay.message.boards.constants.MBConstants;
@@ -201,6 +202,10 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 
 			assetEntryLocalService.deleteEntry(
 				message.getWorkflowClassName(), message.getMessageId());
+
+			// Expando
+
+			expandoRowLocalService.deleteRows(message.getMessageId());
 
 			// Resources
 
@@ -1225,6 +1230,9 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 			moveChildrenMessages(message, category, oldThreadId);
 		}
 	}
+
+	@Reference
+	protected ExpandoRowLocalService expandoRowLocalService;
 
 	@Reference
 	protected MBStatsUserLocalService mbStatsUserLocalService;

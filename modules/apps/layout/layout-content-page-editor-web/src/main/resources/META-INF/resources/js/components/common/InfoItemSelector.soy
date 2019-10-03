@@ -1,17 +1,14 @@
-{namespace com.liferay.layout.content.page.editor.web.AssetSelector}
+{namespace com.liferay.layout.content.page.editor.web.InfoItemSelector}
 
 /**
- * AssetSelector
+ * InfoItemSelector
  */
 {template .render}
-	{@param? assetBrowserLinks: list<[
-		href: string,
-		typeName: string
-	]>}
 	{@param? fieldId: string}
 	{@param? fieldName: string}
 	{@param? handleAssetBrowserLinkClick: any}
 	{@param? handleAssetEntryLinkClick: any}
+	{@param? infoItemSelectorURL: string}
 	{@param? recentlyUsedAssetEntries: list<[
 		encodedId: string,
 		classNameId: string,
@@ -57,19 +54,14 @@
 				</button>
 
 				<div class="dropdown-menu item-selector-dropdown-menu" id="{$dropdownId}">
-					{if $assetBrowserLinks}
-						{foreach $assetBrowserLink in $assetBrowserLinks}
-							<button
-								class="dropdown-item"
-								data-onclick="{$handleAssetBrowserLinkClick}"
-								data-asset-browser-url="{$assetBrowserLink.href}"
-								data-asset-browser-window-title="{$assetBrowserLink.typeName}"
-								key="{$assetBrowserLink.href}"
-								type="button"
-							>
-								{$assetBrowserLink.typeName}
-							</button>
-						{/foreach}
+					{if $infoItemSelectorURL}
+						<button
+							class="dropdown-item"
+							data-onclick="{$handleAssetBrowserLinkClick}"
+							type="button"
+						>
+							{msg desc=""}select{/msg}...
+						</button>
 					{/if}
 					{if $recentlyUsedAssetEntries and length($recentlyUsedAssetEntries) > 0}
 						<div

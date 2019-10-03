@@ -16,7 +16,7 @@ import Component from 'metal-component';
 import Soy from 'metal-soy';
 import {Config} from 'metal-state';
 
-import '../../../common/AssetSelector.es';
+import '../../../common/InfoItemSelector.es';
 import './ItemSelectorFieldDelegateTemplate.soy';
 import templates from './ItemSelectorField.soy';
 import getConnectedComponent from '../../../../store/ConnectedComponent.es';
@@ -63,13 +63,7 @@ class ItemSelectorField extends Component {
 			this.configurationValues[this.field.name] &&
 			this.configurationValues[this.field.name].className
 		) {
-			const {className} = this.configurationValues[this.field.name];
-
-			const itemType = this.availableAssets.find(
-				availableAsset => availableAsset.className === className
-			);
-
-			this.availableTemplates = itemType.availableTemplates;
+			this.availableTemplates = [];
 		} else {
 			this.availableTemplates = [];
 		}
@@ -80,15 +74,7 @@ class ItemSelectorField extends Component {
 	 * @review
 	 */
 	_handleItemSelectClick() {
-		const className = this.field.typeOptions.className;
-
-		const itemType = this.availableAssets.find(
-			availableAsset => availableAsset.className === className
-		);
-
-		if (itemType) {
-			this._openItemSelector(itemType.href);
-		}
+		this._openItemSelector();
 	}
 
 	/**
@@ -111,21 +97,17 @@ class ItemSelectorField extends Component {
 
 	/**
 	 * Handle the click in the item type dropdown
-	 * @param {Event} event
 	 * @review
 	 */
-	_handleItemTypeClick(event) {
-		const {itemSelectorURL} = event.delegateTarget.dataset;
-
-		this._openItemSelector(itemSelectorURL);
+	_handleItemTypeClick() {
+		this._openItemSelector();
 	}
 
 	/**
 	 * Opens item selector
-	 * @param {string} itemSelectorURL
 	 * @review
 	 */
-	_openItemSelector(itemSelectorURL) {
+	_openItemSelector() {
 		openItemSelector({
 			callback: selectedInfoItem => {
 				this.emit('fieldValueChanged', {
@@ -139,7 +121,7 @@ class ItemSelectorField extends Component {
 				});
 			},
 			eventName: `${this.portletNamespace}selectInfoItem`,
-			itemSelectorURL
+			itemSelectorURL: this.infoItemSelectorURL
 		});
 	}
 }
@@ -186,7 +168,7 @@ ItemSelectorField.STATE = {
 };
 
 const ConnectedItemSelectorField = getConnectedComponent(ItemSelectorField, [
-	'availableAssets',
+	'infoItemSelectorURL',
 	'portletNamespace',
 	'spritemap'
 ]);

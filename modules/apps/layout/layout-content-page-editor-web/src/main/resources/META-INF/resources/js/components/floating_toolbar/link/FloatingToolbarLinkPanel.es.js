@@ -12,7 +12,6 @@
  * details.
  */
 
-import '../../common/AssetSelector.es';
 import {debounce, PortletBase} from 'frontend-js-web';
 import Soy, {Config} from 'metal-soy';
 
@@ -233,13 +232,10 @@ class FloatingToolbarLinkPanel extends PortletBase {
 	}
 
 	/**
-	 * @param {MouseEvent} event
 	 * @private
 	 * @review
 	 */
-	_handleAssetBrowserLinkClick(event) {
-		const {itemSelectorURL} = event.delegateTarget.dataset;
-
+	_handleAssetBrowserLinkClick() {
 		openItemSelector({
 			callback: selectedInfoItem => {
 				this._selectAssetEntry(selectedInfoItem);
@@ -247,7 +243,7 @@ class FloatingToolbarLinkPanel extends PortletBase {
 				this._focusPanel();
 			},
 			eventName: `${this.portletNamespace}selectInfoItem`,
-			itemSelectorURL,
+			itemSelectorURL: this.infoItemSelectorURL,
 			portletNamespace: this.portletNamespace
 		});
 	}
@@ -571,9 +567,9 @@ FloatingToolbarLinkPanel.STATE = {
 const ConnectedFloatingToolbarLinkPanel = getConnectedComponent(
 	FloatingToolbarLinkPanel,
 	[
-		'assetBrowserLinks',
 		'getAssetFieldValueURL',
 		'getAssetMappingFieldsURL',
+		'infoItemSelectorURL',
 		'mappedAssetEntries',
 		'mappingFieldsURL',
 		'portletNamespace',

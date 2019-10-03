@@ -15,7 +15,6 @@
 import {PortletBase} from 'frontend-js-web';
 import Soy, {Config} from 'metal-soy';
 
-import '../../common/AssetSelector.es';
 import './FloatingToolbarMappingPanelDelegateTemplate.soy';
 import {ADD_MAPPED_ASSET_ENTRY} from '../../../actions/actions.es';
 import {
@@ -203,13 +202,10 @@ class FloatingToolbarMappingPanel extends PortletBase {
 	}
 
 	/**
-	 * @param {MouseEvent} event
 	 * @private
 	 * @review
 	 */
-	_handleAssetBrowserLinkClick(event) {
-		const {itemSelectorURL} = event.delegateTarget.dataset;
-
+	_handleAssetBrowserLinkClick() {
 		openItemSelector({
 			callback: selectedInfoItem => {
 				this._selectAssetEntry(selectedInfoItem);
@@ -219,7 +215,7 @@ class FloatingToolbarMappingPanel extends PortletBase {
 				});
 			},
 			eventName: `${this.portletNamespace}selectInfoItem`,
-			itemSelectorURL
+			itemSelectorURL: this.infoItemSelectorURL
 		});
 	}
 
@@ -443,10 +439,10 @@ FloatingToolbarMappingPanel.STATE = {
 const ConnectedFloatingToolbarMappingPanel = getConnectedComponent(
 	FloatingToolbarMappingPanel,
 	[
-		'assetBrowserLinks',
 		'contentCreationEnabled',
 		'defaultSegmentsExperienceId',
 		'getAssetMappingFieldsURL',
+		'infoItemSelectorURL',
 		'languageId',
 		'mappedAssetEntries',
 		'mappingFieldsURL',

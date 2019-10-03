@@ -265,19 +265,16 @@ class FloatingToolbarLayoutBackgroundImagePanel extends Component {
 	}
 
 	/**
-	 * @param {MouseEvent} event
 	 * @private
 	 * @review
 	 */
-	_handleAssetBrowserLinkClick(event) {
-		const {itemSelectorURL} = event.delegateTarget.dataset;
-
+	_handleAssetBrowserLinkClick() {
 		openItemSelector({
 			callback: selectedInfoItem => {
 				this._selectAssetEntry(selectedInfoItem);
 			},
 			eventName: `${this.portletNamespace}selectInfoItem`,
-			itemSelectorURL
+			itemSelectorURL: this.infoItemSelectorURL
 		});
 	}
 
@@ -543,8 +540,8 @@ FloatingToolbarLayoutBackgroundImagePanel.STATE = {
 const ConnectedFloatingToolbarLayoutBackgroundImagePanel = getConnectedComponent(
 	FloatingToolbarLayoutBackgroundImagePanel,
 	[
-		'assetBrowserLinks',
 		'imageSelectorURL',
+		'infoItemSelectorURL',
 		'mappedAssetEntries',
 		'mappingFieldsURL',
 		'portletNamespace',

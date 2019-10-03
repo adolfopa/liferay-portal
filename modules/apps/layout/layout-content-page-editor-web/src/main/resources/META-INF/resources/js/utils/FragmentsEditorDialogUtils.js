@@ -113,7 +113,7 @@ function openItemSelector({
 			eventName,
 			on: {
 				selectedItemChange: event => {
-					const selectedItem = event.newVal || {};
+					const selectedItem = event.newVal;
 
 					if (selectedItem && selectedItem.value) {
 						const infoItem = JSON.parse(selectedItem.value);

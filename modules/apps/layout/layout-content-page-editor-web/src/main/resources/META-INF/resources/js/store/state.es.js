@@ -98,35 +98,6 @@ const INITIAL_STATE = {
 	addStructuredContentURL: Config.string().value(''),
 
 	/**
-	 * List of asset browser links that can be used
-	 * for selecting an asset
-	 * @default []
-	 * @review
-	 * @type {object[]}
-	 */
-	assetBrowserLinks: Config.arrayOf(
-		Config.shapeOf({
-			href: Config.string(),
-			typeName: Config.string()
-		})
-	).value([]),
-
-	availableAssets: Config.arrayOf(
-		Config.shapeOf({
-			availableTemplates: Config.arrayOf(
-				Config.shapeOf({
-					key: Config.string(),
-					label: Config.string()
-				})
-			),
-			className: Config.string(),
-			classNameId: Config.string(),
-			href: Config.string(),
-			name: Config.string()
-		})
-	).value([]),
-
-	/**
 	 * Object of available languages.
 	 * @default {}
 	 * @review
@@ -472,6 +443,14 @@ const INITIAL_STATE = {
 	 * @type {string}
 	 */
 	imageSelectorURL: Config.string().value(''),
+
+	/**
+	 * URL for selecting info items
+	 * @default []
+	 * @review
+	 * @type {object[]}
+	 */
+	infoItemSelectorURL: Config.string().value(''),
 
 	/**
 	 * Currently selected language id.

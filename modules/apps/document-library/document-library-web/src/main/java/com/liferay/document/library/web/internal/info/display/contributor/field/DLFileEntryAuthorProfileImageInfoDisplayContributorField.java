@@ -73,15 +73,17 @@ public class DLFileEntryAuthorProfileImageInfoDisplayContributorField
 
 		ThemeDisplay themeDisplay = getThemeDisplay();
 
-		if (themeDisplay != null) {
-			try {
-				return JSONUtil.put(
-					"url", user.getPortraitURL(getThemeDisplay()));
-			}
-			catch (PortalException pe) {
-				if (_log.isDebugEnabled()) {
-					_log.debug(pe, pe);
-				}
+		if (themeDisplay == null) {
+			return StringPool.BLANK;
+		}
+
+		try {
+			return JSONUtil.put(
+				"url", user.getPortraitURL(themeDisplay));
+		}
+		catch (PortalException pe) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(pe, pe);
 			}
 		}
 

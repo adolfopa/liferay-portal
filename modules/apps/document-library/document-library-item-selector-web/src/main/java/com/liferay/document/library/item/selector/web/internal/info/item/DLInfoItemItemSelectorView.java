@@ -78,11 +78,8 @@ public class DLInfoItemItemSelectorView
 	}
 
 	private static final List<ItemSelectorReturnType>
-		_supportedItemSelectorReturnTypes = Collections.unmodifiableList(
-			ListUtil.fromArray(
-				new ItemSelectorReturnType[] {
-					new InfoItemItemSelectorReturnType()
-				}));
+		_supportedItemSelectorReturnTypes = Collections.singletonList(
+			new InfoItemItemSelectorReturnType());
 
 	private volatile DLImageItemSelectorViewConfiguration
 		_dlImageItemSelectorViewConfiguration;

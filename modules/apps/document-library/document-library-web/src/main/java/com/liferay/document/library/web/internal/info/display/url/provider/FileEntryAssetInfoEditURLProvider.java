@@ -38,7 +38,7 @@ import org.osgi.service.component.annotations.Reference;
 	property = "model.class.name=com.liferay.document.library.kernel.model.DLFileEntry",
 	service = InfoEditURLProvider.class
 )
-public class DLFileEntryAssetInfoEditURLProvider
+public class FileEntryAssetInfoEditURLProvider
 	implements InfoEditURLProvider<FileEntry> {
 
 	@Override

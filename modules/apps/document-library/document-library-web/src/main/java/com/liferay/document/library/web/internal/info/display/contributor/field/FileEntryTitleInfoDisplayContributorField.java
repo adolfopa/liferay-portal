@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Component;
 	property = "model.class.name=com.liferay.document.library.kernel.model.DLFileEntry",
 	service = InfoDisplayContributorField.class
 )
-public class DLFileEntryTitleInfoDisplayContributorField
+public class FileEntryTitleInfoDisplayContributorField
 	implements InfoDisplayContributorField<FileEntry> {
 
 	@Override

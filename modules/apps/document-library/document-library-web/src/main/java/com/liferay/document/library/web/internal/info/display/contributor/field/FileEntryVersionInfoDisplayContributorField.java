@@ -21,31 +21,28 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Component;
 
 /**
- * @author Eudaldo Alonso
+ * @author Alejandro Tardín
  */
 @Component(
 	property = "model.class.name=com.liferay.document.library.kernel.model.DLFileEntry",
 	service = InfoDisplayContributorField.class
 )
-public class DLFileEntryDescriptionInfoDisplayContributorField
+public class FileEntryVersionInfoDisplayContributorField
 	implements InfoDisplayContributorField<FileEntry> {
 
 	@Override
 	public String getKey() {
-		return "description";
+		return "version";
 	}
 
 	@Override
 	public String getLabel(Locale locale) {
-		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
-			locale, getClass());
-
-		return LanguageUtil.get(resourceBundle, "description");
+		return LanguageUtil.get(
+			ResourceBundleUtil.getBundle(locale, getClass()), "version");
 	}
 
 	@Override
@@ -55,7 +52,7 @@ public class DLFileEntryDescriptionInfoDisplayContributorField
 
 	@Override
 	public String getValue(FileEntry fileEntry, Locale locale) {
-		return fileEntry.getDescription();
+		return fileEntry.getVersion();
 	}
 
 }

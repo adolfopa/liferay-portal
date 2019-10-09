@@ -14,38 +14,48 @@
 
 package com.liferay.document.library.web.internal.info.display.contributor.field;
 
-import com.liferay.document.library.util.DLURLHelper;
+import com.liferay.info.display.contributor.field.BaseInfoDisplayContributorField;
 import com.liferay.info.display.contributor.field.InfoDisplayContributorField;
 import com.liferay.info.display.contributor.field.InfoDisplayContributorFieldType;
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * @author Alejandro Tardín
+ * @author Eudaldo Alonso
  */
 @Component(
 	property = "model.class.name=com.liferay.portal.kernel.repository.model.FileEntry",
 	service = InfoDisplayContributorField.class
 )
-public class DLFileEntryPreviewImageInfoDisplayContributorField
-	implements InfoDisplayContributorField<FileEntry> {
+public class FileEntryAuthorProfileImageInfoDisplayContributorField
+	extends BaseInfoDisplayContributorField<FileEntry> {
 
 	@Override
 	public String getKey() {
-		return "previewImage";
+		return "authorProfileImage";
 	}
 
 	@Override
 	public String getLabel(Locale locale) {
-		return LanguageUtil.get(
-			ResourceBundleUtil.getBundle(locale, getClass()), "preview-image");
+		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
+			locale, getClass());
+
+		return LanguageUtil.get(resourceBundle, "author-profile-image");
 	}
 
 	@Override
@@ -55,16 +65,35 @@ public class DLFileEntryPreviewImageInfoDisplayContributorField
 
 	@Override
 	public Object getValue(FileEntry fileEntry, Locale locale) {
+		User user = _userLocalService.fetchUser(fileEntry.getUserId());
+
+		if (user == null) {
+			return StringPool.BLANK;
+		}
+
+		ThemeDisplay themeDisplay = getThemeDisplay();
+
+		if (themeDisplay == null) {
+			return StringPool.BLANK;
+		}
+
 		try {
 			return JSONUtil.put(
-				"url", _dlURLHelper.getImagePreviewURL(fileEntry, null));
+				"url", user.getPortraitURL(themeDisplay));
 		}
-		catch (Exception pe) {
-			return null;
+		catch (PortalException pe) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(pe, pe);
+			}
 		}
+
+		return StringPool.BLANK;
 	}
 
+	private static final Log _log = LogFactoryUtil.getLog(
+		FileEntryAuthorProfileImageInfoDisplayContributorField.class);
+
 	@Reference
-	private DLURLHelper _dlURLHelper;
+	private UserLocalService _userLocalService;
 
 }

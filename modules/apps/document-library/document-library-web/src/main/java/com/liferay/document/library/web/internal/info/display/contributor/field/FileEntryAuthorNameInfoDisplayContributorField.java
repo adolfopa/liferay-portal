@@ -16,14 +16,18 @@ package com.liferay.document.library.web.internal.info.display.contributor.field
 
 import com.liferay.info.display.contributor.field.InfoDisplayContributorField;
 import com.liferay.info.display.contributor.field.InfoDisplayContributorFieldType;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Eudaldo Alonso
@@ -32,12 +36,12 @@ import org.osgi.service.component.annotations.Component;
 	property = "model.class.name=com.liferay.portal.kernel.repository.model.FileEntry",
 	service = InfoDisplayContributorField.class
 )
-public class DLFileEntryDescriptionInfoDisplayContributorField
+public class FileEntryAuthorNameInfoDisplayContributorField
 	implements InfoDisplayContributorField<FileEntry> {
 
 	@Override
 	public String getKey() {
-		return "description";
+		return "authorName";
 	}
 
 	@Override
@@ -45,7 +49,7 @@ public class DLFileEntryDescriptionInfoDisplayContributorField
 		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
 			locale, getClass());
 
-		return LanguageUtil.get(resourceBundle, "description");
+		return LanguageUtil.get(resourceBundle, "author-name");
 	}
 
 	@Override
@@ -55,7 +59,16 @@ public class DLFileEntryDescriptionInfoDisplayContributorField
 
 	@Override
 	public String getValue(FileEntry fileEntry, Locale locale) {
-		return fileEntry.getDescription();
+		User user = _userLocalService.fetchUser(fileEntry.getUserId());
+
+		if (user != null) {
+			return user.getFullName();
+		}
+
+		return StringPool.BLANK;
 	}
+
+	@Reference
+	private UserLocalService _userLocalService;
 
 }

@@ -32,12 +32,12 @@ import org.osgi.service.component.annotations.Component;
 	property = "model.class.name=com.liferay.portal.kernel.repository.model.FileEntry",
 	service = InfoDisplayContributorField.class
 )
-public class DLFileEntryTitleInfoDisplayContributorField
+public class FileEntryDescriptionInfoDisplayContributorField
 	implements InfoDisplayContributorField<FileEntry> {
 
 	@Override
 	public String getKey() {
-		return "title";
+		return "description";
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class DLFileEntryTitleInfoDisplayContributorField
 		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
 			locale, getClass());
 
-		return LanguageUtil.get(resourceBundle, "title");
+		return LanguageUtil.get(resourceBundle, "description");
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class DLFileEntryTitleInfoDisplayContributorField
 
 	@Override
 	public String getValue(FileEntry fileEntry, Locale locale) {
-		return fileEntry.getTitle();
+		return fileEntry.getDescription();
 	}
 
 }

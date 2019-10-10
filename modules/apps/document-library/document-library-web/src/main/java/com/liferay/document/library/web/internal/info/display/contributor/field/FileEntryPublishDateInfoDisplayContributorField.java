@@ -14,6 +14,7 @@
 
 package com.liferay.document.library.web.internal.info.display.contributor.field;
 
+import com.liferay.document.library.web.internal.util.DLFileEntryInfoDisplayRegistryUtil;
 import com.liferay.info.display.contributor.field.InfoDisplayContributorField;
 import com.liferay.info.display.contributor.field.InfoDisplayContributorFieldType;
 import com.liferay.petra.string.StringPool;
@@ -27,7 +28,10 @@ import java.text.Format;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 
 /**
  * @author Eudaldo Alonso
@@ -68,5 +72,18 @@ public class FileEntryPublishDateInfoDisplayContributorField
 
 		return dateFormatDateTime.format(fileEntry.getModifiedDate());
 	}
+
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_runnable = DLFileEntryInfoDisplayRegistryUtil.register(
+			bundleContext, this);
+	}
+
+	@Deactivate
+	protected void deactivate() {
+		_runnable.run();
+	}
+
+	private Runnable _runnable;
 
 }

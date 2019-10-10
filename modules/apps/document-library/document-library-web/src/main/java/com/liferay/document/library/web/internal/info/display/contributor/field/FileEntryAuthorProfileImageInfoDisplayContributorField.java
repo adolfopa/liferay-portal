@@ -14,6 +14,7 @@
 
 package com.liferay.document.library.web.internal.info.display.contributor.field;
 
+import com.liferay.document.library.web.internal.util.DLFileEntryInfoDisplayRegistryUtil;
 import com.liferay.info.display.contributor.field.BaseInfoDisplayContributorField;
 import com.liferay.info.display.contributor.field.InfoDisplayContributorField;
 import com.liferay.info.display.contributor.field.InfoDisplayContributorFieldType;
@@ -32,7 +33,10 @@ import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -78,8 +82,7 @@ public class FileEntryAuthorProfileImageInfoDisplayContributorField
 		}
 
 		try {
-			return JSONUtil.put(
-				"url", user.getPortraitURL(themeDisplay));
+			return JSONUtil.put("url", user.getPortraitURL(themeDisplay));
 		}
 		catch (PortalException pe) {
 			if (_log.isDebugEnabled()) {
@@ -90,8 +93,21 @@ public class FileEntryAuthorProfileImageInfoDisplayContributorField
 		return StringPool.BLANK;
 	}
 
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_runnable = DLFileEntryInfoDisplayRegistryUtil.register(
+			bundleContext, this);
+	}
+
+	@Deactivate
+	protected void deactivate() {
+		_runnable.run();
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		FileEntryAuthorProfileImageInfoDisplayContributorField.class);
+
+	private Runnable _runnable;
 
 	@Reference
 	private UserLocalService _userLocalService;

@@ -15,6 +15,7 @@
 package com.liferay.document.library.web.internal.info.display.url.provider;
 
 import com.liferay.document.library.constants.DLPortletKeys;
+import com.liferay.document.library.web.internal.util.DLFileEntryInfoDisplayRegistryUtil;
 import com.liferay.info.display.url.provider.InfoEditURLProvider;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.repository.model.FileEntry;
@@ -28,7 +29,10 @@ import javax.portlet.PortletURL;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -68,10 +72,23 @@ public class FileEntryAssetInfoEditURLProvider
 		return portletURL.toString();
 	}
 
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_runnable = DLFileEntryInfoDisplayRegistryUtil.register(
+			bundleContext, this);
+	}
+
+	@Deactivate
+	protected void deactivate() {
+		_runnable.run();
+	}
+
 	@Reference
 	private GroupLocalService _groupLocalService;
 
 	@Reference
 	private Portal _portal;
+
+	private Runnable _runnable;
 
 }

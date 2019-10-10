@@ -14,6 +14,7 @@
 
 package com.liferay.document.library.web.internal.info.display.contributor.field;
 
+import com.liferay.document.library.web.internal.util.DLFileEntryInfoDisplayRegistryUtil;
 import com.liferay.info.display.contributor.field.InfoDisplayContributorField;
 import com.liferay.info.display.contributor.field.InfoDisplayContributorFieldType;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -23,7 +24,10 @@ import com.liferay.portal.kernel.util.TextFormatter;
 
 import java.util.Locale;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 
 /**
  * @author Alejandro Tardín
@@ -55,5 +59,18 @@ public class FileEntrySizeInfoDisplayContributorField
 	public String getValue(FileEntry fileEntry, Locale locale) {
 		return TextFormatter.formatStorageSize(fileEntry.getSize(), locale);
 	}
+
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_runnable = DLFileEntryInfoDisplayRegistryUtil.register(
+			bundleContext, this);
+	}
+
+	@Deactivate
+	protected void deactivate() {
+		_runnable.run();
+	}
+
+	private Runnable _runnable;
 
 }

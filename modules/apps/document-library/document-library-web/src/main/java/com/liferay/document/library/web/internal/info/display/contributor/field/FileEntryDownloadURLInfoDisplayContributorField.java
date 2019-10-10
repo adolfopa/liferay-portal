@@ -15,6 +15,7 @@
 package com.liferay.document.library.web.internal.info.display.contributor.field;
 
 import com.liferay.document.library.util.DLURLHelper;
+import com.liferay.document.library.web.internal.util.DLFileEntryInfoDisplayRegistryUtil;
 import com.liferay.info.display.contributor.field.InfoDisplayContributorField;
 import com.liferay.info.display.contributor.field.InfoDisplayContributorFieldType;
 import com.liferay.petra.string.StringPool;
@@ -24,7 +25,10 @@ import com.liferay.portal.kernel.util.ResourceBundleUtil;
 
 import java.util.Locale;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -64,7 +68,20 @@ public class FileEntryDownloadURLInfoDisplayContributorField
 		}
 	}
 
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_runnable = DLFileEntryInfoDisplayRegistryUtil.register(
+			bundleContext, this);
+	}
+
+	@Deactivate
+	protected void deactivate() {
+		_runnable.run();
+	}
+
 	@Reference
 	private DLURLHelper _dlURLHelper;
+
+	private Runnable _runnable;
 
 }

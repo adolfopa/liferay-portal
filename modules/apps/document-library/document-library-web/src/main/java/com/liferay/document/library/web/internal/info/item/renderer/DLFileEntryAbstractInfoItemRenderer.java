@@ -14,7 +14,6 @@
 
 package com.liferay.document.library.web.internal.info.item.renderer;
 
-import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.info.item.renderer.InfoItemRenderer;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.WebKeys;

@@ -18,6 +18,7 @@ import com.liferay.asset.info.display.field.AssetEntryInfoDisplayFieldProvider;
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.model.ClassType;
 import com.liferay.document.library.kernel.model.DLFileEntry;
+import com.liferay.document.library.web.internal.util.DLFileEntryInfoDisplayRegistryUtil;
 import com.liferay.dynamic.data.mapping.info.display.field.DDMFormValuesInfoDisplayFieldProvider;
 import com.liferay.info.display.contributor.InfoDisplayContributor;
 import com.liferay.info.display.contributor.InfoDisplayField;
@@ -38,7 +39,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -159,6 +163,17 @@ public class FileEntryInfoDisplayContributor
 		return "/d/";
 	}
 
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_runnable = DLFileEntryInfoDisplayRegistryUtil.register(
+			bundleContext, this);
+	}
+
+	@Deactivate
+	protected void deactivate() {
+		_runnable.run();
+	}
+
 	@Reference
 	private AssetEntryInfoDisplayFieldProvider
 		_assetEntryInfoDisplayFieldProvider;
@@ -179,5 +194,7 @@ public class FileEntryInfoDisplayContributor
 
 	@Reference
 	private RepositoryProvider _repositoryProvider;
+
+	private Runnable _runnable;
 
 }

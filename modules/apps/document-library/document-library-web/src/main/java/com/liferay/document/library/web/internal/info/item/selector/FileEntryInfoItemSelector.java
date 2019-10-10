@@ -34,8 +34,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Eudaldo Alonso
  */
 @Component(service = InfoItemSelector.class)
-public class DLFileEntryInfoItemSelector
-	implements InfoItemSelector<FileEntry> {
+public class FileEntryInfoItemSelector implements InfoItemSelector<FileEntry> {
 
 	@Override
 	public PortletURL getInfoItemSelectorPortletURL(

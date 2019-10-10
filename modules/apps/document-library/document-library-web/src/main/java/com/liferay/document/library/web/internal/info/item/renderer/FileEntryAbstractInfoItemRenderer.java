@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Eudaldo Alonso
  */
 @Component(service = InfoItemRenderer.class)
-public class DLFileEntryAbstractInfoItemRenderer
+public class FileEntryAbstractInfoItemRenderer
 	implements InfoItemRenderer<FileEntry> {
 
 	@Override
@@ -43,16 +43,16 @@ public class DLFileEntryAbstractInfoItemRenderer
 
 	@Override
 	public void render(
-		FileEntry dlFileEntry, HttpServletRequest httpServletRequest,
+		FileEntry fileEntry, HttpServletRequest httpServletRequest,
 		HttpServletResponse httpServletResponse) {
 
 		try {
 			httpServletRequest.setAttribute(
-				WebKeys.DOCUMENT_LIBRARY_FILE_ENTRY, dlFileEntry);
+				WebKeys.DOCUMENT_LIBRARY_FILE_ENTRY, fileEntry);
 
 			httpServletRequest.setAttribute(
 				WebKeys.DOCUMENT_LIBRARY_FILE_VERSION,
-				dlFileEntry.getFileVersion());
+				fileEntry.getFileVersion());
 
 			RequestDispatcher requestDispatcher =
 				_servletContext.getRequestDispatcher(

@@ -67,7 +67,9 @@ import org.osgi.service.component.annotations.Reference;
 @Component(
 	immediate = true,
 	property = "javax.portlet.name=" + DLPortletKeys.DOCUMENT_LIBRARY,
-	service = AssetRendererFactory.class
+	service = {
+		AssetRendererFactory.class, DLFileEntryAssetRendererFactory.class
+	}
 )
 public class DLFileEntryAssetRendererFactory
 	extends BaseAssetRendererFactory<FileEntry> {

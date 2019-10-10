@@ -19,6 +19,7 @@ import com.liferay.info.item.selector.InfoItemSelector;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.PortletProvider;
 import com.liferay.portal.kernel.portlet.PortletProviderUtil;
+import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
 
@@ -34,7 +35,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(service = InfoItemSelector.class)
 public class DLFileEntryInfoItemSelector
-	implements InfoItemSelector<DLFileEntry> {
+	implements InfoItemSelector<FileEntry> {
 
 	@Override
 	public PortletURL getInfoItemSelectorPortletURL(

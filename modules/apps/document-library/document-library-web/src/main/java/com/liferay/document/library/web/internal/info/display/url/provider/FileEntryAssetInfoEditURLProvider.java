@@ -35,7 +35,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Jürgen Kappler
  */
 @Component(
-	property = "model.class.name=com.liferay.document.library.kernel.model.DLFileEntry",
+	property = "model.class.name=com.liferay.portal.kernel.repository.model.FileEntry",
 	service = InfoEditURLProvider.class
 )
 public class FileEntryAssetInfoEditURLProvider

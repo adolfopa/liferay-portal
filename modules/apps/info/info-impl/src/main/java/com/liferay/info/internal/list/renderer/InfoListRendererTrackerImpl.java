@@ -14,9 +14,11 @@
 
 package com.liferay.info.internal.list.renderer;
 
-import com.liferay.info.internal.util.GenericsUtil;
+import com.liferay.info.internal.util.MappingServiceTrackerCustomizer;
 import com.liferay.info.list.renderer.InfoListRenderer;
 import com.liferay.info.list.renderer.InfoListRendererTracker;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
@@ -25,10 +27,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.Deactivate;
 
 /**
  * @author Jorge Ferrer
@@ -53,7 +55,8 @@ public class InfoListRendererTrackerImpl implements InfoListRendererTracker {
 	@Override
 	public List<InfoListRenderer> getInfoListRenderers(String itemClassName) {
 		List<InfoListRenderer> infoListRenderers =
-			_itemClassNameInfoListRenderers.get(itemClassName);
+			_itemClassNameInfoListRenderersServiceTrackerMap.getService(
+				itemClassName);
 
 		if (infoListRenderers != null) {
 			return new ArrayList<>(infoListRenderers);
@@ -62,36 +65,24 @@ public class InfoListRendererTrackerImpl implements InfoListRendererTracker {
 		return Collections.emptyList();
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void setInfoListRenderer(InfoListRenderer infoListRenderer) {
-		_infoListRenderers.put(infoListRenderer.getKey(), infoListRenderer);
-
-		List<InfoListRenderer> itemClassInfoListRenderers =
-			_itemClassNameInfoListRenderers.computeIfAbsent(
-				GenericsUtil.getItemClassName(infoListRenderer),
-				itemClass -> new ArrayList<>());
-
-		itemClassInfoListRenderers.add(infoListRenderer);
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_itemClassNameInfoListRenderersServiceTrackerMap =
+			ServiceTrackerMapFactory.openMultiValueMap(
+				bundleContext, InfoListRenderer.class, "model.class.name",
+				new MappingServiceTrackerCustomizer<>(
+					_infoListRenderers, InfoListRenderer::getKey,
+					bundleContext));
 	}
 
-	protected void unsetInfoListRenderer(InfoListRenderer infoListRenderer) {
-		_infoListRenderers.remove(infoListRenderer.getKey());
-
-		List<InfoListRenderer> itemClassInfoListRenderers =
-			_itemClassNameInfoListRenderers.get(
-				GenericsUtil.getItemClassName(infoListRenderer));
-
-		if (itemClassInfoListRenderers != null) {
-			itemClassInfoListRenderers.remove(infoListRenderer);
-		}
+	@Deactivate
+	protected void deactivate() {
+		_itemClassNameInfoListRenderersServiceTrackerMap.close();
 	}
 
 	private final Map<String, InfoListRenderer> _infoListRenderers =
 		new ConcurrentHashMap<>();
-	private final Map<String, List<InfoListRenderer>>
-		_itemClassNameInfoListRenderers = new ConcurrentHashMap<>();
+	private ServiceTrackerMap<String, List<InfoListRenderer>>
+		_itemClassNameInfoListRenderersServiceTrackerMap;
 
 }

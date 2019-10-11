@@ -16,16 +16,19 @@ package com.liferay.info.internal.display.contributor;
 
 import com.liferay.info.display.contributor.InfoDisplayContributor;
 import com.liferay.info.display.contributor.InfoDisplayContributorTracker;
+import com.liferay.info.internal.util.MappingServiceTrackerCustomizer;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.Deactivate;
 
 /**
  * @author Jürgen Kappler
@@ -36,7 +39,7 @@ public class InfoDisplayContributorTrackerImpl
 
 	@Override
 	public InfoDisplayContributor getInfoDisplayContributor(String className) {
-		return _infoDisplayContributor.get(className);
+		return _infoDisplayContributorServiceTrackerMap.getService(className);
 	}
 
 	@Override
@@ -48,33 +51,29 @@ public class InfoDisplayContributorTrackerImpl
 
 	@Override
 	public List<InfoDisplayContributor> getInfoDisplayContributors() {
-		return new ArrayList(_infoDisplayContributor.values());
+		return new ArrayList<>(
+			_infoDisplayContributorServiceTrackerMap.values());
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void setInfoDisplayContributor(
-		InfoDisplayContributor infoDisplayContributor) {
-
-		_infoDisplayContributor.put(
-			infoDisplayContributor.getClassName(), infoDisplayContributor);
-		_infoDisplayContributorByURLSeparator.put(
-			infoDisplayContributor.getInfoURLSeparator(),
-			infoDisplayContributor);
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_infoDisplayContributorServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, InfoDisplayContributor.class, "model.class.name",
+				new MappingServiceTrackerCustomizer<>(
+					_infoDisplayContributorByURLSeparator,
+					InfoDisplayContributor::getInfoURLSeparator,
+					bundleContext));
 	}
 
-	protected void unsetInfoDisplayContributor(
-		InfoDisplayContributor infoDisplayContributor) {
-
-		_infoDisplayContributor.remove(infoDisplayContributor.getClassName());
-		_infoDisplayContributorByURLSeparator.remove(
-			infoDisplayContributor.getInfoURLSeparator());
+	@Deactivate
+	protected void deactivate() {
+		_infoDisplayContributorServiceTrackerMap.close();
 	}
 
-	private final Map<String, InfoDisplayContributor> _infoDisplayContributor =
-		new ConcurrentHashMap<>();
+	private static ServiceTrackerMap<String, InfoDisplayContributor>
+		_infoDisplayContributorServiceTrackerMap;
+
 	private final Map<String, InfoDisplayContributor>
 		_infoDisplayContributorByURLSeparator = new ConcurrentHashMap<>();
 

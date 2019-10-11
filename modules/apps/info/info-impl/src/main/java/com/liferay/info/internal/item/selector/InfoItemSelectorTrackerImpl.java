@@ -14,9 +14,11 @@
 
 package com.liferay.info.internal.item.selector;
 
-import com.liferay.info.internal.util.GenericsUtil;
+import com.liferay.info.internal.util.MappingServiceTrackerCustomizer;
 import com.liferay.info.item.selector.InfoItemSelector;
 import com.liferay.info.item.selector.InfoItemSelectorTracker;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
@@ -26,10 +28,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.Deactivate;
 
 /**
  * @author Eudaldo Alonso
@@ -54,7 +56,8 @@ public class InfoItemSelectorTrackerImpl implements InfoItemSelectorTracker {
 	@Override
 	public List<InfoItemSelector> getInfoItemSelectors(String itemClassName) {
 		List<InfoItemSelector> infoItemSelectors =
-			_itemClassNameInfoItemSelectors.get(itemClassName);
+			_itemClassNameInfoItemSelectorsServiceTrackerMap.getService(
+				itemClassName);
 
 		if (infoItemSelectors != null) {
 			return new ArrayList<>(infoItemSelectors);
@@ -65,39 +68,27 @@ public class InfoItemSelectorTrackerImpl implements InfoItemSelectorTracker {
 
 	@Override
 	public Set<String> getInfoItemSelectorsClassNames() {
-		return _itemClassNameInfoItemSelectors.keySet();
+		return _itemClassNameInfoItemSelectorsServiceTrackerMap.keySet();
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void setInfoItemSelector(InfoItemSelector infoItemSelector) {
-		_infoItemSelectors.put(infoItemSelector.getKey(), infoItemSelector);
-
-		List<InfoItemSelector> itemClassInfoItemSelectors =
-			_itemClassNameInfoItemSelectors.computeIfAbsent(
-				GenericsUtil.getItemClassName(infoItemSelector),
-				itemClass -> new ArrayList<>());
-
-		itemClassInfoItemSelectors.add(infoItemSelector);
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_itemClassNameInfoItemSelectorsServiceTrackerMap =
+			ServiceTrackerMapFactory.openMultiValueMap(
+				bundleContext, InfoItemSelector.class, "model.class.name",
+				new MappingServiceTrackerCustomizer<>(
+					_infoItemSelectors, InfoItemSelector::getKey,
+					bundleContext));
 	}
 
-	protected void unsetInfoItemSelector(InfoItemSelector infoItemSelector) {
-		_infoItemSelectors.remove(infoItemSelector.getKey());
-
-		List<InfoItemSelector> itemClassInfoItemSelectors =
-			_itemClassNameInfoItemSelectors.get(
-				GenericsUtil.getItemClassName(infoItemSelector));
-
-		if (itemClassInfoItemSelectors != null) {
-			itemClassInfoItemSelectors.remove(infoItemSelector);
-		}
+	@Deactivate
+	protected void deactivate() {
+		_itemClassNameInfoItemSelectorsServiceTrackerMap.close();
 	}
 
 	private final Map<String, InfoItemSelector> _infoItemSelectors =
 		new ConcurrentHashMap<>();
-	private final Map<String, List<InfoItemSelector>>
-		_itemClassNameInfoItemSelectors = new ConcurrentHashMap<>();
+	private ServiceTrackerMap<String, List<InfoItemSelector>>
+		_itemClassNameInfoItemSelectorsServiceTrackerMap;
 
 }

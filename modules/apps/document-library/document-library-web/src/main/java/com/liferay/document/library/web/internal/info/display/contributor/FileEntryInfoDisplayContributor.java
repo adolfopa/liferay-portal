@@ -163,17 +163,6 @@ public class FileEntryInfoDisplayContributor
 		return "/d/";
 	}
 
-	@Activate
-	protected void activate(BundleContext bundleContext) {
-		_runnable = DLFileEntryInfoDisplayRegistryUtil.register(
-			bundleContext, this);
-	}
-
-	@Deactivate
-	protected void deactivate() {
-		_runnable.run();
-	}
-
 	@Reference
 	private AssetEntryInfoDisplayFieldProvider
 		_assetEntryInfoDisplayFieldProvider;
@@ -194,7 +183,5 @@ public class FileEntryInfoDisplayContributor
 
 	@Reference
 	private RepositoryProvider _repositoryProvider;
-
-	private Runnable _runnable;
 
 }

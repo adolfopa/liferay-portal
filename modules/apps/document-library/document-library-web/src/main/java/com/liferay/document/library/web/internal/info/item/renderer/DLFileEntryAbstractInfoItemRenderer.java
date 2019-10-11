@@ -29,7 +29,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Adolfo Pérez
  */
-@Component(service = InfoItemRenderer.class)
+//@Component(service = InfoItemRenderer.class)
 public class DLFileEntryAbstractInfoItemRenderer
 	implements InfoItemRenderer<DLFileEntry> {
 

@@ -103,8 +103,7 @@ public class FileEntryInfoDisplayObjectProvider
 				fileEntry.getFileEntryId());
 
 			return assetRendererFactory.getAssetEntry(
-				DLFileEntryConstants.getClassName(),
-				assetRenderer.getClassPK());
+				FileEntry.class.getName(), assetRenderer.getClassPK());
 		}
 		catch (PortalException pe) {
 			if (_log.isDebugEnabled()) {

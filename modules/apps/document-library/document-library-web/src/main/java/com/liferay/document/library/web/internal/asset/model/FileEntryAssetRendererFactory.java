@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Tuple;
 
 import java.util.List;
@@ -65,21 +66,21 @@ public class FileEntryAssetRendererFactory
 	public AssetRenderer<FileEntry> getAssetRenderer(FileEntry entry, int type)
 		throws PortalException {
 
-		return _dlFileEntryAssetRendererFactory.getAssetRenderer(entry, type);
+		return new FileEntryAssetRenderer(_dlFileEntryAssetRendererFactory.getAssetRenderer(entry, type));
 	}
 
 	@Override
 	public AssetRenderer<FileEntry> getAssetRenderer(long classPK)
 		throws PortalException {
 
-		return _dlFileEntryAssetRendererFactory.getAssetRenderer(classPK);
+		return new FileEntryAssetRenderer(_dlFileEntryAssetRendererFactory.getAssetRenderer(classPK));
 	}
 
 	@Override
 	public AssetRenderer<FileEntry> getAssetRenderer(long classPK, int type)
 		throws PortalException {
 
-		return _dlFileEntryAssetRendererFactory.getAssetRenderer(classPK, type);
+		return new FileEntryAssetRenderer(_dlFileEntryAssetRendererFactory.getAssetRenderer(classPK, type));
 	}
 
 	@Override
@@ -87,8 +88,8 @@ public class FileEntryAssetRendererFactory
 			long groupId, String urlTitle)
 		throws PortalException {
 
-		return _dlFileEntryAssetRendererFactory.getAssetRenderer(
-			groupId, urlTitle);
+		return new FileEntryAssetRenderer(_dlFileEntryAssetRendererFactory.getAssetRenderer(
+			groupId, urlTitle));
 	}
 
 	@Override
@@ -98,7 +99,7 @@ public class FileEntryAssetRendererFactory
 
 	@Override
 	public long getClassNameId() {
-		return _dlFileEntryAssetRendererFactory.getClassNameId();
+		return PortalUtil.getClassNameId(getClassName());
 	}
 
 	@Override

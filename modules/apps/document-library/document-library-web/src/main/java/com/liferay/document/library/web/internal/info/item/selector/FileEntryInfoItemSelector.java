@@ -43,7 +43,7 @@ public class FileEntryInfoItemSelector implements InfoItemSelector<FileEntry> {
 
 		PortletURL infoItemSelectorPortletURL =
 			PortletProviderUtil.getPortletURL(
-				httpServletRequest, DLFileEntry.class.getName(),
+				httpServletRequest, FileEntry.class.getName(),
 				PortletProvider.Action.BROWSE);
 
 		if (infoItemSelectorPortletURL == null) {
@@ -60,7 +60,7 @@ public class FileEntryInfoItemSelector implements InfoItemSelector<FileEntry> {
 			"selectedGroupIds", String.valueOf(themeDisplay.getScopeGroupId()));
 
 		infoItemSelectorPortletURL.setParameter(
-			"typeSelection", DLFileEntry.class.getName());
+			"typeSelection", FileEntry.class.getName());
 		infoItemSelectorPortletURL.setParameter(
 			"showNonindexable", String.valueOf(Boolean.TRUE));
 		infoItemSelectorPortletURL.setParameter(

@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Adolfo Pérez
  */
-@Component(service = InfoItemSelector.class)
+//@Component(service = InfoItemSelector.class)
 public class DLFileEntryInfoItemSelector
 	implements InfoItemSelector<DLFileEntry> {
 

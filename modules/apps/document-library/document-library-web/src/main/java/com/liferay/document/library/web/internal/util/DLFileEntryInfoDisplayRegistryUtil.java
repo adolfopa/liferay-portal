@@ -75,18 +75,19 @@ public class DLFileEntryInfoDisplayRegistryUtil {
 	private static <S, T> Runnable _register(
 		BundleContext bundleContext, Class<T> clazz, T value) {
 
-		ServiceRegistration<T> serviceRegistration =
-			bundleContext.registerService(
-				clazz, value,
-				new HashMapDictionary<String, Object>() {
-					{
-						put(
-							"model.class.name",
-							DLFileEntryConstants.getClassName());
-					}
-				});
-
-		return serviceRegistration::unregister;
+//		ServiceRegistration<T> serviceRegistration =
+//			bundleContext.registerService(
+//				clazz, value,
+//				new HashMapDictionary<String, Object>() {
+//					{
+//						put(
+//							"model.class.name",
+//							DLFileEntryConstants.getClassName());
+//					}
+//				});
+//
+//		return serviceRegistration::unregister;
+		return () -> {};
 	}
 
 	private static class DLFileEntryInfoDisplayContributor

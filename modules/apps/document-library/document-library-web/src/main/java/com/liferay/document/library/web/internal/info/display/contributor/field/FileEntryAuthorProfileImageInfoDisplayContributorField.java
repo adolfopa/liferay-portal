@@ -78,8 +78,7 @@ public class FileEntryAuthorProfileImageInfoDisplayContributorField
 		}
 
 		try {
-			return JSONUtil.put(
-				"url", user.getPortraitURL(themeDisplay));
+			return JSONUtil.put("url", user.getPortraitURL(themeDisplay));
 		}
 		catch (PortalException pe) {
 			if (_log.isDebugEnabled()) {

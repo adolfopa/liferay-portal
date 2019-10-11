@@ -23,7 +23,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Eudaldo Alonso
  */
 @Component(service = FriendlyURLResolver.class)
-public class DLFileEntryAssetDisplayPageFriendlyURLResolver
+public class FileEntryAssetDisplayPageFriendlyURLResolver
 	extends BaseAssetDisplayPageFriendlyURLResolver {
 
 	@Override

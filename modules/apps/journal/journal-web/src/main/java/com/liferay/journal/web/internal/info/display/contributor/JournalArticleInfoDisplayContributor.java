@@ -63,7 +63,10 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Jürgen Kappler
  */
-@Component(immediate = true, service = InfoDisplayContributor.class)
+@Component(
+	property = "model.class.name=com.liferay.journal.model.JournalArticle",
+	service = InfoDisplayContributor.class
+)
 public class JournalArticleInfoDisplayContributor
 	implements InfoDisplayContributor<JournalArticle> {
 

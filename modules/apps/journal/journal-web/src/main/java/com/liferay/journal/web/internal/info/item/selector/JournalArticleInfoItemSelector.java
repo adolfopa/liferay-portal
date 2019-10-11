@@ -32,7 +32,10 @@ import org.osgi.service.component.annotations.Component;
 /**
  * @author Eudaldo Alonso
  */
-@Component(service = InfoItemSelector.class)
+@Component(
+	property = "model.class.name=com.liferay.journal.model.JournalArticle",
+	service = InfoItemSelector.class
+)
 public class JournalArticleInfoItemSelector
 	implements InfoItemSelector<JournalArticle> {
 

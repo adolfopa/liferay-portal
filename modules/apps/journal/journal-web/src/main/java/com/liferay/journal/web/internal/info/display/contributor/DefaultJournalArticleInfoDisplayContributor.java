@@ -22,7 +22,10 @@ import org.osgi.service.component.annotations.Component;
 /**
  * @author Eudaldo Alonso
  */
-@Component(immediate = true, service = InfoDisplayContributor.class)
+@Component(
+	property = "model.class.name=com.liferay.journal.model.JournalArticle",
+	service = InfoDisplayContributor.class
+)
 public class DefaultJournalArticleInfoDisplayContributor
 	extends JournalArticleInfoDisplayContributor {
 

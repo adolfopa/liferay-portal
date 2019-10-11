@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Deactivate;
 /**
  * @author Eudaldo Alonso
  */
-@Component(immediate = true, service = InfoListProviderTracker.class)
+@Component(service = InfoListProviderTracker.class)
 public class InfoListProviderTrackerImpl implements InfoListProviderTracker {
 
 	@Override

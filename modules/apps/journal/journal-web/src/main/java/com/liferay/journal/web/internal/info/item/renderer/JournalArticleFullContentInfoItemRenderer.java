@@ -32,7 +32,10 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Eudaldo Alonso
  */
-@Component(service = InfoItemRenderer.class)
+@Component(
+	property = "model.class.name=com.liferay.journal.model.JournalArticle",
+	service = InfoItemRenderer.class
+)
 public class JournalArticleFullContentInfoItemRenderer
 	implements InfoItemRenderer<JournalArticle> {
 

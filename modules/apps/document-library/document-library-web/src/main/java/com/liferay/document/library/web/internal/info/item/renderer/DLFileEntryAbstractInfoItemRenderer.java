@@ -32,7 +32,10 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Eudaldo Alonso
  */
-@Component(service = InfoItemRenderer.class)
+@Component(
+	property = "model.class.name=com.liferay.document.library.kernel.model.DLFileEntry",
+	service = InfoItemRenderer.class
+)
 public class DLFileEntryAbstractInfoItemRenderer
 	implements InfoItemRenderer<DLFileEntry> {
 

@@ -22,7 +22,10 @@ import org.osgi.service.component.annotations.Component;
 /**
  * @author Jorge Ferrer
  */
-@Component(service = InfoItemRenderer.class)
+@Component(
+	property = "model.class.name=com.liferay.asset.kernel.model.AssetEntry",
+	service = InfoItemRenderer.class
+)
 public class FullContentAssetEntryInfoItemRenderer
 	extends BaseAssetEntryInfoItemRenderer {
 

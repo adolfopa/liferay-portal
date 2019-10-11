@@ -36,7 +36,10 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Alejandro Tardín
  */
-@Component(service = InfoDisplayContributor.class)
+@Component(
+	property = "model.class.name=com.liferay.blogs.model.BlogsEntry",
+	service = InfoDisplayContributor.class
+)
 public class BlogsEntryInfoDisplayContributor
 	implements InfoDisplayContributor<BlogsEntry> {
 

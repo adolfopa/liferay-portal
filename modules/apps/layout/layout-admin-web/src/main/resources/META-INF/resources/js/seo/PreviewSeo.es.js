@@ -14,6 +14,7 @@
 
 import React, {useEffect, useState} from 'react';
 import {PropTypes} from 'prop-types';
+import titleConcatenator from './utils/titleConcatenator.es';
 
 const MAX_LENGTH_DESCIPTION = 160;
 
@@ -25,8 +26,7 @@ const PreviewSeo = ({
 }) => (
 	<div className="preview-seo preview-seo-serp">
 		<div className="preview-seo-title text-truncate">
-			{title}
-			{suffixTitle && ` - ${suffixTitle}`}
+			{titleConcatenator({suffixTitle, title})}
 		</div>
 		<div className="preview-seo-url text-truncate">{url}</div>
 		<div className="preview-seo-description">
@@ -36,6 +36,7 @@ const PreviewSeo = ({
 		</div>
 	</div>
 );
+
 PreviewSeo.propTypes = {
 	description: PropTypes.string,
 	suffixTitle: PropTypes.string,

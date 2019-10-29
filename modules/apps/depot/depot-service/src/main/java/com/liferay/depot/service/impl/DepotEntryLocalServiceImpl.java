@@ -96,20 +96,11 @@ public class DepotEntryLocalServiceImpl extends DepotEntryLocalServiceBaseImpl {
 		UnicodeProperties currentTypeSettingsProperties =
 			group.getTypeSettingsProperties();
 
-		boolean inheritLocales = GetterUtil.getBoolean(
-			currentTypeSettingsProperties.getProperty("inheritLocales"), true);
-
-		inheritLocales = GetterUtil.getBoolean(
-			formTypeSettingsProperties.getProperty("inheritLocales"),
-			inheritLocales);
-
-		if (inheritLocales) {
-			formTypeSettingsProperties.setProperty(
-				PropsKeys.LOCALES,
-				StringUtil.merge(
-					LocaleUtil.toLanguageIds(
-						LanguageUtil.getAvailableLocales())));
-		}
+		_fillInheritLocales(
+			formTypeSettingsProperties,
+			GetterUtil.getBoolean(
+				currentTypeSettingsProperties.getProperty("inheritLocales"),
+				true));
 
 		currentTypeSettingsProperties.putAll(formTypeSettingsProperties);
 
@@ -131,6 +122,26 @@ public class DepotEntryLocalServiceImpl extends DepotEntryLocalServiceBaseImpl {
 			group.getGroupId(), currentTypeSettingsProperties.toString());
 
 		return depotEntryPersistence.update(depotEntry);
+	}
+
+	private void _fillInheritLocales(
+		UnicodeProperties formTypeSettingsProperties, boolean inheritLocales) {
+
+		if (formTypeSettingsProperties.isEmpty()) {
+			return;
+		}
+
+		inheritLocales = GetterUtil.getBoolean(
+			formTypeSettingsProperties.getProperty("inheritLocales"),
+			inheritLocales);
+
+		if (inheritLocales) {
+			formTypeSettingsProperties.setProperty(
+				PropsKeys.LOCALES,
+				StringUtil.merge(
+					LocaleUtil.toLanguageIds(
+						LanguageUtil.getAvailableLocales())));
+		}
 	}
 
 	private String _getDefaultName(

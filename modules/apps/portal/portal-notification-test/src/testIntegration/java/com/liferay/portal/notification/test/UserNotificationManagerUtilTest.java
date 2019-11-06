@@ -81,7 +81,7 @@ public class UserNotificationManagerUtilTest {
 
 			@Override
 			public boolean isDeliver(
-				long userId, long classNameId, int notificationType,
+				long userId, long classNameId, String notificationType,
 				int deliveryType, ServiceContext serviceContext) {
 
 				if (userId == 1) {
@@ -149,11 +149,11 @@ public class UserNotificationManagerUtilTest {
 	public void testIsDeliver() throws PortalException {
 		Assert.assertTrue(
 			UserNotificationManagerUtil.isDeliver(
-				1, _SELECTOR, _PORTLET_ID, 1, 1, 1, null));
+				1, _SELECTOR, _PORTLET_ID, 1, "1", 1, null));
 
 		Assert.assertFalse(
 			UserNotificationManagerUtil.isDeliver(
-				0, _SELECTOR, _PORTLET_ID, 1, 1, 1, null));
+				0, _SELECTOR, _PORTLET_ID, 1, "1", 1, null));
 	}
 
 	private static final String _PORTLET_ID = "PORTLET_ID";

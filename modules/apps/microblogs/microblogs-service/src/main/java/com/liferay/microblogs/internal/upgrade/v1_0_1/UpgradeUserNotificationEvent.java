@@ -64,10 +64,10 @@ public class UpgradeUserNotificationEvent extends UpgradeProcess {
 					JSONObject payloadJSONObject =
 						JSONFactoryUtil.createJSONObject(payload);
 
-					int notificationType = payloadJSONObject.getInt(
+					String notificationType = payloadJSONObject.getString(
 						"notificationType");
 
-					if (notificationType != 0) {
+					if (notificationType != "0") {
 						return;
 					}
 

@@ -73,7 +73,7 @@ public class MicroblogsUserNotificationHandler
 		String userFullName = HtmlUtil.escape(
 			_portal.getUserName(microblogsEntry.getUserId(), StringPool.BLANK));
 
-		int notificationType = jsonObject.getInt("notificationType");
+		String notificationType = jsonObject.getString("notificationType");
 
 		if (notificationType ==
 				MicroblogsEntryConstants.NOTIFICATION_TYPE_REPLY) {

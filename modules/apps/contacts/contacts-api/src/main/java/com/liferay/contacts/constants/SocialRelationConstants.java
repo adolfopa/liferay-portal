@@ -20,7 +20,7 @@ package com.liferay.contacts.constants;
 public class SocialRelationConstants
 	extends com.liferay.social.kernel.model.SocialRelationConstants {
 
-	public static final int SOCIAL_RELATION_REQUEST = 1001;
+	public static final String SOCIAL_RELATION_REQUEST = "1001";
 
 	public static final int TYPE_MY_CONTACTS = 101;
 

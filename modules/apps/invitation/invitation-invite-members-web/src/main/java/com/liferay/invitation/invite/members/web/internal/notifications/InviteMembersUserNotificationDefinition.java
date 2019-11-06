@@ -36,7 +36,7 @@ public class InviteMembersUserNotificationDefinition
 	public InviteMembersUserNotificationDefinition() {
 		super(
 			InviteMembersPortletKeys.INVITE_MEMBERS, 0,
-			MembershipRequestConstants.STATUS_PENDING,
+			String.valueOf(MembershipRequestConstants.STATUS_PENDING),
 			"receive-a-notification-when-someone-sends-you-a-membership-" +
 				"request");
 

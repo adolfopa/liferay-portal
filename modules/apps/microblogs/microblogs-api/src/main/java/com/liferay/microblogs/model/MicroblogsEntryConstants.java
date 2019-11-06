@@ -19,15 +19,15 @@ package com.liferay.microblogs.model;
  */
 public class MicroblogsEntryConstants {
 
-	public static final int NOTIFICATION_TYPE_REPLY = 0;
+	public static final String NOTIFICATION_TYPE_REPLY = "0";
 
-	public static final int NOTIFICATION_TYPE_REPLY_TO_REPLIED = 1;
+	public static final String NOTIFICATION_TYPE_REPLY_TO_REPLIED = "1";
 
-	public static final int NOTIFICATION_TYPE_REPLY_TO_TAGGED = 2;
+	public static final String NOTIFICATION_TYPE_REPLY_TO_TAGGED = "2";
 
-	public static final int NOTIFICATION_TYPE_TAG = 3;
+	public static final String NOTIFICATION_TYPE_TAG = "3";
 
-	public static final int NOTIFICATION_TYPE_UNKNOWN = -1;
+	public static final String NOTIFICATION_TYPE_UNKNOWN = "-1";
 
 	public static final int TYPE_EVERYONE = 0;
 

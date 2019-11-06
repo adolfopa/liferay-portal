@@ -1605,7 +1605,7 @@ public class JournalArticleStagedModelDataHandler
 					subscriptionSender.setMailId(
 						"journal_article", article.getId());
 					subscriptionSender.setNotificationType(
-						jsonObject.getInt("notificationType"));
+						jsonObject.getString("notificationType"));
 					subscriptionSender.setPortletId(
 						jsonObject.getString("portletId"));
 					subscriptionSender.setReplyToAddress(fromAddress);

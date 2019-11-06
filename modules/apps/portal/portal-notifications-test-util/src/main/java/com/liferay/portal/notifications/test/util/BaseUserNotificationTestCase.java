@@ -88,7 +88,7 @@ public abstract class BaseUserNotificationTestCase {
 					userNotificationEventsJSONObject));
 			Assert.assertEquals(
 				UserNotificationDefinition.NOTIFICATION_TYPE_ADD_ENTRY,
-				userNotificationEventsJSONObject.getInt("notificationType"));
+				userNotificationEventsJSONObject.getString("notificationType"));
 		}
 	}
 
@@ -122,7 +122,7 @@ public abstract class BaseUserNotificationTestCase {
 					userNotificationEventsJSONObject));
 			Assert.assertEquals(
 				UserNotificationDefinition.NOTIFICATION_TYPE_ADD_ENTRY,
-				userNotificationEventsJSONObject.getInt("notificationType"));
+				userNotificationEventsJSONObject.getString("notificationType"));
 		}
 	}
 
@@ -194,7 +194,7 @@ public abstract class BaseUserNotificationTestCase {
 					userNotificationEventsJSONObject));
 
 			Assert.assertEquals(
-				userNotificationEventsJSONObject.getInt("notificationType"),
+				userNotificationEventsJSONObject.getString("notificationType"),
 				UserNotificationDefinition.NOTIFICATION_TYPE_UPDATE_ENTRY);
 		}
 	}
@@ -234,7 +234,7 @@ public abstract class BaseUserNotificationTestCase {
 					userNotificationEventsJSONObject));
 
 			Assert.assertEquals(
-				userNotificationEventsJSONObject.getInt("notificationType"),
+				userNotificationEventsJSONObject.getString("notificationType"),
 				UserNotificationDefinition.NOTIFICATION_TYPE_UPDATE_ENTRY);
 		}
 	}
@@ -386,7 +386,7 @@ public abstract class BaseUserNotificationTestCase {
 	}
 
 	private void _updateUserNotificationDelivery(
-		int notificationType, int deliveryType, boolean deliver) {
+		String notificationType, int deliveryType, boolean deliver) {
 
 		boolean exists = false;
 

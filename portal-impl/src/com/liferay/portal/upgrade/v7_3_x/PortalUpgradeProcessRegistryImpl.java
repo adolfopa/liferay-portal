@@ -52,6 +52,9 @@ public class PortalUpgradeProcessRegistryImpl
 				"ResourcePermission"));
 
 		upgradeProcesses.put(new Version(8, 0, 0), new UpgradeSchema());
+
+		upgradeProcesses.put(
+			new Version(9, 0, 0), new UpgradeUserNotificationDelivery());
 	}
 
 }

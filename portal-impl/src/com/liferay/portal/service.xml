@@ -2940,7 +2940,7 @@
 
 		<column name="portletId" type="String" />
 		<column name="classNameId" type="long" />
-		<column name="notificationType" type="int" />
+		<column name="notificationType" type="String" />
 		<column name="deliveryType" type="int" />
 		<column name="deliver" type="boolean" />
 

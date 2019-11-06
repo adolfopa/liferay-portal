@@ -28,12 +28,12 @@ import java.util.ResourceBundle;
  */
 public class UserNotificationDefinition {
 
-	public static final int NOTIFICATION_TYPE_ADD_ENTRY = 0;
+	public static final String NOTIFICATION_TYPE_ADD_ENTRY = "0";
 
-	public static final int NOTIFICATION_TYPE_UPDATE_ENTRY = 1;
+	public static final String NOTIFICATION_TYPE_UPDATE_ENTRY = "1";
 
 	public UserNotificationDefinition(
-		String portletId, long classNameId, int notificationType,
+		String portletId, long classNameId, String notificationType,
 		String description) {
 
 		_portletId = portletId;
@@ -65,7 +65,7 @@ public class UserNotificationDefinition {
 		return _description;
 	}
 
-	public int getNotificationType() {
+	public String getNotificationType() {
 		return _notificationType;
 	}
 
@@ -99,7 +99,7 @@ public class UserNotificationDefinition {
 
 	private final long _classNameId;
 	private final String _description;
-	private final int _notificationType;
+	private final String _notificationType;
 	private final String _portletId;
 	private final Map<Integer, UserNotificationDeliveryType>
 		_userNotificationDeliveryTypes = new HashMap<>();

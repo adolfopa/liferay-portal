@@ -79,7 +79,7 @@ public class JournalUserNotificationHandler
 		String userFullName = HtmlUtil.escape(
 			_portal.getUserName(userId, StringPool.BLANK));
 
-		int notificationType = jsonObject.getInt("notificationType");
+		String notificationType = jsonObject.getString("notificationType");
 
 		if (notificationType ==
 				UserNotificationDefinition.NOTIFICATION_TYPE_ADD_ENTRY) {

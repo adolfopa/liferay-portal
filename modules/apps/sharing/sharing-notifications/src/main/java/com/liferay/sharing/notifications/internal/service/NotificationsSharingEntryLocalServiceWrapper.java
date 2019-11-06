@@ -118,7 +118,7 @@ public class NotificationsSharingEntryLocalServiceWrapper
 	}
 
 	private void _sendNotificationEvent(
-		SharingEntry sharingEntry, int notificationType,
+		SharingEntry sharingEntry, String notificationType,
 		ServiceContext serviceContext) {
 
 		try {

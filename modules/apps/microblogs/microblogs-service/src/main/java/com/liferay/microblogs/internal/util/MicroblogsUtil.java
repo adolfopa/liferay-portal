@@ -113,7 +113,7 @@ public class MicroblogsUtil {
 		return jsonArray;
 	}
 
-	public static int getNotificationType(
+	public static String getNotificationType(
 			MicroblogsEntry microblogsEntry, long userId, int deliveryType)
 		throws PortalException {
 

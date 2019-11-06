@@ -98,7 +98,7 @@ public class CommentUserNotificationHandler
 
 		String message = StringPool.BLANK;
 
-		int notificationType = jsonObject.getInt("notificationType");
+		String notificationType = jsonObject.getString("notificationType");
 
 		if (notificationType ==
 				UserNotificationDefinition.NOTIFICATION_TYPE_ADD_ENTRY) {

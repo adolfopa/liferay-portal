@@ -234,7 +234,7 @@ public class SubscriptionDLAppHelperLocalServiceWrapper
 		subscriptionSender.setMailId(
 			"file_entry", fileVersion.getFileEntryId());
 
-		int notificationType =
+		String notificationType =
 			UserNotificationDefinition.NOTIFICATION_TYPE_ADD_ENTRY;
 
 		if (commandUpdate) {

@@ -40,7 +40,7 @@ public interface UserNotificationHandler {
 	}
 
 	public boolean isDeliver(
-			long userId, long classNameId, int notificationType,
+			long userId, long classNameId, String notificationType,
 			int deliveryType, ServiceContext serviceContext)
 		throws PortalException;
 

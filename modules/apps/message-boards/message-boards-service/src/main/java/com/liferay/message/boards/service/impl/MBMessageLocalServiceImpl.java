@@ -1989,7 +1989,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 			MBMailUtil.MESSAGE_POP_PORTLET_PREFIX, message.getCategoryId(),
 			message.getMessageId(), modifiedDate.getTime());
 
-		int notificationType =
+		String notificationType =
 			UserNotificationDefinition.NOTIFICATION_TYPE_ADD_ENTRY;
 
 		if (serviceContext.isCommandUpdate()) {
@@ -2090,7 +2090,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 			"mb_discussion", message.getCategoryId(), message.getMessageId(),
 			modifiedDate.getTime());
 
-		int notificationType =
+		String notificationType =
 			UserNotificationDefinition.NOTIFICATION_TYPE_ADD_ENTRY;
 
 		if (serviceContext.isCommandUpdate()) {

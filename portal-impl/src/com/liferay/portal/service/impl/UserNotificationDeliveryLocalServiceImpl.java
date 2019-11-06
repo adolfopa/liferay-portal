@@ -24,6 +24,7 @@ import com.liferay.portal.service.base.UserNotificationDeliveryLocalServiceBaseI
 
 /**
  * @author Jonathan Lee
+ * @author Roberto Díaz
  */
 public class UserNotificationDeliveryLocalServiceImpl
 	extends UserNotificationDeliveryLocalServiceBaseImpl {
@@ -31,7 +32,7 @@ public class UserNotificationDeliveryLocalServiceImpl
 	@Override
 	public UserNotificationDelivery addUserNotificationDelivery(
 			long userId, String portletId, long classNameId,
-			int notificationType, int deliveryType, boolean deliver)
+			String notificationType, int deliveryType, boolean deliver)
 		throws PortalException {
 
 		User user = userPersistence.findByPrimaryKey(userId);
@@ -61,8 +62,8 @@ public class UserNotificationDeliveryLocalServiceImpl
 
 	@Override
 	public void deleteUserNotificationDelivery(
-		long userId, String portletId, long classNameId, int notificationType,
-		int deliveryType) {
+		long userId, String portletId, long classNameId,
+		String notificationType, int deliveryType) {
 
 		try {
 			userNotificationDeliveryPersistence.removeByU_P_C_N_D(
@@ -80,7 +81,7 @@ public class UserNotificationDeliveryLocalServiceImpl
 
 	@Override
 	public UserNotificationDelivery fetchUserNotificationDelivery(
-		long userId, String portletId, long classNameId, int notificationType,
+		long userId, String portletId, long classNameId, String notificationType,
 		int deliveryType) {
 
 		return userNotificationDeliveryPersistence.fetchByU_P_C_N_D(
@@ -90,7 +91,7 @@ public class UserNotificationDeliveryLocalServiceImpl
 	@Override
 	public UserNotificationDelivery getUserNotificationDelivery(
 			long userId, String portletId, long classNameId,
-			int notificationType, int deliveryType, boolean deliver)
+			String notificationType, int deliveryType, boolean deliver)
 		throws PortalException {
 
 		UserNotificationDelivery userNotificationDelivery =

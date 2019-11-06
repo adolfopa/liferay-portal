@@ -34,13 +34,13 @@ public class JournalArticleConstants {
 
 	public static final String DISPLAY_PAGE = "display-page";
 
-	public static final int NOTIFICATION_TYPE_MOVE_ENTRY_FROM_FOLDER = 2;
+	public static final String NOTIFICATION_TYPE_MOVE_ENTRY_FROM_FOLDER = "2";
 
-	public static final int NOTIFICATION_TYPE_MOVE_ENTRY_FROM_TRASH = 4;
+	public static final String NOTIFICATION_TYPE_MOVE_ENTRY_FROM_TRASH = "4";
 
-	public static final int NOTIFICATION_TYPE_MOVE_ENTRY_TO_FOLDER = 3;
+	public static final String NOTIFICATION_TYPE_MOVE_ENTRY_TO_FOLDER = "3";
 
-	public static final int NOTIFICATION_TYPE_MOVE_ENTRY_TO_TRASH = 5;
+	public static final String NOTIFICATION_TYPE_MOVE_ENTRY_TO_TRASH = "5";
 
 	public static final String PORTLET = "portlet";
 

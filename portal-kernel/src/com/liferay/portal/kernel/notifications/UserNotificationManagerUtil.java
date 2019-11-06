@@ -76,7 +76,7 @@ public class UserNotificationManagerUtil {
 	}
 
 	public static UserNotificationDefinition fetchUserNotificationDefinition(
-		String portletId, long classNameId, int notificationType) {
+		String portletId, long classNameId, String notificationType) {
 
 		return _userNotificationManagerUtil._fetchUserNotificationDefinition(
 			portletId, classNameId, notificationType);
@@ -114,7 +114,7 @@ public class UserNotificationManagerUtil {
 
 	public static boolean isDeliver(
 			long userId, String portletId, long classNameId,
-			int notificationType, int deliveryType)
+			String notificationType, int deliveryType)
 		throws PortalException {
 
 		return _userNotificationManagerUtil._isDeliver(
@@ -124,7 +124,7 @@ public class UserNotificationManagerUtil {
 
 	public static boolean isDeliver(
 			long userId, String selector, String portletId, long classNameId,
-			int notificationType, int deliveryType,
+			String notificationType, int deliveryType,
 			ServiceContext serviceContext)
 		throws PortalException {
 
@@ -215,7 +215,7 @@ public class UserNotificationManagerUtil {
 	}
 
 	private UserNotificationDefinition _fetchUserNotificationDefinition(
-		String portletId, long classNameId, int notificationType) {
+		String portletId, long classNameId, String notificationType) {
 
 		List<UserNotificationDefinition> userNotificationDefinitions =
 			_userNotificationDefinitions.getService(portletId);
@@ -298,7 +298,7 @@ public class UserNotificationManagerUtil {
 
 	private boolean _isDeliver(
 			long userId, String selector, String portletId, long classNameId,
-			int notificationType, int deliveryType,
+			String notificationType, int deliveryType,
 			ServiceContext serviceContext)
 		throws PortalException {
 

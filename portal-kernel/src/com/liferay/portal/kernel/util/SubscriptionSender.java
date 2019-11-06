@@ -1115,7 +1115,7 @@ public class SubscriptionSender implements Serializable {
 	private Object[] _mailIdIds;
 	private String _mailIdPopPortletPrefix;
 	private long _notificationClassNameId;
-	private int _notificationType;
+	private String _notificationType;
 	private final List<Tuple> _persistedSubscribersTuples = new ArrayList<>();
 	private final List<ObjectValuePair<String, String>>
 		_runtimeSubscribersOVPs = new ArrayList<>();

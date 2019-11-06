@@ -794,7 +794,7 @@ public class PortletBagFactory {
 				classNameId = PortalUtil.getClassNameId(modelName);
 			}
 
-			int notificationType = GetterUtil.getInteger(
+			String notificationType = GetterUtil.getString(
 				definitionElement.elementText("notification-type"));
 
 			String description = GetterUtil.getString(

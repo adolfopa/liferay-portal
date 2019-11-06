@@ -34,7 +34,7 @@ public abstract class AlloyNotificationEventHelper {
 		throws Exception;
 
 	protected void addUserNotificationEvent(
-			String portletKey, long userId, int notificationType,
+			String portletKey, long userId, String notificationType,
 			int deliveryType, Object... attributes)
 		throws Exception {
 

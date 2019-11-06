@@ -19,6 +19,6 @@ package com.liferay.portal.workflow.constants;
  */
 public class MyWorkflowTasksConstants {
 
-	public static final int NOTIFICATION_TYPE_MY_WORKFLOW_TASKS = 0;
+	public static final String NOTIFICATION_TYPE_MY_WORKFLOW_TASKS = "0";
 
 }

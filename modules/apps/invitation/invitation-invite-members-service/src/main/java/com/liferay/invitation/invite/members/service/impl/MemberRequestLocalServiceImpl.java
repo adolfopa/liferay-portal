@@ -441,7 +441,7 @@ public class MemberRequestLocalServiceImpl
 
 		if (UserNotificationManagerUtil.isDeliver(
 				memberRequest.getReceiverUserId(), portletId, 0,
-				MembershipRequestConstants.STATUS_PENDING,
+				String.valueOf(MembershipRequestConstants.STATUS_PENDING),
 				UserNotificationDeliveryConstants.TYPE_WEBSITE)) {
 
 			JSONObject notificationEventJSONObject = JSONUtil.put(

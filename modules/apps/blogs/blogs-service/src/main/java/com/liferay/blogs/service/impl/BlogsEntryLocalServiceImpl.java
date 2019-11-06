@@ -1983,7 +1983,7 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 
 		subscriptionSender.setMailId("blogs_entry", entry.getEntryId());
 
-		int notificationType =
+		String notificationType =
 			UserNotificationDefinition.NOTIFICATION_TYPE_ADD_ENTRY;
 
 		if (serviceContext.isCommandUpdate()) {

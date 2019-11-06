@@ -99,7 +99,7 @@ public class DefaultMentionsNotifier implements MentionsNotifier {
 			locale -> getAssetEntryName(className, locale));
 		subscriptionSender.setMailId("mb_discussion", classPK);
 		subscriptionSender.setNotificationType(
-			MentionsConstants.NOTIFICATION_TYPE_MENTION);
+			String.valueOf(MentionsConstants.NOTIFICATION_TYPE_MENTION));
 		subscriptionSender.setPortletId(MentionsPortletKeys.MENTIONS);
 		subscriptionSender.setScopeGroupId(groupId);
 		subscriptionSender.setServiceContext(serviceContext);

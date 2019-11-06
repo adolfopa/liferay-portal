@@ -28,7 +28,7 @@ public abstract class BaseJournalUserNotificationDefinition
 	extends UserNotificationDefinition {
 
 	public BaseJournalUserNotificationDefinition(
-		int notificationType, String description) {
+		String notificationType, String description) {
 
 		super(JournalPortletKeys.JOURNAL, 0, notificationType, description);
 

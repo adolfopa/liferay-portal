@@ -106,7 +106,7 @@ public class CommentUserNotificationTest extends BaseUserNotificationTestCase {
 							userNotificationEventsJSONObject));
 					Assert.assertEquals(
 						UserNotificationDefinition.NOTIFICATION_TYPE_ADD_ENTRY,
-						userNotificationEventsJSONObject.getInt(
+						userNotificationEventsJSONObject.getString(
 							"notificationType"));
 				}
 			});
@@ -143,7 +143,7 @@ public class CommentUserNotificationTest extends BaseUserNotificationTestCase {
 					Assert.assertEquals(
 						UserNotificationDefinition.
 							NOTIFICATION_TYPE_UPDATE_ENTRY,
-						userNotificationEventsJSONObject.getInt(
+						userNotificationEventsJSONObject.getString(
 							"notificationType"));
 				}
 			});

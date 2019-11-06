@@ -416,7 +416,7 @@ public class PowwowUtil {
 		if (!UserNotificationManagerUtil.isDeliver(
 				powwowParticipant.getParticipantUserId(),
 				PowwowPortletKeys.POWWOW_MEETINGS, 0,
-				PowwowParticipantConstants.STATUS_INVITED,
+				String.valueOf(PowwowParticipantConstants.STATUS_INVITED),
 				UserNotificationDeliveryConstants.TYPE_WEBSITE)) {
 
 			return;

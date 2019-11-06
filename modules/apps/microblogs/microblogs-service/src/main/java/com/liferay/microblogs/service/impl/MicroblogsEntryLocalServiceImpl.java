@@ -667,9 +667,10 @@ public class MicroblogsEntryLocalServiceImpl
 					notificationEventJSONObject.put(
 						"subscriptionId", subscriptionId);
 
-					int notificationType = MicroblogsUtil.getNotificationType(
-						microblogsEntry, receiverUserIds.get(j),
-						UserNotificationDeliveryConstants.TYPE_PUSH);
+					String notificationType =
+						MicroblogsUtil.getNotificationType(
+							microblogsEntry, receiverUserIds.get(j),
+							UserNotificationDeliveryConstants.TYPE_PUSH);
 
 					if (notificationType !=
 							MicroblogsEntryConstants.

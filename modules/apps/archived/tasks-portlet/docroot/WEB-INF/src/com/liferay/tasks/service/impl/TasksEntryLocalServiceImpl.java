@@ -438,7 +438,7 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 			if ((receiverUserId == 0) ||
 				!UserNotificationManagerUtil.isDeliver(
 					receiverUserId, PortletKeys.TASKS, 0,
-					TasksEntryConstants.STATUS_ALL,
+					String.valueOf(TasksEntryConstants.STATUS_ALL),
 					UserNotificationDeliveryConstants.TYPE_WEBSITE)) {
 
 				continue;

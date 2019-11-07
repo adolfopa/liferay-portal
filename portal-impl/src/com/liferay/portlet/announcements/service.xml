@@ -3,7 +3,7 @@
 
 <service-builder api-package-path="com.liferay.announcements.kernel" auto-import-default-references="false" mvcc-enabled="true" package-path="com.liferay.portlet.announcements">
 	<namespace>Announcements</namespace>
-	<entity local-service="true" name="AnnouncementsDelivery" remote-service="true">
+	<entity deprecated="true" local-service="true" name="AnnouncementsDelivery" remote-service="true">
 
 		<!-- PK fields -->
 
@@ -111,7 +111,6 @@
 		<reference entity="Team" package-path="com.liferay.portal" />
 		<reference entity="User" package-path="com.liferay.portal" />
 		<reference entity="UserGroup" package-path="com.liferay.portal" />
-		<reference entity="AnnouncementsDelivery" package-path="com.liferay.portlet.announcements" />
 		<reference entity="AnnouncementsFlag" package-path="com.liferay.portlet.announcements" />
 	</entity>
 	<entity local-service="true" name="AnnouncementsFlag" remote-service="true">

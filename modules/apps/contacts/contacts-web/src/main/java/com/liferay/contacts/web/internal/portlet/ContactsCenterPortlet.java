@@ -1238,10 +1238,6 @@ public class ContactsCenterPortlet extends MVCPortlet {
 		int birthdayMonth = cal.get(Calendar.MONTH);
 		int birthdayYear = cal.get(Calendar.YEAR);
 
-		List<AnnouncementsDelivery> announcementsDeliveries =
-			announcementsDeliveryLocalService.getUserDeliveries(
-				user.getUserId());
-
 		userService.updateUser(
 			user.getUserId(), user.getPasswordUnencrypted(),
 			user.getPasswordUnencrypted(), user.getPasswordUnencrypted(),
@@ -1255,7 +1251,7 @@ public class ContactsCenterPortlet extends MVCPortlet {
 			jobTitle, user.getGroupIds(), user.getOrganizationIds(),
 			user.getRoleIds(), null, user.getUserGroupIds(),
 			user.getAddresses(), null, user.getPhones(), user.getWebsites(),
-			announcementsDeliveries, new ServiceContext());
+			null, new ServiceContext());
 	}
 
 	protected void updateWebsites(ActionRequest actionRequest)

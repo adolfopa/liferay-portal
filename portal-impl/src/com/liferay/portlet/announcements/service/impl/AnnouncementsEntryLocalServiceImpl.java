@@ -62,6 +62,9 @@ import java.util.List;
 public class AnnouncementsEntryLocalServiceImpl
 	extends AnnouncementsEntryLocalServiceBaseImpl {
 
+	public static final String[] ANNOUNCEMENTS_ENTRY_TYPES = PropsUtil.getArray(
+		PropsKeys.ANNOUNCEMENTS_ENTRY_TYPES);
+
 	@Override
 	public AnnouncementsEntry addEntry(
 			long userId, long classNameId, long classPK, String title,
@@ -492,8 +495,8 @@ public class AnnouncementsEntryLocalServiceImpl
 	}
 
 	protected void notifyUsers(
-			List<User> users, AnnouncementsEntry entry,
-			String toAddress, String toName, String notificationType)
+			List<User> users, AnnouncementsEntry entry, String toAddress,
+			String toName, String notificationType)
 		throws PortalException {
 
 		if (_log.isDebugEnabled()) {
@@ -531,8 +534,8 @@ public class AnnouncementsEntryLocalServiceImpl
 		subscriptionSender.setHtmlFormat(true);
 		subscriptionSender.setLocalizedContextAttributeWithFunction(
 			"[$ENTRY_TYPE$]",
-			notificationLocale ->
-				LanguageUtil.get(notificationLocale, entry.getType()));
+			notificationLocale -> LanguageUtil.get(
+				notificationLocale, entry.getType()));
 		subscriptionSender.setLocalizedContextAttributeWithFunction(
 			"[$PORTLET_NAME$]",
 			notificationLocale -> LanguageUtil.get(
@@ -580,17 +583,14 @@ public class AnnouncementsEntryLocalServiceImpl
 		}
 	}
 
-	public static final String[] ANNOUNCEMENTS_ENTRY_TYPES = PropsUtil.getArray(
-		PropsKeys.ANNOUNCEMENTS_ENTRY_TYPES);
+	@BeanReference(type = UserNotificationDeliveryLocalService.class)
+	protected UserNotificationDeliveryLocalService
+		_userNotificationDeliveryLocalService;
 
 	private static final long _ANNOUNCEMENTS_ENTRY_CHECK_INTERVAL =
 		PropsValues.ANNOUNCEMENTS_ENTRY_CHECK_INTERVAL * Time.MINUTE;
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		AnnouncementsEntryLocalServiceImpl.class);
-
-	@BeanReference(type = UserNotificationDeliveryLocalService.class)
-	protected UserNotificationDeliveryLocalService
-		_userNotificationDeliveryLocalService;
 
 }

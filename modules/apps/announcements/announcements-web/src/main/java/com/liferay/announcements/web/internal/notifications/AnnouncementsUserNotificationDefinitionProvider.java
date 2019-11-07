@@ -18,10 +18,10 @@ import com.liferay.announcements.constants.AnnouncementsPortletKeys;
 import com.liferay.portal.kernel.model.UserNotificationDeliveryConstants;
 import com.liferay.portal.kernel.notifications.UserNotificationDefinition;
 import com.liferay.portal.kernel.notifications.UserNotificationDeliveryType;
-
 import com.liferay.portal.kernel.notifications.UserNotificationManagerUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
+
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -35,13 +35,15 @@ import org.osgi.service.component.annotations.Deactivate;
 )
 public class AnnouncementsUserNotificationDefinitionProvider {
 
+	public static final String[] TYPES = PropsUtil.getArray(
+		PropsKeys.ANNOUNCEMENTS_ENTRY_TYPES);
+
 	@Activate
-	public void activate() {
+	protected void activate() {
 		for (String type : TYPES) {
 			UserNotificationDefinition userNotificationDefinition =
 				new UserNotificationDefinition(
-					AnnouncementsPortletKeys.ANNOUNCEMENTS, 0, type,
-					type);
+					AnnouncementsPortletKeys.ANNOUNCEMENTS, 0, type, type);
 
 			userNotificationDefinition.addUserNotificationDeliveryType(
 				new UserNotificationDeliveryType(
@@ -59,12 +61,9 @@ public class AnnouncementsUserNotificationDefinitionProvider {
 	}
 
 	@Deactivate
-	public void deactivate() {
+	protected void deactivate() {
 		UserNotificationManagerUtil.deleteUserNotificationDefinitions(
 			AnnouncementsPortletKeys.ANNOUNCEMENTS);
 	}
-
-	public static final String[] TYPES = PropsUtil.getArray(
-		PropsKeys.ANNOUNCEMENTS_ENTRY_TYPES);
 
 }

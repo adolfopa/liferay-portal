@@ -17,8 +17,8 @@ package com.liferay.announcements.web.internal.notifications;
 import com.liferay.announcements.constants.AnnouncementsPortletKeys;
 import com.liferay.portal.kernel.notifications.BaseModelUserNotificationHandler;
 import com.liferay.portal.kernel.notifications.UserNotificationHandler;
-import org.osgi.service.component.annotations.Component;
 
+import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Roberto Díaz
@@ -28,12 +28,11 @@ import org.osgi.service.component.annotations.Component;
 	property = "javax.portlet.name=" + AnnouncementsPortletKeys.ANNOUNCEMENTS,
 	service = UserNotificationHandler.class
 )
-public class AnnouncementsUserNotificationsHandler 	extends
-	BaseModelUserNotificationHandler {
+public class AnnouncementsUserNotificationsHandler
+	extends BaseModelUserNotificationHandler {
 
 	public AnnouncementsUserNotificationsHandler() {
 		setPortletId(AnnouncementsPortletKeys.ANNOUNCEMENTS);
 	}
-
 
 }

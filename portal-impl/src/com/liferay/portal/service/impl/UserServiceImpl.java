@@ -611,9 +611,6 @@ public class UserServiceImpl extends UserServiceBaseImpl {
 			UsersAdminUtil.updateWebsites(
 				Contact.class.getName(), user.getContactId(), websites);
 
-			updateAnnouncementsDeliveries(
-				user.getUserId(), announcementsDelivers);
-
 			if (indexingEnabled) {
 				Indexer<User> indexer = IndexerRegistryUtil.nullSafeGetIndexer(
 					User.class);
@@ -1936,11 +1933,6 @@ public class UserServiceImpl extends UserServiceBaseImpl {
 				Contact.class.getName(), user.getContactId(), websites);
 		}
 
-		if (announcementsDelivers != null) {
-			updateAnnouncementsDeliveries(
-				user.getUserId(), announcementsDelivers);
-		}
-
 		long curUserId = getUserId();
 
 		if (curUserId == userId) {
@@ -2671,19 +2663,6 @@ public class UserServiceImpl extends UserServiceBaseImpl {
 		if (userGroupIds != null) {
 			UserGroupMembershipPolicyUtil.propagateMembership(
 				userIds, userGroupIds, null);
-		}
-	}
-
-	protected void updateAnnouncementsDeliveries(
-			long userId, List<AnnouncementsDelivery> announcementsDeliveries)
-		throws PortalException {
-
-		for (AnnouncementsDelivery announcementsDelivery :
-				announcementsDeliveries) {
-
-			announcementsDeliveryService.updateDelivery(
-				userId, announcementsDelivery.getType(),
-				announcementsDelivery.isEmail(), announcementsDelivery.isSms());
 		}
 	}
 

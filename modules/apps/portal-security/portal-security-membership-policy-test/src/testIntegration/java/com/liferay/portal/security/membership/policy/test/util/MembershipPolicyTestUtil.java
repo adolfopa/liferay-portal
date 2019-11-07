@@ -202,7 +202,6 @@ public class MembershipPolicyTestUtil {
 		List<EmailAddress> emailAddresses = new ArrayList<>();
 		List<Phone> phones = new ArrayList<>();
 		List<Website> websites = new ArrayList<>();
-		List<AnnouncementsDelivery> announcementsDelivers = new ArrayList<>();
 
 		ServiceContext serviceContext = new ServiceContext();
 
@@ -214,8 +213,7 @@ public class MembershipPolicyTestUtil {
 			prefixId, suffixId, male, birthdayMonth, birthdayDay, birthdayYear,
 			smsSn, facebookSn, jabberSn, skypeSn, twitterSn, jobTitle, siteIds,
 			organizationIds, roleIds, userGroupRoles, userGroupIds, addresses,
-			emailAddresses, phones, websites, announcementsDelivers,
-			serviceContext);
+			emailAddresses, phones, websites, null, serviceContext);
 	}
 
 	protected static Map<String, Serializable> addExpandoMap(Class<?> clazz)

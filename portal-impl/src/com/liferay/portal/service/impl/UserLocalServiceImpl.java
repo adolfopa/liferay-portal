@@ -1897,10 +1897,6 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 		userIdMapperLocalService.deleteUserIdMappers(user.getUserId());
 
-		// Announcements
-
-		announcementsDeliveryLocalService.deleteDeliveries(user.getUserId());
-
 		// Asset
 
 		assetEntryLocalService.deleteEntry(
@@ -5283,10 +5279,6 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 		if (userGroupIds != null) {
 			userPersistence.setUserGroups(userId, userGroupIds);
 		}
-
-		// Announcements
-
-		announcementsDeliveryLocalService.getUserDeliveries(user.getUserId());
 
 		// Asset
 

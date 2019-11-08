@@ -25,10 +25,19 @@ public class InfoItemItemSelectorCriterion extends BaseItemSelectorCriterion {
 		return _className;
 	}
 
+	public int getStatus() {
+		return _status;
+	}
+
 	public void setClassName(String className) {
 		_className = className;
 	}
 
+	public void setStatus(int status) {
+		_status = status;
+	}
+
 	private String _className;
+	private int _status;
 
 }

@@ -59,13 +59,14 @@ public class JournalArticleItemSelectorViewDisplayContext {
 	public JournalArticleItemSelectorViewDisplayContext(
 		HttpServletRequest httpServletRequest, String itemSelectedEventName,
 		JournalArticleItemSelectorView journalArticleItemSelectorView,
-		PortletURL portletURL, boolean search) {
+		PortletURL portletURL, boolean search, int status) {
 
 		_httpServletRequest = httpServletRequest;
 		_itemSelectedEventName = itemSelectedEventName;
 		_journalArticleItemSelectorView = journalArticleItemSelectorView;
 		_portletURL = portletURL;
 		_search = search;
+		_status = status;
 
 		_portletRequest = (PortletRequest)httpServletRequest.getAttribute(
 			JavaConstants.JAVAX_PORTLET_REQUEST);
@@ -208,16 +209,14 @@ public class JournalArticleItemSelectorViewDisplayContext {
 		articleSearchContainer.setOrderByType(_getOrderByType());
 
 		int total = JournalFolderServiceUtil.getFoldersAndArticlesCount(
-			_themeDisplay.getScopeGroupId(), 0, _getFolderId(),
-			WorkflowConstants.STATUS_APPROVED);
+			_themeDisplay.getScopeGroupId(), 0, _getFolderId(), _status);
 
 		articleSearchContainer.setTotal(total);
 
 		List results = JournalFolderServiceUtil.getFoldersAndArticles(
-			_themeDisplay.getScopeGroupId(), 0, _getFolderId(),
-			WorkflowConstants.STATUS_APPROVED, _themeDisplay.getLocale(),
-			articleSearchContainer.getStart(), articleSearchContainer.getEnd(),
-			folderOrderByComparator);
+			_themeDisplay.getScopeGroupId(), 0, _getFolderId(), _status,
+			_themeDisplay.getLocale(), articleSearchContainer.getStart(),
+			articleSearchContainer.getEnd(), folderOrderByComparator);
 
 		articleSearchContainer.setResults(results);
 
@@ -304,6 +303,7 @@ public class JournalArticleItemSelectorViewDisplayContext {
 	private final PortletResponse _portletResponse;
 	private final PortletURL _portletURL;
 	private final boolean _search;
+	private final int _status;
 	private final ThemeDisplay _themeDisplay;
 
 }

@@ -67,7 +67,7 @@ public class UpgradeUserNotificationEvent extends UpgradeProcess {
 					String notificationType = payloadJSONObject.getString(
 						"notificationType");
 
-					if (notificationType != "0") {
+					if (notificationType.equals("0")) {
 						return;
 					}
 

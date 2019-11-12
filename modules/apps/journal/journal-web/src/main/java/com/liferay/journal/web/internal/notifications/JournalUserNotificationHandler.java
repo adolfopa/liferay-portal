@@ -81,47 +81,48 @@ public class JournalUserNotificationHandler
 
 		String notificationType = jsonObject.getString("notificationType");
 
-		if (notificationType ==
-				UserNotificationDefinition.NOTIFICATION_TYPE_ADD_ENTRY) {
+		if (notificationType.equals(
+				UserNotificationDefinition.NOTIFICATION_TYPE_ADD_ENTRY)) {
 
 			title = ResourceBundleUtil.getString(
 				resourceBundle, "x-added-a-new-web-content-article",
 				userFullName);
 		}
-		else if (notificationType ==
-					UserNotificationDefinition.NOTIFICATION_TYPE_UPDATE_ENTRY) {
+		else if (notificationType.equals(
+					UserNotificationDefinition.
+						NOTIFICATION_TYPE_UPDATE_ENTRY)) {
 
 			title = ResourceBundleUtil.getString(
 				resourceBundle, "x-updated-a-web-content-article",
 				userFullName);
 		}
-		else if (notificationType ==
+		else if (notificationType.equals(
 					JournalArticleConstants.
-						NOTIFICATION_TYPE_MOVE_ENTRY_FROM_FOLDER) {
+						NOTIFICATION_TYPE_MOVE_ENTRY_FROM_FOLDER)) {
 
 			title = ResourceBundleUtil.getString(
 				resourceBundle, "x-moved-a-web-content-from-a-folder",
 				userFullName);
 		}
-		else if (notificationType ==
+		else if (notificationType.equals(
 					JournalArticleConstants.
-						NOTIFICATION_TYPE_MOVE_ENTRY_FROM_TRASH) {
+						NOTIFICATION_TYPE_MOVE_ENTRY_FROM_TRASH)) {
 
 			title = ResourceBundleUtil.getString(
 				resourceBundle, "x-restored-a-web-content-from-the-recycle-bin",
 				userFullName);
 		}
-		else if (notificationType ==
+		else if (notificationType.equals(
 					JournalArticleConstants.
-						NOTIFICATION_TYPE_MOVE_ENTRY_TO_FOLDER) {
+						NOTIFICATION_TYPE_MOVE_ENTRY_TO_FOLDER)) {
 
 			title = ResourceBundleUtil.getString(
 				resourceBundle, "x-moved-a-web-content-to-a-folder",
 				userFullName);
 		}
-		else if (notificationType ==
+		else if (notificationType.equals(
 					JournalArticleConstants.
-						NOTIFICATION_TYPE_MOVE_ENTRY_TO_TRASH) {
+						NOTIFICATION_TYPE_MOVE_ENTRY_TO_TRASH)) {
 
 			title = ResourceBundleUtil.getString(
 				resourceBundle, "x-moved-a-web-content-to-the-recycle-bin",

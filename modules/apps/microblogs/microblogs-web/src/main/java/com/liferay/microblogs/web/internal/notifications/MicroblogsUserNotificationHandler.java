@@ -75,15 +75,15 @@ public class MicroblogsUserNotificationHandler
 
 		String notificationType = jsonObject.getString("notificationType");
 
-		if (notificationType ==
-				MicroblogsEntryConstants.NOTIFICATION_TYPE_REPLY) {
+		if (notificationType.equals(
+				MicroblogsEntryConstants.NOTIFICATION_TYPE_REPLY)) {
 
 			title = ResourceBundleUtil.getString(
 				resourceBundle, "x-commented-on-your-post", userFullName);
 		}
-		else if (notificationType ==
+		else if (notificationType.equals(
 					MicroblogsEntryConstants.
-						NOTIFICATION_TYPE_REPLY_TO_REPLIED) {
+						NOTIFICATION_TYPE_REPLY_TO_REPLIED)) {
 
 			long parentMicroblogsEntryUserId =
 				microblogsEntry.fetchParentMicroblogsEntryUserId();
@@ -97,16 +97,16 @@ public class MicroblogsUserNotificationHandler
 					userFullName, user.getFullName());
 			}
 		}
-		else if (notificationType ==
+		else if (notificationType.equals(
 					MicroblogsEntryConstants.
-						NOTIFICATION_TYPE_REPLY_TO_TAGGED) {
+						NOTIFICATION_TYPE_REPLY_TO_TAGGED)) {
 
 			title = ResourceBundleUtil.getString(
 				resourceBundle, "x-commented-on-a-post-you-are-tagged-in",
 				userFullName);
 		}
-		else if (notificationType ==
-					MicroblogsEntryConstants.NOTIFICATION_TYPE_TAG) {
+		else if (notificationType.equals(
+					MicroblogsEntryConstants.NOTIFICATION_TYPE_TAG)) {
 
 			title = ResourceBundleUtil.getString(
 				resourceBundle, "x-tagged-you-in-a-post", userFullName);

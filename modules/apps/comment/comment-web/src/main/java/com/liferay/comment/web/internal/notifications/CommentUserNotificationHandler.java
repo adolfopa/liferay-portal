@@ -100,8 +100,8 @@ public class CommentUserNotificationHandler
 
 		String notificationType = jsonObject.getString("notificationType");
 
-		if (notificationType ==
-				UserNotificationDefinition.NOTIFICATION_TYPE_ADD_ENTRY) {
+		if (notificationType.equals(
+				UserNotificationDefinition.NOTIFICATION_TYPE_ADD_ENTRY)) {
 
 			if (assetRenderer != null) {
 				message = "x-added-a-new-comment-to-x";
@@ -110,8 +110,9 @@ public class CommentUserNotificationHandler
 				message = "x-added-a-new-comment";
 			}
 		}
-		else if (notificationType ==
-					UserNotificationDefinition.NOTIFICATION_TYPE_UPDATE_ENTRY) {
+		else if (notificationType.equals(
+					UserNotificationDefinition.
+						NOTIFICATION_TYPE_UPDATE_ENTRY)) {
 
 			if (assetRenderer != null) {
 				message = "x-updated-a-comment-to-x";

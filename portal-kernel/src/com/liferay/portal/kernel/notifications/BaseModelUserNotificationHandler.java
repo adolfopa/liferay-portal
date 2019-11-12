@@ -156,13 +156,14 @@ public abstract class BaseModelUserNotificationHandler
 
 		String notificationType = jsonObject.getString("notificationType");
 
-		if (notificationType ==
-				UserNotificationDefinition.NOTIFICATION_TYPE_ADD_ENTRY) {
+		if (notificationType.equals(
+				UserNotificationDefinition.NOTIFICATION_TYPE_ADD_ENTRY)) {
 
 			message = "x-added-a-new-x";
 		}
-		else if (notificationType ==
-					UserNotificationDefinition.NOTIFICATION_TYPE_UPDATE_ENTRY) {
+		else if (notificationType.equals(
+					UserNotificationDefinition.
+						NOTIFICATION_TYPE_UPDATE_ENTRY)) {
 
 			message = "x-updated-a-x";
 		}

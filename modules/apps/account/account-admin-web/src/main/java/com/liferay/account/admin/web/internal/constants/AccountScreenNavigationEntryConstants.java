@@ -31,9 +31,6 @@ public class AccountScreenNavigationEntryConstants {
 
 	public static final String ENTRY_KEY_ADDRESSES = "addresses";
 
-	public static final String ENTRY_KEY_ALERTS_AND_ANNOUNCEMENTS_DELIVERY =
-		"alerts-and-announcements-delivery";
-
 	public static final String ENTRY_KEY_CONTACT_INFORMATION =
 		"contact-information";
 

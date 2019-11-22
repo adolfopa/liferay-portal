@@ -247,8 +247,10 @@ class ItemSelectorPreview extends Component {
 		});
 	};
 
-	updateCurrentItem = ({url, value}) => {
-		this.setState({currentItem: {...this.state.currentItem, url, value}});
+	updateCurrentItem = ({status, title, url, value}) => {
+		this.setState({
+			currentItem: {...this.state.currentItem, status, title, url, value}
+		});
 	};
 
 	render() {

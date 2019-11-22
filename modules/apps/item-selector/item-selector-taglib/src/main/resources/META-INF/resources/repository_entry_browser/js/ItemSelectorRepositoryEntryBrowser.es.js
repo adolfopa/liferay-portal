@@ -144,6 +144,8 @@ class ItemSelectorRepositoryEntryBrowser extends PortletBase {
 				}),
 				itemSelectorUploader.after('itemUploadComplete', itemData => {
 					Liferay.fire('updateCurrentItem', {
+						status: itemData.file.status,
+						title: itemData.file.title,
 						url: itemData.file.url,
 						value: itemData.file.resolvedValue
 					});
@@ -344,6 +346,8 @@ class ItemSelectorRepositoryEntryBrowser extends PortletBase {
 		this.emit('selectedItem', {
 			data: {
 				returnType: item.returntype,
+				status: item.status,
+				title: item.title,
 				value: item.value
 			}
 		});

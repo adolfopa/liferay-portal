@@ -15,6 +15,8 @@
 import Component from 'metal-component';
 import {Config} from 'metal-state';
 
+import openToast from './toast/commands/OpenToast.es';
+
 /**
  * Shows a dialog and handles the selected item.
  */
@@ -102,8 +104,16 @@ class ItemSelectorDialog extends Component {
 		);
 
 		addItemHandler = Liferay.on(eventName + 'AddItem', () => {
-			this._selectedItem = this._currentItem;
-			this.close();
+			if (this._currentItem.status == Liferay.Workflow.STATUS_APPROVED) {
+				this._selectedItem = this._currentItem;
+				this.close();
+			} else {
+				const errorMessage = Liferay.Util.sub(
+					Liferay.Language.get('x-is-not-approved'),
+					[this._currentItem.title]
+				);
+				this._showError(errorMessage);
+			}
 		});
 	}
 
@@ -127,6 +137,20 @@ class ItemSelectorDialog extends Component {
 		Liferay.Util.toggleDisabled(addButton, !currentItem);
 
 		this._currentItem = currentItem;
+	}
+
+	/**
+	 * Shows an error message
+	 *
+	 * @param {String} message
+	 * @private
+	 */
+	_showError(message) {
+		openToast({
+			message,
+			title: Liferay.Language.get('error'),
+			type: 'danger'
+		});
 	}
 }
 

@@ -104,7 +104,10 @@ class ItemSelectorDialog extends Component {
 		);
 
 		addItemHandler = Liferay.on(eventName + 'AddItem', () => {
-			if (this._currentItem.status == Liferay.Workflow.STATUS_APPROVED) {
+			if (
+				this._currentItem.status == Liferay.Workflow.STATUS_APPROVED ||
+				this._currentItem.status == Liferay.Workflow.STATUS_SCHEDULED
+			) {
 				this._selectedItem = this._currentItem;
 				this.close();
 			} else {
@@ -134,7 +137,12 @@ class ItemSelectorDialog extends Component {
 			.get('boundingBox')
 			.one('#addButton');
 
-		Liferay.Util.toggleDisabled(addButton, !currentItem);
+		Liferay.Util.toggleDisabled(
+			addButton,
+			currentItem.length < 1 ||
+				(currentItem.status != Liferay.Workflow.STATUS_APPROVED &&
+					currentItem.status != Liferay.Workflow.STATUS_SCHEDULED)
+		);
 
 		this._currentItem = currentItem;
 	}

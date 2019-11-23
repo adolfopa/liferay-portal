@@ -76,6 +76,7 @@ JournalArticleItemSelectorViewDisplayContext journalArticleItemSelectorViewDispl
 
 					articleJSONObject.put("title", title);
 
+					data.put("status", curArticle.getStatus());
 					data.put("value", articleJSONObject.toString());
 
 					row.setData(data);
@@ -310,6 +311,7 @@ JournalArticleItemSelectorViewDisplayContext journalArticleItemSelectorViewDispl
 					data: {
 						returnType:
 							'<%= InfoItemItemSelectorReturnType.class.getName() %>',
+						status: event.delegateTarget.dataset.status,
 						value: event.delegateTarget.dataset.value
 					}
 				}

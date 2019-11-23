@@ -27,5 +27,7 @@ Liferay.Workflow = {
 
 	STATUS_EXPIRED: 3,
 
-	STATUS_PENDING: 1
+	STATUS_PENDING: 1,
+
+	STATUS_SCHEDULED: 7
 };

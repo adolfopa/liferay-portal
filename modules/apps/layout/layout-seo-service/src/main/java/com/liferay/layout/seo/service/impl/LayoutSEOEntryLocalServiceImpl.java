@@ -14,12 +14,20 @@
 
 package com.liferay.layout.seo.service.impl;
 
+import com.liferay.dynamic.data.mapping.model.DDMForm;
+import com.liferay.dynamic.data.mapping.model.DDMFormField;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
+import com.liferay.dynamic.data.mapping.storage.StorageEngine;
 import com.liferay.layout.seo.exception.NoSuchEntryException;
 import com.liferay.layout.seo.model.LayoutSEOEntry;
 import com.liferay.layout.seo.service.base.LayoutSEOEntryLocalServiceBaseImpl;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.service.ClassNameLocalService;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.DateUtil;
 
@@ -29,6 +37,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Adolfo Pérez
@@ -161,7 +170,42 @@ public class LayoutSEOEntryLocalServiceImpl
 		layoutSEOEntry.setOpenGraphTitleEnabled(openGraphTitleEnabled);
 		layoutSEOEntry.setOpenGraphTitleMap(openGraphTitleMap);
 
+		Group companyGroup = _groupLocalService.getCompanyGroup(
+			group.getCompanyId());
+
+		DDMStructure ddmStructure = _ddmStructureLocalService.fetchStructure(
+			companyGroup.getGroupId(),
+			_classNameLocalService.getClassNameId(
+				LayoutSEOEntry.class.getName()),
+			"custom-opengraph-meta-tags");
+
+		DDMForm ddmForm = new DDMForm();
+		DDMFormField ddmFormFieldKey = new DDMFormField("key", "String");
+		DDMFormField ddmFormFieldValue = new DDMFormField("value", "String");
+		ddmForm.addDDMFormField(ddmFormFieldKey);
+		ddmForm.addDDMFormField(ddmFormFieldValue);
+
+		DDMFormValues ddmFormValues = new DDMFormValues(ddmForm);
+
+		long ddmStorageId = _storageEngine.create(
+			group.getCompanyId(), ddmStructure.getStructureId(), ddmFormValues,
+			serviceContext);
+
+		layoutSEOEntry.setDDMStorageId(ddmStorageId);
+
 		return layoutSEOEntryPersistence.update(layoutSEOEntry);
 	}
+
+	@Reference
+	private ClassNameLocalService _classNameLocalService;
+
+	@Reference
+	private DDMStructureLocalService _ddmStructureLocalService;
+
+	@Reference
+	private GroupLocalService _groupLocalService;
+
+	@Reference
+	private StorageEngine _storageEngine;
 
 }

@@ -43,6 +43,29 @@ if (Validator.isNull(backURL)) {
 			</p>
 		</div>
 
+		<%
+		DDMStructure ddmStructure = layoutsAdminDisplayContext.getDDMStructure();
+
+		LayoutSEOEntry selLayoutSEOEntry = layoutsAdminDisplayContext.getSelLayoutSEOEntry();
+		%>
+
+		<c:if test="<%= selLayoutSEOEntry != null %>">
+
+			<%
+			DDMFormValues ddmFormValues = layoutsAdminDisplayContext.getDDMFormValues(selLayoutSEOEntry.getDDMStorageId());
+			%>
+
+			<liferay-ddm:html
+				classNameId="<%= PortalUtil.getClassNameId(com.liferay.dynamic.data.mapping.model.DDMStructure.class) %>"
+				classPK="<%= ddmStructure.getPrimaryKey() %>"
+				ddmFormValues="<%= ddmFormValues %>"
+				fieldsNamespace="<%= String.valueOf(ddmStructure.getPrimaryKey()) %>"
+				groupId="<%= (selLayoutSEOEntry != null) ? selLayoutSEOEntry.getGroupId() : 0 %>"
+				localizable="<%= true %>"
+				requestedLocale="<%= locale %>"
+			/>
+		</c:if>
+
 		<div class="sheet-footer">
 			<aui:button primary="<%= true %>" type="submit" />
 

@@ -48,7 +48,6 @@ public class OpenGraphSettingsDisplayContext {
 		ItemSelector itemSelector) {
 
 		_httpServletRequest = httpServletRequest;
-		_liferayPortletRequest = liferayPortletRequest;
 		_liferayPortletResponse = liferayPortletResponse;
 		_dlurlHelper = dlurlHelper;
 		_itemSelector = itemSelector;
@@ -130,7 +129,6 @@ public class OpenGraphSettingsDisplayContext {
 	private final DLURLHelper _dlurlHelper;
 	private final HttpServletRequest _httpServletRequest;
 	private final ItemSelector _itemSelector;
-	private final LiferayPortletRequest _liferayPortletRequest;
 	private final LiferayPortletResponse _liferayPortletResponse;
 	private final ThemeDisplay _themeDisplay;
 

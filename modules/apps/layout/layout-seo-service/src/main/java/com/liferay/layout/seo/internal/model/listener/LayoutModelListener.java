@@ -40,10 +40,11 @@ public class LayoutModelListener extends BaseModelListener<Layout> {
 	public void onAfterCreate(Layout layout) throws ModelListenerException {
 		super.onAfterCreate(layout);
 
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
+		ServiceContext serviceContext = _getServiceContext(layout);
 
 		try {
+			ServiceContextThreadLocal.pushServiceContext(serviceContext);
+
 			_layoutSEOEntryLocalService.updateLayoutSEOEntry(
 				layout.getUserId(), layout.getGroupId(),
 				layout.getPrivateLayout(), layout.getLayoutId(), false,
@@ -51,6 +52,9 @@ public class LayoutModelListener extends BaseModelListener<Layout> {
 		}
 		catch (PortalException pe) {
 			throw new ModelListenerException(pe);
+		}
+		finally {
+			ServiceContextThreadLocal.popServiceContext();
 		}
 	}
 
@@ -73,6 +77,23 @@ public class LayoutModelListener extends BaseModelListener<Layout> {
 		catch (NoSuchEntryException nsee) {
 			throw new ModelListenerException(nsee);
 		}
+	}
+
+	private ServiceContext _getServiceContext(Layout layout) {
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		if (serviceContext.getUserId() != 0) {
+			return serviceContext;
+		}
+
+		ServiceContext newServiceContext =
+			(ServiceContext)serviceContext.clone();
+
+		newServiceContext.setUserId(layout.getUserId());
+		newServiceContext.setScopeGroupId(layout.getGroupId());
+
+		return newServiceContext;
 	}
 
 	@Reference

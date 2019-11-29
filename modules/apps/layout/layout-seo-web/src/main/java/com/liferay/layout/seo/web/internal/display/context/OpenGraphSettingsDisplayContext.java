@@ -31,7 +31,6 @@ import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.site.admin.web.internal.constants.SiteAdminWebKeys;
 
 import javax.portlet.PortletURL;
 
@@ -45,17 +44,14 @@ public class OpenGraphSettingsDisplayContext {
 	public OpenGraphSettingsDisplayContext(
 		HttpServletRequest httpServletRequest,
 		LiferayPortletRequest liferayPortletRequest,
-		LiferayPortletResponse liferayPortletResponse) {
+		LiferayPortletResponse liferayPortletResponse, DLURLHelper dlurlHelper,
+		ItemSelector itemSelector) {
 
 		_httpServletRequest = httpServletRequest;
 		_liferayPortletRequest = liferayPortletRequest;
 		_liferayPortletResponse = liferayPortletResponse;
-
-		_dlurlHelper = (DLURLHelper)_liferayPortletRequest.getAttribute(
-			SiteAdminWebKeys.DLURL_HELPER);
-
-		_itemSelector = (ItemSelector)_liferayPortletRequest.getAttribute(
-			SiteAdminWebKeys.ITEM_SELECTOR);
+		_dlurlHelper = dlurlHelper;
+		_itemSelector = itemSelector;
 
 		_themeDisplay = (ThemeDisplay)liferayPortletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);

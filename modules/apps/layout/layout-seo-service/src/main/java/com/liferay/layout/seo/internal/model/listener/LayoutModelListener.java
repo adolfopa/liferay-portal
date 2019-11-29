@@ -18,9 +18,14 @@ import com.liferay.layout.seo.exception.NoSuchEntryException;
 import com.liferay.layout.seo.model.LayoutSEOEntry;
 import com.liferay.layout.seo.service.LayoutSEOEntryLocalService;
 import com.liferay.portal.kernel.exception.ModelListenerException;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.ModelListener;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+
+import java.util.Collections;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -30,6 +35,24 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(service = ModelListener.class)
 public class LayoutModelListener extends BaseModelListener<Layout> {
+
+	@Override
+	public void onAfterCreate(Layout layout) throws ModelListenerException {
+		super.onAfterCreate(layout);
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		try {
+			_layoutSEOEntryLocalService.updateLayoutSEOEntry(
+				layout.getUserId(), layout.getGroupId(),
+				layout.getPrivateLayout(), layout.getLayoutId(), false,
+				Collections.emptyMap(), serviceContext);
+		}
+		catch (PortalException pe) {
+			throw new ModelListenerException(pe);
+		}
+	}
 
 	@Override
 	public void onBeforeRemove(Layout layout) throws ModelListenerException {

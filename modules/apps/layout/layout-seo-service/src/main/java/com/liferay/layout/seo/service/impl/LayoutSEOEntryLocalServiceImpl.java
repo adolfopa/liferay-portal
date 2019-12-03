@@ -180,10 +180,9 @@ public class LayoutSEOEntryLocalServiceImpl
 			"custom-opengraph-meta-tags");
 
 		DDMForm ddmForm = new DDMForm();
-		DDMFormField ddmFormFieldKey = new DDMFormField("key", "String");
-		DDMFormField ddmFormFieldValue = new DDMFormField("value", "String");
-		ddmForm.addDDMFormField(ddmFormFieldKey);
-		ddmForm.addDDMFormField(ddmFormFieldValue);
+
+		ddmForm.addDDMFormField(new DDMFormField("key", "String"));
+		ddmForm.addDDMFormField(new DDMFormField("value", "String"));
 
 		DDMFormValues ddmFormValues = new DDMFormValues(ddmForm);
 

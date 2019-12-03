@@ -50,6 +50,17 @@ public class LayoutsSEODisplayContext {
 			WebKeys.THEME_DISPLAY);
 	}
 
+	public DDMFormValues getDDMFormDefaultValues() {
+		DDMForm ddmForm = new DDMForm();
+
+		ddmForm.addDDMFormField(new DDMFormField("key", "String"));
+		ddmForm.addDDMFormField(new DDMFormField("value", "String"));
+
+		DDMFormValues ddmFormValues = new DDMFormValues(ddmForm);
+
+		return ddmFormValues;
+	}
+
 	public DDMFormValues getDDMFormValues(long classPK)
 		throws StorageException {
 

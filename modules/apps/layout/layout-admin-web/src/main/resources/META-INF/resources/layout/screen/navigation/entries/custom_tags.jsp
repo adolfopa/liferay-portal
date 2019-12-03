@@ -47,24 +47,26 @@ if (Validator.isNull(backURL)) {
 		DDMStructure ddmStructure = layoutsSEODisplayContext.getDDMStructure();
 
 		LayoutSEOEntry selLayoutSEOEntry = layoutsSEODisplayContext.getSelLayoutSEOEntry();
+
+		DDMFormValues ddmFormValues = null;
+
+		if (selLayoutSEOEntry != null) {
+			ddmFormValues = layoutsSEODisplayContext.getDDMFormValues(selLayoutSEOEntry.getDDMStorageId());
+		}
+		else {
+			ddmFormValues = layoutsSEODisplayContext.getDDMFormDefaultValues();
+		}
 		%>
 
-		<c:if test="<%= selLayoutSEOEntry != null %>">
-
-			<%
-			DDMFormValues ddmFormValues = layoutsSEODisplayContext.getDDMFormValues(selLayoutSEOEntry.getDDMStorageId());
-			%>
-
-			<liferay-ddm:html
-				classNameId="<%= PortalUtil.getClassNameId(com.liferay.dynamic.data.mapping.model.DDMStructure.class) %>"
-				classPK="<%= ddmStructure.getPrimaryKey() %>"
-				ddmFormValues="<%= ddmFormValues %>"
-				fieldsNamespace="<%= String.valueOf(ddmStructure.getPrimaryKey()) %>"
-				groupId="<%= (selLayoutSEOEntry != null) ? selLayoutSEOEntry.getGroupId() : 0 %>"
-				localizable="<%= true %>"
-				requestedLocale="<%= locale %>"
-			/>
-		</c:if>
+		<liferay-ddm:html
+			classNameId="<%= PortalUtil.getClassNameId(com.liferay.dynamic.data.mapping.model.DDMStructure.class) %>"
+			classPK="<%= ddmStructure.getPrimaryKey() %>"
+			ddmFormValues="<%= ddmFormValues %>"
+			fieldsNamespace="<%= String.valueOf(ddmStructure.getPrimaryKey()) %>"
+			groupId="<%= (selLayoutSEOEntry != null) ? selLayoutSEOEntry.getGroupId() : 0 %>"
+			localizable="<%= true %>"
+			requestedLocale="<%= locale %>"
+		/>
 
 		<div class="sheet-footer">
 			<aui:button primary="<%= true %>" type="submit" />

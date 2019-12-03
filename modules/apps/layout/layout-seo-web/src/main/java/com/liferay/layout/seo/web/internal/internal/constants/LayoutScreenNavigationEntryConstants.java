@@ -12,20 +12,16 @@
  * details.
  */
 
-package com.liferay.layout.admin.web.internal.constants;
+package com.liferay.layout.seo.web.internal.internal.constants;
 
 /**
- * @author Alejandro Tardín
+ * @author Alicia García
  */
 public class LayoutScreenNavigationEntryConstants {
 
 	public static final String CATEGORY_KEY_GENERAL = "general";
 
-	public static final String ENTRY_KEY_GENERAL = "general";
-
-	public static final String ENTRY_KEY_OPEN_GRAPH = "open-graph";
-
-	public static final String ENTRY_KEY_SEO = "seo";
+	public static final String ENTRY_KEY_CUSTOM_TAGS = "custom-tags";
 
 	public static final String SCREEN_NAVIGATION_KEY_LAYOUT = "layout.form";
 

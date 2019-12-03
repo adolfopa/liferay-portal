@@ -884,7 +884,7 @@ public class LayoutsAdminDisplayContext {
 	}
 
 	public String getOpenGraphImageURL() {
-		LayoutSEOEntry layoutSEOEntry = _getSelLayoutSEOEntry();
+		LayoutSEOEntry layoutSEOEntry = getSelLayoutSEOEntry();
 
 		if ((layoutSEOEntry == null) ||
 			(layoutSEOEntry.getOpenGraphImageFileEntryId() == 0)) {
@@ -1209,6 +1209,18 @@ public class LayoutsAdminDisplayContext {
 		}
 
 		return _selLayout;
+	}
+
+	public LayoutSEOEntry getSelLayoutSEOEntry() {
+		Layout layout = getSelLayout();
+
+		if (layout == null) {
+			return null;
+		}
+
+		return LayoutSEOEntryLocalServiceUtil.fetchLayoutSEOEntry(
+			layout.getGroupId(), layout.isPrivateLayout(),
+			layout.getLayoutId());
 	}
 
 	public LayoutSet getSelLayoutSet() throws PortalException {
@@ -1956,18 +1968,6 @@ public class LayoutsAdminDisplayContext {
 			_liferayPortletRequest, "orderByType", "asc");
 
 		return _orderByType;
-	}
-
-	private LayoutSEOEntry _getSelLayoutSEOEntry() {
-		Layout layout = getSelLayout();
-
-		if (layout == null) {
-			return null;
-		}
-
-		return LayoutSEOEntryLocalServiceUtil.fetchLayoutSEOEntry(
-			layout.getGroupId(), layout.isPrivateLayout(),
-			layout.getLayoutId());
 	}
 
 	private boolean _isActive(long plid) throws PortalException {

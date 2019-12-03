@@ -12,12 +12,15 @@
  * details.
  */
 
-package com.liferay.layout.admin.web.internal.servlet.taglib.ui;
+package com.liferay.layout.seo.web.internal.servlet.taglib.ui;
 
+import com.liferay.dynamic.data.mapping.storage.StorageEngine;
 import com.liferay.frontend.taglib.servlet.taglib.ScreenNavigationEntry;
 import com.liferay.frontend.taglib.servlet.taglib.util.JSPRenderer;
-import com.liferay.layout.admin.web.internal.constants.LayoutScreenNavigationEntryConstants;
 import com.liferay.layout.seo.kernel.LayoutSEOLinkManagerUtil;
+import com.liferay.layout.seo.web.internal.constants.LayoutSEOWebKeys;
+import com.liferay.layout.seo.web.internal.display.context.LayoutsSEODisplayContext;
+import com.liferay.layout.seo.web.internal.internal.constants.LayoutScreenNavigationEntryConstants;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
@@ -26,6 +29,7 @@ import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.util.AggregateResourceBundle;
+import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -35,6 +39,9 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import javax.portlet.PortletRequest;
+
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -97,8 +104,18 @@ public class LayoutCustomTagsScreenNavigationEntry
 			HttpServletResponse httpServletResponse)
 		throws IOException {
 
+		PortletRequest portletRequest =
+			(PortletRequest)httpServletRequest.getAttribute(
+				JavaConstants.JAVAX_PORTLET_REQUEST);
+
+		httpServletRequest.setAttribute(
+			LayoutSEOWebKeys.LAYOUT_PAGE_LAYOUT_SEO_DISPLAY_CONTEXT,
+			new LayoutsSEODisplayContext(
+				_portal.getLiferayPortletRequest(portletRequest),
+				_storageEngine));
+
 		_jspRenderer.renderJSP(
-			httpServletRequest, httpServletResponse,
+			_servletContext, httpServletRequest, httpServletResponse,
 			"/layout/screen/navigation/entries/custom_tags.jsp");
 	}
 
@@ -118,5 +135,14 @@ public class LayoutCustomTagsScreenNavigationEntry
 
 	@Reference
 	private Portal _portal;
+
+	@Reference(
+		target = "(osgi.web.symbolicname=com.liferay.layout.seo.web)",
+		unbind = "-"
+	)
+	private ServletContext _servletContext;
+
+	@Reference
+	private StorageEngine _storageEngine;
 
 }

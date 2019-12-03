@@ -17,15 +17,28 @@
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
 
 <%@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
+taglib uri="http://liferay.com/tld/ddm" prefix="liferay-ddm" %><%@
 taglib uri="http://liferay.com/tld/frontend" prefix="liferay-frontend" %><%@
 taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
 taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 
-<%@ page import="com.liferay.layout.seo.web.internal.display.context.OpenGraphSettingsDisplayContext" %><%@
-page import="com.liferay.petra.string.StringPool" %>
+<%@ page import="com.liferay.dynamic.data.mapping.model.DDMStructure" %><%@
+page import="com.liferay.dynamic.data.mapping.storage.DDMFormValues" %><%@
+page import="com.liferay.layout.seo.model.LayoutSEOEntry" %><%@
+page import="com.liferay.layout.seo.web.internal.constants.LayoutSEOWebKeys" %><%@
+page import="com.liferay.layout.seo.web.internal.display.context.LayoutsSEODisplayContext" %><%@
+page import="com.liferay.layout.seo.web.internal.display.context.OpenGraphSettingsDisplayContext" %><%@
+page import="com.liferay.petra.string.StringPool" %><%@
+page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
+page import="com.liferay.portal.kernel.util.PortalUtil" %><%@
+page import="com.liferay.portal.kernel.util.Validator" %>
 
 <liferay-frontend:defineObjects />
 
 <liferay-theme:defineObjects />
+
+<%
+LayoutsSEODisplayContext layoutsSEODisplayContext = (LayoutsSEODisplayContext)request.getAttribute(LayoutSEOWebKeys.LAYOUT_PAGE_LAYOUT_SEO_DISPLAY_CONTEXT);
+%>
 
 <%@ include file="/init-ext.jsp" %>

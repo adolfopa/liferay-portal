@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.layout.admin.web.internal.display.context;
+package com.liferay.layout.seo.web.internal.display.context;
 
 import com.liferay.dynamic.data.mapping.exception.StorageException;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
@@ -25,6 +25,7 @@ import com.liferay.layout.seo.model.LayoutSEOEntry;
 import com.liferay.layout.seo.service.LayoutSEOEntryLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
@@ -32,7 +33,11 @@ import com.liferay.portal.kernel.service.ClassNameLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portlet.layoutsadmin.display.context.GroupDisplayContextHelper;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Alicia García
@@ -46,6 +51,12 @@ public class LayoutsSEODisplayContext {
 		_liferayPortletRequest = liferayPortletRequest;
 		_storageEngine = storageEngine;
 
+		_httpServletRequest = PortalUtil.getHttpServletRequest(
+			_liferayPortletRequest);
+
+		_groupDisplayContextHelper = new GroupDisplayContextHelper(
+			_httpServletRequest);
+
 		_themeDisplay = (ThemeDisplay)liferayPortletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 	}
@@ -56,9 +67,7 @@ public class LayoutsSEODisplayContext {
 		ddmForm.addDDMFormField(new DDMFormField("key", "String"));
 		ddmForm.addDDMFormField(new DDMFormField("value", "String"));
 
-		DDMFormValues ddmFormValues = new DDMFormValues(ddmForm);
-
-		return ddmFormValues;
+		return new DDMFormValues(ddmForm);
 	}
 
 	public DDMFormValues getDDMFormValues(long classPK)
@@ -83,6 +92,10 @@ public class LayoutsSEODisplayContext {
 		return _ddmStructure;
 	}
 
+	public Long getGroupId() {
+		return _groupDisplayContextHelper.getGroupId();
+	}
+
 	public Long getLayoutId() {
 		if (_layoutId != null) {
 			return _layoutId;
@@ -99,6 +112,22 @@ public class LayoutsSEODisplayContext {
 		return _layoutId;
 	}
 
+	public Group getSelGroup() {
+		return _groupDisplayContextHelper.getSelGroup();
+	}
+
+	public Layout getSelLayout() {
+		if (_selLayout != null) {
+			return _selLayout;
+		}
+
+		if (getSelPlid() != LayoutConstants.DEFAULT_PLID) {
+			_selLayout = LayoutLocalServiceUtil.fetchLayout(getSelPlid());
+		}
+
+		return _selLayout;
+	}
+
 	public LayoutSEOEntry getSelLayoutSEOEntry() {
 		Layout layout = _getSelLayout();
 
@@ -109,6 +138,52 @@ public class LayoutsSEODisplayContext {
 		return LayoutSEOEntryLocalServiceUtil.fetchLayoutSEOEntry(
 			layout.getGroupId(), layout.isPrivateLayout(),
 			layout.getLayoutId());
+	}
+
+	public Long getSelPlid() {
+		if (_selPlid != null) {
+			return _selPlid;
+		}
+
+		_selPlid = ParamUtil.getLong(
+			_liferayPortletRequest, "selPlid", LayoutConstants.DEFAULT_PLID);
+
+		return _selPlid;
+	}
+
+	public boolean isPrivateLayout() {
+		if (_privateLayout != null) {
+			return _privateLayout;
+		}
+
+		Group selGroup = getSelGroup();
+
+		if (selGroup.isLayoutSetPrototype()) {
+			_privateLayout = true;
+
+			return _privateLayout;
+		}
+
+		Layout selLayout = getSelLayout();
+
+		if (getSelLayout() != null) {
+			_privateLayout = selLayout.isPrivateLayout();
+
+			return _privateLayout;
+		}
+
+		Layout layout = _themeDisplay.getLayout();
+
+		if (!layout.isTypeControlPanel()) {
+			_privateLayout = layout.isPrivateLayout();
+
+			return _privateLayout;
+		}
+
+		_privateLayout = ParamUtil.getBoolean(
+			_liferayPortletRequest, "privateLayout");
+
+		return _privateLayout;
 	}
 
 	private Layout _getSelLayout() {
@@ -135,8 +210,11 @@ public class LayoutsSEODisplayContext {
 	}
 
 	private DDMStructure _ddmStructure;
+	private final GroupDisplayContextHelper _groupDisplayContextHelper;
+	private final HttpServletRequest _httpServletRequest;
 	private Long _layoutId;
 	private final LiferayPortletRequest _liferayPortletRequest;
+	private Boolean _privateLayout;
 	private Layout _selLayout;
 	private Long _selPlid;
 	private final StorageEngine _storageEngine;

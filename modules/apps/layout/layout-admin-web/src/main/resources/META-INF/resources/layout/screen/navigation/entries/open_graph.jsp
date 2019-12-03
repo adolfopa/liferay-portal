@@ -62,7 +62,7 @@ Layout selLayout = layoutsAdminDisplayContext.getSelLayout();
 			</div>
 
 			<%
-			LayoutSEOEntry selLayoutSEOEntry = layoutsSEODisplayContext.getSelLayoutSEOEntry();
+			LayoutSEOEntry selLayoutSEOEntry = layoutsAdminDisplayContext.getSelLayoutSEOEntry();
 			%>
 
 			<c:choose>

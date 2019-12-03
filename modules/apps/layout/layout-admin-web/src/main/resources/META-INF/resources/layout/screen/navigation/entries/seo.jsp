@@ -76,7 +76,7 @@ UnicodeProperties layoutTypeSettings = selLayout.getTypeSettingsProperties();
 				<c:if test="<%= !StringUtil.equals(selLayout.getType(), LayoutConstants.TYPE_ASSET_DISPLAY) %>">
 
 					<%
-					LayoutSEOEntry selLayoutSEOEntry = layoutsSEODisplayContext.getSelLayoutSEOEntry();
+					LayoutSEOEntry selLayoutSEOEntry = layoutsAdminDisplayContext.getSelLayoutSEOEntry();
 					%>
 
 					<liferay-util:buffer

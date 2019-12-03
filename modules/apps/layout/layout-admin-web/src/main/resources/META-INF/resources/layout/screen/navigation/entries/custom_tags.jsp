@@ -44,15 +44,15 @@ if (Validator.isNull(backURL)) {
 		</div>
 
 		<%
-		DDMStructure ddmStructure = layoutsAdminDisplayContext.getDDMStructure();
+		DDMStructure ddmStructure = layoutsSEODisplayContext.getDDMStructure();
 
-		LayoutSEOEntry selLayoutSEOEntry = layoutsAdminDisplayContext.getSelLayoutSEOEntry();
+		LayoutSEOEntry selLayoutSEOEntry = layoutsSEODisplayContext.getSelLayoutSEOEntry();
 		%>
 
 		<c:if test="<%= selLayoutSEOEntry != null %>">
 
 			<%
-			DDMFormValues ddmFormValues = layoutsAdminDisplayContext.getDDMFormValues(selLayoutSEOEntry.getDDMStorageId());
+			DDMFormValues ddmFormValues = layoutsSEODisplayContext.getDDMFormValues(selLayoutSEOEntry.getDDMStorageId());
 			%>
 
 			<liferay-ddm:html

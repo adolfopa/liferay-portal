@@ -42,6 +42,7 @@ page import="com.liferay.layout.admin.web.internal.constants.LayoutAdminWebKeys"
 page import="com.liferay.layout.admin.web.internal.constants.LayoutScreenNavigationEntryConstants" %><%@
 page import="com.liferay.layout.admin.web.internal.display.context.LayoutsAdminDisplayContext" %><%@
 page import="com.liferay.layout.admin.web.internal.display.context.LayoutsAdminManagementToolbarDisplayContext" %><%@
+page import="com.liferay.layout.admin.web.internal.display.context.LayoutsSEODisplayContext" %><%@
 page import="com.liferay.layout.admin.web.internal.display.context.OrphanPortletsDisplayContext" %><%@
 page import="com.liferay.layout.admin.web.internal.display.context.OrphanPortletsManagementToolbarDisplayContext" %><%@
 page import="com.liferay.layout.admin.web.internal.display.context.SelectLayoutPageTemplateEntryDisplayContext" %><%@
@@ -166,6 +167,8 @@ page import="javax.portlet.PortletURL" %>
 
 <%
 LayoutsAdminDisplayContext layoutsAdminDisplayContext = (LayoutsAdminDisplayContext)request.getAttribute(LayoutAdminWebKeys.LAYOUT_PAGE_LAYOUT_ADMIN_DISPLAY_CONTEXT);
+
+LayoutsSEODisplayContext layoutsSEODisplayContext = (LayoutsSEODisplayContext)request.getAttribute(LayoutAdminWebKeys.LAYOUT_PAGE_LAYOUT_SEO_DISPLAY_CONTEXT);
 
 portletDisplay.setShowExportImportIcon(false);
 %>

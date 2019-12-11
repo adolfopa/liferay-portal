@@ -573,19 +573,26 @@ AUI.add(
 				},
 
 				_getWebContentSelectorURL() {
-					var webContentSelectorParameters = {
-						eventName: 'selectContent',
-						groupId: themeDisplay.getScopeGroupId(),
-						p_auth: Liferay.authToken,
-						p_p_id:
-							'com_liferay_asset_browser_web_portlet_AssetBrowserPortlet',
-						p_p_state: 'pop_up',
-						selectedGroupId: themeDisplay.getScopeGroupId(),
-						showNonindexable: true,
-						showScheduled: true,
-						typeSelection:
-							'com.liferay.journal.model.JournalArticle'
+					var criterionJSON = {
+						desiredItemSelectorReturnTypes:
+							'com.liferay.item.selector.criteria.JournalArticleItemSelectorReturnType'
 					};
+
+					var instance = this;
+
+					var portletNamespace = instance.get('portletNamespace');
+
+					var webContentSelectorParameters = {
+						'0_json': JSON.stringify(criterionJSON),
+						criteria: 'com.liferay.item.selector.criteria.info.item.criterion.InfoItemItemSelectorCriterion',
+						itemSelectedEventName: portletNamespace + 'selectContent',
+						p_auth: Liferay.authToken,
+						p_p_id: Liferay.PortletKeys.ITEM_SELECTOR,
+						p_p_mode: 'view',
+						p_p_state: 'pop_up'
+					}
+
+					webContentSelectorParameters[portletNamespace + 'singleSelect'] = 'true';
 
 					var webContentSelectorURL = Liferay.Util.PortletURL.createRenderURL(
 						themeDisplay.getURLControlPanel(),

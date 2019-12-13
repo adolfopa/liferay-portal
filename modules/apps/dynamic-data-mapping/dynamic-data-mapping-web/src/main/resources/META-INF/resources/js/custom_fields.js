@@ -622,29 +622,40 @@ AUI.add(
 				_onClickChoose() {
 					var instance = this;
 
-					Liferay.Util.selectEntity(
-						{
-							dialog: {
-								constrain: true,
-								destroyOnHide: true,
-								modal: true
-							},
-							eventName: 'selectContent',
-							id: 'selectContent',
-							title: Liferay.Language.get('journal-article'),
-							uri: instance._getWebContentSelectorURL()
-						},
-						event => {
-							if (event.details.length > 0) {
-								var selectedWebContent = event.details[0];
+					var portletNamespace = instance.get('portletNamespace');
 
-								instance.setValue({
-									className:
-										selectedWebContent.assetclassname,
-									classPK: selectedWebContent.assetclasspk,
-									title: selectedWebContent.assettitle
-								});
-							}
+					Liferay.Loader.require(
+						'frontend-js-web/liferay/ItemSelectorDialog.es',
+						ItemSelectorDialog => {
+							var itemSelectorDialog = new ItemSelectorDialog.default(
+								{
+									eventName: portletNamespace + 'selectContent',
+									singleSelect: true,
+									title: Liferay.Language.get('journal-article'),
+									url: instance._getWebContentSelectorURL()
+								}
+							);
+
+							itemSelectorDialog.on(
+								'selectedItemChange',
+								event => {
+									var selectedItem = event.selectedItem;
+
+									if (selectedItem) {
+										var itemValue = JSON.parse(
+											selectedItem.value
+										);
+
+										instance.setValue({
+											className: itemValue.className,
+											classPK: itemValue.classPK,
+											title: itemValue.title
+										});
+									}
+								}
+							);
+
+							itemSelectorDialog.open();
 						}
 					);
 				},

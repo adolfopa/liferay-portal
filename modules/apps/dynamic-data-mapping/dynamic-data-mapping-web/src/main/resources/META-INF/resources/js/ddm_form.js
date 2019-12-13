@@ -1636,32 +1636,38 @@ AUI.add(
 				_handleSelectButtonClick() {
 					var instance = this;
 
-					Liferay.Util.selectEntity(
-						{
-							dialog: {
-								constrain: true,
-								destroyOnHide: true,
-								modal: true
-							},
-							eventName: 'selectContent',
-							id: 'selectContent',
-							title: Liferay.Language.get('journal-article'),
-							uri: instance.getWebContentSelectorURL()
-						},
-						event => {
-							if (event.details.length > 0) {
-								var selectedWebContent = event.details[0];
+					Liferay.Loader.require(
+						'frontend-js-web/liferay/ItemSelectorDialog.es',
+						ItemSelectorDialog => {
+							var itemSelectorDialog = new ItemSelectorDialog.default(
+								{
+									eventName: 'selectContent',
+									singleSelect: true,
+									title: Liferay.Language.get('journal-article'),
+									url: instance.getWebContentSelectorURL()
+								}
+							);
 
-								instance.setValue({
-									className:
-										selectedWebContent.assetclassname,
-									classPK: selectedWebContent.assetclasspk,
-									title: selectedWebContent.assettitle || '',
-									titleMap: selectedWebContent.assettitlemap
-								});
+							itemSelectorDialog.on(
+								'selectedItemChange',
+								event => {
+									var selectedItem = event.selectedItem;
 
-								instance._hideMessage();
-							}
+									if (selectedItem) {
+										instance.setValue({
+											className:
+												selectedItem.assetclassname,
+											classPK: selectedItem.assetclasspk,
+											title: selectedItem.assettitle || '',
+											titleMap: selectedItem.assettitlemap
+										});
+
+										instance._hideMessage();
+									}
+								}
+							);
+
+							itemSelectorDialog.open();
 						}
 					);
 				},

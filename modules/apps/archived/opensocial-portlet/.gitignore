@@ -1,0 +1,3 @@
+!/docroot/WEB-INF/lib
+/docroot/WEB-INF/lib/*
+!/docroot/WEB-INF/lib/opensocial-portlet-service.jar

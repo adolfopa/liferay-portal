@@ -48,7 +48,11 @@ import org.osgi.service.component.annotations.Reference;
  * @author Alejandro Tardín
  */
 @Component(
-	immediate = true, property = "javax.portlet.name=" + BlogsPortletKeys.BLOGS,
+	immediate = true,
+	property = {
+		"javax.portlet.name=" + BlogsPortletKeys.BLOGS,
+		"service.ranking:Integer=100"
+	},
 	service = PortletFilter.class
 )
 public class BlogsPortletFilter implements RenderFilter {

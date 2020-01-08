@@ -311,7 +311,7 @@ public class UserNotificationDeliveryUtil {
 	 */
 	public static UserNotificationDelivery findByU_P_C_N_D(
 			long userId, String portletId, long classNameId,
-			int notificationType, int deliveryType)
+			String notificationType, int deliveryType)
 		throws com.liferay.portal.kernel.exception.
 			NoSuchUserNotificationDeliveryException {
 
@@ -330,8 +330,8 @@ public class UserNotificationDeliveryUtil {
 	 * @return the matching user notification delivery, or <code>null</code> if a matching user notification delivery could not be found
 	 */
 	public static UserNotificationDelivery fetchByU_P_C_N_D(
-		long userId, String portletId, long classNameId, int notificationType,
-		int deliveryType) {
+		long userId, String portletId, long classNameId,
+		String notificationType, int deliveryType) {
 
 		return getPersistence().fetchByU_P_C_N_D(
 			userId, portletId, classNameId, notificationType, deliveryType);
@@ -349,8 +349,8 @@ public class UserNotificationDeliveryUtil {
 	 * @return the matching user notification delivery, or <code>null</code> if a matching user notification delivery could not be found
 	 */
 	public static UserNotificationDelivery fetchByU_P_C_N_D(
-		long userId, String portletId, long classNameId, int notificationType,
-		int deliveryType, boolean useFinderCache) {
+		long userId, String portletId, long classNameId,
+		String notificationType, int deliveryType, boolean useFinderCache) {
 
 		return getPersistence().fetchByU_P_C_N_D(
 			userId, portletId, classNameId, notificationType, deliveryType,
@@ -369,7 +369,7 @@ public class UserNotificationDeliveryUtil {
 	 */
 	public static UserNotificationDelivery removeByU_P_C_N_D(
 			long userId, String portletId, long classNameId,
-			int notificationType, int deliveryType)
+			String notificationType, int deliveryType)
 		throws com.liferay.portal.kernel.exception.
 			NoSuchUserNotificationDeliveryException {
 
@@ -388,8 +388,8 @@ public class UserNotificationDeliveryUtil {
 	 * @return the number of matching user notification deliveries
 	 */
 	public static int countByU_P_C_N_D(
-		long userId, String portletId, long classNameId, int notificationType,
-		int deliveryType) {
+		long userId, String portletId, long classNameId,
+		String notificationType, int deliveryType) {
 
 		return getPersistence().countByU_P_C_N_D(
 			userId, portletId, classNameId, notificationType, deliveryType);

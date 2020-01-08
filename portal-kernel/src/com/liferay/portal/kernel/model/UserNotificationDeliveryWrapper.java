@@ -96,7 +96,7 @@ public class UserNotificationDeliveryWrapper
 			setClassNameId(classNameId);
 		}
 
-		Integer notificationType = (Integer)attributes.get("notificationType");
+		String notificationType = (String)attributes.get("notificationType");
 
 		if (notificationType != null) {
 			setNotificationType(notificationType);
@@ -181,7 +181,7 @@ public class UserNotificationDeliveryWrapper
 	 * @return the notification type of this user notification delivery
 	 */
 	@Override
-	public int getNotificationType() {
+	public String getNotificationType() {
 		return model.getNotificationType();
 	}
 
@@ -311,7 +311,7 @@ public class UserNotificationDeliveryWrapper
 	 * @param notificationType the notification type of this user notification delivery
 	 */
 	@Override
-	public void setNotificationType(int notificationType) {
+	public void setNotificationType(String notificationType) {
 		model.setNotificationType(notificationType);
 	}
 

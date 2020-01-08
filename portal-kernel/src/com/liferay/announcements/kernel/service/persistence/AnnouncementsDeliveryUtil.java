@@ -35,8 +35,10 @@ import java.util.Set;
  *
  * @author Brian Wing Shun Chan
  * @see AnnouncementsDeliveryPersistence
+ * @deprecated
  * @generated
  */
+@Deprecated
 public class AnnouncementsDeliveryUtil {
 
 	/*

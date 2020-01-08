@@ -603,7 +603,7 @@ public class UserNotificationDeliveryPersistenceImpl
 	@Override
 	public UserNotificationDelivery findByU_P_C_N_D(
 			long userId, String portletId, long classNameId,
-			int notificationType, int deliveryType)
+			String notificationType, int deliveryType)
 		throws NoSuchUserNotificationDeliveryException {
 
 		UserNotificationDelivery userNotificationDelivery = fetchByU_P_C_N_D(
@@ -653,8 +653,8 @@ public class UserNotificationDeliveryPersistenceImpl
 	 */
 	@Override
 	public UserNotificationDelivery fetchByU_P_C_N_D(
-		long userId, String portletId, long classNameId, int notificationType,
-		int deliveryType) {
+		long userId, String portletId, long classNameId,
+		String notificationType, int deliveryType) {
 
 		return fetchByU_P_C_N_D(
 			userId, portletId, classNameId, notificationType, deliveryType,
@@ -674,10 +674,11 @@ public class UserNotificationDeliveryPersistenceImpl
 	 */
 	@Override
 	public UserNotificationDelivery fetchByU_P_C_N_D(
-		long userId, String portletId, long classNameId, int notificationType,
-		int deliveryType, boolean useFinderCache) {
+		long userId, String portletId, long classNameId,
+		String notificationType, int deliveryType, boolean useFinderCache) {
 
 		portletId = Objects.toString(portletId, "");
+		notificationType = Objects.toString(notificationType, "");
 
 		Object[] finderArgs = null;
 
@@ -702,7 +703,8 @@ public class UserNotificationDeliveryPersistenceImpl
 				!Objects.equals(
 					portletId, userNotificationDelivery.getPortletId()) ||
 				(classNameId != userNotificationDelivery.getClassNameId()) ||
-				(notificationType !=
+				!Objects.equals(
+					notificationType,
 					userNotificationDelivery.getNotificationType()) ||
 				(deliveryType != userNotificationDelivery.getDeliveryType())) {
 
@@ -730,7 +732,16 @@ public class UserNotificationDeliveryPersistenceImpl
 
 			query.append(_FINDER_COLUMN_U_P_C_N_D_CLASSNAMEID_2);
 
-			query.append(_FINDER_COLUMN_U_P_C_N_D_NOTIFICATIONTYPE_2);
+			boolean bindNotificationType = false;
+
+			if (notificationType.isEmpty()) {
+				query.append(_FINDER_COLUMN_U_P_C_N_D_NOTIFICATIONTYPE_3);
+			}
+			else {
+				bindNotificationType = true;
+
+				query.append(_FINDER_COLUMN_U_P_C_N_D_NOTIFICATIONTYPE_2);
+			}
 
 			query.append(_FINDER_COLUMN_U_P_C_N_D_DELIVERYTYPE_2);
 
@@ -753,7 +764,9 @@ public class UserNotificationDeliveryPersistenceImpl
 
 				qPos.add(classNameId);
 
-				qPos.add(notificationType);
+				if (bindNotificationType) {
+					qPos.add(notificationType);
+				}
 
 				qPos.add(deliveryType);
 
@@ -808,7 +821,7 @@ public class UserNotificationDeliveryPersistenceImpl
 	@Override
 	public UserNotificationDelivery removeByU_P_C_N_D(
 			long userId, String portletId, long classNameId,
-			int notificationType, int deliveryType)
+			String notificationType, int deliveryType)
 		throws NoSuchUserNotificationDeliveryException {
 
 		UserNotificationDelivery userNotificationDelivery = findByU_P_C_N_D(
@@ -829,10 +842,11 @@ public class UserNotificationDeliveryPersistenceImpl
 	 */
 	@Override
 	public int countByU_P_C_N_D(
-		long userId, String portletId, long classNameId, int notificationType,
-		int deliveryType) {
+		long userId, String portletId, long classNameId,
+		String notificationType, int deliveryType) {
 
 		portletId = Objects.toString(portletId, "");
+		notificationType = Objects.toString(notificationType, "");
 
 		FinderPath finderPath = _finderPathCountByU_P_C_N_D;
 
@@ -863,7 +877,16 @@ public class UserNotificationDeliveryPersistenceImpl
 
 			query.append(_FINDER_COLUMN_U_P_C_N_D_CLASSNAMEID_2);
 
-			query.append(_FINDER_COLUMN_U_P_C_N_D_NOTIFICATIONTYPE_2);
+			boolean bindNotificationType = false;
+
+			if (notificationType.isEmpty()) {
+				query.append(_FINDER_COLUMN_U_P_C_N_D_NOTIFICATIONTYPE_3);
+			}
+			else {
+				bindNotificationType = true;
+
+				query.append(_FINDER_COLUMN_U_P_C_N_D_NOTIFICATIONTYPE_2);
+			}
 
 			query.append(_FINDER_COLUMN_U_P_C_N_D_DELIVERYTYPE_2);
 
@@ -886,7 +909,9 @@ public class UserNotificationDeliveryPersistenceImpl
 
 				qPos.add(classNameId);
 
-				qPos.add(notificationType);
+				if (bindNotificationType) {
+					qPos.add(notificationType);
+				}
 
 				qPos.add(deliveryType);
 
@@ -921,6 +946,9 @@ public class UserNotificationDeliveryPersistenceImpl
 
 	private static final String _FINDER_COLUMN_U_P_C_N_D_NOTIFICATIONTYPE_2 =
 		"userNotificationDelivery.notificationType = ? AND ";
+
+	private static final String _FINDER_COLUMN_U_P_C_N_D_NOTIFICATIONTYPE_3 =
+		"(userNotificationDelivery.notificationType IS NULL OR userNotificationDelivery.notificationType = '') AND ";
 
 	private static final String _FINDER_COLUMN_U_P_C_N_D_DELIVERYTYPE_2 =
 		"userNotificationDelivery.deliveryType = ?";
@@ -1643,7 +1671,7 @@ public class UserNotificationDeliveryPersistenceImpl
 			"fetchByU_P_C_N_D",
 			new String[] {
 				Long.class.getName(), String.class.getName(),
-				Long.class.getName(), Integer.class.getName(),
+				Long.class.getName(), String.class.getName(),
 				Integer.class.getName()
 			},
 			UserNotificationDeliveryModelImpl.USERID_COLUMN_BITMASK |
@@ -1658,7 +1686,7 @@ public class UserNotificationDeliveryPersistenceImpl
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByU_P_C_N_D",
 			new String[] {
 				Long.class.getName(), String.class.getName(),
-				Long.class.getName(), Integer.class.getName(),
+				Long.class.getName(), String.class.getName(),
 				Integer.class.getName()
 			});
 	}

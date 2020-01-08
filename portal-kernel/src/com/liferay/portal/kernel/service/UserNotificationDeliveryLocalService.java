@@ -60,7 +60,7 @@ public interface UserNotificationDeliveryLocalService
 	 */
 	public UserNotificationDelivery addUserNotificationDelivery(
 			long userId, String portletId, long classNameId,
-			int notificationType, int deliveryType, boolean deliver)
+			String notificationType, int deliveryType, boolean deliver)
 		throws PortalException;
 
 	/**
@@ -105,8 +105,8 @@ public interface UserNotificationDeliveryLocalService
 		throws PortalException;
 
 	public void deleteUserNotificationDelivery(
-		long userId, String portletId, long classNameId, int notificationType,
-		int deliveryType);
+		long userId, String portletId, long classNameId,
+		String notificationType, int deliveryType);
 
 	/**
 	 * Deletes the user notification delivery from the database. Also notifies the appropriate model listeners.
@@ -190,8 +190,8 @@ public interface UserNotificationDeliveryLocalService
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public UserNotificationDelivery fetchUserNotificationDelivery(
-		long userId, String portletId, long classNameId, int notificationType,
-		int deliveryType);
+		long userId, String portletId, long classNameId,
+		String notificationType, int deliveryType);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public ActionableDynamicQuery getActionableDynamicQuery();
@@ -249,7 +249,7 @@ public interface UserNotificationDeliveryLocalService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public UserNotificationDelivery getUserNotificationDelivery(
 			long userId, String portletId, long classNameId,
-			int notificationType, int deliveryType, boolean deliver)
+			String notificationType, int deliveryType, boolean deliver)
 		throws PortalException;
 
 	public UserNotificationDelivery updateUserNotificationDelivery(

@@ -138,7 +138,7 @@ public class UserNotificationDeliveryPersistenceTest {
 		newUserNotificationDelivery.setClassNameId(RandomTestUtil.nextLong());
 
 		newUserNotificationDelivery.setNotificationType(
-			RandomTestUtil.nextInt());
+			RandomTestUtil.randomString());
 
 		newUserNotificationDelivery.setDeliveryType(RandomTestUtil.nextInt());
 
@@ -190,12 +190,12 @@ public class UserNotificationDeliveryPersistenceTest {
 	@Test
 	public void testCountByU_P_C_N_D() throws Exception {
 		_persistence.countByU_P_C_N_D(
-			RandomTestUtil.nextLong(), "", RandomTestUtil.nextLong(),
-			RandomTestUtil.nextInt(), RandomTestUtil.nextInt());
+			RandomTestUtil.nextLong(), "", RandomTestUtil.nextLong(), "",
+			RandomTestUtil.nextInt());
 
-		_persistence.countByU_P_C_N_D(0L, "null", 0L, 0, 0);
+		_persistence.countByU_P_C_N_D(0L, "null", 0L, "null", 0);
 
-		_persistence.countByU_P_C_N_D(0L, (String)null, 0L, 0, 0);
+		_persistence.countByU_P_C_N_D(0L, (String)null, 0L, (String)null, 0);
 	}
 
 	@Test
@@ -499,12 +499,12 @@ public class UserNotificationDeliveryPersistenceTest {
 			ReflectionTestUtil.<Long>invoke(
 				existingUserNotificationDelivery, "getOriginalClassNameId",
 				new Class<?>[0]));
-		Assert.assertEquals(
-			Integer.valueOf(
-				existingUserNotificationDelivery.getNotificationType()),
-			ReflectionTestUtil.<Integer>invoke(
-				existingUserNotificationDelivery, "getOriginalNotificationType",
-				new Class<?>[0]));
+		Assert.assertTrue(
+			Objects.equals(
+				existingUserNotificationDelivery.getNotificationType(),
+				ReflectionTestUtil.invoke(
+					existingUserNotificationDelivery,
+					"getOriginalNotificationType", new Class<?>[0])));
 		Assert.assertEquals(
 			Integer.valueOf(existingUserNotificationDelivery.getDeliveryType()),
 			ReflectionTestUtil.<Integer>invoke(
@@ -530,7 +530,8 @@ public class UserNotificationDeliveryPersistenceTest {
 
 		userNotificationDelivery.setClassNameId(RandomTestUtil.nextLong());
 
-		userNotificationDelivery.setNotificationType(RandomTestUtil.nextInt());
+		userNotificationDelivery.setNotificationType(
+			RandomTestUtil.randomString());
 
 		userNotificationDelivery.setDeliveryType(RandomTestUtil.nextInt());
 

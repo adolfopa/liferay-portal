@@ -1266,7 +1266,7 @@ create table UserNotificationDelivery (
 	userId LONG,
 	portletId VARCHAR(200) null,
 	classNameId LONG,
-	notificationType INTEGER,
+	notificationType VARCHAR(75) null,
 	deliveryType INTEGER,
 	deliver BOOLEAN
 );

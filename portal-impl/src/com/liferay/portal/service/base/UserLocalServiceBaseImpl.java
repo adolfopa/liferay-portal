@@ -14,7 +14,6 @@
 
 package com.liferay.portal.service.base;
 
-import com.liferay.announcements.kernel.service.persistence.AnnouncementsDeliveryPersistence;
 import com.liferay.asset.kernel.service.persistence.AssetEntryFinder;
 import com.liferay.asset.kernel.service.persistence.AssetEntryPersistence;
 import com.liferay.expando.kernel.service.persistence.ExpandoRowPersistence;
@@ -2081,56 +2080,6 @@ public abstract class UserLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the announcements delivery local service.
-	 *
-	 * @return the announcements delivery local service
-	 */
-	public
-		com.liferay.announcements.kernel.service.
-			AnnouncementsDeliveryLocalService
-				getAnnouncementsDeliveryLocalService() {
-
-		return announcementsDeliveryLocalService;
-	}
-
-	/**
-	 * Sets the announcements delivery local service.
-	 *
-	 * @param announcementsDeliveryLocalService the announcements delivery local service
-	 */
-	public void setAnnouncementsDeliveryLocalService(
-		com.liferay.announcements.kernel.service.
-			AnnouncementsDeliveryLocalService
-				announcementsDeliveryLocalService) {
-
-		this.announcementsDeliveryLocalService =
-			announcementsDeliveryLocalService;
-	}
-
-	/**
-	 * Returns the announcements delivery persistence.
-	 *
-	 * @return the announcements delivery persistence
-	 */
-	public AnnouncementsDeliveryPersistence
-		getAnnouncementsDeliveryPersistence() {
-
-		return announcementsDeliveryPersistence;
-	}
-
-	/**
-	 * Sets the announcements delivery persistence.
-	 *
-	 * @param announcementsDeliveryPersistence the announcements delivery persistence
-	 */
-	public void setAnnouncementsDeliveryPersistence(
-		AnnouncementsDeliveryPersistence announcementsDeliveryPersistence) {
-
-		this.announcementsDeliveryPersistence =
-			announcementsDeliveryPersistence;
-	}
-
-	/**
 	 * Returns the asset entry local service.
 	 *
 	 * @return the asset entry local service
@@ -2883,16 +2832,6 @@ public abstract class UserLocalServiceBaseImpl
 
 	@BeanReference(type = TicketPersistence.class)
 	protected TicketPersistence ticketPersistence;
-
-	@BeanReference(
-		type = com.liferay.announcements.kernel.service.AnnouncementsDeliveryLocalService.class
-	)
-	protected
-		com.liferay.announcements.kernel.service.
-			AnnouncementsDeliveryLocalService announcementsDeliveryLocalService;
-
-	@BeanReference(type = AnnouncementsDeliveryPersistence.class)
-	protected AnnouncementsDeliveryPersistence announcementsDeliveryPersistence;
 
 	@BeanReference(
 		type = com.liferay.asset.kernel.service.AssetEntryLocalService.class

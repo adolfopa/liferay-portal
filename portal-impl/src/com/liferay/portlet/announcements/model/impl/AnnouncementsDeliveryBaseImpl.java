@@ -27,8 +27,10 @@ import com.liferay.announcements.kernel.service.AnnouncementsDeliveryLocalServic
  * @author Brian Wing Shun Chan
  * @see AnnouncementsDeliveryImpl
  * @see AnnouncementsDelivery
+ * @deprecated
  * @generated
  */
+@Deprecated
 public abstract class AnnouncementsDeliveryBaseImpl
 	extends AnnouncementsDeliveryModelImpl implements AnnouncementsDelivery {
 

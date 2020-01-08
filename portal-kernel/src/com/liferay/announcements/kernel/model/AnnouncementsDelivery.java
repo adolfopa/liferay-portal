@@ -25,8 +25,10 @@ import org.osgi.annotation.versioning.ProviderType;
  *
  * @author Brian Wing Shun Chan
  * @see AnnouncementsDeliveryModel
+ * @deprecated
  * @generated
  */
+@Deprecated
 @ImplementationClassName(
 	"com.liferay.portlet.announcements.model.impl.AnnouncementsDeliveryImpl"
 )

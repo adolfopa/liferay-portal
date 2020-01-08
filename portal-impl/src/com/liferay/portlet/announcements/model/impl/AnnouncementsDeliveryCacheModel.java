@@ -29,8 +29,10 @@ import java.io.ObjectOutput;
  * The cache model class for representing AnnouncementsDelivery in entity cache.
  *
  * @author Brian Wing Shun Chan
+ * @deprecated
  * @generated
  */
+@Deprecated
 public class AnnouncementsDeliveryCacheModel
 	implements CacheModel<AnnouncementsDelivery>, Externalizable, MVCCModel {
 

@@ -27,8 +27,10 @@ import java.util.Map;
  *
  * @author Brian Wing Shun Chan
  * @see AnnouncementsDelivery
+ * @deprecated
  * @generated
  */
+@Deprecated
 public class AnnouncementsDeliveryWrapper
 	extends BaseModelWrapper<AnnouncementsDelivery>
 	implements AnnouncementsDelivery, ModelWrapper<AnnouncementsDelivery> {

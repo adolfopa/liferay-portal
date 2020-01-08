@@ -174,14 +174,15 @@ public interface UserNotificationDeliveryModel
 	 *
 	 * @return the notification type of this user notification delivery
 	 */
-	public int getNotificationType();
+	@AutoEscape
+	public String getNotificationType();
 
 	/**
 	 * Sets the notification type of this user notification delivery.
 	 *
 	 * @param notificationType the notification type of this user notification delivery
 	 */
-	public void setNotificationType(int notificationType);
+	public void setNotificationType(String notificationType);
 
 	/**
 	 * Returns the delivery type of this user notification delivery.

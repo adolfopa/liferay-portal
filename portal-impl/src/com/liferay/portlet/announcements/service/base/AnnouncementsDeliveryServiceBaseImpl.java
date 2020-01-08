@@ -40,8 +40,10 @@ import javax.sql.DataSource;
  *
  * @author Brian Wing Shun Chan
  * @see com.liferay.portlet.announcements.service.impl.AnnouncementsDeliveryServiceImpl
+ * @deprecated
  * @generated
  */
+@Deprecated
 public abstract class AnnouncementsDeliveryServiceBaseImpl
 	extends BaseServiceImpl
 	implements AnnouncementsDeliveryService, IdentifiableOSGiService {

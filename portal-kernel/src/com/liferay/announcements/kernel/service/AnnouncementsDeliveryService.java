@@ -32,9 +32,11 @@ import org.osgi.annotation.versioning.ProviderType;
  *
  * @author Brian Wing Shun Chan
  * @see AnnouncementsDeliveryServiceUtil
+ * @deprecated
  * @generated
  */
 @AccessControlled
+@Deprecated
 @JSONWebService
 @ProviderType
 @Transactional(

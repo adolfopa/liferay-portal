@@ -23,8 +23,10 @@ import java.util.List;
  * This class is used by SOAP remote services, specifically {@link com.liferay.portlet.announcements.service.http.AnnouncementsDeliveryServiceSoap}.
  *
  * @author Brian Wing Shun Chan
+ * @deprecated
  * @generated
  */
+@Deprecated
 public class AnnouncementsDeliverySoap implements Serializable {
 
 	public static AnnouncementsDeliverySoap toSoapModel(

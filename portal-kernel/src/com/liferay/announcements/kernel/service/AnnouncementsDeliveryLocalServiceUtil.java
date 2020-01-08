@@ -26,8 +26,10 @@ import com.liferay.portal.kernel.bean.PortalBeanLocatorUtil;
  *
  * @author Brian Wing Shun Chan
  * @see AnnouncementsDeliveryLocalService
+ * @deprecated
  * @generated
  */
+@Deprecated
 public class AnnouncementsDeliveryLocalServiceUtil {
 
 	/*

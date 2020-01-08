@@ -29,8 +29,10 @@ import org.osgi.annotation.versioning.ProviderType;
  *
  * @author Brian Wing Shun Chan
  * @see AnnouncementsDeliveryUtil
+ * @deprecated
  * @generated
  */
+@Deprecated
 @ProviderType
 public interface AnnouncementsDeliveryPersistence
 	extends BasePersistence<AnnouncementsDelivery> {

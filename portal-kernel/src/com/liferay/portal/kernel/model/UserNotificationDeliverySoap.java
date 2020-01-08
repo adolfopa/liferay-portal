@@ -154,11 +154,11 @@ public class UserNotificationDeliverySoap implements Serializable {
 		_classNameId = classNameId;
 	}
 
-	public int getNotificationType() {
+	public String getNotificationType() {
 		return _notificationType;
 	}
 
-	public void setNotificationType(int notificationType) {
+	public void setNotificationType(String notificationType) {
 		_notificationType = notificationType;
 	}
 
@@ -188,7 +188,7 @@ public class UserNotificationDeliverySoap implements Serializable {
 	private long _userId;
 	private String _portletId;
 	private long _classNameId;
-	private int _notificationType;
+	private String _notificationType;
 	private int _deliveryType;
 	private boolean _deliver;
 

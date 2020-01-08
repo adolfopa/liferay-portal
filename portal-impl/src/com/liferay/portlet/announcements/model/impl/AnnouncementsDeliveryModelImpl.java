@@ -57,8 +57,10 @@ import java.util.function.Function;
  *
  * @author Brian Wing Shun Chan
  * @see AnnouncementsDeliveryImpl
+ * @deprecated
  * @generated
  */
+@Deprecated
 @JSON(strict = true)
 public class AnnouncementsDeliveryModelImpl
 	extends BaseModelImpl<AnnouncementsDelivery>

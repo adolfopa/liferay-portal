@@ -57,8 +57,10 @@ import java.rmi.RemoteException;
  *
  * @author Brian Wing Shun Chan
  * @see AnnouncementsDeliveryServiceHttp
+ * @deprecated
  * @generated
  */
+@Deprecated
 public class AnnouncementsDeliveryServiceSoap {
 
 	public static

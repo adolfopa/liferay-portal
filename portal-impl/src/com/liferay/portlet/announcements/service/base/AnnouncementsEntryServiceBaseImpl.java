@@ -16,7 +16,6 @@ package com.liferay.portlet.announcements.service.base;
 
 import com.liferay.announcements.kernel.model.AnnouncementsEntry;
 import com.liferay.announcements.kernel.service.AnnouncementsEntryService;
-import com.liferay.announcements.kernel.service.persistence.AnnouncementsDeliveryPersistence;
 import com.liferay.announcements.kernel.service.persistence.AnnouncementsEntryFinder;
 import com.liferay.announcements.kernel.service.persistence.AnnouncementsEntryPersistence;
 import com.liferay.announcements.kernel.service.persistence.AnnouncementsFlagPersistence;
@@ -739,79 +738,6 @@ public abstract class AnnouncementsEntryServiceBaseImpl
 	}
 
 	/**
-	 * Returns the announcements delivery local service.
-	 *
-	 * @return the announcements delivery local service
-	 */
-	public
-		com.liferay.announcements.kernel.service.
-			AnnouncementsDeliveryLocalService
-				getAnnouncementsDeliveryLocalService() {
-
-		return announcementsDeliveryLocalService;
-	}
-
-	/**
-	 * Sets the announcements delivery local service.
-	 *
-	 * @param announcementsDeliveryLocalService the announcements delivery local service
-	 */
-	public void setAnnouncementsDeliveryLocalService(
-		com.liferay.announcements.kernel.service.
-			AnnouncementsDeliveryLocalService
-				announcementsDeliveryLocalService) {
-
-		this.announcementsDeliveryLocalService =
-			announcementsDeliveryLocalService;
-	}
-
-	/**
-	 * Returns the announcements delivery remote service.
-	 *
-	 * @return the announcements delivery remote service
-	 */
-	public com.liferay.announcements.kernel.service.AnnouncementsDeliveryService
-		getAnnouncementsDeliveryService() {
-
-		return announcementsDeliveryService;
-	}
-
-	/**
-	 * Sets the announcements delivery remote service.
-	 *
-	 * @param announcementsDeliveryService the announcements delivery remote service
-	 */
-	public void setAnnouncementsDeliveryService(
-		com.liferay.announcements.kernel.service.AnnouncementsDeliveryService
-			announcementsDeliveryService) {
-
-		this.announcementsDeliveryService = announcementsDeliveryService;
-	}
-
-	/**
-	 * Returns the announcements delivery persistence.
-	 *
-	 * @return the announcements delivery persistence
-	 */
-	public AnnouncementsDeliveryPersistence
-		getAnnouncementsDeliveryPersistence() {
-
-		return announcementsDeliveryPersistence;
-	}
-
-	/**
-	 * Sets the announcements delivery persistence.
-	 *
-	 * @param announcementsDeliveryPersistence the announcements delivery persistence
-	 */
-	public void setAnnouncementsDeliveryPersistence(
-		AnnouncementsDeliveryPersistence announcementsDeliveryPersistence) {
-
-		this.announcementsDeliveryPersistence =
-			announcementsDeliveryPersistence;
-	}
-
-	/**
 	 * Returns the announcements flag local service.
 	 *
 	 * @return the announcements flag local service
@@ -1064,23 +990,6 @@ public abstract class AnnouncementsEntryServiceBaseImpl
 
 	@BeanReference(type = UserGroupFinder.class)
 	protected UserGroupFinder userGroupFinder;
-
-	@BeanReference(
-		type = com.liferay.announcements.kernel.service.AnnouncementsDeliveryLocalService.class
-	)
-	protected
-		com.liferay.announcements.kernel.service.
-			AnnouncementsDeliveryLocalService announcementsDeliveryLocalService;
-
-	@BeanReference(
-		type = com.liferay.announcements.kernel.service.AnnouncementsDeliveryService.class
-	)
-	protected
-		com.liferay.announcements.kernel.service.AnnouncementsDeliveryService
-			announcementsDeliveryService;
-
-	@BeanReference(type = AnnouncementsDeliveryPersistence.class)
-	protected AnnouncementsDeliveryPersistence announcementsDeliveryPersistence;
 
 	@BeanReference(
 		type = com.liferay.announcements.kernel.service.AnnouncementsFlagLocalService.class

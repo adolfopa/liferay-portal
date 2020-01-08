@@ -196,7 +196,7 @@ public interface UserNotificationDeliveryPersistence
 	 */
 	public UserNotificationDelivery findByU_P_C_N_D(
 			long userId, String portletId, long classNameId,
-			int notificationType, int deliveryType)
+			String notificationType, int deliveryType)
 		throws NoSuchUserNotificationDeliveryException;
 
 	/**
@@ -210,8 +210,8 @@ public interface UserNotificationDeliveryPersistence
 	 * @return the matching user notification delivery, or <code>null</code> if a matching user notification delivery could not be found
 	 */
 	public UserNotificationDelivery fetchByU_P_C_N_D(
-		long userId, String portletId, long classNameId, int notificationType,
-		int deliveryType);
+		long userId, String portletId, long classNameId,
+		String notificationType, int deliveryType);
 
 	/**
 	 * Returns the user notification delivery where userId = &#63; and portletId = &#63; and classNameId = &#63; and notificationType = &#63; and deliveryType = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
@@ -225,8 +225,8 @@ public interface UserNotificationDeliveryPersistence
 	 * @return the matching user notification delivery, or <code>null</code> if a matching user notification delivery could not be found
 	 */
 	public UserNotificationDelivery fetchByU_P_C_N_D(
-		long userId, String portletId, long classNameId, int notificationType,
-		int deliveryType, boolean useFinderCache);
+		long userId, String portletId, long classNameId,
+		String notificationType, int deliveryType, boolean useFinderCache);
 
 	/**
 	 * Removes the user notification delivery where userId = &#63; and portletId = &#63; and classNameId = &#63; and notificationType = &#63; and deliveryType = &#63; from the database.
@@ -240,7 +240,7 @@ public interface UserNotificationDeliveryPersistence
 	 */
 	public UserNotificationDelivery removeByU_P_C_N_D(
 			long userId, String portletId, long classNameId,
-			int notificationType, int deliveryType)
+			String notificationType, int deliveryType)
 		throws NoSuchUserNotificationDeliveryException;
 
 	/**
@@ -254,8 +254,8 @@ public interface UserNotificationDeliveryPersistence
 	 * @return the number of matching user notification deliveries
 	 */
 	public int countByU_P_C_N_D(
-		long userId, String portletId, long classNameId, int notificationType,
-		int deliveryType);
+		long userId, String portletId, long classNameId,
+		String notificationType, int deliveryType);
 
 	/**
 	 * Caches the user notification delivery in the entity cache if it is enabled.

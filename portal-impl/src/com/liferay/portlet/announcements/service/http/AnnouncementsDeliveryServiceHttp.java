@@ -47,8 +47,10 @@ import com.liferay.portal.kernel.util.MethodKey;
  *
  * @author Brian Wing Shun Chan
  * @see AnnouncementsDeliveryServiceSoap
+ * @deprecated
  * @generated
  */
+@Deprecated
 public class AnnouncementsDeliveryServiceHttp {
 
 	public static com.liferay.announcements.kernel.model.AnnouncementsDelivery

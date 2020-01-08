@@ -121,7 +121,14 @@ public class UserNotificationDeliveryCacheModel
 		}
 
 		userNotificationDeliveryImpl.setClassNameId(classNameId);
-		userNotificationDeliveryImpl.setNotificationType(notificationType);
+
+		if (notificationType == null) {
+			userNotificationDeliveryImpl.setNotificationType("");
+		}
+		else {
+			userNotificationDeliveryImpl.setNotificationType(notificationType);
+		}
+
 		userNotificationDeliveryImpl.setDeliveryType(deliveryType);
 		userNotificationDeliveryImpl.setDeliver(deliver);
 
@@ -142,8 +149,7 @@ public class UserNotificationDeliveryCacheModel
 		portletId = objectInput.readUTF();
 
 		classNameId = objectInput.readLong();
-
-		notificationType = objectInput.readInt();
+		notificationType = objectInput.readUTF();
 
 		deliveryType = objectInput.readInt();
 
@@ -169,7 +175,12 @@ public class UserNotificationDeliveryCacheModel
 
 		objectOutput.writeLong(classNameId);
 
-		objectOutput.writeInt(notificationType);
+		if (notificationType == null) {
+			objectOutput.writeUTF("");
+		}
+		else {
+			objectOutput.writeUTF(notificationType);
+		}
 
 		objectOutput.writeInt(deliveryType);
 
@@ -182,7 +193,7 @@ public class UserNotificationDeliveryCacheModel
 	public long userId;
 	public String portletId;
 	public long classNameId;
-	public int notificationType;
+	public String notificationType;
 	public int deliveryType;
 	public boolean deliver;
 

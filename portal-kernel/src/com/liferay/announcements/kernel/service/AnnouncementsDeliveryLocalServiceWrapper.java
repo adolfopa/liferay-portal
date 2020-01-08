@@ -21,8 +21,10 @@ import com.liferay.portal.kernel.service.ServiceWrapper;
  *
  * @author Brian Wing Shun Chan
  * @see AnnouncementsDeliveryLocalService
+ * @deprecated
  * @generated
  */
+@Deprecated
 public class AnnouncementsDeliveryLocalServiceWrapper
 	implements AnnouncementsDeliveryLocalService,
 			   ServiceWrapper<AnnouncementsDeliveryLocalService> {

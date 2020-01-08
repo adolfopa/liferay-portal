@@ -73,7 +73,7 @@ public class UserNotificationDeliveryModelImpl
 		{"userNotificationDeliveryId", Types.BIGINT},
 		{"companyId", Types.BIGINT}, {"userId", Types.BIGINT},
 		{"portletId", Types.VARCHAR}, {"classNameId", Types.BIGINT},
-		{"notificationType", Types.INTEGER}, {"deliveryType", Types.INTEGER},
+		{"notificationType", Types.VARCHAR}, {"deliveryType", Types.INTEGER},
 		{"deliver", Types.BOOLEAN}
 	};
 
@@ -87,13 +87,13 @@ public class UserNotificationDeliveryModelImpl
 		TABLE_COLUMNS_MAP.put("userId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("portletId", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("classNameId", Types.BIGINT);
-		TABLE_COLUMNS_MAP.put("notificationType", Types.INTEGER);
+		TABLE_COLUMNS_MAP.put("notificationType", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("deliveryType", Types.INTEGER);
 		TABLE_COLUMNS_MAP.put("deliver", Types.BOOLEAN);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table UserNotificationDelivery (mvccVersion LONG default 0 not null,userNotificationDeliveryId LONG not null primary key,companyId LONG,userId LONG,portletId VARCHAR(200) null,classNameId LONG,notificationType INTEGER,deliveryType INTEGER,deliver BOOLEAN)";
+		"create table UserNotificationDelivery (mvccVersion LONG default 0 not null,userNotificationDeliveryId LONG not null primary key,companyId LONG,userId LONG,portletId VARCHAR(200) null,classNameId LONG,notificationType VARCHAR(75) null,deliveryType INTEGER,deliver BOOLEAN)";
 
 	public static final String TABLE_SQL_DROP =
 		"drop table UserNotificationDelivery";
@@ -313,7 +313,7 @@ public class UserNotificationDeliveryModelImpl
 			"notificationType", UserNotificationDelivery::getNotificationType);
 		attributeSetterBiConsumers.put(
 			"notificationType",
-			(BiConsumer<UserNotificationDelivery, Integer>)
+			(BiConsumer<UserNotificationDelivery, String>)
 				UserNotificationDelivery::setNotificationType);
 		attributeGetterFunctions.put(
 			"deliveryType", UserNotificationDelivery::getDeliveryType);
@@ -470,25 +470,28 @@ public class UserNotificationDeliveryModelImpl
 	}
 
 	@Override
-	public int getNotificationType() {
-		return _notificationType;
+	public String getNotificationType() {
+		if (_notificationType == null) {
+			return "";
+		}
+		else {
+			return _notificationType;
+		}
 	}
 
 	@Override
-	public void setNotificationType(int notificationType) {
+	public void setNotificationType(String notificationType) {
 		_columnBitmask |= NOTIFICATIONTYPE_COLUMN_BITMASK;
 
-		if (!_setOriginalNotificationType) {
-			_setOriginalNotificationType = true;
-
+		if (_originalNotificationType == null) {
 			_originalNotificationType = _notificationType;
 		}
 
 		_notificationType = notificationType;
 	}
 
-	public int getOriginalNotificationType() {
-		return _originalNotificationType;
+	public String getOriginalNotificationType() {
+		return GetterUtil.getString(_originalNotificationType);
 	}
 
 	@Override
@@ -656,8 +659,6 @@ public class UserNotificationDeliveryModelImpl
 		userNotificationDeliveryModelImpl._originalNotificationType =
 			userNotificationDeliveryModelImpl._notificationType;
 
-		userNotificationDeliveryModelImpl._setOriginalNotificationType = false;
-
 		userNotificationDeliveryModelImpl._originalDeliveryType =
 			userNotificationDeliveryModelImpl._deliveryType;
 
@@ -692,6 +693,13 @@ public class UserNotificationDeliveryModelImpl
 
 		userNotificationDeliveryCacheModel.notificationType =
 			getNotificationType();
+
+		String notificationType =
+			userNotificationDeliveryCacheModel.notificationType;
+
+		if ((notificationType != null) && (notificationType.length() == 0)) {
+			userNotificationDeliveryCacheModel.notificationType = null;
+		}
 
 		userNotificationDeliveryCacheModel.deliveryType = getDeliveryType();
 
@@ -785,9 +793,8 @@ public class UserNotificationDeliveryModelImpl
 	private long _classNameId;
 	private long _originalClassNameId;
 	private boolean _setOriginalClassNameId;
-	private int _notificationType;
-	private int _originalNotificationType;
-	private boolean _setOriginalNotificationType;
+	private String _notificationType;
+	private String _originalNotificationType;
 	private int _deliveryType;
 	private int _originalDeliveryType;
 	private boolean _setOriginalDeliveryType;

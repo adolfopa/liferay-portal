@@ -54,8 +54,10 @@ import java.util.Set;
  * </p>
  *
  * @author Brian Wing Shun Chan
+ * @deprecated
  * @generated
  */
+@Deprecated
 public class AnnouncementsDeliveryPersistenceImpl
 	extends BasePersistenceImpl<AnnouncementsDelivery>
 	implements AnnouncementsDeliveryPersistence {

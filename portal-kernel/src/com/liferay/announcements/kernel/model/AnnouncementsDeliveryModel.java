@@ -30,8 +30,10 @@ import org.osgi.annotation.versioning.ProviderType;
  *
  * @author Brian Wing Shun Chan
  * @see AnnouncementsDelivery
+ * @deprecated
  * @generated
  */
+@Deprecated
 @ProviderType
 public interface AnnouncementsDeliveryModel
 	extends BaseModel<AnnouncementsDelivery>, MVCCModel, ShardedModel {

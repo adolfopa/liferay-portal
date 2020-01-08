@@ -1,0 +1,4 @@
+Bundle-Name: Liferay Sharepoint Repository SOAP
+Bundle-SymbolicName: com.liferay.sharepoint.repository.soap
+Bundle-Version: 1.0.0
+Liferay-Releng-Module-Group-Title: Sharepoint

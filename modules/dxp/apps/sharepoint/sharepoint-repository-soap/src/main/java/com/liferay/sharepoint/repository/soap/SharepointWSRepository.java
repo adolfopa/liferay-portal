@@ -53,6 +53,7 @@ import com.liferay.sharepoint.connector.SharepointRuntimeException;
 import com.liferay.sharepoint.connector.SharepointVersion;
 import com.liferay.sharepoint.connector.operation.PathHelper;
 import com.liferay.sharepoint.connector.operation.URLHelper;
+import com.liferay.sharepoint.repository.soap.constants.SharepointWSConstants;
 import com.liferay.sharepoint.repository.soap.model.SharepointWSFileEntry;
 import com.liferay.sharepoint.repository.soap.model.SharepointWSFileVersion;
 import com.liferay.sharepoint.repository.soap.model.SharepointWSFolder;
@@ -714,18 +715,23 @@ public class SharepointWSRepository
 		try {
 			_credentialsProvider = credentialsProvider;
 
-			_libraryName = typeSettingsProperties.getProperty(_LIBRARY_NAME);
+			_libraryName = typeSettingsProperties.getProperty(
+				SharepointWSConstants.SHAREPOINT_LIBRARY_NAME);
 
-			_libraryPath = typeSettingsProperties.getProperty(_LIBRARY_PATH);
+			_libraryPath = typeSettingsProperties.getProperty(
+				SharepointWSConstants.SHAREPOINT_LIBRARY_PATH);
 
 			if (Validator.isNull(_libraryPath)) {
 				_libraryPath = _libraryName;
 			}
 
 			String serverVersion = typeSettingsProperties.getProperty(
-				_SERVER_VERSION, StringPool.BLANK);
+				SharepointWSConstants.SHAREPOINT_SERVER_VERSION,
+				StringPool.BLANK);
 
-			if (serverVersion.equals(_SHAREPOINT_2013_VALUE)) {
+			if (serverVersion.equals(
+					SharepointWSConstants.SHAREPOINT_2013_VALUE)) {
+
 				_serverVersion =
 					SharepointConnection.ServerVersion.SHAREPOINT_2013;
 			}
@@ -734,9 +740,9 @@ public class SharepointWSRepository
 					SharepointConnection.ServerVersion.SHAREPOINT_2010;
 			}
 
-			String siteURL = typeSettingsProperties.getProperty(_SITE_URL);
-
-			URL url = urlHelper.toURL(siteURL);
+			URL url = urlHelper.toURL(
+				typeSettingsProperties.getProperty(
+					SharepointWSConstants.SHAREPOINT_SITE_URL));
 
 			_host = url.getHost();
 			_protocol = url.getProtocol();
@@ -1043,25 +1049,17 @@ public class SharepointWSRepository
 	protected static PathHelper pathHelper = new PathHelper();
 	protected static URLHelper urlHelper = new URLHelper();
 
-	private static final String _CONFIGURATION_WS = "SHAREPOINT_WS";
-
-	private static final String _LIBRARY_NAME = "LIBRARY_NAME";
-
-	private static final String _LIBRARY_PATH = "LIBRARY_PATH";
-
-	private static final String _SERVER_VERSION = "SERVER_VERSION";
-
-	private static final String _SHAREPOINT_2013_VALUE =
-		SharepointConnection.ServerVersion.SHAREPOINT_2013.getValue();
-
-	private static final String _SITE_URL = "SITE_URL";
-
 	private static final String[] _SUPPORTED_CONFIGURATIONS = {
-		_CONFIGURATION_WS
+		SharepointWSConstants.SHAREPOINT_CONFIGURATION_WS
 	};
 
 	private static final String[][] _SUPPORTED_PARAMETERS = {
-		{_LIBRARY_NAME, _LIBRARY_PATH, _SERVER_VERSION, _SITE_URL}
+		{
+			SharepointWSConstants.SHAREPOINT_LIBRARY_NAME,
+			SharepointWSConstants.SHAREPOINT_LIBRARY_PATH,
+			SharepointWSConstants.SHAREPOINT_SERVER_VERSION,
+			SharepointWSConstants.SHAREPOINT_SITE_URL
+		}
 	};
 
 	private static final Map

@@ -21,6 +21,11 @@ import com.liferay.portal.kernel.notifications.UserNotificationDeliveryType;
 import com.liferay.portal.kernel.notifications.UserNotificationManagerUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
+import com.liferay.portal.kernel.util.Validator;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -42,8 +47,7 @@ public class AnnouncementsUserNotificationDefinitionProvider {
 	protected void activate() {
 		for (String type : TYPES) {
 			UserNotificationDefinition userNotificationDefinition =
-				new UserNotificationDefinition(
-					AnnouncementsPortletKeys.ANNOUNCEMENTS, 0, type, type);
+				new AnnouncementsUserNotificationDefinition(type);
 
 			userNotificationDefinition.addUserNotificationDeliveryType(
 				new UserNotificationDeliveryType(
@@ -64,6 +68,40 @@ public class AnnouncementsUserNotificationDefinitionProvider {
 	protected void deactivate() {
 		UserNotificationManagerUtil.deleteUserNotificationDefinitions(
 			AnnouncementsPortletKeys.ANNOUNCEMENTS);
+	}
+
+	private class AnnouncementsUserNotificationDefinition
+		extends UserNotificationDefinition {
+
+		public AnnouncementsUserNotificationDefinition(String type) {
+			super(AnnouncementsPortletKeys.ANNOUNCEMENTS, 0, type, type);
+
+			_description = type;
+		}
+
+		@Override
+		public String getDescription(Locale locale) {
+			ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
+				locale, AnnouncementsUserNotificationDefinitionProvider.class);
+
+			String notificationType = ResourceBundleUtil.getString(
+				resourceBundle, getNotificationType());
+
+			String description = ResourceBundleUtil.getString(
+				resourceBundle,
+				"receive-a-notification-when-someone-adds-a-new-announcement-" +
+					"for-x-distribution-scope",
+				notificationType);
+
+			if (Validator.isNotNull(description)) {
+				return description;
+			}
+
+			return _description;
+		}
+
+		private final String _description;
+
 	}
 
 }

@@ -14,7 +14,6 @@
 
 package com.liferay.contacts.web.internal.portlet;
 
-import com.liferay.announcements.kernel.model.AnnouncementsDelivery;
 import com.liferay.announcements.kernel.service.AnnouncementsDeliveryLocalService;
 import com.liferay.contacts.constants.ContactsConstants;
 import com.liferay.contacts.constants.SocialRelationConstants;

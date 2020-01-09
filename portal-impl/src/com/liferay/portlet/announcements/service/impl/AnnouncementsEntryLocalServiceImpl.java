@@ -483,8 +483,7 @@ public class AnnouncementsEntryLocalServiceImpl
 						(OrderByComparator<User>)null);
 				}
 
-				notifyUsers(
-					users, entry, toAddress, toName, entry.getType());
+				notifyUsers(users, entry, toAddress, toName, entry.getType());
 
 				intervalActionProcessor.incrementStart(users.size());
 
@@ -514,6 +513,7 @@ public class AnnouncementsEntryLocalServiceImpl
 
 		String body = ContentUtil.get(
 			clazz.getClassLoader(), PropsValues.ANNOUNCEMENTS_EMAIL_BODY);
+
 		String fromAddress = PrefsPropsUtil.getStringFromNames(
 			entry.getCompanyId(), PropsKeys.ANNOUNCEMENTS_EMAIL_FROM_ADDRESS,
 			PropsKeys.ADMIN_EMAIL_FROM_ADDRESS);
@@ -583,14 +583,14 @@ public class AnnouncementsEntryLocalServiceImpl
 		}
 	}
 
-	@BeanReference(type = UserNotificationDeliveryLocalService.class)
-	protected UserNotificationDeliveryLocalService
-		_userNotificationDeliveryLocalService;
-
 	private static final long _ANNOUNCEMENTS_ENTRY_CHECK_INTERVAL =
 		PropsValues.ANNOUNCEMENTS_ENTRY_CHECK_INTERVAL * Time.MINUTE;
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		AnnouncementsEntryLocalServiceImpl.class);
+
+	@BeanReference(type = UserNotificationDeliveryLocalService.class)
+	private UserNotificationDeliveryLocalService
+		_userNotificationDeliveryLocalService;
 
 }

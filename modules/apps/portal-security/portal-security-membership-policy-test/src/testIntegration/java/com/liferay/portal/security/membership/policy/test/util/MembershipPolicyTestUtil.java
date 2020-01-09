@@ -14,7 +14,6 @@
 
 package com.liferay.portal.security.membership.policy.test.util;
 
-import com.liferay.announcements.kernel.model.AnnouncementsDelivery;
 import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.asset.kernel.model.AssetTag;
 import com.liferay.asset.kernel.model.AssetVocabulary;

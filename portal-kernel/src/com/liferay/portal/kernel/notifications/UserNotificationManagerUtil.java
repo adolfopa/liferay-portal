@@ -228,8 +228,8 @@ public class UserNotificationManagerUtil {
 				userNotificationDefinitions) {
 
 			if ((userNotificationDefinition.getClassNameId() == classNameId) &&
-				(notificationType.equals(
-					userNotificationDefinition.getNotificationType()))) {
+				notificationType.equals(
+					userNotificationDefinition.getNotificationType())) {
 
 				return userNotificationDefinition;
 			}

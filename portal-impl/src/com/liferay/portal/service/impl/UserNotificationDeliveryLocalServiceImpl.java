@@ -81,8 +81,8 @@ public class UserNotificationDeliveryLocalServiceImpl
 
 	@Override
 	public UserNotificationDelivery fetchUserNotificationDelivery(
-		long userId, String portletId, long classNameId, String notificationType,
-		int deliveryType) {
+		long userId, String portletId, long classNameId,
+		String notificationType, int deliveryType) {
 
 		return userNotificationDeliveryPersistence.fetchByU_P_C_N_D(
 			userId, portletId, classNameId, notificationType, deliveryType);

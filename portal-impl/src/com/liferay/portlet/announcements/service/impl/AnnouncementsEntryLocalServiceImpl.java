@@ -483,8 +483,7 @@ public class AnnouncementsEntryLocalServiceImpl
 						(OrderByComparator<User>)null);
 				}
 
-				notifyUsers(
-					users, entry, toAddress, toName, entry.getType());
+				notifyUsers(users, entry, toAddress, toName, entry.getType());
 
 				intervalActionProcessor.incrementStart(users.size());
 

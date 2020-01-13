@@ -18,6 +18,9 @@ import com.liferay.depot.application.DepotApplication;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -29,9 +32,32 @@ import org.osgi.service.component.annotations.Deactivate;
 @Component(immediate = true, service = DepotApplicationController.class)
 public class DepotApplicationController {
 
+	public Collection<DepotApplication> getDepotApplications() {
+		Collection<DepotApplication> depotApplications = new ArrayList<>();
+
+		for (DepotApplication depotApplication : _serviceTrackerMap.values()) {
+			if (depotApplication.isCustomizable()) {
+				depotApplications.add(depotApplication);
+			}
+		}
+
+		return depotApplications;
+	}
+
 	public boolean isEnabled(String portletId) {
 		if (_serviceTrackerMap.getService(portletId) != null) {
 			return true;
+		}
+
+		return false;
+	}
+
+	public boolean isEnabled(String portletId, long groupId) {
+		DepotApplication depotApplication = _serviceTrackerMap.getService(
+			portletId);
+
+		if (depotApplication != null) {
+			return depotApplication.isEnabled(groupId);
 		}
 
 		return false;

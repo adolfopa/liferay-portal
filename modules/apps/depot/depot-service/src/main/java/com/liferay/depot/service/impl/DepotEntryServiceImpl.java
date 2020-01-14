@@ -69,13 +69,14 @@ public class DepotEntryServiceImpl extends DepotEntryServiceBaseImpl {
 	public DepotEntry updateDepotEntry(
 			long depotEntryId, Map<Locale, String> nameMap,
 			Map<Locale, String> descriptionMap,
+			UnicodeProperties depotAppCustomizations,
 			UnicodeProperties typeSettingsProperties,
 			ServiceContext serviceContext)
 		throws PortalException {
 
 		return depotEntryLocalService.updateDepotEntry(
-			depotEntryId, nameMap, descriptionMap, typeSettingsProperties,
-			serviceContext);
+			depotEntryId, nameMap, descriptionMap, depotAppCustomizations,
+			typeSettingsProperties, serviceContext);
 	}
 
 }

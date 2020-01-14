@@ -45,6 +45,28 @@ public class DepotAppCustomizationLocalServiceImpl
 	extends DepotAppCustomizationLocalServiceBaseImpl {
 
 	@Override
+	public DepotAppCustomization addDepotAppCustomization(
+		long depotEntryId, String portletId, boolean enabled) {
+
+		DepotAppCustomization depotAppCustomization =
+			_depotAppCustomizationPersistence.fetchByD_PI(
+				depotEntryId, portletId);
+
+		if (depotAppCustomization != null) {
+			return depotAppCustomization;
+		}
+
+		depotAppCustomization = _depotAppCustomizationPersistence.create(
+			counterLocalService.increment());
+
+		depotAppCustomization.setDepotEntryId(depotEntryId);
+		depotAppCustomization.setEnabled(enabled);
+		depotAppCustomization.setPortletId(portletId);
+
+		return _depotAppCustomizationPersistence.update(depotAppCustomization);
+	}
+
+	@Override
 	public DepotAppCustomization getDepotAppCustomization(
 		long depotEntryId, String portletId) {
 

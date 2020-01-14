@@ -69,6 +69,8 @@ public class EditDepotEntryMVCActionCommand extends BaseMVCActionCommand {
 				LocalizationUtil.getLocalizationMap(
 					actionRequest, "description", group.getDescriptionMap()),
 				PropertiesParamUtil.getProperties(
+					actionRequest, "DepotAppCustomization--"),
+				PropertiesParamUtil.getProperties(
 					actionRequest, "TypeSettingsProperties--"),
 				ServiceContextFactory.getInstance(
 					DepotEntry.class.getName(), actionRequest));

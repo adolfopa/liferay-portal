@@ -21,13 +21,16 @@ import com.liferay.sharepoint.connector.SharepointObject;
 import com.liferay.sharepoint.connector.SharepointResultException;
 import com.liferay.sharepoint.connector.internal.util.RemoteExceptionSharepointExceptionMapper;
 
-import com.microsoft.webservices.SharePoint.QueryService.QueryServiceSoap;
+import com.microsoft.webservices.sharepoint.queryservice.QueryServiceStub;
 
 import java.rmi.RemoteException;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import search.microsoft.QueryDocument;
+import search.microsoft.QueryResponseDocument;
 
 /**
  * @author Iván Zaera
@@ -50,11 +53,20 @@ public class GetObjectsByQueryPacketOperation extends BaseOperation {
 		throws SharepointException {
 
 		try {
-			String queryServiceSoapResultString = _queryServiceSoap.query(
-				queryPacket);
+			QueryDocument queryDocument = QueryDocument.Factory.newInstance();
+
+			QueryDocument.Query query = queryDocument.addNewQuery();
+
+			query.setQueryXml(queryPacket);
+
+			QueryResponseDocument queryResponseDocument =
+				_queryServiceStub.query(queryDocument);
+
+			QueryResponseDocument.QueryResponse queryResponse =
+				queryResponseDocument.getQueryResponse();
 
 			QueryServiceSoapResult queryServiceSoapResult =
-				new QueryServiceSoapResult(queryServiceSoapResultString);
+				new QueryServiceSoapResult(queryResponse.getQueryResult());
 
 			if (!queryServiceSoapResult.isSuccess()) {
 				throw new SharepointResultException(
@@ -98,14 +110,12 @@ public class GetObjectsByQueryPacketOperation extends BaseOperation {
 			return sharepointObjects;
 		}
 		catch (RemoteException re) {
-			RemoteExceptionSharepointExceptionMapper.map(re);
-
-			throw new IllegalStateException();
+			throw RemoteExceptionSharepointExceptionMapper.map(re);
 		}
 	}
 
-	public void setQueryServiceSoap(QueryServiceSoap queryServiceSoap) {
-		_queryServiceSoap = queryServiceSoap;
+	public void setQueryServiceSoap(QueryServiceStub queryServiceStub) {
+		_queryServiceStub = queryServiceStub;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
@@ -113,7 +123,7 @@ public class GetObjectsByQueryPacketOperation extends BaseOperation {
 
 	private GetSharepointObjectByPathOperation
 		_getSharepointObjectByPathOperation;
-	private QueryServiceSoap _queryServiceSoap;
+	private QueryServiceStub _queryServiceStub;
 	private String _searchPrefix;
 	private int _searchPrefixLength;
 

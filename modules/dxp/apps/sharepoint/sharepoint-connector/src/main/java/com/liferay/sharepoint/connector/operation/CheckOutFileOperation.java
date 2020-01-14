@@ -18,7 +18,8 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.sharepoint.connector.SharepointException;
 import com.liferay.sharepoint.connector.internal.util.RemoteExceptionSharepointExceptionMapper;
 
-import java.net.URL;
+import com.microsoft.schemas.sharepoint.soap.CheckOutFileDocument;
+import com.microsoft.schemas.sharepoint.soap.CheckOutFileResponseDocument;
 
 import java.rmi.RemoteException;
 
@@ -29,11 +30,24 @@ public class CheckOutFileOperation extends BaseOperation {
 
 	public boolean execute(String filePath) throws SharepointException {
 		try {
-			URL filePathURL = toURL(filePath);
+			CheckOutFileDocument checkOutFileDocument =
+				CheckOutFileDocument.Factory.newInstance();
 
-			return listsSoap.checkOutFile(
-				filePathURL.toString(), Boolean.FALSE.toString(),
-				StringPool.BLANK);
+			CheckOutFileDocument.CheckOutFile checkOutFile =
+				checkOutFileDocument.addNewCheckOutFile();
+
+			checkOutFile.setPageUrl(String.valueOf(toURL(filePath)));
+			checkOutFile.setCheckoutToLocal(Boolean.FALSE.toString());
+			checkOutFile.setLastmodified(StringPool.BLANK);
+
+			CheckOutFileResponseDocument checkOutFileResponseDocument =
+				listsStub.checkOutFile(checkOutFileDocument);
+
+			CheckOutFileResponseDocument.CheckOutFileResponse
+				checkOutFileResponse =
+					checkOutFileResponseDocument.getCheckOutFileResponse();
+
+			return checkOutFileResponse.getCheckOutFileResult();
 		}
 		catch (RemoteException re) {
 			throw RemoteExceptionSharepointExceptionMapper.map(re);

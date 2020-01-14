@@ -14,24 +14,22 @@
 
 package com.liferay.sharepoint.connector.operation;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.sharepoint.connector.SharepointException;
 import com.liferay.sharepoint.connector.SharepointObject;
 import com.liferay.sharepoint.connector.internal.util.RemoteExceptionSharepointExceptionMapper;
 import com.liferay.sharepoint.connector.schema.query.Query;
 import com.liferay.sharepoint.connector.schema.query.QueryField;
-import com.liferay.sharepoint.connector.schema.query.QueryFieldsList;
 import com.liferay.sharepoint.connector.schema.query.QueryOptionsList;
 import com.liferay.sharepoint.connector.schema.query.option.ExpandUserFieldQueryOption;
 
-import com.microsoft.schemas.sharepoint.soap.GetListItemsQuery;
-import com.microsoft.schemas.sharepoint.soap.GetListItemsQueryOptions;
-import com.microsoft.schemas.sharepoint.soap.GetListItemsResponseGetListItemsResult;
-import com.microsoft.schemas.sharepoint.soap.GetListItemsViewFields;
+import com.microsoft.schemas.sharepoint.soap.GetListItemsDocument;
+import com.microsoft.schemas.sharepoint.soap.GetListItemsResponseDocument;
+import com.microsoft.schemas.sharepoint.soap.impl.GetListItemsDocumentImpl;
 
 import java.rmi.RemoteException;
 
@@ -46,9 +44,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import org.apache.axis.message.MessageElement;
-
-import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -71,87 +66,44 @@ public class GetSharepointObjectsByQueryOperation extends BaseOperation {
 			String... queryFieldNames)
 		throws SharepointException {
 
-		GetListItemsResponseGetListItemsResult
-			getListItemsResponseGetListItemsResult = null;
-
-		GetListItemsQuery getListItemsQuery = getGetListItemsQuery(query);
-		GetListItemsViewFields getListItemsViewFields =
-			getGetListItemsViewFields(queryFieldNames);
-
-		if (!queryOptionsList.contains(ExpandUserFieldQueryOption.class)) {
-			queryOptionsList = queryOptionsList.append(
-				new ExpandUserFieldQueryOption(true));
-		}
-
-		GetListItemsQueryOptions getListItemsQueryOptions =
-			getGetListItemsQueryOptions(queryOptionsList);
-
 		try {
-			getListItemsResponseGetListItemsResult = listsSoap.getListItems(
-				sharepointConnectionInfo.getLibraryName(),
-				SharepointConstants.VIEW_DEFAULT, getListItemsQuery,
-				getListItemsViewFields, SharepointConstants.ROW_LIMIT_DEFAULT,
-				getListItemsQueryOptions, SharepointConstants.WEB_ID_DEFAULT);
+			GetListItemsDocument getListItemsDocument =
+				GetListItemsDocument.Factory.newInstance();
+
+			GetListItemsDocument.GetListItems getListItems =
+				getListItemsDocument.addNewGetListItems();
+
+			getListItems.setListName(sharepointConnectionInfo.getLibraryName());
+			getListItems.setQuery(getQuery(query));
+
+			if (!queryOptionsList.contains(ExpandUserFieldQueryOption.class)) {
+				queryOptionsList = queryOptionsList.append(
+					new ExpandUserFieldQueryOption(true));
+			}
+
+			getListItems.setQueryOptions(getQueryOptions(queryOptionsList));
+
+			getListItems.setRowLimit(SharepointConstants.ROW_LIMIT_DEFAULT);
+			getListItems.setViewFields(getViewFields(queryFieldNames));
+			getListItems.setViewName(SharepointConstants.VIEW_DEFAULT);
+
+			GetListItemsResponseDocument getListItemsResponseDocument =
+				listsStub.getListItems(getListItemsDocument);
+
+			log(query, queryOptionsList, getListItemsResponseDocument);
+
+			return getSharepointObjects(getListItemsResponseDocument);
 		}
 		catch (RemoteException re) {
-			RemoteExceptionSharepointExceptionMapper.map(re);
+			throw RemoteExceptionSharepointExceptionMapper.map(re);
 		}
-
-		log(query, queryOptionsList, getListItemsResponseGetListItemsResult);
-
-		return getSharepointObjects(getListItemsResponseGetListItemsResult);
-	}
-
-	protected GetListItemsQuery getGetListItemsQuery(Query query) {
-		GetListItemsQuery getListItemsQuery = new GetListItemsQuery();
-
-		Element queryElement = xmlHelper.toElement(query);
-
-		MessageElement queryMessageElement = new MessageElement(queryElement);
-
-		getListItemsQuery.set_any(new MessageElement[] {queryMessageElement});
-
-		return getListItemsQuery;
-	}
-
-	protected GetListItemsQueryOptions getGetListItemsQueryOptions(
-		QueryOptionsList queryOptionsList) {
-
-		Element queryOptionsListElement = xmlHelper.toElement(queryOptionsList);
-
-		MessageElement queryOptionsListMessageElement = new MessageElement(
-			queryOptionsListElement);
-
-		GetListItemsQueryOptions getListItemsQueryOptions =
-			new GetListItemsQueryOptions();
-
-		getListItemsQueryOptions.set_any(
-			new MessageElement[] {queryOptionsListMessageElement});
-
-		return getListItemsQueryOptions;
-	}
-
-	protected GetListItemsViewFields getGetListItemsViewFields(
-		String... queryFieldNames) {
-
-		QueryFieldsList queryFieldsList = new QueryFieldsList(
-			toQueryFields(queryFieldNames));
-
-		Element queryFieldsListElement = xmlHelper.toElement(queryFieldsList);
-
-		MessageElement queryFieldsListMessageElement = new MessageElement(
-			queryFieldsListElement);
-
-		GetListItemsViewFields getListItemsViewFields =
-			new GetListItemsViewFields();
-
-		getListItemsViewFields.set_any(
-			new MessageElement[] {queryFieldsListMessageElement});
-
-		return getListItemsViewFields;
 	}
 
 	protected String getNodeValue(Node node, int index) {
+		if (node == null) {
+			return null;
+		}
+
 		String nodeValue = node.getNodeValue();
 
 		String[] parts = nodeValue.split(
@@ -186,17 +138,54 @@ public class GetSharepointObjectsByQueryOperation extends BaseOperation {
 		return permissions;
 	}
 
+	protected GetListItemsDocument.GetListItems.Query getQuery(Query query) {
+		GetListItemsDocument.GetListItems.Query getListItemsQuery =
+			GetListItemsDocumentImpl.GetListItems.Query.Factory.newInstance();
+
+		Node node = getListItemsQuery.getDomNode();
+
+		for (Node childrenNode :
+				xmlHelper.toNodes(node.getOwnerDocument(), query)) {
+
+			node.appendChild(childrenNode);
+		}
+
+		return getListItemsQuery;
+	}
+
+	protected GetListItemsDocument.GetListItems.QueryOptions getQueryOptions(
+		QueryOptionsList queryOptionsList) {
+
+		GetListItemsDocument.GetListItems.QueryOptions queryOptions =
+			GetListItemsDocumentImpl.GetListItems.QueryOptions.Factory.
+				newInstance();
+
+		Node node = queryOptions.getDomNode();
+
+		for (Node childrenNode :
+				xmlHelper.toNodes(node.getOwnerDocument(), queryOptionsList)) {
+
+			node.appendChild(childrenNode);
+		}
+
+		return queryOptions;
+	}
+
 	protected List<SharepointObject> getSharepointObjects(
-		GetListItemsResponseGetListItemsResult
-			getListItemsResponseGetListItemsResult) {
+		GetListItemsResponseDocument getListItemsResponseDocument) {
+
+		GetListItemsResponseDocument.GetListItemsResponse getListItemsResponse =
+			getListItemsResponseDocument.getGetListItemsResponse();
+
+		GetListItemsResponseDocument.GetListItemsResponse.GetListItemsResult
+			getListItemsResult = getListItemsResponse.getGetListItemsResult();
+
+		Node getListItemsResultNode = getListItemsResult.getDomNode();
 
 		List<SharepointObject> sharepointObjects = new ArrayList<>();
 
-		Element getListItemsResponseGetListItemsResultElement =
-			xmlHelper.getElement(getListItemsResponseGetListItemsResult);
-
-		Element dataElement = xmlHelper.getElement(
-			"Data", getListItemsResponseGetListItemsResultElement);
+		Node dataElement = xmlHelper.getNode(
+			"Data", getListItemsResultNode.getFirstChild());
 
 		NodeList nodeList = dataElement.getChildNodes();
 
@@ -257,10 +246,28 @@ public class GetSharepointObjectsByQueryOperation extends BaseOperation {
 		return sharepointObjects;
 	}
 
+	protected GetListItemsDocument.GetListItems.ViewFields getViewFields(
+		String... queryFieldNames) {
+
+		GetListItemsDocument.GetListItems.ViewFields viewFields =
+			GetListItemsDocumentImpl.GetListItems.ViewFields.Factory.
+				newInstance();
+
+		Node node = viewFields.getDomNode();
+
+		for (Node childNode :
+				xmlHelper.toNodes(
+					node.getOwnerDocument(), toQueryFields(queryFieldNames))) {
+
+			node.appendChild(childNode);
+		}
+
+		return viewFields;
+	}
+
 	protected void log(
 		Query query, QueryOptionsList queryOptionsList,
-		GetListItemsResponseGetListItemsResult
-			getListItemsResponseGetListItemsResult) {
+		GetListItemsResponseDocument getListItemsResponseDocument) {
 
 		if (!_log.isDebugEnabled()) {
 			return;
@@ -268,11 +275,8 @@ public class GetSharepointObjectsByQueryOperation extends BaseOperation {
 
 		_log.debug(
 			StringBundler.concat(
-				"Query: ", String.valueOf(query), "\nQuery options: ",
-				String.valueOf(queryOptionsList), "\nResult: ",
-				xmlHelper.toString(
-					xmlHelper.getElement(
-						getListItemsResponseGetListItemsResult))));
+				"Query: ", query, "\nQuery options: ", queryOptionsList,
+				"\nResult: ", getListItemsResponseDocument.xmlText()));
 	}
 
 	protected Date parseDate(String dateString) {

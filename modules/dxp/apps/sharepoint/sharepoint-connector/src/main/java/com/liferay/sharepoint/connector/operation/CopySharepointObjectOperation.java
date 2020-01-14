@@ -23,16 +23,15 @@ import com.liferay.sharepoint.connector.SharepointResultException;
 import com.liferay.sharepoint.connector.internal.util.RemoteExceptionSharepointExceptionMapper;
 
 import com.microsoft.schemas.sharepoint.soap.CopyErrorCode;
+import com.microsoft.schemas.sharepoint.soap.CopyIntoItemsLocalDocument;
+import com.microsoft.schemas.sharepoint.soap.CopyIntoItemsLocalResponseDocument;
 import com.microsoft.schemas.sharepoint.soap.CopyResult;
-import com.microsoft.schemas.sharepoint.soap.holders.CopyResultCollectionHolder;
-
-import java.net.URL;
+import com.microsoft.schemas.sharepoint.soap.CopyResultCollection;
+import com.microsoft.schemas.sharepoint.soap.DestinationUrlCollection;
 
 import java.rmi.RemoteException;
 
 import java.util.List;
-
-import org.apache.axis.holders.UnsignedIntHolder;
 
 /**
  * @author Iván Zaera
@@ -70,28 +69,44 @@ public class CopySharepointObjectOperation extends BaseOperation {
 	protected void copyFile(String path, String newPath)
 		throws SharepointException {
 
-		URL pathURL = toURL(path);
-		URL newPathURL = toURL(newPath);
-
-		CopyResultCollectionHolder copyResultCollectionHolder =
-			new CopyResultCollectionHolder();
-
 		try {
-			copySoap.copyIntoItemsLocal(
-				pathURL.toString(), new String[] {newPathURL.toString()},
-				new UnsignedIntHolder(), copyResultCollectionHolder);
+			CopyIntoItemsLocalDocument copyIntoItemsLocalDocument =
+				CopyIntoItemsLocalDocument.Factory.newInstance();
+
+			CopyIntoItemsLocalDocument.CopyIntoItemsLocal copyIntoItemsLocal =
+				copyIntoItemsLocalDocument.addNewCopyIntoItemsLocal();
+
+			copyIntoItemsLocal.setSourceUrl(String.valueOf(toURL(path)));
+
+			DestinationUrlCollection destinationUrlCollection =
+				DestinationUrlCollection.Factory.newInstance();
+
+			destinationUrlCollection.addString(String.valueOf(toURL(newPath)));
+
+			copyIntoItemsLocal.setDestinationUrls(destinationUrlCollection);
+
+			CopyIntoItemsLocalResponseDocument
+				copyIntoItemsLocalResponseDocument =
+					copyStub.copyIntoItemsLocal(copyIntoItemsLocalDocument);
+
+			CopyIntoItemsLocalResponseDocument.CopyIntoItemsLocalResponse
+				copyIntoItemsLocalResponse =
+					copyIntoItemsLocalResponseDocument.
+						getCopyIntoItemsLocalResponse();
+
+			CopyResultCollection results =
+				copyIntoItemsLocalResponse.getResults();
+
+			CopyResult copyResult = results.getCopyResultArray(0);
+
+			if (copyResult.getErrorCode() != CopyErrorCode.SUCCESS) {
+				throw new SharepointResultException(
+					String.valueOf(copyResult.getErrorCode()),
+					copyResult.getErrorMessage());
+			}
 		}
 		catch (RemoteException re) {
 			throw RemoteExceptionSharepointExceptionMapper.map(re);
-		}
-
-		CopyResult copyResult = copyResultCollectionHolder.value[0];
-
-		CopyErrorCode copyErrorCode = copyResult.getErrorCode();
-
-		if (copyErrorCode != CopyErrorCode.Success) {
-			throw new SharepointResultException(
-				copyErrorCode.toString(), copyResult.getErrorMessage());
 		}
 	}
 

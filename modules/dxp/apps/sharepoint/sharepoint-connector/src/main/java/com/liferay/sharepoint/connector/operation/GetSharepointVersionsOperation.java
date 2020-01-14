@@ -22,7 +22,8 @@ import com.liferay.sharepoint.connector.SharepointObject;
 import com.liferay.sharepoint.connector.SharepointVersion;
 import com.liferay.sharepoint.connector.internal.util.RemoteExceptionSharepointExceptionMapper;
 
-import com.microsoft.schemas.sharepoint.soap.GetVersionsResponseGetVersionsResult;
+import com.microsoft.schemas.sharepoint.soap.GetVersionsDocument;
+import com.microsoft.schemas.sharepoint.soap.GetVersionsResponseDocument;
 
 import java.rmi.RemoteException;
 
@@ -35,7 +36,6 @@ import java.util.List;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -63,18 +63,24 @@ public class GetSharepointVersionsOperation extends BaseOperation {
 					"Unable to find Sharepoint object at " + filePath);
 			}
 
-			String fileFullPath = toFullPath(filePath);
+			GetVersionsDocument getVersionsDocument =
+				GetVersionsDocument.Factory.newInstance();
 
-			GetVersionsResponseGetVersionsResult
-				getVersionsResponseGetVersionsResult = versionsSoap.getVersions(
-					fileFullPath);
+			GetVersionsDocument.GetVersions getVersions =
+				getVersionsDocument.addNewGetVersions();
 
-			Element getVersionsResponseGetVersionsResultElement =
-				xmlHelper.getElement(getVersionsResponseGetVersionsResult);
+			getVersions.setFileName(toFullPath(filePath));
+
+			GetVersionsResponseDocument getVersionsResponseDocument =
+				versionsStub.getVersions(getVersionsDocument);
+
+			GetVersionsResponseDocument.GetVersionsResponse
+				getVersionsResponse =
+					getVersionsResponseDocument.getGetVersionsResponse();
 
 			return getSharepointVersions(
 				sharepointObject.getSharepointObjectId(),
-				getVersionsResponseGetVersionsResultElement);
+				getVersionsResponse.getGetVersionsResult());
 		}
 		catch (RemoteException re) {
 			throw RemoteExceptionSharepointExceptionMapper.map(re);
@@ -95,12 +101,16 @@ public class GetSharepointVersionsOperation extends BaseOperation {
 
 	protected List<SharepointVersion> getSharepointVersions(
 		long sharepointObjectId,
-		Element getVersionsResponseGetVersionsResultElement) {
+		GetVersionsResponseDocument.GetVersionsResponse.GetVersionsResult
+			getVersionsResult) {
+
+		Node getVersionsResultNode = getVersionsResult.getDomNode();
+
+		Node resultNode = getVersionsResultNode.getFirstChild();
 
 		List<SharepointVersion> sharepointVersions = new ArrayList<>();
 
-		NodeList nodeList =
-			getVersionsResponseGetVersionsResultElement.getChildNodes();
+		NodeList nodeList = resultNode.getChildNodes();
 
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node node = nodeList.item(i);

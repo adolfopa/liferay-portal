@@ -17,7 +17,8 @@ package com.liferay.sharepoint.connector.operation;
 import com.liferay.sharepoint.connector.SharepointException;
 import com.liferay.sharepoint.connector.internal.util.RemoteExceptionSharepointExceptionMapper;
 
-import java.net.URL;
+import com.microsoft.schemas.sharepoint.soap.UndoCheckOutDocument;
+import com.microsoft.schemas.sharepoint.soap.UndoCheckOutResponseDocument;
 
 import java.rmi.RemoteException;
 
@@ -28,14 +29,25 @@ public class CancelCheckOutFileOperation extends BaseOperation {
 
 	public boolean execute(String filePath) throws SharepointException {
 		try {
-			URL filePathURL = toURL(filePath);
+			UndoCheckOutDocument undoCheckOutDocument =
+				UndoCheckOutDocument.Factory.newInstance();
 
-			return listsSoap.undoCheckOut(filePathURL.toString());
+			UndoCheckOutDocument.UndoCheckOut undoCheckOut =
+				undoCheckOutDocument.addNewUndoCheckOut();
+
+			undoCheckOut.setPageUrl(String.valueOf(toURL(filePath)));
+
+			UndoCheckOutResponseDocument undoCheckOutResponseDocument =
+				listsStub.undoCheckOut(undoCheckOutDocument);
+
+			UndoCheckOutResponseDocument.UndoCheckOutResponse
+				undoCheckOutResponse =
+					undoCheckOutResponseDocument.getUndoCheckOutResponse();
+
+			return undoCheckOutResponse.getUndoCheckOutResult();
 		}
 		catch (RemoteException re) {
 			throw RemoteExceptionSharepointExceptionMapper.map(re);
-
-			throw new IllegalStateException();
 		}
 	}
 

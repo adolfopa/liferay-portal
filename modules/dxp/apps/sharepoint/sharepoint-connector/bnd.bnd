@@ -11,18 +11,24 @@ Export-Package:\
 	com.liferay.sharepoint.connector.schema.query.operator,\
 	com.liferay.sharepoint.connector.schema.query.option
 Import-Package:\
-	!com.ibm.wsdl.extensions.soap.*,\
+	!com.ibm.wsdl.util.xml.*,\
 	\
-	!com.sun.jimi.core.*,\
-	!com.sun.net.ssl.*,\
+	!com.sun.javadoc.*,\
+	!com.sun.tools.javadoc.*,\
 	\
-	!org.apache.bsf.*,\
-	!org.apache.commons.net.pop3.*,\
-	!org.apache.commons.net.smtp.*,\
+	!net.sf.saxon.*,\
 	\
-	!org.exolab.castor.xml.*,\
+	!org.apache.axis2.jaxws.description.*,\
+	!org.apache.axis2.jaxws.i18n.*,\
+	!org.apache.axis2.jaxws.server.config.*,\
+	!org.apache.axis2.jaxws.util.*,\
+	!org.apache.axis2.wsdl.codegen.*,\
+	!org.apache.axis2.wsdl.databinding.*,\
+	!org.apache.http.*,\
+	!org.apache.james.mime4j.*,\
+	!org.apache.neethi.*,\
 	\
-	!sun.awt.image.codec.*,\
+	com.liferay.petra.string.*,\
 	\
 	*
 Liferay-Releng-Module-Group-Title: Sharepoint

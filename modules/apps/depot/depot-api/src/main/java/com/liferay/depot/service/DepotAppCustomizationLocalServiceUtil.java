@@ -216,6 +216,12 @@ public class DepotAppCustomizationLocalServiceUtil {
 		return getService().getDepotAppCustomization(depotAppCustomizationId);
 	}
 
+	public static com.liferay.depot.model.DepotAppCustomization
+		getDepotAppCustomization(long depotEntryId, String portletId) {
+
+		return getService().getDepotAppCustomization(depotEntryId, portletId);
+	}
+
 	/**
 	 * Returns a range of all the depot app customizations.
 	 *

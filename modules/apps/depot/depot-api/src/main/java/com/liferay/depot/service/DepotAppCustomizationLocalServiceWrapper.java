@@ -230,6 +230,14 @@ public class DepotAppCustomizationLocalServiceWrapper
 			depotAppCustomizationId);
 	}
 
+	@Override
+	public com.liferay.depot.model.DepotAppCustomization
+		getDepotAppCustomization(long depotEntryId, String portletId) {
+
+		return _depotAppCustomizationLocalService.getDepotAppCustomization(
+			depotEntryId, portletId);
+	}
+
 	/**
 	 * Returns a range of all the depot app customizations.
 	 *

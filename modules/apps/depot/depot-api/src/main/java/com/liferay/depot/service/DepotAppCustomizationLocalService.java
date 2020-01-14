@@ -71,6 +71,9 @@ public interface DepotAppCustomizationLocalService
 	public DepotAppCustomization addDepotAppCustomization(
 		DepotAppCustomization depotAppCustomization);
 
+	public DepotAppCustomization addDepotAppCustomization(
+		long depotEntryId, String portletId, boolean enabled);
+
 	/**
 	 * Creates a new depot app customization with the primary key. Does not add the depot app customization to the database.
 	 *

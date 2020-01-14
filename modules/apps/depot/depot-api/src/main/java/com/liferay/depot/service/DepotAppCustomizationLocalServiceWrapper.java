@@ -49,6 +49,15 @@ public class DepotAppCustomizationLocalServiceWrapper
 			depotAppCustomization);
 	}
 
+	@Override
+	public com.liferay.depot.model.DepotAppCustomization
+		addDepotAppCustomization(
+			long depotEntryId, String portletId, boolean enabled) {
+
+		return _depotAppCustomizationLocalService.addDepotAppCustomization(
+			depotEntryId, portletId, enabled);
+	}
+
 	/**
 	 * Creates a new depot app customization with the primary key. Does not add the depot app customization to the database.
 	 *

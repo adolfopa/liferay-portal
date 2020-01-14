@@ -18,6 +18,7 @@ import com.liferay.depot.application.DepotApplication;
 import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.web.internal.application.controller.DepotApplicationController;
 import com.liferay.depot.web.internal.constants.DepotAdminWebKeys;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -69,7 +70,7 @@ public class DepotAdminDetailsDisplayContext {
 		return _group;
 	}
 
-	public boolean isEnabled(String portletId) {
+	public boolean isEnabled(String portletId) throws PortalException {
 		return _depotApplicationController.isEnabled(portletId, _getGroupId());
 	}
 

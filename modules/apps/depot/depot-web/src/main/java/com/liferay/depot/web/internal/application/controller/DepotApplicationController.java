@@ -15,8 +15,13 @@
 package com.liferay.depot.web.internal.application.controller;
 
 import com.liferay.depot.application.DepotApplication;
+import com.liferay.depot.model.DepotAppCustomization;
+import com.liferay.depot.model.DepotEntry;
+import com.liferay.depot.service.DepotAppCustomizationLocalService;
+import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
+import com.liferay.portal.kernel.exception.PortalException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +30,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Alejandro Tardín
@@ -44,7 +50,9 @@ public class DepotApplicationController {
 		return depotApplications;
 	}
 
-	public boolean isEnabled(String portletId, long groupId) {
+	public boolean isEnabled(String portletId, long groupId)
+		throws PortalException {
+
 		DepotApplication depotApplication = _serviceTrackerMap.getService(
 			portletId);
 
@@ -52,7 +60,11 @@ public class DepotApplicationController {
 			return false;
 		}
 
-		return true;
+		DepotEntry groupDepotEntry = _depotEntryLocalService.getGroupDepotEntry(
+			groupId);
+
+		return _depotApplicationEnabled(
+			groupDepotEntry.getDepotEntryId(), depotApplication);
 	}
 
 	@Activate
@@ -73,6 +85,35 @@ public class DepotApplicationController {
 	protected void deactivate() {
 		_serviceTrackerMap.close();
 	}
+
+	private boolean _depotApplicationEnabled(
+		long depotEntryId, DepotApplication depotApplication) {
+
+		if (depotEntryId <= 0) {
+			return false;
+		}
+
+		if (!depotApplication.isCustomizable()) {
+			return false;
+		}
+
+		DepotAppCustomization depotApplicationCustomization =
+			_depotAppCustomizationLocalService.getDepotAppCustomization(
+				depotEntryId, depotApplication.getPortletId());
+
+		if (depotApplicationCustomization == null) {
+			return true;
+		}
+
+		return depotApplicationCustomization.getEnabled();
+	}
+
+	@Reference
+	private DepotAppCustomizationLocalService
+		_depotAppCustomizationLocalService;
+
+	@Reference
+	private DepotEntryLocalService _depotEntryLocalService;
 
 	private ServiceTrackerMap<String, DepotApplication> _serviceTrackerMap;
 

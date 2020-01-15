@@ -17,7 +17,7 @@ package com.liferay.sharepoint.connector.operation;
 import com.liferay.petra.string.StringPool;
 import com.liferay.sharepoint.connector.SharepointException;
 import com.liferay.sharepoint.connector.SharepointResultException;
-import com.liferay.sharepoint.connector.internal.util.RemoteExceptionUtil;
+import com.liferay.sharepoint.connector.internal.util.RemoteExceptionSharepointExceptionMapper;
 import com.liferay.sharepoint.connector.schema.batch.Batch;
 
 import com.microsoft.schemas.sharepoint.soap.UpdateListItemsResponseUpdateListItemsResult;
@@ -54,7 +54,7 @@ public class BatchOperation extends BaseOperation {
 					updateListItemsUpdates);
 		}
 		catch (RemoteException re) {
-			RemoteExceptionUtil.handleRemoteException(re);
+			throw RemoteExceptionSharepointExceptionMapper.map(re);
 		}
 
 		parseUpdateListItemsResponseUpdateListItemsResult(

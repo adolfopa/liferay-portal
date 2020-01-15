@@ -20,7 +20,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.sharepoint.connector.SharepointException;
 import com.liferay.sharepoint.connector.SharepointObject;
 import com.liferay.sharepoint.connector.SharepointVersion;
-import com.liferay.sharepoint.connector.internal.util.RemoteExceptionUtil;
+import com.liferay.sharepoint.connector.internal.util.RemoteExceptionSharepointExceptionMapper;
 
 import com.microsoft.schemas.sharepoint.soap.GetVersionsResponseGetVersionsResult;
 
@@ -77,9 +77,7 @@ public class GetSharepointVersionsOperation extends BaseOperation {
 				getVersionsResponseGetVersionsResultElement);
 		}
 		catch (RemoteException re) {
-			RemoteExceptionUtil.handleRemoteException(re);
-
-			throw new IllegalStateException();
+			throw RemoteExceptionSharepointExceptionMapper.map(re);
 		}
 	}
 

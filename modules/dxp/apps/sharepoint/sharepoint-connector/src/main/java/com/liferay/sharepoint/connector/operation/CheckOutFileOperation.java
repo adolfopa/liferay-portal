@@ -16,7 +16,7 @@ package com.liferay.sharepoint.connector.operation;
 
 import com.liferay.petra.string.StringPool;
 import com.liferay.sharepoint.connector.SharepointException;
-import com.liferay.sharepoint.connector.internal.util.RemoteExceptionUtil;
+import com.liferay.sharepoint.connector.internal.util.RemoteExceptionSharepointExceptionMapper;
 
 import java.net.URL;
 
@@ -36,9 +36,7 @@ public class CheckOutFileOperation extends BaseOperation {
 				StringPool.BLANK);
 		}
 		catch (RemoteException re) {
-			RemoteExceptionUtil.handleRemoteException(re);
-
-			throw new IllegalStateException();
+			throw RemoteExceptionSharepointExceptionMapper.map(re);
 		}
 	}
 

@@ -15,7 +15,7 @@
 package com.liferay.sharepoint.connector.operation;
 
 import com.liferay.sharepoint.connector.SharepointException;
-import com.liferay.sharepoint.connector.internal.util.RemoteExceptionUtil;
+import com.liferay.sharepoint.connector.internal.util.RemoteExceptionSharepointExceptionMapper;
 
 import java.net.URL;
 
@@ -33,7 +33,7 @@ public class CancelCheckOutFileOperation extends BaseOperation {
 			return listsSoap.undoCheckOut(filePathURL.toString());
 		}
 		catch (RemoteException re) {
-			RemoteExceptionUtil.handleRemoteException(re);
+			throw RemoteExceptionSharepointExceptionMapper.map(re);
 
 			throw new IllegalStateException();
 		}

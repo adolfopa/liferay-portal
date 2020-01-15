@@ -16,7 +16,7 @@ package com.liferay.sharepoint.connector.operation;
 
 import com.liferay.sharepoint.connector.SharepointConnection;
 import com.liferay.sharepoint.connector.SharepointException;
-import com.liferay.sharepoint.connector.internal.util.RemoteExceptionUtil;
+import com.liferay.sharepoint.connector.internal.util.RemoteExceptionSharepointExceptionMapper;
 
 import java.net.URL;
 
@@ -42,9 +42,7 @@ public class CheckInFileOperation extends BaseOperation {
 				filePathURL.toString(), comment, protocolValue);
 		}
 		catch (RemoteException re) {
-			RemoteExceptionUtil.handleRemoteException(re);
-
-			throw new IllegalStateException();
+			throw RemoteExceptionSharepointExceptionMapper.map(re);
 		}
 	}
 

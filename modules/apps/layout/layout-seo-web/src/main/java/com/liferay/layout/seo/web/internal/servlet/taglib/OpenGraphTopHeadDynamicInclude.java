@@ -78,6 +78,11 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 		throws IOException {
 
 		try {
+			PrintWriter printWriter = httpServletResponse.getWriter();
+
+			printWriter.println(
+				_addTitleTag(_getTitleTagValue(httpServletRequest)));
+
 			ThemeDisplay themeDisplay =
 				(ThemeDisplay)httpServletRequest.getAttribute(
 					WebKeys.THEME_DISPLAY);
@@ -103,8 +108,6 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 				alternateURLs = _portal.getAlternateURLs(
 					canonicalURL, themeDisplay, layout);
 			}
-
-			PrintWriter printWriter = httpServletResponse.getWriter();
 
 			for (LayoutSEOLink layoutSEOLink :
 					_layoutSEOLinkManager.getLocalizedLayoutSEOLinks(
@@ -182,7 +185,8 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 			printWriter.println(
 				_getOpenGraphTag(
 					"og:title",
-					_getTitleTagValue(httpServletRequest, layoutSEOEntry)));
+					_getOpenGraphTitleTagValue(
+						httpServletRequest, layoutSEOEntry)));
 			printWriter.println(_getOpenGraphTag("og:type", "website"));
 
 			LayoutSEOLink layoutSEOLink =
@@ -281,6 +285,16 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 		return sb.toString();
 	}
 
+	private String _addTitleTag(String title) {
+		StringBuilder sb = new StringBuilder(3);
+
+		sb.append("<title>");
+		sb.append(title);
+		sb.append("</title>");
+
+		return sb.toString();
+	}
+
 	private String _getDescriptionTagValue(
 		LayoutSEOEntry layoutSEOEntry, ThemeDisplay themeDisplay) {
 
@@ -354,7 +368,7 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 			"<meta property=\"", property, "\" content=\"", content, "\">");
 	}
 
-	private String _getTitleTagValue(
+	private String _getOpenGraphTitleTagValue(
 			HttpServletRequest httpServletRequest,
 			LayoutSEOEntry layoutSEOEntry)
 		throws PortalException {
@@ -368,6 +382,16 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 
 			return layoutSEOEntry.getOpenGraphTitle(themeDisplay.getLocale());
 		}
+
+		return _getTitleTagValue(httpServletRequest);
+	}
+
+	private String _getTitleTagValue(HttpServletRequest httpServletRequest)
+		throws PortalException {
+
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)httpServletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
 
 		String portletId = (String)httpServletRequest.getAttribute(
 			WebKeys.PORTLET_ID);

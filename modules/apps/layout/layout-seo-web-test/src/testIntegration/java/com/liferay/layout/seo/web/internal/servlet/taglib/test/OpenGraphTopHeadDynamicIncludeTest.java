@@ -624,6 +624,31 @@ public class OpenGraphTopHeadDynamicIncludeTest {
 	}
 
 	@Test
+	public void testIncludeTitle() throws Exception {
+		MockHttpServletResponse mockHttpServletResponse =
+			new MockHttpServletResponse();
+
+		_testWithLayoutSEOCompanyConfiguration(
+			() -> _dynamicInclude.include(
+				_getHttpServletRequest(), mockHttpServletResponse,
+				RandomTestUtil.randomString()),
+			true);
+
+		Document document = Jsoup.parse(
+			mockHttpServletResponse.getContentAsString());
+
+		Company company = _companyLocalService.getCompany(
+			TestPropsValues.getCompanyId());
+
+		_assertTitleTag(
+			document,
+			StringBundler.concat(
+				_layout.getName(LocaleUtil.US), " - ",
+				_group.getDescriptiveName(LocaleUtil.US), " - ",
+				company.getName()));
+	}
+
+	@Test
 	public void testIncludeType() throws Exception {
 		MockHttpServletResponse mockHttpServletResponse =
 			new MockHttpServletResponse();
@@ -791,6 +816,17 @@ public class OpenGraphTopHeadDynamicIncludeTest {
 		Elements elements = document.select("meta[property^='og:']");
 
 		Assert.assertEquals(0, elements.size());
+	}
+
+	private void _assertTitleTag(Document document, String title) {
+		Elements elements = document.select("title");
+
+		Assert.assertNotNull(elements);
+		Assert.assertEquals(1, elements.size());
+
+		Element element = elements.get(0);
+
+		Assert.assertEquals(title, element.text());
 	}
 
 	private long _getDDMStructureId() throws PortalException {

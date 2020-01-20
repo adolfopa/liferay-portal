@@ -80,8 +80,7 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 		try {
 			PrintWriter printWriter = httpServletResponse.getWriter();
 
-			printWriter.println(
-				_addTitleTag(_getTitleTagValue(httpServletRequest)));
+			printWriter.println(_getTitleTag(httpServletRequest));
 
 			ThemeDisplay themeDisplay =
 				(ThemeDisplay)httpServletRequest.getAttribute(
@@ -114,7 +113,7 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 						layout, _portal.getLocale(httpServletRequest),
 						canonicalURL, alternateURLs)) {
 
-				printWriter.println(_addLinkTag(layoutSEOLink));
+				printWriter.println(_getLinkTag(layoutSEOLink));
 			}
 
 			LayoutSEOEntry layoutSEOEntry =
@@ -264,37 +263,6 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 				_portal, _storageEngine);
 	}
 
-	private String _addLinkTag(LayoutSEOLink layoutSEOLink) {
-		StringBuilder sb = new StringBuilder(10);
-
-		sb.append("<link data-senna-track=\"temporary\" ");
-		sb.append("href=\"");
-		sb.append(layoutSEOLink.getHref());
-		sb.append("\" ");
-
-		if (Validator.isNotNull(layoutSEOLink.getHrefLang())) {
-			sb.append("hreflang=\"");
-			sb.append(layoutSEOLink.getHrefLang());
-			sb.append("\" ");
-		}
-
-		sb.append("rel=\"");
-		sb.append(layoutSEOLink.getRelationship());
-		sb.append("\" />");
-
-		return sb.toString();
-	}
-
-	private String _addTitleTag(String title) {
-		StringBuilder sb = new StringBuilder(3);
-
-		sb.append("<title>");
-		sb.append(title);
-		sb.append("</title>");
-
-		return sb.toString();
-	}
-
 	private String _getDescriptionTagValue(
 		LayoutSEOEntry layoutSEOEntry, ThemeDisplay themeDisplay) {
 
@@ -330,6 +298,27 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 		}
 
 		return null;
+	}
+
+	private String _getLinkTag(LayoutSEOLink layoutSEOLink) {
+		StringBuilder sb = new StringBuilder(10);
+
+		sb.append("<link data-senna-track=\"temporary\" ");
+		sb.append("href=\"");
+		sb.append(layoutSEOLink.getHref());
+		sb.append("\" ");
+
+		if (Validator.isNotNull(layoutSEOLink.getHrefLang())) {
+			sb.append("hreflang=\"");
+			sb.append(layoutSEOLink.getHrefLang());
+			sb.append("\" ");
+		}
+
+		sb.append("rel=\"");
+		sb.append(layoutSEOLink.getRelationship());
+		sb.append("\" />");
+
+		return sb.toString();
 	}
 
 	private long _getOpenGraphImageFileEntryId(
@@ -384,6 +373,13 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 		}
 
 		return _getTitleTagValue(httpServletRequest);
+	}
+
+	private String _getTitleTag(HttpServletRequest httpServletRequest)
+		throws PortalException {
+
+		return StringBundler.concat(
+			"<title>", _getTitleTagValue(httpServletRequest), "</title>");
 	}
 
 	private String _getTitleTagValue(HttpServletRequest httpServletRequest)

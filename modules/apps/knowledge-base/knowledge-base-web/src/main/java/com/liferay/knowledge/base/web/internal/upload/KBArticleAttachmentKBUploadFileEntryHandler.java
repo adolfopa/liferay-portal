@@ -14,9 +14,16 @@
 
 package com.liferay.knowledge.base.web.internal.upload;
 
+import com.liferay.document.library.kernel.util.DLValidator;
+import com.liferay.knowledge.base.configuration.KBFileUploadConfiguration;
 import com.liferay.knowledge.base.constants.KBActionKeys;
+import com.liferay.knowledge.base.exception.KBAttachmentMimeTypeException;
+import com.liferay.knowledge.base.exception.KBAttachmentSizeException;
 import com.liferay.knowledge.base.model.KBArticle;
 import com.liferay.knowledge.base.service.KBArticleLocalService;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -25,6 +32,7 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -34,19 +42,31 @@ import com.liferay.upload.UploadFileEntryHandler;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.util.List;
+import java.util.Map;
+
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Roberto Díaz
  */
-@Component(service = KBArticleAttachmentKBUploadFileEntryHandler.class)
+@Component(
+	configurationPid = "com.liferay.knowledge.base.configuration.KBFileUploadConfiguration",
+	service = KBArticleAttachmentKBUploadFileEntryHandler.class
+)
 public class KBArticleAttachmentKBUploadFileEntryHandler
 	implements UploadFileEntryHandler {
 
 	@Override
 	public FileEntry upload(UploadPortletRequest uploadPortletRequest)
 		throws IOException, PortalException {
+
+		dlValidator.validateFileSize(
+			uploadPortletRequest.getFileName(_PARAMETER_NAME),
+			uploadPortletRequest.getSize(_PARAMETER_NAME));
 
 		ThemeDisplay themeDisplay =
 			(ThemeDisplay)uploadPortletRequest.getAttribute(
@@ -66,6 +86,10 @@ public class KBArticleAttachmentKBUploadFileEntryHandler
 		String contentType = uploadPortletRequest.getContentType(
 			_PARAMETER_NAME);
 
+		_validateFile(
+			fileName, contentType,
+			uploadPortletRequest.getSize(_PARAMETER_NAME));
+
 		try (InputStream inputStream = uploadPortletRequest.getFileAsStream(
 				_PARAMETER_NAME)) {
 
@@ -78,6 +102,16 @@ public class KBArticleAttachmentKBUploadFileEntryHandler
 				inputStream, contentType);
 		}
 	}
+
+	@Activate
+	@Modified
+	protected void activate(Map<String, Object> properties) {
+		_kbFileUploadConfiguration = ConfigurableUtil.createConfigurable(
+			KBFileUploadConfiguration.class, properties);
+	}
+
+	@Reference
+	protected DLValidator dlValidator;
 
 	private boolean _exists(
 		ThemeDisplay themeDisplay, KBArticle kbArticle, String fileName) {
@@ -105,6 +139,31 @@ public class KBArticleAttachmentKBUploadFileEntryHandler
 		}
 	}
 
+	private void _validateFile(String fileName, String contentType, long size)
+		throws PortalException {
+
+		long kbAttachmentMaxSize =
+			_kbFileUploadConfiguration.attachmentMaxSize();
+
+		if ((kbAttachmentMaxSize > 0) && (size > kbAttachmentMaxSize)) {
+			throw new KBAttachmentSizeException();
+		}
+
+		List<String> kbAttachmentMimeTypes = ListUtil.toList(
+			_kbFileUploadConfiguration.attachmentMimeTypes());
+
+		if (kbAttachmentMimeTypes.contains(StringPool.STAR) ||
+			kbAttachmentMimeTypes.contains(contentType)) {
+
+			return;
+		}
+
+		throw new KBAttachmentMimeTypeException(
+			StringBundler.concat(
+				"Invalid MIME type ", contentType, " for file name ",
+				fileName));
+	}
+
 	private static final String _PARAMETER_NAME = "imageSelectorFileName";
 
 	private static final Log _log = LogFactoryUtil.getLog(
@@ -118,6 +177,8 @@ public class KBArticleAttachmentKBUploadFileEntryHandler
 	)
 	private ModelResourcePermission<KBArticle>
 		_kbArticleModelResourcePermission;
+
+	private KBFileUploadConfiguration _kbFileUploadConfiguration;
 
 	@Reference
 	private UniqueFileNameProvider _uniqueFileNameProvider;

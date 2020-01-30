@@ -16,17 +16,22 @@ package com.liferay.knowledge.base.item.selector.web.internal.display.context;
 
 import com.liferay.item.selector.ItemSelectorReturnTypeResolver;
 import com.liferay.item.selector.ItemSelectorReturnTypeResolverHandler;
+import com.liferay.knowledge.base.configuration.KBFileUploadConfiguration;
 import com.liferay.knowledge.base.constants.KBPortletKeys;
 import com.liferay.knowledge.base.item.selector.criterion.KBAttachmentItemSelectorCriterion;
 import com.liferay.knowledge.base.item.selector.web.internal.KBAttachmentItemSelectorView;
 import com.liferay.knowledge.base.model.KBArticle;
 import com.liferay.knowledge.base.service.KBArticleLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.module.configuration.ConfigurationException;
+import com.liferay.portal.kernel.module.configuration.ConfigurationProviderUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.PortletURLUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
+import java.util.List;
 import java.util.Locale;
 
 import javax.portlet.ActionRequest;
@@ -81,6 +86,18 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 		return _kbAttachmentItemSelectorCriterion;
 	}
 
+	public long getKBAttachmentMaxSize() throws ConfigurationException {
+		KBFileUploadConfiguration kbFileUploadConfiguration =
+			_getKBFileUploadConfiguration();
+
+		return kbFileUploadConfiguration.attachmentMaxSize();
+	}
+
+	public List<String> getMimeTypes() throws ConfigurationException {
+		return ListUtil.toList(
+			_getKBFileUploadConfiguration().attachmentMimeTypes());
+	}
+
 	public PortletURL getPortletURL(
 			HttpServletRequest httpServletRequest,
 			LiferayPortletResponse liferayPortletResponse)
@@ -120,12 +137,25 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 		return _search;
 	}
 
+	private KBFileUploadConfiguration _getKBFileUploadConfiguration()
+		throws ConfigurationException {
+
+		if (_kbFileUploadConfiguration == null) {
+			_kbFileUploadConfiguration =
+				ConfigurationProviderUtil.getSystemConfiguration(
+					KBFileUploadConfiguration.class);
+		}
+
+		return _kbFileUploadConfiguration;
+	}
+
 	private final String _itemSelectedEventName;
 	private final ItemSelectorReturnTypeResolverHandler
 		_itemSelectorReturnTypeResolverHandler;
 	private final KBAttachmentItemSelectorCriterion
 		_kbAttachmentItemSelectorCriterion;
 	private final KBAttachmentItemSelectorView _kbAttachmentItemSelectorView;
+	private KBFileUploadConfiguration _kbFileUploadConfiguration;
 	private final PortletURL _portletURL;
 	private final boolean _search;
 

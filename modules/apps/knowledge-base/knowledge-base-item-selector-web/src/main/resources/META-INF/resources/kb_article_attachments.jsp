@@ -81,8 +81,10 @@ else {
 
 <liferay-item-selector:repository-entry-browser
 	emptyResultsMessage='<%= LanguageUtil.get(resourceBundle, "there-are-no-attachments") %>'
+	extensions="<%= kbAttachmentItemSelectorViewDisplayContext.getMimeTypes() %>"
 	itemSelectedEventName="<%= kbAttachmentItemSelectorViewDisplayContext.getItemSelectedEventName() %>"
 	itemSelectorReturnTypeResolver="<%= kbAttachmentItemSelectorViewDisplayContext.getItemSelectorReturnTypeResolver() %>"
+	maxFileSize="<%= kbAttachmentItemSelectorViewDisplayContext.getKBAttachmentMaxSize() %>"
 	portletURL="<%= kbAttachmentItemSelectorViewDisplayContext.getPortletURL(request, liferayPortletResponse) %>"
 	repositoryEntries="<%= portletFileEntries %>"
 	repositoryEntriesCount="<%= portletFileEntriesCount %>"

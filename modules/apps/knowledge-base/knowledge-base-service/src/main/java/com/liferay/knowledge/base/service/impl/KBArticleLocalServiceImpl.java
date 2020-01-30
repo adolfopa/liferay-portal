@@ -19,6 +19,7 @@ import com.liferay.asset.kernel.model.AssetLink;
 import com.liferay.asset.kernel.model.AssetLinkConstants;
 import com.liferay.document.library.util.DLURLHelper;
 import com.liferay.expando.kernel.model.ExpandoBridge;
+import com.liferay.knowledge.base.configuration.KBFileUploadConfiguration;
 import com.liferay.knowledge.base.configuration.KBGroupServiceConfiguration;
 import com.liferay.knowledge.base.constants.AdminActivityKeys;
 import com.liferay.knowledge.base.constants.KBArticleConstants;
@@ -31,6 +32,7 @@ import com.liferay.knowledge.base.exception.KBArticleSourceURLException;
 import com.liferay.knowledge.base.exception.KBArticleStatusException;
 import com.liferay.knowledge.base.exception.KBArticleTitleException;
 import com.liferay.knowledge.base.exception.KBArticleUrlTitleException;
+import com.liferay.knowledge.base.exception.KBAttachmentMimeTypeException;
 import com.liferay.knowledge.base.exception.NoSuchArticleException;
 import com.liferay.knowledge.base.internal.importer.KBArchiveFactory;
 import com.liferay.knowledge.base.internal.importer.KBArticleImporter;
@@ -131,6 +133,20 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			long userId, long resourcePrimKey, String fileName,
 			InputStream inputStream, String mimeType)
 		throws PortalException {
+
+		KBFileUploadConfiguration kbFileUploadConfiguration =
+			configurationProvider.getSystemConfiguration(
+				KBFileUploadConfiguration.class);
+
+		List<String> kbAttachmentMimeTypes = ListUtil.toList(
+			kbFileUploadConfiguration.attachmentMimeTypes());
+
+		if (ListUtil.isNull(kbAttachmentMimeTypes) ||
+			(!kbAttachmentMimeTypes.contains(StringPool.STAR) &&
+			 !kbAttachmentMimeTypes.contains(mimeType))) {
+
+			throw new KBAttachmentMimeTypeException();
+		}
 
 		KBArticle kbArticle = kbArticleLocalService.getLatestKBArticle(
 			resourcePrimKey, WorkflowConstants.STATUS_ANY);
@@ -1997,6 +2013,9 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			throw new KBArticleUrlTitleException.MustNotBeDuplicate(urlTitle);
 		}
 	}
+
+	@Reference
+	protected ConfigurationProvider configurationProvider;
 
 	private static final int[] _STATUSES = {
 		WorkflowConstants.STATUS_APPROVED, WorkflowConstants.STATUS_PENDING

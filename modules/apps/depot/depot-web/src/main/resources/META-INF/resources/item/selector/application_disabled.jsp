@@ -16,4 +16,4 @@
 
 <%@ include file="/init.jsp" %>
 
-Esto no está habilitao
+This app is disabled.

@@ -16,4 +16,30 @@
 
 <%@ include file="/init.jsp" %>
 
-This app is disabled.
+<%
+DepotApplicationDisplayContext depotApplicationDisplayContext = (DepotApplicationDisplayContext)request.getAttribute(DepotAdminWebKeys.DEPOT_APPLICATION_DISPLAY_CONTEXT);
+
+PortletURL portletURL = depotApplicationDisplayContext.getPortletURL();
+String portletTitle = depotApplicationDisplayContext.getPortletTitle();
+
+PortletURL viewGroupSelectorURL = PortletURLUtil.clone(portletURL, liferayPortletResponse);
+
+viewGroupSelectorURL.setParameter("groupType", "site");
+viewGroupSelectorURL.setParameter("showGroupSelector", Boolean.TRUE.toString());
+%>
+
+<div class="container-fluid container-fluid-max-xl pt-4">
+	<div class="alert alert-info">
+		<span class="alert-indicator">
+			<svg class="lexicon-icon lexicon-icon-info-circle" focusable="false" role="presentation">
+				<use xlink:href="<%= themeDisplay.getPathThemeImages() %>/lexicon/icons.svg#info-circle" />
+			</svg>
+		</span>
+
+		<%
+		String taglibViewGroupSelectorURL = "<a href=\"" + HtmlUtil.escape(viewGroupSelectorURL.toString()) + "\">";
+		%>
+
+		<strong class="lead">Info:</strong><liferay-ui:message arguments='<%= new Object[] {portletTitle, taglibViewGroupSelectorURL, "</a>"} %>' key="x-application-is-disabled-for-this-scope.-please-go-back-to-selection" />
+	</div>
+</div>

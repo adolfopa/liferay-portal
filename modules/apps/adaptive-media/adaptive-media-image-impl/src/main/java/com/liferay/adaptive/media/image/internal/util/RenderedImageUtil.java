@@ -90,7 +90,7 @@ public class RenderedImageUtil {
 
 				return imageReader.read(0);
 			}
-			catch (IOException ioException) {
+			catch (Exception exception) {
 			}
 			finally {
 				if (imageReader != null) {

@@ -63,10 +63,6 @@ public class KBAttachmentItemSelectorView
 		return KBAttachmentItemSelectorCriterion.class;
 	}
 
-	public ServletContext getServletContext() {
-		return _servletContext;
-	}
-
 	@Override
 	public List<ItemSelectorReturnType> getSupportedItemSelectorReturnTypes() {
 		return _supportedItemSelectorReturnTypes;
@@ -106,29 +102,10 @@ public class KBAttachmentItemSelectorView
 				KB_ATTACHMENT_ITEM_SELECTOR_VIEW_DISPLAY_CONTEXT,
 			kbAttachmentItemSelectorViewDisplayContext);
 
-		ServletContext servletContext = getServletContext();
-
 		RequestDispatcher requestDispatcher =
-			servletContext.getRequestDispatcher("/kb_article_attachments.jsp");
+			_servletContext.getRequestDispatcher("/kb_article_attachments.jsp");
 
 		requestDispatcher.include(servletRequest, servletResponse);
-	}
-
-	@Reference(unbind = "-")
-	public void setItemSelectorReturnTypeResolverHandler(
-		ItemSelectorReturnTypeResolverHandler
-			itemSelectorReturnTypeResolverHandler) {
-
-		_itemSelectorReturnTypeResolverHandler =
-			itemSelectorReturnTypeResolverHandler;
-	}
-
-	@Reference(
-		target = "(osgi.web.symbolicname=com.liferay.knowledge.base.item.selector.web)",
-		unbind = "-"
-	)
-	public void setServletContext(ServletContext servletContext) {
-		_servletContext = servletContext;
 	}
 
 	@Activate
@@ -144,9 +121,15 @@ public class KBAttachmentItemSelectorView
 				new FileEntryItemSelectorReturnType(),
 				new URLItemSelectorReturnType()));
 
+	@Reference
 	private ItemSelectorReturnTypeResolverHandler
 		_itemSelectorReturnTypeResolverHandler;
+
 	private KBFileUploadConfiguration _kbFileUploadConfiguration;
+
+	@Reference(
+		target = "(osgi.web.symbolicname=com.liferay.knowledge.base.item.selector.web)"
+	)
 	private ServletContext _servletContext;
 
 }

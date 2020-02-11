@@ -90,18 +90,12 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 				_kbAttachmentItemSelectorView, FileEntry.class);
 	}
 
-	public KBAttachmentItemSelectorCriterion
-		getKBAttachmentItemSelectorCriterion() {
-
-		return _kbAttachmentItemSelectorCriterion;
-	}
-
 	public long getKBAttachmentMaxSize() {
 		return _kbFileUploadConfiguration.attachmentMaxSize();
 	}
 
 	public List<String> getMimeTypes() {
-		return ListUtil.toList(
+		return ListUtil.fromArray(
 			_kbFileUploadConfiguration.attachmentMimeTypes());
 	}
 

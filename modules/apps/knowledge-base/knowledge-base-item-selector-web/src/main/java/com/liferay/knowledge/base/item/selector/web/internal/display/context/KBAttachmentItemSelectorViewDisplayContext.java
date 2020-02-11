@@ -25,8 +25,6 @@ import com.liferay.knowledge.base.item.selector.web.internal.KBAttachmentItemSel
 import com.liferay.knowledge.base.model.KBArticle;
 import com.liferay.knowledge.base.service.KBArticleLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.module.configuration.ConfigurationException;
-import com.liferay.portal.kernel.module.configuration.ConfigurationProviderUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.PortalPreferences;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
@@ -56,6 +54,7 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 			itemSelectorReturnTypeResolverHandler,
 		KBAttachmentItemSelectorCriterion kbAttachmentItemSelectorCriterion,
 		KBAttachmentItemSelectorView kbAttachmentItemSelectorView,
+		KBFileUploadConfiguration kbFileUploadConfiguration,
 		PortletURL portletURL, boolean search) {
 
 		_httpServletRequest = httpServletRequest;
@@ -64,6 +63,7 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 			itemSelectorReturnTypeResolverHandler;
 		_kbAttachmentItemSelectorCriterion = kbAttachmentItemSelectorCriterion;
 		_kbAttachmentItemSelectorView = kbAttachmentItemSelectorView;
+		_kbFileUploadConfiguration = kbFileUploadConfiguration;
 		_portletURL = portletURL;
 		_search = search;
 
@@ -96,16 +96,13 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 		return _kbAttachmentItemSelectorCriterion;
 	}
 
-	public long getKBAttachmentMaxSize() throws ConfigurationException {
-		KBFileUploadConfiguration kbFileUploadConfiguration =
-			_getKBFileUploadConfiguration();
-
-		return kbFileUploadConfiguration.attachmentMaxSize();
+	public long getKBAttachmentMaxSize() {
+		return _kbFileUploadConfiguration.attachmentMaxSize();
 	}
 
-	public List<String> getMimeTypes() throws ConfigurationException {
+	public List<String> getMimeTypes() {
 		return ListUtil.toList(
-			_getKBFileUploadConfiguration().attachmentMimeTypes());
+			_kbFileUploadConfiguration.attachmentMimeTypes());
 	}
 
 	public OrderByComparator<FileEntry> getOrderByComparator() {
@@ -155,18 +152,6 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 		return _search;
 	}
 
-	private KBFileUploadConfiguration _getKBFileUploadConfiguration()
-		throws ConfigurationException {
-
-		if (_kbFileUploadConfiguration == null) {
-			_kbFileUploadConfiguration =
-				ConfigurationProviderUtil.getSystemConfiguration(
-					KBFileUploadConfiguration.class);
-		}
-
-		return _kbFileUploadConfiguration;
-	}
-
 	private final HttpServletRequest _httpServletRequest;
 	private final String _itemSelectedEventName;
 	private final ItemSelectorReturnTypeResolverHandler
@@ -174,7 +159,7 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 	private final KBAttachmentItemSelectorCriterion
 		_kbAttachmentItemSelectorCriterion;
 	private final KBAttachmentItemSelectorView _kbAttachmentItemSelectorView;
-	private KBFileUploadConfiguration _kbFileUploadConfiguration;
+	private final KBFileUploadConfiguration _kbFileUploadConfiguration;
 	private final PortalPreferences _portalPreferences;
 	private final PortletURL _portletURL;
 	private final boolean _search;

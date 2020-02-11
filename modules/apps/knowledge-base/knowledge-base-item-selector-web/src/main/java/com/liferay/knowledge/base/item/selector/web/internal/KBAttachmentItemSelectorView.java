@@ -19,9 +19,12 @@ import com.liferay.item.selector.ItemSelectorReturnTypeResolverHandler;
 import com.liferay.item.selector.ItemSelectorView;
 import com.liferay.item.selector.criteria.FileEntryItemSelectorReturnType;
 import com.liferay.item.selector.criteria.URLItemSelectorReturnType;
+import com.liferay.knowledge.base.configuration.KBFileUploadConfiguration;
 import com.liferay.knowledge.base.item.selector.criterion.KBAttachmentItemSelectorCriterion;
 import com.liferay.knowledge.base.item.selector.web.internal.constants.KBItemSelectorWebKeys;
 import com.liferay.knowledge.base.item.selector.web.internal.display.context.KBAttachmentItemSelectorViewDisplayContext;
+import com.liferay.portal.kernel.module.configuration.ConfigurationException;
+import com.liferay.portal.kernel.module.configuration.ConfigurationProviderUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
@@ -42,6 +45,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -94,8 +98,8 @@ public class KBAttachmentItemSelectorView
 				new KBAttachmentItemSelectorViewDisplayContext(
 					(HttpServletRequest)servletRequest, itemSelectedEventName,
 					_itemSelectorReturnTypeResolverHandler,
-					kbAttachmentItemSelectorCriterion, this, portletURL,
-					search);
+					kbAttachmentItemSelectorCriterion, this,
+					_kbFileUploadConfiguration, portletURL, search);
 
 		servletRequest.setAttribute(
 			KBItemSelectorWebKeys.
@@ -127,6 +131,13 @@ public class KBAttachmentItemSelectorView
 		_servletContext = servletContext;
 	}
 
+	@Activate
+	protected void activate() throws ConfigurationException {
+		_kbFileUploadConfiguration =
+			ConfigurationProviderUtil.getSystemConfiguration(
+				KBFileUploadConfiguration.class);
+	}
+
 	private static final List<ItemSelectorReturnType>
 		_supportedItemSelectorReturnTypes = Collections.unmodifiableList(
 			ListUtil.fromArray(
@@ -135,6 +146,7 @@ public class KBAttachmentItemSelectorView
 
 	private ItemSelectorReturnTypeResolverHandler
 		_itemSelectorReturnTypeResolverHandler;
+	private KBFileUploadConfiguration _kbFileUploadConfiguration;
 	private ServletContext _servletContext;
 
 }

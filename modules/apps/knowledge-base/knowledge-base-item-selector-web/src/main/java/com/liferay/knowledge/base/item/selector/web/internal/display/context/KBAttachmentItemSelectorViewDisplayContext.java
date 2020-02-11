@@ -24,16 +24,32 @@ import com.liferay.knowledge.base.item.selector.criterion.KBAttachmentItemSelect
 import com.liferay.knowledge.base.item.selector.web.internal.KBAttachmentItemSelectorView;
 import com.liferay.knowledge.base.model.KBArticle;
 import com.liferay.knowledge.base.service.KBArticleLocalServiceUtil;
+import com.liferay.portal.kernel.dao.search.SearchContainer;
+import com.liferay.portal.kernel.dao.search.SearchPaginationUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.PortalPreferences;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortletURLUtil;
+import com.liferay.portal.kernel.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.repository.model.Folder;
+import com.liferay.portal.kernel.search.Document;
+import com.liferay.portal.kernel.search.Field;
+import com.liferay.portal.kernel.search.Hits;
+import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.kernel.search.SearchContextFactory;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -107,6 +123,18 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 				_httpServletRequest, _portalPreferences));
 	}
 
+	public List<FileEntry> getPortletFileEntries() throws PortalException {
+		_performSearch();
+
+		return _portletFileEntries;
+	}
+
+	public int getPortletFileEntriesCount() throws PortalException {
+		_performSearch();
+
+		return _portletFileEntriesCount;
+	}
+
 	public PortletURL getPortletURL(
 			HttpServletRequest httpServletRequest,
 			LiferayPortletResponse liferayPortletResponse)
@@ -146,6 +174,85 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 		return _search;
 	}
 
+	private void _performSearch() throws PortalException {
+		int cur = ParamUtil.getInteger(
+			_httpServletRequest, SearchContainer.DEFAULT_CUR_PARAM,
+			SearchContainer.DEFAULT_CUR);
+		int delta = ParamUtil.getInteger(
+			_httpServletRequest, SearchContainer.DEFAULT_DELTA_PARAM,
+			SearchContainer.DEFAULT_DELTA);
+
+		int[] startAndEnd = SearchPaginationUtil.calculateStartAndEnd(
+			cur, delta);
+
+		int start = startAndEnd[0];
+		int end = startAndEnd[1];
+
+		long folderId = getAttachmentsFolderId();
+
+		if (isSearch()) {
+			SearchContext searchContext = SearchContextFactory.getInstance(
+				_httpServletRequest);
+
+			searchContext.setEnd(end);
+			searchContext.setFolderIds(new long[] {folderId});
+			searchContext.setStart(start);
+
+			Folder folder = PortletFileRepositoryUtil.getPortletFolder(
+				folderId);
+
+			Hits hits = PortletFileRepositoryUtil.searchPortletFileEntries(
+				folder.getRepositoryId(), searchContext);
+
+			_portletFileEntriesCount = hits.getLength();
+
+			Document[] docs = hits.getDocs();
+
+			_portletFileEntries = new ArrayList(docs.length);
+
+			for (Document doc : docs) {
+				long fileEntryId = GetterUtil.getLong(
+					doc.get(Field.ENTRY_CLASS_PK));
+
+				FileEntry fileEntry = null;
+
+				try {
+					fileEntry = PortletFileRepositoryUtil.getPortletFileEntry(
+						fileEntryId);
+				}
+				catch (Exception e) {
+					if (_log.isWarnEnabled()) {
+						_log.warn(
+							"Documents and Media search index is stale and " +
+								"contains file entry {" + fileEntryId + "}");
+					}
+
+					continue;
+				}
+
+				_portletFileEntries.add(fileEntry);
+			}
+		}
+		else {
+			ThemeDisplay themeDisplay =
+				(ThemeDisplay)_httpServletRequest.getAttribute(
+					WebKeys.THEME_DISPLAY);
+
+			_portletFileEntries =
+				PortletFileRepositoryUtil.getPortletFileEntries(
+					themeDisplay.getScopeGroupId(), folderId,
+					WorkflowConstants.STATUS_APPROVED, start, end,
+					getOrderByComparator());
+			_portletFileEntriesCount =
+				PortletFileRepositoryUtil.getPortletFileEntriesCount(
+					themeDisplay.getScopeGroupId(), folderId,
+					WorkflowConstants.STATUS_APPROVED);
+		}
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		KBAttachmentItemSelectorViewDisplayContext.class);
+
 	private final HttpServletRequest _httpServletRequest;
 	private final String _itemSelectedEventName;
 	private final ItemSelectorReturnTypeResolverHandler
@@ -155,6 +262,8 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 	private final KBAttachmentItemSelectorView _kbAttachmentItemSelectorView;
 	private final KBFileUploadConfiguration _kbFileUploadConfiguration;
 	private final PortalPreferences _portalPreferences;
+	private List<FileEntry> _portletFileEntries;
+	private Integer _portletFileEntriesCount;
 	private final PortletURL _portletURL;
 	private final boolean _search;
 

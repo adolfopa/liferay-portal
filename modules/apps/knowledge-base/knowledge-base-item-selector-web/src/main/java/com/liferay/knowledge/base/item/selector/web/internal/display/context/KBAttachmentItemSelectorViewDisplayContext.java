@@ -14,7 +14,6 @@
 
 package com.liferay.knowledge.base.item.selector.web.internal.display.context;
 
-import com.liferay.document.library.kernel.exception.NoSuchFileEntryException;
 import com.liferay.document.library.kernel.util.DLUtil;
 import com.liferay.item.selector.ItemSelectorReturnTypeResolver;
 import com.liferay.item.selector.ItemSelectorReturnTypeResolverHandler;
@@ -38,7 +37,6 @@ import com.liferay.portal.kernel.portlet.PortletURLUtil;
 import com.liferay.portal.kernel.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
-import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.search.SearchContext;
@@ -51,10 +49,8 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -92,14 +88,6 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 			_httpServletRequest);
 	}
 
-	private long _getAttachmentsFolderId() throws PortalException {
-		KBArticle kbArticle = KBArticleLocalServiceUtil.getLatestKBArticle(
-			_kbAttachmentItemSelectorCriterion.getResourcePrimKey(),
-			WorkflowConstants.STATUS_APPROVED);
-
-		return kbArticle.getAttachmentsFolderId();
-	}
-
 	public String getItemSelectedEventName() {
 		return _itemSelectedEventName;
 	}
@@ -118,14 +106,6 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 	public List<String> getMimeTypes() {
 		return ListUtil.fromArray(
 			_kbFileUploadConfiguration.attachmentMimeTypes());
-	}
-
-	private OrderByComparator<FileEntry> _getOrderByComparator() {
-		return DLUtil.getRepositoryModelOrderByComparator(
-			RepositoryEntryBrowserTagUtil.getOrderByCol(
-				_httpServletRequest, _portalPreferences),
-			RepositoryEntryBrowserTagUtil.getOrderByType(
-				_httpServletRequest, _portalPreferences));
 	}
 
 	public List<FileEntry> getPortletFileEntries() throws PortalException {
@@ -173,6 +153,39 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 				_kbAttachmentItemSelectorCriterion.getResourcePrimKey()));
 
 		return portletURL;
+	}
+
+	private Stream<FileEntry> _fetchFileEntry(long fileEntryId) {
+		try {
+			return Stream.of(
+				PortletFileRepositoryUtil.getPortletFileEntry(fileEntryId));
+		}
+		catch (Exception exception) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					StringBundler.concat(
+						"Documents and Media search index is stale and ",
+						"contains file entry {", fileEntryId, "}"));
+			}
+
+			return Stream.empty();
+		}
+	}
+
+	private long _getAttachmentsFolderId() throws PortalException {
+		KBArticle kbArticle = KBArticleLocalServiceUtil.getLatestKBArticle(
+			_kbAttachmentItemSelectorCriterion.getResourcePrimKey(),
+			WorkflowConstants.STATUS_APPROVED);
+
+		return kbArticle.getAttachmentsFolderId();
+	}
+
+	private OrderByComparator<FileEntry> _getOrderByComparator() {
+		return DLUtil.getRepositoryModelOrderByComparator(
+			RepositoryEntryBrowserTagUtil.getOrderByCol(
+				_httpServletRequest, _portalPreferences),
+			RepositoryEntryBrowserTagUtil.getOrderByType(
+				_httpServletRequest, _portalPreferences));
 	}
 
 	private void _performSearch() throws PortalException {
@@ -230,23 +243,6 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 				PortletFileRepositoryUtil.getPortletFileEntriesCount(
 					themeDisplay.getScopeGroupId(), folderId,
 					WorkflowConstants.STATUS_APPROVED);
-		}
-	}
-
-	private Stream<FileEntry> _fetchFileEntry(long fileEntryId) {
-		try {
-			return Stream.of(
-				PortletFileRepositoryUtil.getPortletFileEntry(fileEntryId));
-		}
-		catch (Exception exception) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					StringBundler.concat(
-						"Documents and Media search index is stale and ",
-						"contains file entry {", fileEntryId, "}"));
-			}
-
-			return Stream.empty();
 		}
 	}
 

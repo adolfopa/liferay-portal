@@ -87,7 +87,7 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 			_httpServletRequest);
 	}
 
-	public long getAttachmentsFolderId() throws PortalException {
+	private long _getAttachmentsFolderId() throws PortalException {
 		KBArticle kbArticle = KBArticleLocalServiceUtil.getLatestKBArticle(
 			_kbAttachmentItemSelectorCriterion.getResourcePrimKey(),
 			WorkflowConstants.STATUS_APPROVED);
@@ -115,7 +115,7 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 			_kbFileUploadConfiguration.attachmentMimeTypes());
 	}
 
-	public OrderByComparator<FileEntry> getOrderByComparator() {
+	private OrderByComparator<FileEntry> _getOrderByComparator() {
 		return DLUtil.getRepositoryModelOrderByComparator(
 			RepositoryEntryBrowserTagUtil.getOrderByCol(
 				_httpServletRequest, _portalPreferences),
@@ -170,10 +170,6 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 		return portletURL;
 	}
 
-	public boolean isSearch() {
-		return _search;
-	}
-
 	private void _performSearch() throws PortalException {
 		int cur = ParamUtil.getInteger(
 			_httpServletRequest, SearchContainer.DEFAULT_CUR_PARAM,
@@ -188,9 +184,9 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 		int start = startAndEnd[0];
 		int end = startAndEnd[1];
 
-		long folderId = getAttachmentsFolderId();
+		long folderId = _getAttachmentsFolderId();
 
-		if (isSearch()) {
+		if (_search) {
 			SearchContext searchContext = SearchContextFactory.getInstance(
 				_httpServletRequest);
 
@@ -242,7 +238,7 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 				PortletFileRepositoryUtil.getPortletFileEntries(
 					themeDisplay.getScopeGroupId(), folderId,
 					WorkflowConstants.STATUS_APPROVED, start, end,
-					getOrderByComparator());
+					_getOrderByComparator());
 			_portletFileEntriesCount =
 				PortletFileRepositoryUtil.getPortletFileEntriesCount(
 					themeDisplay.getScopeGroupId(), folderId,

@@ -14,6 +14,7 @@
 
 package com.liferay.knowledge.base.item.selector.web.internal.display.context;
 
+import com.liferay.document.library.kernel.exception.NoSuchFileEntryException;
 import com.liferay.document.library.kernel.util.DLUtil;
 import com.liferay.item.selector.ItemSelectorReturnTypeResolver;
 import com.liferay.item.selector.ItemSelectorReturnTypeResolverHandler;
@@ -24,6 +25,7 @@ import com.liferay.knowledge.base.item.selector.criterion.KBAttachmentItemSelect
 import com.liferay.knowledge.base.item.selector.web.internal.KBAttachmentItemSelectorView;
 import com.liferay.knowledge.base.model.KBArticle;
 import com.liferay.knowledge.base.service.KBArticleLocalServiceUtil;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.dao.search.SearchPaginationUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -52,6 +54,9 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.PortletException;
@@ -200,34 +205,16 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 			Hits hits = PortletFileRepositoryUtil.searchPortletFileEntries(
 				folder.getRepositoryId(), searchContext);
 
+			_portletFileEntries = Stream.of(
+				hits.getDocs()
+			).flatMap(
+				document -> _fetchFileEntry(
+					GetterUtil.getLong(document.get(Field.ENTRY_CLASS_PK)))
+			).collect(
+				Collectors.toList()
+			);
+
 			_portletFileEntriesCount = hits.getLength();
-
-			Document[] docs = hits.getDocs();
-
-			_portletFileEntries = new ArrayList(docs.length);
-
-			for (Document doc : docs) {
-				long fileEntryId = GetterUtil.getLong(
-					doc.get(Field.ENTRY_CLASS_PK));
-
-				FileEntry fileEntry = null;
-
-				try {
-					fileEntry = PortletFileRepositoryUtil.getPortletFileEntry(
-						fileEntryId);
-				}
-				catch (Exception e) {
-					if (_log.isWarnEnabled()) {
-						_log.warn(
-							"Documents and Media search index is stale and " +
-								"contains file entry {" + fileEntryId + "}");
-					}
-
-					continue;
-				}
-
-				_portletFileEntries.add(fileEntry);
-			}
 		}
 		else {
 			ThemeDisplay themeDisplay =
@@ -243,6 +230,23 @@ public class KBAttachmentItemSelectorViewDisplayContext {
 				PortletFileRepositoryUtil.getPortletFileEntriesCount(
 					themeDisplay.getScopeGroupId(), folderId,
 					WorkflowConstants.STATUS_APPROVED);
+		}
+	}
+
+	private Stream<FileEntry> _fetchFileEntry(long fileEntryId) {
+		try {
+			return Stream.of(
+				PortletFileRepositoryUtil.getPortletFileEntry(fileEntryId));
+		}
+		catch (Exception exception) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					StringBundler.concat(
+						"Documents and Media search index is stale and ",
+						"contains file entry {", fileEntryId, "}"));
+			}
+
+			return Stream.empty();
 		}
 	}
 

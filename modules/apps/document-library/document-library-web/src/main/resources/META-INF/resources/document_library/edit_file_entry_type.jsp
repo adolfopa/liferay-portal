@@ -1,3 +1,5 @@
+<%@ page import="com.liferay.portal.kernel.util.ListUtil" %>
+
 <%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
@@ -38,17 +40,15 @@ if (fileEntryType != null) {
 	ddmStructures = fileEntryType.getDDMStructures();
 
 	if (ddmStructure != null) {
-		ddmStructures = new ArrayList<>(ddmStructures);
-
-		ddmStructures.remove(ddmStructure);
+		ddmStructures = ListUtil.filter(fileEntryType.getDDMStructures(), currentDDMStructure -> currentDDMStructure.getStructureId() != ddmStructure.getStructureId());
 	}
 }
 
-	if ((ddmStructure == null) && dlEditFileEntryTypeDisplayContext.useDataEngineEditor()) {
-		fileEntryTypeUuid = (fileEntryType != null) ? fileEntryType.getUuid() : PortalUUIDUtil.generate();
+if ((ddmStructure == null) && dlEditFileEntryTypeDisplayContext.useDataEngineEditor()) {
+	fileEntryTypeUuid = (fileEntryType != null) ? fileEntryType.getUuid() : PortalUUIDUtil.generate();
 
-		dataDefinitionKey = DLUtil.getDDMStructureKey(fileEntryTypeUuid);
-	}
+	dataDefinitionKey = DLUtil.getDDMStructureKey(fileEntryTypeUuid);
+}
 
 portletDisplay.setShowBackIcon(true);
 portletDisplay.setURLBack(redirect);

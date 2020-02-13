@@ -388,12 +388,8 @@ renderResponse.setTitle(headerTitle);
 											<div class="hide">
 										</c:if>
 
-										<%
-										FFDocumentLibraryDDMEditorConfiguration ffDocumentLibraryDDMEditorConfiguration = (FFDocumentLibraryDDMEditorConfiguration)request.getAttribute(FFDocumentLibraryDDMEditorConfiguration.class.getName());
-										%>
-
 										<c:choose>
-											<c:when test="<%= ffDocumentLibraryDDMEditorConfiguration.useDataEngineEditor() %>">
+											<c:when test="<%= FFDocumentLibraryDDMEditorConfigurationUtil.useDataEngineEditor() %>">
 
 												<%
 												DDMFormValuesToMapConverter ddmFormValuesToMapConverter = (DDMFormValuesToMapConverter)request.getAttribute(DDMFormValuesToMapConverter.class.getName());

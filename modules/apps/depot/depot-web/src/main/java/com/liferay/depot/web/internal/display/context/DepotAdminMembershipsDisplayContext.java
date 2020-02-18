@@ -27,6 +27,7 @@ import com.liferay.portal.kernel.service.permission.GroupPermissionUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.users.admin.kernel.util.UsersAdmin;
@@ -35,6 +36,7 @@ import com.liferay.users.admin.kernel.util.UsersAdminUtil;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -64,6 +66,13 @@ public class DepotAdminMembershipsDisplayContext {
 		List<Group> groups = _getDepotGroups();
 
 		return groups.size();
+	}
+
+	public String getLabel() {
+		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
+			_themeDisplay.getLocale(), getClass());
+
+		return ResourceBundleUtil.getString(resourceBundle, "asset-libraries");
 	}
 
 	public String getRoles(Group group) {

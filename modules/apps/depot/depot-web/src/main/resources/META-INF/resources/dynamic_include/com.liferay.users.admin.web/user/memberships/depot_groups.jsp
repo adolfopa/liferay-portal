@@ -19,19 +19,19 @@
 <%
 DepotAdminMembershipsDisplayContext depotAdminMembershipsDisplayContext = new DepotAdminMembershipsDisplayContext(request);
 
-currentURLObj.setParameter("historyKey", renderResponse.getNamespace() + "repositories");
+currentURLObj.setParameter("historyKey", renderResponse.getNamespace() + "asset-libraries");
 %>
 
 <liferay-ui:error-marker
 	key="<%= WebKeys.ERROR_SECTION %>"
-	value="repositories"
+	value="asset-libraries"
 />
 
 <liferay-ui:membership-policy-error />
 
 <h3 class="autofit-row sheet-subtitle">
 	<span class="autofit-col autofit-col-expand">
-		<span class="heading-text"><liferay-ui:message key="repositories" /></span>
+		<span class="heading-text"><%= depotAdminMembershipsDisplayContext.getLabel() %></span>
 	</span>
 </h3>
 
@@ -49,7 +49,7 @@ currentURLObj.setParameter("historyKey", renderResponse.getNamespace() + "reposi
 	compactEmptyResultsMessage="<%= true %>"
 	cssClass="lfr-search-container-sites"
 	curParam="depotsCur"
-	emptyResultsMessage="this-user-does-not-belong-to-a-repository"
+	emptyResultsMessage="this-user-does-not-belong-to-an-asset-library"
 	headerNames="name,roles,null"
 	iteratorURL="<%= currentURLObj %>"
 	total="<%= depotAdminMembershipsDisplayContext.getDepotGroupsCount() %>"

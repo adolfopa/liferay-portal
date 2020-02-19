@@ -84,8 +84,8 @@ public class DepotRolesPortalInstanceLifecycleListener
 
 			return _language.get(
 				resourceBundle,
-				"all-users-who-belong-to-a-asset library-have-this-role-" +
-					"within-that-asset library");
+				"all-users-who-belong-to-an-asset library-have-this-role-" +
+					"within-that-asset-library");
 		}
 		else if (Objects.equals(
 					DepotRolesConstants.ASSET_LIBRARY_OWNER, name)) {

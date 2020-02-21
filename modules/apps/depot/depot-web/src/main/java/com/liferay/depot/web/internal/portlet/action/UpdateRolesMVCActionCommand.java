@@ -16,7 +16,6 @@ package com.liferay.depot.web.internal.portlet.action;
 
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
-import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.users.admin.constants.UsersAdminPortletKeys;
 
 import javax.portlet.ActionRequest;
@@ -30,24 +29,16 @@ import org.osgi.service.component.annotations.Component;
 @Component(
 	property = {
 		"javax.portlet.name=" + UsersAdminPortletKeys.USERS_ADMIN,
-		"mvc.command.name=/depot/dummy"
+		"mvc.command.name=/depot/update_roles"
 	},
 	service = MVCActionCommand.class
 )
-public class DummyDepotMVCActionCommand extends BaseMVCActionCommand {
+public class UpdateRolesMVCActionCommand extends BaseMVCActionCommand {
 
 	@Override
 	protected void doProcessAction(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
-
-		System.out.println("Additional Action");
-
-		String command = ParamUtil.getString(actionRequest, "DEPOT_COMMAND");
-
-		System.out.println(command);
-
-		System.out.println();
 	}
 
 }

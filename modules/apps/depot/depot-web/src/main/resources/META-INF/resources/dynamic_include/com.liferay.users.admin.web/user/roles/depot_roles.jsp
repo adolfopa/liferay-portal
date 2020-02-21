@@ -20,8 +20,7 @@
 DepotAdminRolesDisplayContext depotAdminRolesDisplayContext = new DepotAdminRolesDisplayContext(request);
 %>
 
-<aui:input name="<%= ActionRequest.ACTION_NAME %>" type="hidden" value="/depot/dummy" />
-<aui:input name="DEPOT_COMMAND" type="hidden" value="roles" />
+<aui:input name="<%= ActionRequest.ACTION_NAME %>" type="hidden" value="/depot/update_roles" />
 
 <h3 class="autofit-row sheet-subtitle">
 	<span class="autofit-col autofit-col-expand">

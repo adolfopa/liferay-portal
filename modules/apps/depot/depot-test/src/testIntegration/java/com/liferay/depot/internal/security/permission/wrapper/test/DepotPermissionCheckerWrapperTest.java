@@ -12,9 +12,10 @@
  * details.
  */
 
-package com.liferay.depot.internal.security.permissions.test;
+package com.liferay.depot.internal.security.permission.wrapper.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.depot.constants.DepotRolesConstants;
 import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -47,7 +48,7 @@ import org.junit.runner.RunWith;
  * @author Cristina González
  */
 @RunWith(Arquillian.class)
-public class DepotPermissionCheckerTest {
+public class DepotPermissionCheckerWrapperTest {
 
 	@ClassRule
 	@Rule
@@ -67,7 +68,8 @@ public class DepotPermissionCheckerTest {
 				TestPropsValues.getGroupId(), TestPropsValues.getUserId()));
 
 		Role role = _roleLocalService.getRole(
-			TestPropsValues.getCompanyId(), "Depot Administrator");
+			TestPropsValues.getCompanyId(),
+			DepotRolesConstants.ASSET_LIBRARY_ADMINISTRATOR);
 
 		try {
 			_userGroupRoleLocalService.addUserGroupRoles(
@@ -201,7 +203,8 @@ public class DepotPermissionCheckerTest {
 				TestPropsValues.getGroupId(), TestPropsValues.getUserId()));
 
 		Role role = _roleLocalService.getRole(
-			TestPropsValues.getCompanyId(), "Depot Administrator");
+			TestPropsValues.getCompanyId(),
+			DepotRolesConstants.ASSET_LIBRARY_ADMINISTRATOR);
 
 		try {
 			_userGroupRoleLocalService.addUserGroupRoles(
@@ -335,7 +338,8 @@ public class DepotPermissionCheckerTest {
 				TestPropsValues.getGroupId(), TestPropsValues.getUserId()));
 
 		Role role = _roleLocalService.getRole(
-			TestPropsValues.getCompanyId(), "Depot Administrator");
+			TestPropsValues.getCompanyId(),
+			DepotRolesConstants.ASSET_LIBRARY_ADMINISTRATOR);
 
 		try {
 			_userGroupRoleLocalService.addUserGroupRoles(

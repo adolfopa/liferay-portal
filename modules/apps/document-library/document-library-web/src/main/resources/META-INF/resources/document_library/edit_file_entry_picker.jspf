@@ -49,7 +49,9 @@ DLFilePicker dlFilePicker = dlEditFileEntryDisplayContext.getDLFilePicker("onFil
 					pickButtonIcon.setAttribute('src', documentIconURL);
 				}
 
-				var documentTitle = fields['<%= dlFilePicker.getTitleFieldName() %>'];
+				var documentTitle = fields[
+					'<%= dlFilePicker.getTitleFieldName() %>'
+				].value.replace(/\.[^/.]+$/, '');
 
 				var pickButtonTitleElement = document.getElementById(
 					'<portlet:namespace />pickButtonTitle'

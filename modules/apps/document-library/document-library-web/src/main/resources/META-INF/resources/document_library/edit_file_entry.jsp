@@ -657,7 +657,9 @@ renderResponse.setTitle(headerTitle);
 			var fileElement = document.getElementById('<portlet:namespace />file');
 
 			if (fileElement && fileElement.value) {
-				titleElement.value = fileElement.value.replace(/^.*[\\\/]/, '');
+				titleElement.value = fileElement.value
+					.replace(/^.*[\\\/]/, '')
+					.replace(/\.[^/.]+$/, '');
 			}
 		}
 

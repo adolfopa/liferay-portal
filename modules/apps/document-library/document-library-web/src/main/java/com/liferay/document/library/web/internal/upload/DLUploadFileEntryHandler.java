@@ -16,6 +16,7 @@ package com.liferay.document.library.web.internal.upload;
 
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.service.DLAppService;
+import com.liferay.document.library.kernel.util.DLUtil;
 import com.liferay.document.library.kernel.util.DLValidator;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -30,6 +31,7 @@ import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
+import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.upload.UniqueFileNameProvider;
@@ -75,8 +77,10 @@ public class DLUploadFileEntryHandler implements UploadFileEntryHandler {
 		try (InputStream inputStream = uploadPortletRequest.getFileAsStream(
 				_PARAMETER_NAME)) {
 
-			String uniqueFileName = _uniqueFileNameProvider.provide(
-				fileName,
+			String extension = FileUtil.getExtension(fileName);
+
+			String uniqueFileTitle = _uniqueFileNameProvider.provide(
+				FileUtil.stripExtension(fileName),
 				curFileName -> _exists(
 					themeDisplay.getScopeGroupId(), folderId, curFileName));
 
@@ -84,8 +88,9 @@ public class DLUploadFileEntryHandler implements UploadFileEntryHandler {
 				DLFileEntry.class.getName(), uploadPortletRequest);
 
 			return _dlAppService.addFileEntry(
-				themeDisplay.getScopeGroupId(), folderId, uniqueFileName,
-				contentType, uniqueFileName, description, StringPool.BLANK,
+				themeDisplay.getScopeGroupId(), folderId,
+				DLUtil.getSanitizedFileName(uniqueFileTitle, extension),
+				contentType, uniqueFileTitle, description, StringPool.BLANK,
 				inputStream, size, serviceContext);
 		}
 	}

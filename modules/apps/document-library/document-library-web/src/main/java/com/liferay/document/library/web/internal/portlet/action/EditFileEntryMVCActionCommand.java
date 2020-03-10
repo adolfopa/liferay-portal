@@ -89,6 +89,7 @@ import com.liferay.portal.kernel.upload.UploadException;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
 import com.liferay.portal.kernel.upload.UploadRequestSizeException;
 import com.liferay.portal.kernel.util.Constants;
+import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.KeyValuePair;
@@ -418,8 +419,11 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 				TempFileEntryUtil.getOriginalTempFileName(
 					tempFileEntry.getFileName());
 
-			String uniqueFileName = DLUtil.getUniqueFileName(
-				tempFileEntry.getGroupId(), folderId, originalSelectedFileName);
+			String extension = FileUtil.getExtension(originalSelectedFileName);
+
+			String uniqueFileTitle = DLUtil.getUniqueFileName(
+				tempFileEntry.getGroupId(), folderId,
+				FileUtil.stripExtension(originalSelectedFileName));
 
 			String mimeType = tempFileEntry.getMimeType();
 			InputStream inputStream = tempFileEntry.getContentStream();
@@ -429,16 +433,17 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 				DLFileEntry.class.getName(), actionRequest);
 
 			FileEntry fileEntry = _dlAppService.addFileEntry(
-				repositoryId, folderId, uniqueFileName, mimeType,
-				uniqueFileName, description, changeLog, inputStream, size,
-				serviceContext);
+				repositoryId, folderId,
+				DLUtil.getSanitizedFileName(uniqueFileTitle, extension),
+				mimeType, uniqueFileTitle, description, changeLog, inputStream,
+				size, serviceContext);
 
 			_assetDisplayPageEntryFormProcessor.process(
 				FileEntry.class.getName(), fileEntry.getFileEntryId(),
 				actionRequest);
 
 			validFileNameKVPs.add(
-				new KeyValuePair(uniqueFileName, selectedFileName));
+				new KeyValuePair(uniqueFileTitle, selectedFileName));
 		}
 		catch (Exception exception) {
 			String errorMessage = _getAddMultipleFileEntriesErrorMessage(
@@ -1061,13 +1066,17 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 
 				// Add file entry
 
-				String uniqueFileName = DLUtil.getUniqueFileName(
-					themeDisplay.getScopeGroupId(), folderId, title);
+				String extension = FileUtil.getExtension(title);
+
+				String uniqueFileTitle = DLUtil.getUniqueFileName(
+					themeDisplay.getScopeGroupId(), folderId,
+					FileUtil.stripExtension(title));
 
 				fileEntry = _dlAppService.addFileEntry(
-					repositoryId, folderId, uniqueFileName, contentType,
-					uniqueFileName, description, changeLog, inputStream, size,
-					serviceContext);
+					repositoryId, folderId,
+					DLUtil.getSanitizedFileName(uniqueFileTitle, extension),
+					contentType, uniqueFileTitle, description, changeLog,
+					inputStream, size, serviceContext);
 
 				JSONObject jsonObject = JSONUtil.put(
 					"fileEntryId", fileEntry.getFileEntryId());

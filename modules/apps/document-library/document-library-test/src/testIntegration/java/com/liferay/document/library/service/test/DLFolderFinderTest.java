@@ -324,7 +324,7 @@ public class DLFolderFinderTest {
 			if (result instanceof DLFileEntry) {
 				DLFileEntry dlFileEntry = (DLFileEntry)result;
 
-				Assert.assertEquals("FE1.txt", dlFileEntry.getTitle());
+				Assert.assertEquals("FE1.txt", dlFileEntry.getFileName());
 			}
 			else if (result instanceof FileShortcut) {
 				FileShortcut fileShortcut = (FileShortcut)result;

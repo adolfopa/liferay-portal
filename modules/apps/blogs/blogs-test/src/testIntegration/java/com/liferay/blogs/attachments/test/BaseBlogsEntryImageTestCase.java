@@ -71,7 +71,9 @@ public abstract class BaseBlogsEntryImageTestCase {
 		FileEntry imageFileEntry = _portletFileRepository.getPortletFileEntry(
 			getImageFileEntryId(blogsEntry));
 
-		Assert.assertEquals("image1.jpg", imageFileEntry.getTitle());
+		Assert.assertEquals("image1", imageFileEntry.getTitle());
+
+		Assert.assertEquals("image1.jpg", imageFileEntry.getFileName());
 	}
 
 	@Test
@@ -81,7 +83,9 @@ public abstract class BaseBlogsEntryImageTestCase {
 		FileEntry imageFileEntry = _portletFileRepository.getPortletFileEntry(
 			getImageFileEntryId(blogsEntry));
 
-		Assert.assertEquals("image1.jpg", imageFileEntry.getTitle());
+		Assert.assertEquals("image1.jpg", imageFileEntry.getFileName());
+
+		Assert.assertEquals("image1", imageFileEntry.getTitle());
 	}
 
 	@Test(expected = NoSuchFileEntryException.class)
@@ -185,7 +189,9 @@ public abstract class BaseBlogsEntryImageTestCase {
 		FileEntry imageFileEntry = _portletFileRepository.getPortletFileEntry(
 			getImageFileEntryId(blogsEntry));
 
-		Assert.assertEquals("image2.jpg", imageFileEntry.getTitle());
+		Assert.assertEquals("image2", imageFileEntry.getTitle());
+
+		Assert.assertEquals("image2.jpg", imageFileEntry.getFileName());
 	}
 
 	protected abstract BlogsEntry addBlogsEntry(ImageSelector imageSelector)

@@ -173,9 +173,9 @@ public class DocumentLibraryConvertProcessTest {
 
 		DLFileEntry dlFileEntry = getDLFileEntry(mbMessage);
 
-		String title = dlFileEntry.getTitle();
+		String fileName = dlFileEntry.getFileName();
 
-		Assert.assertTrue(title.endsWith(".docx"));
+		Assert.assertTrue(fileName.endsWith(".docx"));
 
 		_dlContentLocalService.getContent(
 			dlFileEntry.getCompanyId(),

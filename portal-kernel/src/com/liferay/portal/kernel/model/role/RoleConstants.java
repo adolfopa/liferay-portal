@@ -33,6 +33,13 @@ public class RoleConstants {
 	public static final String ANALYTICS_ADMINISTRATOR =
 		"Analytics Administrator";
 
+	public static final String ASSET_LIBRARY_ADMINISTRATOR =
+		"Asset Library Administrator";
+
+	public static final String ASSET_LIBRARY_MEMBER = "Asset Library Member";
+
+	public static final String ASSET_LIBRARY_OWNER = "Asset Library Owner";
+
 	public static final String GUEST = "Guest";
 
 	public static final String NAME_INVALID_CHARACTERS =
@@ -66,6 +73,10 @@ public class RoleConstants {
 	public static final String SITE_MEMBER = "Site Member";
 
 	public static final String SITE_OWNER = "Site Owner";
+
+	public static final String[] SYSTEM_ASSET_LIBRARY_ROLES = {
+		ASSET_LIBRARY_ADMINISTRATOR, ASSET_LIBRARY_MEMBER, ASSET_LIBRARY_OWNER
+	};
 
 	public static final String[] SYSTEM_ORGANIZATION_ROLES = {
 		ORGANIZATION_ADMINISTRATOR, ORGANIZATION_OWNER, ORGANIZATION_USER

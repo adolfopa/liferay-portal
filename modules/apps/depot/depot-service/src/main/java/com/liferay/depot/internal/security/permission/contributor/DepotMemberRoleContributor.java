@@ -14,13 +14,13 @@
 
 package com.liferay.depot.internal.security.permission.contributor;
 
-import com.liferay.depot.constants.DepotRolesConstants;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.security.permission.UserBag;
 import com.liferay.portal.kernel.security.permission.contributor.RoleCollection;
 import com.liferay.portal.kernel.security.permission.contributor.RoleContributor;
@@ -55,8 +55,7 @@ public class DepotMemberRoleContributor implements RoleContributor {
 				 userBag.hasUserOrgGroup(group))) {
 
 				Role role = _roleLocalService.getRole(
-					group.getCompanyId(),
-					DepotRolesConstants.ASSET_LIBRARY_MEMBER);
+					group.getCompanyId(), RoleConstants.ASSET_LIBRARY_MEMBER);
 
 				roleCollection.addRoleId(role.getRoleId());
 			}

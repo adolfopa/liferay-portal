@@ -14,7 +14,6 @@
 
 package com.liferay.depot.test.util;
 
-import com.liferay.depot.constants.DepotRolesConstants;
 import com.liferay.depot.model.DepotEntry;
 import com.liferay.petra.function.UnsafeBiConsumer;
 import com.liferay.petra.function.UnsafeConsumer;
@@ -48,7 +47,7 @@ public class DepotTestUtil {
 
 		Role role = RoleLocalServiceUtil.getRole(
 			TestPropsValues.getCompanyId(),
-			DepotRolesConstants.ASSET_LIBRARY_ADMINISTRATOR);
+			RoleConstants.ASSET_LIBRARY_ADMINISTRATOR);
 
 		User user = UserTestUtil.addUser();
 

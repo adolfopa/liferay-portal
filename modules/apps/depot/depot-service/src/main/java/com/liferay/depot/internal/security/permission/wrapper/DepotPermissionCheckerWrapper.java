@@ -14,7 +14,6 @@
 
 package com.liferay.depot.internal.security.permission.wrapper;
 
-import com.liferay.depot.constants.DepotRolesConstants;
 import com.liferay.depot.model.DepotEntry;
 import com.liferay.petra.function.UnsafeFunction;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -23,6 +22,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
@@ -134,7 +134,7 @@ public class DepotPermissionCheckerWrapper extends PermissionCheckerWrapper {
 
 			return _getOrAddToPermissionCache(
 				_groupLocalService.fetchGroup(groupId), this::_isGroupAdmin,
-				DepotRolesConstants.ASSET_LIBRARY_ADMINISTRATOR);
+				RoleConstants.ASSET_LIBRARY_ADMINISTRATOR);
 		}
 		catch (Exception exception) {
 			_log.error(exception, exception);
@@ -180,7 +180,7 @@ public class DepotPermissionCheckerWrapper extends PermissionCheckerWrapper {
 
 			return _getOrAddToPermissionCache(
 				_groupLocalService.fetchGroup(groupId), this::_isGroupOwner,
-				DepotRolesConstants.ASSET_LIBRARY_OWNER);
+				RoleConstants.ASSET_LIBRARY_OWNER);
 		}
 		catch (Exception exception) {
 			_log.error(exception, exception);
@@ -295,10 +295,10 @@ public class DepotPermissionCheckerWrapper extends PermissionCheckerWrapper {
 
 		if (_userGroupRoleLocalService.hasUserGroupRole(
 				getUserId(), group.getGroupId(),
-				DepotRolesConstants.ASSET_LIBRARY_ADMINISTRATOR, true) ||
+				RoleConstants.ASSET_LIBRARY_ADMINISTRATOR, true) ||
 			_userGroupRoleLocalService.hasUserGroupRole(
 				getUserId(), group.getGroupId(),
-				DepotRolesConstants.ASSET_LIBRARY_OWNER, true)) {
+				RoleConstants.ASSET_LIBRARY_OWNER, true)) {
 
 			return true;
 		}
@@ -324,7 +324,7 @@ public class DepotPermissionCheckerWrapper extends PermissionCheckerWrapper {
 		long[] roleIds = getRoleIds(getUserId(), group.getGroupId());
 
 		Role role = _roleLocalService.getRole(
-			group.getCompanyId(), DepotRolesConstants.ASSET_LIBRARY_MEMBER);
+			group.getCompanyId(), RoleConstants.ASSET_LIBRARY_MEMBER);
 
 		if (Arrays.binarySearch(roleIds, role.getRoleId()) >= 0) {
 			return true;
@@ -337,7 +337,7 @@ public class DepotPermissionCheckerWrapper extends PermissionCheckerWrapper {
 		if (Objects.equals(group.getType(), GroupConstants.TYPE_DEPOT) &&
 			_userGroupRoleLocalService.hasUserGroupRole(
 				getUserId(), group.getGroupId(),
-				DepotRolesConstants.ASSET_LIBRARY_OWNER, true)) {
+				RoleConstants.ASSET_LIBRARY_OWNER, true)) {
 
 			return true;
 		}

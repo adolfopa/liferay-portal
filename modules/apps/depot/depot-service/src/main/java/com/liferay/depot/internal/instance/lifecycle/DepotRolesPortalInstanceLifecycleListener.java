@@ -14,7 +14,6 @@
 
 package com.liferay.depot.internal.instance.lifecycle;
 
-import com.liferay.depot.constants.DepotRolesConstants;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.instance.lifecycle.BasePortalInstanceLifecycleListener;
 import com.liferay.portal.instance.lifecycle.PortalInstanceLifecycleListener;
@@ -71,26 +70,20 @@ public class DepotRolesPortalInstanceLifecycleListener
 		ResourceBundle resourceBundle =
 			_resourceBundleLoader.loadResourceBundle(locale);
 
-		if (Objects.equals(
-				DepotRolesConstants.ASSET_LIBRARY_ADMINISTRATOR, name)) {
-
+		if (Objects.equals(RoleConstants.ASSET_LIBRARY_ADMINISTRATOR, name)) {
 			return ResourceBundleUtil.getString(
 				resourceBundle,
 				"asset-library-administrators-are-super-users-of-their-asset-" +
 					"library-but-cannot-make-other-users-into-asset-library-" +
 						"administrators");
 		}
-		else if (Objects.equals(
-					DepotRolesConstants.ASSET_LIBRARY_MEMBER, name)) {
-
+		else if (Objects.equals(RoleConstants.ASSET_LIBRARY_MEMBER, name)) {
 			return ResourceBundleUtil.getString(
 				resourceBundle,
 				"all-users-who-belong-to-an-asset-library-have-this-role-" +
 					"within-that-asset-library");
 		}
-		else if (Objects.equals(
-					DepotRolesConstants.ASSET_LIBRARY_OWNER, name)) {
-
+		else if (Objects.equals(RoleConstants.ASSET_LIBRARY_OWNER, name)) {
 			return ResourceBundleUtil.getString(
 				resourceBundle,
 				"asset-library-owners-are-super-users-of-their-asset-library-" +
@@ -151,9 +144,8 @@ public class DepotRolesPortalInstanceLifecycleListener
 	}
 
 	private static final String[] _DEPOT_ROLE_NAMES = {
-		DepotRolesConstants.ASSET_LIBRARY_ADMINISTRATOR,
-		DepotRolesConstants.ASSET_LIBRARY_MEMBER,
-		DepotRolesConstants.ASSET_LIBRARY_OWNER
+		RoleConstants.ASSET_LIBRARY_ADMINISTRATOR,
+		RoleConstants.ASSET_LIBRARY_MEMBER, RoleConstants.ASSET_LIBRARY_OWNER
 	};
 
 	private static final Log _log = LogFactoryUtil.getLog(

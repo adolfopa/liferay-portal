@@ -14,7 +14,6 @@
 
 package com.liferay.depot.internal.roles.admin.role.type.contributor;
 
-import com.liferay.depot.constants.DepotRolesConstants;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.role.RoleConstants;
@@ -81,10 +80,8 @@ public class DepotRoleTypeContributor implements RoleTypeContributor {
 	@Override
 	public boolean isAllowDefinePermissions(Role role) {
 		if (Objects.equals(
-				role.getName(),
-				DepotRolesConstants.ASSET_LIBRARY_ADMINISTRATOR) ||
-			Objects.equals(
-				role.getName(), DepotRolesConstants.ASSET_LIBRARY_OWNER)) {
+				role.getName(), RoleConstants.ASSET_LIBRARY_ADMINISTRATOR) ||
+			Objects.equals(role.getName(), RoleConstants.ASSET_LIBRARY_OWNER)) {
 
 			return false;
 		}
@@ -99,12 +96,10 @@ public class DepotRoleTypeContributor implements RoleTypeContributor {
 		}
 
 		if (Objects.equals(
-				role.getName(),
-				DepotRolesConstants.ASSET_LIBRARY_ADMINISTRATOR) ||
+				role.getName(), RoleConstants.ASSET_LIBRARY_ADMINISTRATOR) ||
 			Objects.equals(
-				role.getName(), DepotRolesConstants.ASSET_LIBRARY_MEMBER) ||
-			Objects.equals(
-				role.getName(), DepotRolesConstants.ASSET_LIBRARY_OWNER)) {
+				role.getName(), RoleConstants.ASSET_LIBRARY_MEMBER) ||
+			Objects.equals(role.getName(), RoleConstants.ASSET_LIBRARY_OWNER)) {
 
 			return false;
 		}

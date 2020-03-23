@@ -14,9 +14,9 @@
 
 package com.liferay.depot.internal.role.type.contributor;
 
-import com.liferay.depot.constants.DepotRolesConstants;
 import com.liferay.depot.internal.roles.admin.role.type.contributor.DepotRoleTypeContributor;
 import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.role.RoleConstants;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -38,7 +38,7 @@ public class DepotRoleTypeContributorTest {
 		Mockito.when(
 			role.getName()
 		).thenReturn(
-			DepotRolesConstants.ASSET_LIBRARY_ADMINISTRATOR
+			RoleConstants.ASSET_LIBRARY_ADMINISTRATOR
 		);
 
 		Assert.assertTrue(!depotRoleTypeContributor.isAllowAssignMembers(role));
@@ -54,7 +54,7 @@ public class DepotRoleTypeContributorTest {
 		Mockito.when(
 			role.getName()
 		).thenReturn(
-			DepotRolesConstants.ASSET_LIBRARY_MEMBER
+			RoleConstants.ASSET_LIBRARY_MEMBER
 		);
 
 		Assert.assertTrue(!depotRoleTypeContributor.isAllowAssignMembers(role));
@@ -70,7 +70,7 @@ public class DepotRoleTypeContributorTest {
 		Mockito.when(
 			role.getName()
 		).thenReturn(
-			DepotRolesConstants.ASSET_LIBRARY_OWNER
+			RoleConstants.ASSET_LIBRARY_OWNER
 		);
 
 		Assert.assertTrue(!depotRoleTypeContributor.isAllowAssignMembers(role));
@@ -86,7 +86,7 @@ public class DepotRoleTypeContributorTest {
 		Mockito.when(
 			role.getName()
 		).thenReturn(
-			DepotRolesConstants.ASSET_LIBRARY_ADMINISTRATOR
+			RoleConstants.ASSET_LIBRARY_ADMINISTRATOR
 		);
 
 		Assert.assertTrue(
@@ -103,7 +103,7 @@ public class DepotRoleTypeContributorTest {
 		Mockito.when(
 			role.getName()
 		).thenReturn(
-			DepotRolesConstants.ASSET_LIBRARY_MEMBER
+			RoleConstants.ASSET_LIBRARY_MEMBER
 		);
 
 		Assert.assertTrue(
@@ -120,7 +120,7 @@ public class DepotRoleTypeContributorTest {
 		Mockito.when(
 			role.getName()
 		).thenReturn(
-			DepotRolesConstants.ASSET_LIBRARY_OWNER
+			RoleConstants.ASSET_LIBRARY_OWNER
 		);
 
 		Assert.assertTrue(
@@ -137,7 +137,7 @@ public class DepotRoleTypeContributorTest {
 		Mockito.when(
 			role.getName()
 		).thenReturn(
-			DepotRolesConstants.ASSET_LIBRARY_ADMINISTRATOR
+			RoleConstants.ASSET_LIBRARY_ADMINISTRATOR
 		);
 
 		Assert.assertTrue(!depotRoleTypeContributor.isAllowDelete(role));
@@ -153,7 +153,7 @@ public class DepotRoleTypeContributorTest {
 		Mockito.when(
 			role.getName()
 		).thenReturn(
-			DepotRolesConstants.ASSET_LIBRARY_MEMBER
+			RoleConstants.ASSET_LIBRARY_MEMBER
 		);
 
 		Assert.assertTrue(!depotRoleTypeContributor.isAllowDelete(role));
@@ -169,7 +169,7 @@ public class DepotRoleTypeContributorTest {
 		Mockito.when(
 			role.getName()
 		).thenReturn(
-			DepotRolesConstants.ASSET_LIBRARY_OWNER
+			RoleConstants.ASSET_LIBRARY_OWNER
 		);
 
 		Assert.assertTrue(!depotRoleTypeContributor.isAllowDelete(role));

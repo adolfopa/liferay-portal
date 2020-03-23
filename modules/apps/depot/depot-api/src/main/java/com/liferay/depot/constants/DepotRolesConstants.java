@@ -14,16 +14,22 @@
 
 package com.liferay.depot.constants;
 
+import com.liferay.portal.kernel.model.role.RoleConstants;
+
 /**
- * @author Cristina González
+ * @author     Cristina González
+ * @deprecated As of Athanasius (7.3.x), replaced by {@link RoleConstants}
  */
+@Deprecated
 public class DepotRolesConstants {
 
 	public static final String ASSET_LIBRARY_ADMINISTRATOR =
-		"Asset Library Administrator";
+		RoleConstants.ASSET_LIBRARY_ADMINISTRATOR;
 
-	public static final String ASSET_LIBRARY_MEMBER = "Asset Library Member";
+	public static final String ASSET_LIBRARY_MEMBER =
+		RoleConstants.ASSET_LIBRARY_MEMBER;
 
-	public static final String ASSET_LIBRARY_OWNER = "Asset Library Owner";
+	public static final String ASSET_LIBRARY_OWNER =
+		RoleConstants.ASSET_LIBRARY_OWNER;
 
 }

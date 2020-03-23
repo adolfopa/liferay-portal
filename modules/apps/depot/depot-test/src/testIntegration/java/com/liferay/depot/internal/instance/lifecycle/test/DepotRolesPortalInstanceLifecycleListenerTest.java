@@ -15,13 +15,13 @@
 package com.liferay.depot.internal.instance.lifecycle.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-import com.liferay.depot.constants.DepotRolesConstants;
 import com.liferay.portal.kernel.exception.NoSuchResourcePermissionException;
 import com.liferay.portal.kernel.exception.NoSuchRoleException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
@@ -56,13 +56,11 @@ public class DepotRolesPortalInstanceLifecycleListenerTest {
 
 			_assertRole(
 				company.getCompanyId(),
-				DepotRolesConstants.ASSET_LIBRARY_ADMINISTRATOR);
+				RoleConstants.ASSET_LIBRARY_ADMINISTRATOR);
 			_assertRole(
-				company.getCompanyId(),
-				DepotRolesConstants.ASSET_LIBRARY_MEMBER);
+				company.getCompanyId(), RoleConstants.ASSET_LIBRARY_MEMBER);
 			_assertRole(
-				company.getCompanyId(),
-				DepotRolesConstants.ASSET_LIBRARY_OWNER);
+				company.getCompanyId(), RoleConstants.ASSET_LIBRARY_OWNER);
 		}
 		finally {
 			if (company != null) {

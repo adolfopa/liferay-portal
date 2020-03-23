@@ -237,7 +237,7 @@ private StringBundler _getResourceHtmlId(String resource) {
 private boolean _isImpliedRole(Role role) {
 	String name = role.getName();
 
-	if (name.equals(RoleConstants.GUEST) || name.equals(RoleConstants.ORGANIZATION_USER) || name.equals(RoleConstants.OWNER) || name.equals(RoleConstants.SITE_MEMBER) || name.equals(RoleConstants.USER)) {
+	if (name.equals(RoleConstants.ASSET_LIBRARY_MEMBER) || name.equals(RoleConstants.GUEST) || name.equals(RoleConstants.ORGANIZATION_USER) || name.equals(RoleConstants.OWNER) || name.equals(RoleConstants.SITE_MEMBER) || name.equals(RoleConstants.USER)) {
 		return true;
 	}
 

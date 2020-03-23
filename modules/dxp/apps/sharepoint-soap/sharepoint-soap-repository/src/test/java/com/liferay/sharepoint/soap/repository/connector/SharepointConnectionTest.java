@@ -17,8 +17,11 @@ package com.liferay.sharepoint.soap.repository.connector;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.util.FileImpl;
 import com.liferay.portal.util.HtmlImpl;
+import com.liferay.portal.util.PropsImpl;
 import com.liferay.sharepoint.soap.repository.connector.schema.query.Query;
 import com.liferay.sharepoint.soap.repository.connector.schema.query.QueryField;
 import com.liferay.sharepoint.soap.repository.connector.schema.query.QueryOptionsList;
@@ -63,9 +66,7 @@ public class SharepointConnectionTest {
 		_folderPath1 = StringPool.SLASH + _folderName1;
 		_folderPath2 = StringPool.SLASH + _folderName2;
 
-		_sharepointConnection = SharepointConnectionFactory.getInstance(
-			_SERVER_VERSION, _SERVER_PROTOCOL, _SERVER_ADDRESS, _SERVER_PORT,
-			_SITE_PATH, _LIBRARY_NAME, _LIBRARY_PATH, _USERNAME, _PASSWORD);
+		_sharepointConnection = _getSharepointConnection();
 
 		FileUtil fileUtil = new FileUtil();
 
@@ -764,6 +765,21 @@ public class SharepointConnectionTest {
 		}
 
 		return new QueryOptionsList(new FolderQueryOption(StringPool.BLANK));
+	}
+
+	private SharepointConnection _getSharepointConnection() {
+		if (Validator.isNotNull(System.getenv("JENKINS_HOME"))) {
+			PropsUtil.setProps(new PropsImpl());
+
+			return SharepointConnectionFactory.getInstance(
+				_SERVER_VERSION, _SERVER_PROTOCOL,
+				PropsUtil.get("cmis.repository.vm.host.name"), _SERVER_PORT,
+				_SITE_PATH, _LIBRARY_NAME, _LIBRARY_PATH, _USERNAME, _PASSWORD);
+		}
+
+		return SharepointConnectionFactory.getInstance(
+			_SERVER_VERSION, _SERVER_PROTOCOL, _SERVER_ADDRESS, _SERVER_PORT,
+			_SITE_PATH, _LIBRARY_NAME, _LIBRARY_PATH, _USERNAME, _PASSWORD);
 	}
 
 	private static final String _CONTENT_BYE_WORLD = "Bye world!";

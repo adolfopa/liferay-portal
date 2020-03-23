@@ -25,6 +25,7 @@ import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.RoleServiceUtil;
 import com.liferay.portal.kernel.service.permission.PortalPermissionUtil;
@@ -37,6 +38,7 @@ import com.liferay.portlet.rolesadmin.search.RoleSearch;
 import com.liferay.portlet.rolesadmin.search.RoleSearchTerms;
 import com.liferay.roles.admin.role.type.contributor.RoleTypeContributor;
 import com.liferay.roles.admin.web.internal.role.type.contributor.util.RoleTypeContributorRetrieverUtil;
+import com.liferay.roles.admin.web.internal.search.DepotRoleChecker;
 import com.liferay.roles.admin.web.internal.search.RoleChecker;
 
 import java.util.LinkedHashMap;
@@ -191,7 +193,12 @@ public class ViewRolesManagementToolbarDisplayContext {
 
 		RoleSearch roleSearch = new RoleSearch(_renderRequest, getPortletURL());
 
-		roleSearch.setRowChecker(new RoleChecker(_renderResponse));
+		if (_currentRoleTypeContributor.getType() == RoleConstants.TYPE_DEPOT) {
+			roleSearch.setRowChecker(new DepotRoleChecker(_renderResponse));
+		}
+		else {
+			roleSearch.setRowChecker(new RoleChecker(_renderResponse));
+		}
 
 		ThemeDisplay themeDisplay =
 			(ThemeDisplay)_httpServletRequest.getAttribute(

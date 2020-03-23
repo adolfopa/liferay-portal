@@ -203,8 +203,8 @@ public class UsersAdminImpl implements UsersAdmin {
 
 			String roleName = groupRole.getName();
 
-			if (roleName.equals(RoleConstants.ORGANIZATION_USER) ||
-				roleName.equals(RoleConstants.SITE_MEMBER)) {
+			if (ArrayUtil.contains(
+					RoleConstants.SYSTEM_ASSET_LIBRARY_ROLES, roleName)) {
 
 				itr.remove();
 			}
@@ -234,7 +234,9 @@ public class UsersAdminImpl implements UsersAdmin {
 
 			String roleName = groupRole.getName();
 
-			if (roleName.equals(RoleConstants.ORGANIZATION_ADMINISTRATOR) ||
+			if (roleName.equals(RoleConstants.ASSET_LIBRARY_ADMINISTRATOR) ||
+				roleName.equals(RoleConstants.ASSET_LIBRARY_OWNER) ||
+				roleName.equals(RoleConstants.ORGANIZATION_ADMINISTRATOR) ||
 				roleName.equals(RoleConstants.ORGANIZATION_OWNER) ||
 				roleName.equals(RoleConstants.SITE_ADMINISTRATOR) ||
 				roleName.equals(RoleConstants.SITE_OWNER) ||

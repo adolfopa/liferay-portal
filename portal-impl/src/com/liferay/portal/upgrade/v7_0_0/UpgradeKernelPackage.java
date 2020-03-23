@@ -41,7 +41,7 @@ public class UpgradeKernelPackage extends UpgradeProcess {
 		try {
 			upgradeTable(
 				"ClassName_", "value", getClassNames(), WildcardMode.SURROUND,
-				true);
+				_preventDuplicates);
 			upgradeTable(
 				"Counter", "name", getClassNames(), WildcardMode.SURROUND);
 			upgradeTable(
@@ -276,6 +276,8 @@ public class UpgradeKernelPackage extends UpgradeProcess {
 
 		return columnName;
 	}
+
+	protected boolean _preventDuplicates = true;
 
 	private static final String[][] _CLASS_NAMES = {
 		{

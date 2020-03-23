@@ -14,6 +14,7 @@
 
 package com.liferay.message.boards.internal.upgrade.v1_0_0;
 
+import com.liferay.portal.kernel.upgrade.UpgradeException;
 import com.liferay.portal.upgrade.v7_0_0.UpgradeKernelPackage;
 
 /**
@@ -21,6 +22,13 @@ import com.liferay.portal.upgrade.v7_0_0.UpgradeKernelPackage;
  * @author Adolfo Pérez
  */
 public class UpgradeClassNames extends UpgradeKernelPackage {
+
+	@Override
+	public void doUpgrade() throws UpgradeException {
+		_preventDuplicates = false;
+
+		super.doUpgrade();
+	}
 
 	@Override
 	protected String[][] getClassNames() {

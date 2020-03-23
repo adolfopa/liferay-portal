@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.util.FileImpl;
 import com.liferay.portal.util.HtmlImpl;
+import com.liferay.sharepoint.soap.repository.connector.internal.util.test.SharepointConnectionTestUtil;
 import com.liferay.sharepoint.soap.repository.connector.schema.query.Query;
 import com.liferay.sharepoint.soap.repository.connector.schema.query.QueryField;
 import com.liferay.sharepoint.soap.repository.connector.schema.query.QueryOptionsList;
@@ -63,9 +64,7 @@ public class SharepointConnectionTest {
 		_folderPath1 = StringPool.SLASH + _folderName1;
 		_folderPath2 = StringPool.SLASH + _folderName2;
 
-		_sharepointConnection = SharepointConnectionFactory.getInstance(
-			_SERVER_VERSION, _SERVER_PROTOCOL, _SERVER_ADDRESS, _SERVER_PORT,
-			_SITE_PATH, _LIBRARY_NAME, _LIBRARY_PATH, _USERNAME, _PASSWORD);
+		_sharepointConnection = _getSharepointConnection();
 
 		FileUtil fileUtil = new FileUtil();
 
@@ -272,11 +271,6 @@ public class SharepointConnectionTest {
 		Assert.assertEquals(StringPool.SLASH, sharepointObject.getFolderPath());
 		Assert.assertEquals(_fileName1, sharepointObject.getName());
 		Assert.assertEquals(_filePath1, sharepointObject.getPath());
-		Assert.assertEquals(
-			_SERVER_PROTOCOL + "://" + _SERVER_ADDRESS + StringPool.COLON +
-				_SERVER_PORT + _SITE_PATH + StringPool.SLASH + _LIBRARY_PATH +
-					_filePath1,
-			String.valueOf(sharepointObject.getURL()));
 		Assert.assertTrue(sharepointObject.isFile());
 	}
 
@@ -308,11 +302,6 @@ public class SharepointConnectionTest {
 		Assert.assertEquals(StringPool.SLASH, sharepointObject.getFolderPath());
 		Assert.assertEquals(_folderName1, sharepointObject.getName());
 		Assert.assertEquals(_folderPath1, sharepointObject.getPath());
-		Assert.assertEquals(
-			_SERVER_PROTOCOL + "://" + _SERVER_ADDRESS + StringPool.COLON +
-				_SERVER_PORT + _SITE_PATH + StringPool.SLASH + _LIBRARY_PATH +
-					_folderPath1,
-			String.valueOf(sharepointObject.getURL()));
 		Assert.assertTrue(sharepointObject.isFolder());
 	}
 
@@ -726,10 +715,6 @@ public class SharepointConnectionTest {
 			SharepointConnectionImpl.
 				SHAREPOINT_ROOT_FOLDER_SHAREPOINT_OBJECT_ID,
 			rootFolderSharepointObject.getSharepointObjectId());
-		Assert.assertEquals(
-			_SERVER_PROTOCOL + "://" + _SERVER_ADDRESS + StringPool.COLON +
-				_SERVER_PORT + _SITE_PATH + StringPool.SLASH + _LIBRARY_PATH,
-			String.valueOf(rootFolderSharepointObject.getURL()));
 		Assert.assertTrue(rootFolderSharepointObject.isFolder());
 	}
 
@@ -766,6 +751,14 @@ public class SharepointConnectionTest {
 		return new QueryOptionsList(new FolderQueryOption(StringPool.BLANK));
 	}
 
+	private SharepointConnection _getSharepointConnection() {
+		return SharepointConnectionFactory.getInstance(
+			_SERVER_VERSION, _SERVER_PROTOCOL,
+			SharepointConnectionTestUtil.getSharepointVMHostname(),
+			_SERVER_PORT, _SITE_PATH, _LIBRARY_NAME, _LIBRARY_PATH, _USERNAME,
+			_PASSWORD);
+	}
+
 	private static final String _CONTENT_BYE_WORLD = "Bye world!";
 
 	private static final String _CONTENT_HELLO_WORLD = "Hello world!";
@@ -775,8 +768,6 @@ public class SharepointConnectionTest {
 	private static final String _LIBRARY_PATH = "Documents";
 
 	private static final String _PASSWORD = "password";
-
-	private static final String _SERVER_ADDRESS = "liferay-abb20d6";
 
 	private static final int _SERVER_PORT = 80;
 

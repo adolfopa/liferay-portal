@@ -201,6 +201,8 @@ public class UpgradeKernelPackage extends UpgradeProcess {
 		}
 	}
 
+	protected boolean _preventDuplicates = true;
+
 	private void _executeDelete(
 			String tableName, String columnName, String[][] names,
 			WildcardMode wildcardMode)
@@ -276,8 +278,6 @@ public class UpgradeKernelPackage extends UpgradeProcess {
 
 		return columnName;
 	}
-
-	protected boolean _preventDuplicates = true;
 
 	private static final String[][] _CLASS_NAMES = {
 		{

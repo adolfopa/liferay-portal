@@ -17,8 +17,11 @@ package com.liferay.sharepoint.soap.repository.connector;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.util.FileImpl;
 import com.liferay.portal.util.HtmlImpl;
+import com.liferay.portal.util.PropsImpl;
 import com.liferay.sharepoint.soap.repository.connector.schema.query.Query;
 import com.liferay.sharepoint.soap.repository.connector.schema.query.QueryField;
 import com.liferay.sharepoint.soap.repository.connector.schema.query.QueryOptionsList;
@@ -31,22 +34,23 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.nio.charset.StandardCharsets;
+
 import java.util.Date;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * @author Iván Zaera
  */
-@Ignore
 public class SharepointConnectionTest {
 
-	public SharepointConnectionTest() {
+	@Before
+	public void setUp() throws Exception {
 		_fileExtension1 = "txt";
 
 		_fileName1 =
@@ -61,10 +65,9 @@ public class SharepointConnectionTest {
 
 		_folderPath1 = StringPool.SLASH + _folderName1;
 		_folderPath2 = StringPool.SLASH + _folderName2;
-	}
 
-	@Before
-	public void setUp() throws Exception {
+		_sharepointConnection = _getSharepointConnection();
+
 		FileUtil fileUtil = new FileUtil();
 
 		fileUtil.setFile(new FileImpl());
@@ -394,22 +397,9 @@ public class SharepointConnectionTest {
 			new ContainsOperator(
 				new QueryField("BaseName"), new QueryValue("SubFile")));
 
-		QueryOptionsList queryOptionsList = null;
-
-		if (_SERVER_VERSION.equals(
-				SharepointConnection.ServerVersion.SHAREPOINT_2013)) {
-
-			queryOptionsList = new QueryOptionsList(
-				new FolderQueryOption(StringPool.BLANK),
-				new ViewAttributesQueryOption(true));
-		}
-		else {
-			queryOptionsList = new QueryOptionsList(
-				new FolderQueryOption(StringPool.BLANK));
-		}
-
 		List<SharepointObject> sharepointObjects =
-			_sharepointConnection.getSharepointObjects(query, queryOptionsList);
+			_sharepointConnection.getSharepointObjects(
+				query, _getQueryOptionsList());
 
 		Assert.assertEquals(
 			sharepointObjects.toString(), 2, sharepointObjects.size());
@@ -650,7 +640,7 @@ public class SharepointConnectionTest {
 	protected void addFileVersion(
 			String filePath, String content,
 			SharepointConnection.CheckInType checkInType)
-		throws IOException, SharepointException {
+		throws SharepointException {
 
 		_sharepointConnection.checkOutFile(filePath);
 
@@ -662,7 +652,7 @@ public class SharepointConnectionTest {
 
 	protected void addSharepointObjects(
 			boolean file1, boolean file2, boolean folder1, boolean folder2)
-		throws IOException, SharepointException {
+		throws SharepointException {
 
 		if (file1) {
 			_sharepointConnection.addFile(
@@ -755,14 +745,41 @@ public class SharepointConnectionTest {
 		}
 	}
 
-	protected InputStream getInputStream(String content) throws IOException {
-		return new ByteArrayInputStream(content.getBytes(StringPool.UTF8));
+	protected InputStream getInputStream(String content) {
+		return new ByteArrayInputStream(
+			content.getBytes(StandardCharsets.UTF_8));
 	}
 
 	protected String getString(InputStream inputStream) throws IOException {
-		byte[] bytes = FileUtil.getBytes(inputStream);
+		return new String(
+			FileUtil.getBytes(inputStream), StandardCharsets.UTF_8);
+	}
 
-		return new String(bytes, StringPool.UTF8);
+	private QueryOptionsList _getQueryOptionsList() {
+		if (_SERVER_VERSION.equals(
+				SharepointConnection.ServerVersion.SHAREPOINT_2013)) {
+
+			return new QueryOptionsList(
+				new FolderQueryOption(StringPool.BLANK),
+				new ViewAttributesQueryOption(true));
+		}
+
+		return new QueryOptionsList(new FolderQueryOption(StringPool.BLANK));
+	}
+
+	private SharepointConnection _getSharepointConnection() {
+		if (Validator.isNotNull(System.getenv("JENKINS_HOME"))) {
+			PropsUtil.setProps(new PropsImpl());
+
+			return SharepointConnectionFactory.getInstance(
+				_SERVER_VERSION, _SERVER_PROTOCOL,
+				PropsUtil.get("cmis.repository.vm.host.name"), _SERVER_PORT,
+				_SITE_PATH, _LIBRARY_NAME, _LIBRARY_PATH, _USERNAME, _PASSWORD);
+		}
+
+		return SharepointConnectionFactory.getInstance(
+			_SERVER_VERSION, _SERVER_PROTOCOL, _SERVER_ADDRESS, _SERVER_PORT,
+			_SITE_PATH, _LIBRARY_NAME, _LIBRARY_PATH, _USERNAME, _PASSWORD);
 	}
 
 	private static final String _CONTENT_BYE_WORLD = "Bye world!";
@@ -775,7 +792,7 @@ public class SharepointConnectionTest {
 
 	private static final String _PASSWORD = "password";
 
-	private static final String _SERVER_ADDRESS = "liferay-20jf4ic";
+	private static final String _SERVER_ADDRESS = "liferay-abb20d6";
 
 	private static final int _SERVER_PORT = 80;
 
@@ -790,17 +807,14 @@ public class SharepointConnectionTest {
 
 	private static final String _USERNAME = "Administrator";
 
-	private final String _fileExtension1;
-	private final String _fileName1;
-	private final String _fileName2;
-	private final String _filePath1;
-	private final String _folderName1;
-	private final String _folderName2;
-	private final String _folderPath1;
-	private final String _folderPath2;
-	private final SharepointConnection _sharepointConnection =
-		SharepointConnectionFactory.getInstance(
-			_SERVER_VERSION, _SERVER_PROTOCOL, _SERVER_ADDRESS, _SERVER_PORT,
-			_SITE_PATH, _LIBRARY_NAME, _LIBRARY_PATH, _USERNAME, _PASSWORD);
+	private String _fileExtension1;
+	private String _fileName1;
+	private String _fileName2;
+	private String _filePath1;
+	private String _folderName1;
+	private String _folderName2;
+	private String _folderPath1;
+	private String _folderPath2;
+	private SharepointConnection _sharepointConnection;
 
 }

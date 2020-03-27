@@ -67,8 +67,8 @@ public class SharepointConnectionTestUtil {
 			Matcher matcher = _pattern.matcher(payload);
 
 			if (!matcher.matches()) {
-				if (_log.isDebugEnabled()) {
-					_log.debug(
+				if (_log.isInfoEnabled()) {
+					_log.info(
 						"JSON payload did not contains Sharepoint hostname: " +
 							payload);
 				}
@@ -106,8 +106,8 @@ public class SharepointConnectionTestUtil {
 					throw new RuntimeException(exception);
 				}
 
-				if (_log.isDebugEnabled()) {
-					_log.debug(
+				if (_log.isInfoEnabled()) {
+					_log.info(
 						StringBundler.concat(
 							"Error while trying to get Sharepoint hostname, ",
 							"will retry ", tries, " more times"),

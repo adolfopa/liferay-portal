@@ -36,6 +36,7 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.UserGroupGroupRole;
 import com.liferay.portal.kernel.model.UserGroupRole;
 import com.liferay.portal.kernel.model.role.RoleConstants;
+import com.liferay.portal.kernel.security.group.membership.GroupMembershipCustomizer;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
@@ -59,6 +60,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.security.group.membership.GroupMembershipCustomizerRegistryUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -771,6 +773,19 @@ public class AdvancedPermissionChecker extends BasePermissionChecker {
 
 		Group group = GroupLocalServiceUtil.getGroup(groupId);
 
+		GroupMembershipCustomizer groupMembershipCustomizer =
+			GroupMembershipCustomizerRegistryUtil.getGroupMembershipCustomizer(
+				group.getClassName());
+
+		if (groupMembershipCustomizer != null) {
+			Boolean groupContentReviewer =
+				groupMembershipCustomizer.isGroupContentReviewer(user, group);
+
+			if (groupContentReviewer != null) {
+				return groupContentReviewer;
+			}
+		}
+
 		if (RoleLocalServiceUtil.hasUserRole(
 				getUserId(), group.getCompanyId(),
 				RoleConstants.PORTAL_CONTENT_REVIEWER, true)) {
@@ -835,6 +850,19 @@ public class AdvancedPermissionChecker extends BasePermissionChecker {
 	}
 
 	protected boolean isGroupAdminImpl(Group group) throws Exception {
+		GroupMembershipCustomizer groupMembershipCustomizer =
+			GroupMembershipCustomizerRegistryUtil.getGroupMembershipCustomizer(
+				group.getClassName());
+
+		if (groupMembershipCustomizer != null) {
+			Boolean groupAdmin = groupMembershipCustomizer.isGroupAdmin(
+				user, group);
+
+			if (groupAdmin != null) {
+				return groupAdmin;
+			}
+		}
+
 		if (group.isLayout()) {
 			long parentGroupId = group.getParentGroupId();
 
@@ -972,9 +1000,22 @@ public class AdvancedPermissionChecker extends BasePermissionChecker {
 			return false;
 		}
 
-		long[] roleIds = getRoleIds(getUserId(), groupId);
-
 		Group group = GroupLocalServiceUtil.getGroup(groupId);
+
+		GroupMembershipCustomizer groupMembershipCustomizer =
+			GroupMembershipCustomizerRegistryUtil.getGroupMembershipCustomizer(
+				group.getClassName());
+
+		if (groupMembershipCustomizer != null) {
+			Boolean groupMember = groupMembershipCustomizer.isGroupMember(
+				user, group);
+
+			if (groupMember != null) {
+				return groupMember;
+			}
+		}
+
+		long[] roleIds = getRoleIds(getUserId(), groupId);
 
 		Role role = RoleLocalServiceUtil.getRole(
 			group.getCompanyId(), RoleConstants.SITE_MEMBER);
@@ -989,6 +1030,19 @@ public class AdvancedPermissionChecker extends BasePermissionChecker {
 	}
 
 	protected boolean isGroupOwnerImpl(Group group) throws PortalException {
+		GroupMembershipCustomizer groupMembershipCustomizer =
+			GroupMembershipCustomizerRegistryUtil.getGroupMembershipCustomizer(
+				group.getClassName());
+
+		if (groupMembershipCustomizer != null) {
+			Boolean groupOwner = groupMembershipCustomizer.isGroupOwner(
+				user, group);
+
+			if (groupOwner != null) {
+				return groupOwner;
+			}
+		}
+
 		if (group.isSite() &&
 			UserGroupRoleLocalServiceUtil.hasUserGroupRole(
 				getUserId(), group.getGroupId(), RoleConstants.SITE_OWNER,

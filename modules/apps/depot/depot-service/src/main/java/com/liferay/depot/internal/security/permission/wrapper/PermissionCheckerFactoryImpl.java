@@ -20,8 +20,6 @@ import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.security.permission.wrapper.PermissionCheckerWrapperFactory;
 import com.liferay.portal.kernel.service.GroupLocalService;
-import com.liferay.portal.kernel.service.RoleLocalService;
-import com.liferay.portal.kernel.service.UserGroupRoleLocalService;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -46,7 +44,7 @@ public class PermissionCheckerFactoryImpl
 
 		return new DepotPermissionCheckerWrapper(
 			permissionChecker, _depotEntryModelResourcePermission,
-			_groupLocalService, _roleLocalService, _userGroupRoleLocalService);
+			_groupLocalService);
 	}
 
 	@Reference
@@ -58,11 +56,5 @@ public class PermissionCheckerFactoryImpl
 
 	@Reference
 	private GroupLocalService _groupLocalService;
-
-	@Reference
-	private RoleLocalService _roleLocalService;
-
-	@Reference
-	private UserGroupRoleLocalService _userGroupRoleLocalService;
 
 }

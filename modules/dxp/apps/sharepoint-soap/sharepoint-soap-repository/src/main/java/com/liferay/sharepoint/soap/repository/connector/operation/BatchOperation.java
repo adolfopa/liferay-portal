@@ -36,20 +36,20 @@ import org.w3c.dom.Node;
 public final class BatchOperation extends BaseOperation {
 
 	public void execute(Batch batch) throws SharepointException {
-		UpdateListItemsResponseDocument updateListItemsResponseDocument = null;
-
 		try {
-			updateListItemsResponseDocument = listsSoap12Stub.updateListItems(
-				getUpdateListItemsDocument(batch));
+			UpdateListItemsResponseDocument updateListItemsResponseDocument =
+				listsSoap12Stub.updateListItems(
+					_getUpdateListItemsDocument(batch));
+
+			_processUpdateListItemsResponseDocument(
+				updateListItemsResponseDocument);
 		}
 		catch (RemoteException remoteException) {
 			throw RemoteExceptionSharepointExceptionMapper.map(remoteException);
 		}
-
-		processUpdateListItemsResponseDocument(updateListItemsResponseDocument);
 	}
 
-	protected UpdateListItemsDocument getUpdateListItemsDocument(Batch batch) {
+	private UpdateListItemsDocument _getUpdateListItemsDocument(Batch batch) {
 		UpdateListItemsDocument updateListItemsDocument =
 			UpdateListItemsDocument.Factory.newInstance();
 
@@ -70,7 +70,7 @@ public final class BatchOperation extends BaseOperation {
 		return updateListItemsDocument;
 	}
 
-	protected Void processUpdateListItemsResponseDocument(
+	private void _processUpdateListItemsResponseDocument(
 			UpdateListItemsResponseDocument updateListItemsResponseDocument)
 		throws SharepointException {
 
@@ -104,8 +104,6 @@ public final class BatchOperation extends BaseOperation {
 
 			throw new SharepointResultException(errorCode, errorText);
 		}
-
-		return null;
 	}
 
 }

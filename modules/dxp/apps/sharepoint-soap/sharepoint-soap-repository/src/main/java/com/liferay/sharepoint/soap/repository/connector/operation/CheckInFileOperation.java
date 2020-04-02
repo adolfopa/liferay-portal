@@ -33,20 +33,19 @@ public final class CheckInFileOperation extends BaseOperation {
 			SharepointConnection.CheckInType checkInType)
 		throws SharepointException {
 
-		CheckInFileResponseDocument checkInFileResponseDocument = null;
-
 		try {
-			checkInFileResponseDocument = listsSoap12Stub.checkInFile(
-				getCheckInFileDocument(filePath, comment, checkInType));
+			CheckInFileResponseDocument checkInFileResponseDocument =
+				listsSoap12Stub.checkInFile(
+					_getCheckInFileDocument(filePath, comment, checkInType));
+
+			return _getResponse(checkInFileResponseDocument);
 		}
 		catch (RemoteException remoteException) {
 			throw RemoteExceptionSharepointExceptionMapper.map(remoteException);
 		}
-
-		return getResponse(checkInFileResponseDocument);
 	}
 
-	protected CheckInFileDocument getCheckInFileDocument(
+	private CheckInFileDocument _getCheckInFileDocument(
 		String filePath, String comment,
 		SharepointConnection.CheckInType checkInType) {
 
@@ -64,7 +63,7 @@ public final class CheckInFileOperation extends BaseOperation {
 		return checkInFileDocument;
 	}
 
-	protected boolean getResponse(
+	private boolean _getResponse(
 		CheckInFileResponseDocument checkInFileResponseDocument) {
 
 		CheckInFileResponseDocument.CheckInFileResponse checkInFileResponse =

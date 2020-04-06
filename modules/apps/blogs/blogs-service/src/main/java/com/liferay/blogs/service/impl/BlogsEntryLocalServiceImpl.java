@@ -198,6 +198,8 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 				entry.getUserId(), entry.getGroupId(), entryId, imageSelector);
 		}
 
+		_validateCoverImage(coverImageFileEntryId);
+
 		entry.setCoverImageFileEntryId(coverImageFileEntryId);
 		entry.setCoverImageURL(coverImageURL);
 
@@ -369,6 +371,8 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 			}
 		}
 
+		_validateCoverImage(coverImageFileEntryId);
+
 		long smallImageFileEntryId = 0;
 		String smallImageURL = null;
 
@@ -530,6 +534,8 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 			smallImageFileEntryId = _addSmallImageFileEntry(
 				entry.getUserId(), entry.getGroupId(), entryId, imageSelector);
 		}
+
+		_validate(smallImageFileEntryId);
 
 		entry.setSmallImage(smallImage);
 		entry.setSmallImageFileEntryId(smallImageFileEntryId);
@@ -1238,6 +1244,8 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 			deletePreviousCoverImageFileEntryId =
 				entry.getCoverImageFileEntryId();
 		}
+
+		_validateCoverImage(coverImageFileEntryId);
 
 		long smallImageFileEntryId = entry.getSmallImageFileEntryId();
 		String smallImageURL = entry.getSmallImageURL();
@@ -2277,6 +2285,22 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 		if (content.length() > contentMaxLength) {
 			throw new EntryContentException(
 				"Content has more than " + contentMaxLength + " characters");
+		}
+	}
+
+	private void _validateCoverImage(long coverImageFileEntryId)
+		throws PortalException {
+
+		if (coverImageFileEntryId == 0) {
+			return;
+		}
+
+		FileEntry fileEntry = _portletFileRepository.getPortletFileEntry(
+			coverImageFileEntryId);
+
+		if (!_isValidImageMimeType(fileEntry)) {
+			throw new EntrySmallImageNameException(
+				"Invalid cover image for file entry " + coverImageFileEntryId);
 		}
 	}
 

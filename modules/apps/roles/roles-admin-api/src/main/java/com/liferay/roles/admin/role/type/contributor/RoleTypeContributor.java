@@ -86,6 +86,15 @@ public interface RoleTypeContributor {
 	}
 
 	/**
+	 * Returns an array of role names that should be treated as System roles.
+	 *
+	 * @return
+	 */
+	public default String[] getSystemRoleNames() {
+		return new String[0];
+	}
+
+	/**
 	 * Returns the display title for this role type's section.
 	 *
 	 * Example: "Regular Roles"

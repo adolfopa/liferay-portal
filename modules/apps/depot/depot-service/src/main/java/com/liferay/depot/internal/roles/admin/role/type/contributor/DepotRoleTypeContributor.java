@@ -66,6 +66,15 @@ public class DepotRoleTypeContributor implements RoleTypeContributor {
 	}
 
 	@Override
+	public String[] getSystemRoleNames() {
+		return new String[] {
+			DepotRolesConstants.ASSET_LIBRARY_MEMBER,
+			DepotRolesConstants.ASSET_LIBRARY_ADMINISTRATOR,
+			DepotRolesConstants.ASSET_LIBRARY_OWNER
+		};
+	}
+
+	@Override
 	public String getTabTitle(Locale locale) {
 		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
 			locale, DepotRoleTypeContributor.class);

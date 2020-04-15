@@ -51,6 +51,11 @@ public class DepotRoleTypeContributor implements RoleTypeContributor {
 	}
 
 	@Override
+	public String[] getImpliedRoleNames() {
+		return new String[] {DepotRolesConstants.ASSET_LIBRARY_MEMBER};
+	}
+
+	@Override
 	public String getName() {
 		return "asset-library";
 	}

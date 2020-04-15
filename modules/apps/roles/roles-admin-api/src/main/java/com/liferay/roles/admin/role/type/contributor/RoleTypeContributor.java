@@ -56,6 +56,16 @@ public interface RoleTypeContributor {
 	public String getIcon();
 
 	/**
+	 * Returns a list of role names which are implied when a user is a member
+	 * of the scope.
+	 *
+	 * @return
+	 */
+	public default String[] getImpliedRoleNames() {
+		return new String[0];
+	}
+
+	/**
 	 * Returns the role type name.
 	 *
 	 * Example: "regular"

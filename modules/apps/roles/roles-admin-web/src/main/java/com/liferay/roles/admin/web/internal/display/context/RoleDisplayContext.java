@@ -19,6 +19,7 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.NavigationItemList;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.NavigationItemListBuilder;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.PortletURLUtil;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
@@ -26,6 +27,7 @@ import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.RoleServiceUtil;
 import com.liferay.portal.kernel.service.permission.RolePermissionUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -157,6 +159,33 @@ public class RoleDisplayContext {
 		}
 
 		return navigationItemList;
+	}
+
+	public boolean isImpliedRole(Role role) {
+		String name = role.getName();
+
+		if (name.equals(RoleConstants.GUEST) ||
+			name.equals(RoleConstants.ORGANIZATION_USER) ||
+			name.equals(RoleConstants.OWNER) ||
+			name.equals(RoleConstants.SITE_MEMBER) ||
+			name.equals(RoleConstants.USER)) {
+
+			return true;
+		}
+
+		List<RoleTypeContributor> roleTypeContributors =
+			RoleTypeContributorRetrieverUtil.getRoleTypeContributors(
+				_httpServletRequest);
+
+		for (RoleTypeContributor roleTypeContributor : roleTypeContributors) {
+			if (ArrayUtil.contains(
+					roleTypeContributor.getImpliedRoleNames(), name)) {
+
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private List<String> _getTabsNames() throws Exception {

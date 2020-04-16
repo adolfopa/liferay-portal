@@ -21,7 +21,7 @@ import com.liferay.portal.kernel.model.UserGroupRole;
 import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
-import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.permission.GroupPermissionUtil;
 import com.liferay.portal.kernel.service.permission.OrganizationPermissionUtil;
 import com.liferay.portal.kernel.service.permission.RolePermissionUtil;
@@ -68,7 +68,7 @@ public class RoleFilterImpl implements RoleFilter {
 			return filteredGroupRoles;
 		}
 
-		Group group = GroupLocalServiceUtil.getGroup(groupId);
+		Group group = _groupLocalService.getGroup(groupId);
 
 		if (!GroupPermissionUtil.contains(
 				permissionChecker, group, ActionKeys.ASSIGN_USER_ROLES) &&
@@ -239,6 +239,9 @@ public class RoleFilterImpl implements RoleFilter {
 
 		return false;
 	}
+
+	@Reference
+	private GroupLocalService _groupLocalService;
 
 	@Reference
 	private RoleTypeContributorProvider _roleTypeContributorProvider;

@@ -68,6 +68,10 @@ public class UsersAdminUtil {
 		return getUsersAdmin().addRequiredRoles(user, roleIds);
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x)
+	 */
+	@Deprecated
 	public static List<Role> filterGroupRoles(
 			PermissionChecker permissionChecker, long groupId, List<Role> roles)
 		throws PortalException {
@@ -92,6 +96,10 @@ public class UsersAdminUtil {
 			permissionChecker, organizations);
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x)
+	 */
+	@Deprecated
 	public static List<Role> filterRoles(
 		PermissionChecker permissionChecker, List<Role> roles) {
 
@@ -115,6 +123,10 @@ public class UsersAdminUtil {
 			permissionChecker, organizationId, userIds);
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x)
+	 */
+	@Deprecated
 	public static List<UserGroupRole> filterUserGroupRoles(
 			PermissionChecker permissionChecker,
 			List<UserGroupRole> userGroupRoles)

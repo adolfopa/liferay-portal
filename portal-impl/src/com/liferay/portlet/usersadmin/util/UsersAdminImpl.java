@@ -189,6 +189,10 @@ public class UsersAdminImpl implements UsersAdmin {
 		return roleIds;
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x)
+	 */
+	@Deprecated
 	@Override
 	public List<Role> filterGroupRoles(
 			PermissionChecker permissionChecker, long groupId, List<Role> roles)
@@ -303,6 +307,10 @@ public class UsersAdminImpl implements UsersAdmin {
 		return filteredOrganizations;
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x)
+	 */
+	@Deprecated
 	@Override
 	public List<Role> filterRoles(
 		PermissionChecker permissionChecker, List<Role> roles) {
@@ -383,6 +391,10 @@ public class UsersAdminImpl implements UsersAdmin {
 		return filteredUserIds;
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x)
+	 */
+	@Deprecated
 	@Override
 	public List<UserGroupRole> filterUserGroupRoles(
 			PermissionChecker permissionChecker,

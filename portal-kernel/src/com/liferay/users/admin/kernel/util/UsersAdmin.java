@@ -260,6 +260,10 @@ public interface UsersAdmin {
 	public long[] addRequiredRoles(User user, long[] roleIds)
 		throws PortalException;
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x)
+	 */
+	@Deprecated
 	public List<Role> filterGroupRoles(
 			PermissionChecker permissionChecker, long groupId, List<Role> roles)
 		throws PortalException;
@@ -273,6 +277,10 @@ public interface UsersAdmin {
 			List<Organization> organizations)
 		throws PortalException;
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x)
+	 */
+	@Deprecated
 	public List<Role> filterRoles(
 		PermissionChecker permissionChecker, List<Role> roles);
 
@@ -285,6 +293,10 @@ public interface UsersAdmin {
 			long[] userIds)
 		throws PortalException;
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x)
+	 */
+	@Deprecated
 	public List<UserGroupRole> filterUserGroupRoles(
 			PermissionChecker permissionChecker,
 			List<UserGroupRole> userGroupRoles)

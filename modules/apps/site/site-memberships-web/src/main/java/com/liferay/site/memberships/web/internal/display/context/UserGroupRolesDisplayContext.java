@@ -32,7 +32,7 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.util.comparator.RoleNameComparator;
 import com.liferay.portlet.rolesadmin.search.RoleSearch;
 import com.liferay.portlet.rolesadmin.search.RoleSearchTerms;
-import com.liferay.users.admin.kernel.util.UsersAdminUtil;
+import com.liferay.roles.admin.role.RoleFilterUtil;
 
 import java.util.List;
 import java.util.Objects;
@@ -222,7 +222,7 @@ public class UserGroupRolesDisplayContext {
 			Collectors.toList()
 		);
 
-		roles = UsersAdminUtil.filterGroupRoles(
+		roles = RoleFilterUtil.filterGroupRoles(
 			themeDisplay.getPermissionChecker(), getGroupId(), roles);
 
 		int rolesCount = roles.size();

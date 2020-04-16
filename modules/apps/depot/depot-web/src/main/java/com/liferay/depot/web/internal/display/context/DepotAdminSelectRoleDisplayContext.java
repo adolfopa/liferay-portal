@@ -44,7 +44,7 @@ import com.liferay.portlet.rolesadmin.search.RoleSearchTerms;
 import com.liferay.portlet.usersadmin.search.GroupSearch;
 import com.liferay.portlet.usersadmin.search.GroupSearchTerms;
 import com.liferay.roles.admin.kernel.util.RolesAdminUtil;
-import com.liferay.users.admin.kernel.util.UsersAdminUtil;
+import com.liferay.roles.admin.role.RoleFilterUtil;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -274,7 +274,7 @@ public class DepotAdminSelectRoleDisplayContext {
 				QueryUtil.ALL_POS, roleSearch.getOrderByComparator());
 
 			if (_group != null) {
-				roles = UsersAdminUtil.filterGroupRoles(
+				roles = RoleFilterUtil.filterGroupRoles(
 					_themeDisplay.getPermissionChecker(), _group.getGroupId(),
 					roles);
 			}

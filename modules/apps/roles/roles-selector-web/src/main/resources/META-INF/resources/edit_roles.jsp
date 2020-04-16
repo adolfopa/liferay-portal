@@ -35,7 +35,7 @@ PortletURL portletURL = (PortletURL)request.getAttribute("edit_roles.jsp-portlet
 
 	List<Role> roles = RoleLocalServiceUtil.search(company.getCompanyId(), searchTerms.getKeywords(), new Integer[] {roleType}, QueryUtil.ALL_POS, QueryUtil.ALL_POS, searchContainer.getOrderByComparator());
 
-	roles = UsersAdminUtil.filterGroupRoles(permissionChecker, group.getGroupId(), roles);
+	roles = RoleFilterUtil.filterGroupRoles(permissionChecker, group.getGroupId(), roles);
 
 	total = roles.size();
 

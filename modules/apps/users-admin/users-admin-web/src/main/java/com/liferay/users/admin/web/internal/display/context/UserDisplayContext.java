@@ -46,6 +46,7 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.roles.admin.role.RoleFilterUtil;
 import com.liferay.users.admin.kernel.util.UsersAdminUtil;
 
 import java.util.ArrayList;
@@ -176,7 +177,7 @@ public class UserDisplayContext {
 			return _selUser.getRoles();
 		}
 
-		return UsersAdminUtil.filterRoles(
+		return RoleFilterUtil.filterRoles(
 			_permissionChecker, _selUser.getRoles());
 	}
 
@@ -280,7 +281,7 @@ public class UserDisplayContext {
 			return userGroupRoles;
 		}
 
-		return UsersAdminUtil.filterUserGroupRoles(
+		return RoleFilterUtil.filterUserGroupRoles(
 			_permissionChecker, userGroupRoles);
 	}
 

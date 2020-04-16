@@ -29,7 +29,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portlet.rolesadmin.search.RoleSearch;
 import com.liferay.portlet.rolesadmin.search.RoleSearchTerms;
-import com.liferay.users.admin.kernel.util.UsersAdminUtil;
+import com.liferay.roles.admin.role.RoleFilterUtil;
 
 import java.util.List;
 
@@ -186,7 +186,7 @@ public class RolesDisplayContext {
 			new Integer[] {getRoleType()}, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
 			roleSearch.getOrderByComparator());
 
-		roles = UsersAdminUtil.filterGroupRoles(
+		roles = RoleFilterUtil.filterGroupRoles(
 			themeDisplay.getPermissionChecker(), getGroupId(), roles);
 
 		int rolesCount = roles.size();

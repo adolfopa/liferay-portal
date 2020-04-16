@@ -26,14 +26,18 @@ import com.liferay.portal.kernel.service.permission.GroupPermissionUtil;
 import com.liferay.portal.kernel.service.permission.OrganizationPermissionUtil;
 import com.liferay.portal.kernel.service.permission.RolePermissionUtil;
 import com.liferay.portal.kernel.service.permission.UserGroupRolePermissionUtil;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.roles.admin.role.RoleFilter;
+import com.liferay.roles.admin.role.type.contributor.RoleTypeContributor;
+import com.liferay.roles.admin.role.type.contributor.provider.RoleTypeContributorProvider;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Adolfo Pérez
@@ -53,11 +57,7 @@ public class RoleFilterImpl implements RoleFilter {
 		while (itr.hasNext()) {
 			Role groupRole = itr.next();
 
-			String roleName = groupRole.getName();
-
-			if (roleName.equals(RoleConstants.ORGANIZATION_USER) ||
-				roleName.equals(RoleConstants.SITE_MEMBER)) {
-
+			if (_isMemberRole(groupRole)) {
 				itr.remove();
 			}
 		}
@@ -84,12 +84,7 @@ public class RoleFilterImpl implements RoleFilter {
 		while (itr.hasNext()) {
 			Role groupRole = itr.next();
 
-			String roleName = groupRole.getName();
-
-			if (roleName.equals(RoleConstants.ORGANIZATION_ADMINISTRATOR) ||
-				roleName.equals(RoleConstants.ORGANIZATION_OWNER) ||
-				roleName.equals(RoleConstants.SITE_ADMINISTRATOR) ||
-				roleName.equals(RoleConstants.SITE_OWNER) ||
+			if (_isAdministratorRole(groupRole) ||
 				!RolePermissionUtil.contains(
 					permissionChecker, groupId, groupRole.getRoleId(),
 					ActionKeys.ASSIGN_MEMBERS)) {
@@ -110,16 +105,7 @@ public class RoleFilterImpl implements RoleFilter {
 		Iterator<Role> itr = filteredRoles.iterator();
 
 		while (itr.hasNext()) {
-			Role role = itr.next();
-
-			String roleName = role.getName();
-
-			if (roleName.equals(RoleConstants.GUEST) ||
-				roleName.equals(RoleConstants.ORGANIZATION_USER) ||
-				roleName.equals(RoleConstants.OWNER) ||
-				roleName.equals(RoleConstants.SITE_MEMBER) ||
-				roleName.equals(RoleConstants.USER)) {
-
+			if (_isImpliedRole(itr.next())) {
 				itr.remove();
 			}
 		}
@@ -158,13 +144,7 @@ public class RoleFilterImpl implements RoleFilter {
 		while (itr.hasNext()) {
 			UserGroupRole userGroupRole = itr.next();
 
-			Role role = userGroupRole.getRole();
-
-			String roleName = role.getName();
-
-			if (roleName.equals(RoleConstants.ORGANIZATION_USER) ||
-				roleName.equals(RoleConstants.SITE_MEMBER)) {
-
+			if (_isMemberRole(userGroupRole.getRole())) {
 				itr.remove();
 			}
 		}
@@ -188,5 +168,79 @@ public class RoleFilterImpl implements RoleFilter {
 
 		return filteredUserGroupRoles;
 	}
+
+	private boolean _isAdministratorRole(Role role) {
+		String roleName = role.getName();
+
+		if (roleName.equals(RoleConstants.ORGANIZATION_ADMINISTRATOR) ||
+			roleName.equals(RoleConstants.ORGANIZATION_OWNER) ||
+			roleName.equals(RoleConstants.SITE_ADMINISTRATOR) ||
+			roleName.equals(RoleConstants.SITE_OWNER)) {
+
+			return true;
+		}
+
+		RoleTypeContributor roleTypeContributor =
+			_roleTypeContributorProvider.getRoleTypeContributor(role.getType());
+
+		if ((roleTypeContributor != null) &&
+			ArrayUtil.contains(
+				roleTypeContributor.getAdministatorRoleNames(), roleName)) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private boolean _isImpliedRole(Role role) {
+		String roleName = role.getName();
+
+		if (roleName.equals(RoleConstants.GUEST) ||
+			roleName.equals(RoleConstants.ORGANIZATION_USER) ||
+			roleName.equals(RoleConstants.OWNER) ||
+			roleName.equals(RoleConstants.SITE_MEMBER) ||
+			roleName.equals(RoleConstants.USER)) {
+
+			return true;
+		}
+
+		RoleTypeContributor roleTypeContributor =
+			_roleTypeContributorProvider.getRoleTypeContributor(role.getType());
+
+		if ((roleTypeContributor != null) &&
+			ArrayUtil.contains(
+				roleTypeContributor.getImpliedRoleNames(), roleName)) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private boolean _isMemberRole(Role role) {
+		String roleName = role.getName();
+
+		if (roleName.equals(RoleConstants.ORGANIZATION_USER) ||
+			roleName.equals(RoleConstants.SITE_MEMBER)) {
+
+			return true;
+		}
+
+		RoleTypeContributor roleTypeContributor =
+			_roleTypeContributorProvider.getRoleTypeContributor(role.getType());
+
+		if ((roleTypeContributor != null) &&
+			ArrayUtil.contains(
+				roleTypeContributor.getMemberRoleNames(), roleName)) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	@Reference
+	private RoleTypeContributorProvider _roleTypeContributorProvider;
 
 }

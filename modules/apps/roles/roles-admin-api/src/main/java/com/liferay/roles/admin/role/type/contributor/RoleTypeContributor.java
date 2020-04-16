@@ -29,6 +29,16 @@ import java.util.Locale;
 public interface RoleTypeContributor {
 
 	/**
+	 * Returns a list of role names which grant administrator permissions in a
+	 * scope.
+	 *
+	 * @return
+	 */
+	public default String[] getAdministatorRoleNames() {
+		return new String[0];
+	}
+
+	/**
 	 * Optionally returns a className to be used when creating a new role of
 	 * this type. If none is given, the class name of Role will be used.
 	 *
@@ -62,6 +72,15 @@ public interface RoleTypeContributor {
 	 * @return
 	 */
 	public default String[] getImpliedRoleNames() {
+		return new String[0];
+	}
+
+	/**
+	 * Returns a list of role names which determine membership to a scope.
+	 *
+	 * @return
+	 */
+	public default String[] getMemberRoleNames() {
 		return new String[0];
 	}
 

@@ -25,9 +25,11 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
+import com.liferay.portal.kernel.model.GroupedModel;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.Organization;
 import com.liferay.portal.kernel.model.OrganizationConstants;
+import com.liferay.portal.kernel.model.PersistedModel;
 import com.liferay.portal.kernel.model.PortletConstants;
 import com.liferay.portal.kernel.model.Resource;
 import com.liferay.portal.kernel.model.ResourceConstants;
@@ -45,6 +47,8 @@ import com.liferay.portal.kernel.security.permission.contributor.RoleContributor
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.service.OrganizationLocalServiceUtil;
+import com.liferay.portal.kernel.service.PersistedModelLocalService;
+import com.liferay.portal.kernel.service.PersistedModelLocalServiceRegistryUtil;
 import com.liferay.portal.kernel.service.ResourceLocalServiceUtil;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalServiceUtil;
 import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
@@ -204,6 +208,28 @@ public class AdvancedPermissionChecker extends BasePermissionChecker {
 		stopWatch.start();
 
 		long groupId = 0;
+
+		PersistedModelLocalService persistedModelLocalService =
+			PersistedModelLocalServiceRegistryUtil.
+				getPersistedModelLocalService(name);
+
+		if (persistedModelLocalService != null) {
+			try {
+				PersistedModel persistedModel =
+					persistedModelLocalService.getPersistedModel(
+						Long.valueOf(primKey));
+
+				if (persistedModel instanceof GroupedModel) {
+					GroupedModel groupedModel = (GroupedModel)persistedModel;
+
+					groupId = groupedModel.getGroupId();
+
+					group = GroupLocalServiceUtil.getGroup(groupId);
+				}
+			}
+			catch (PortalException portalException) {
+			}
+		}
 
 		try {
 			if (group != null) {

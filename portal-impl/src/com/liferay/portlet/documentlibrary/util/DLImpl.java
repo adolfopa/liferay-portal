@@ -178,6 +178,10 @@ public class DLImpl implements DL {
 		return sb.toString();
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
 	@Override
 	public Set<String> getAllMediaGalleryMimeTypes() {
 		return _allMediaGalleryMimeTypes;

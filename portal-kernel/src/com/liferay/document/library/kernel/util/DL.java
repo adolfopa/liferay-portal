@@ -58,6 +58,10 @@ public interface DL {
 	public String getAbsolutePath(PortletRequest portletRequest, long folderId)
 		throws PortalException;
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
 	public Set<String> getAllMediaGalleryMimeTypes();
 
 	public String getDDMStructureKey(DLFileEntryType dlFileEntryType);

@@ -16,7 +16,6 @@ package com.liferay.document.library.web.internal.settings;
 
 import com.liferay.document.library.constants.DLPortletKeys;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
-import com.liferay.document.library.kernel.util.DLUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.settings.FallbackKeys;
@@ -26,9 +25,13 @@ import com.liferay.portal.kernel.settings.Settings;
 import com.liferay.portal.kernel.settings.SettingsFactoryUtil;
 import com.liferay.portal.kernel.settings.TypedSettings;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.kernel.util.SetUtil;
 
 import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * @author Sergio González
@@ -168,7 +171,23 @@ public class DLPortletInstanceSettings {
 	}
 
 	private static final String[] _MIME_TYPES_DEFAULT = ArrayUtil.toStringArray(
-		DLUtil.getAllMediaGalleryMimeTypes());
+		new TreeSet<String>() {
+			{
+				addAll(
+					SetUtil.fromArray(
+						PropsUtil.getArray(
+							PropsKeys.DL_FILE_ENTRY_PREVIEW_AUDIO_MIME_TYPES)));
+				addAll(
+					SetUtil.fromArray(
+						PropsUtil.getArray(
+							PropsKeys.DL_FILE_ENTRY_PREVIEW_VIDEO_MIME_TYPES)));
+				addAll(
+					SetUtil.fromArray(
+						PropsUtil.getArray(
+							PropsKeys.DL_FILE_ENTRY_PREVIEW_IMAGE_MIME_TYPES)));
+				add(ContentTypes.IMAGE_SVG_XML);
+			}
+		});
 
 	static {
 		SettingsFactoryUtil.registerSettingsMetadata(

@@ -69,19 +69,33 @@ import org.osgi.service.component.annotations.Reference;
 public class MessageListenerImpl implements MessageListener {
 
 	@Override
-	public boolean accept(String from, String recipient, Message message) {
+	public boolean accept(
+		String from, List<String> recipients, Message message) {
+
 		try {
 			if (isAutoReply(message)) {
 				return false;
 			}
 
-			String messageIdString = getMessageIdString(recipient, message);
+			String messageIdString = null;
 
-			if ((messageIdString == null) ||
-				!messageIdString.startsWith(
-					MBMailUtil.MESSAGE_POP_PORTLET_PREFIX,
-					MBMailUtil.getMessageIdStringOffset())) {
+			boolean valid = false;
 
+			for (String recipient : recipients) {
+				messageIdString = getMessageIdString(recipient, message);
+
+				if ((messageIdString != null) &&
+					messageIdString.startsWith(
+						MBMailUtil.MESSAGE_POP_PORTLET_PREFIX,
+						MBMailUtil.getMessageIdStringOffset())) {
+
+					valid = true;
+
+					break;
+				}
+			}
+
+			if (!valid) {
 				return false;
 			}
 
@@ -121,7 +135,7 @@ public class MessageListenerImpl implements MessageListener {
 	}
 
 	@Override
-	public void deliver(String from, String recipient, Message message)
+	public void deliver(String from, List<String> recipients, Message message)
 		throws MessageListenerException {
 
 		List<ObjectValuePair<String, InputStream>> inputStreamOVPs = null;
@@ -131,13 +145,26 @@ public class MessageListenerImpl implements MessageListener {
 
 			stopWatch.start();
 
-			if (_log.isDebugEnabled()) {
-				_log.debug(
-					StringBundler.concat(
-						"Deliver message from ", from, " to ", recipient));
-			}
+			String messageIdString = null;
 
-			String messageIdString = getMessageIdString(recipient, message);
+			for (String recipient : recipients) {
+				messageIdString = getMessageIdString(recipient, message);
+
+				if ((messageIdString != null) &&
+					messageIdString.startsWith(
+						MBMailUtil.MESSAGE_POP_PORTLET_PREFIX,
+						MBMailUtil.getMessageIdStringOffset())) {
+
+					if (_log.isDebugEnabled()) {
+						_log.debug(
+							StringBundler.concat(
+								"Deliver message from ", from, " to ",
+								recipient));
+					}
+
+					break;
+				}
+			}
 
 			Company company = getCompany(messageIdString);
 

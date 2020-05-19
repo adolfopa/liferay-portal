@@ -25,24 +25,41 @@ dependencies {
 	compileOnly project(":core:petra:petra-string")
 }
 
+task processAnotherSanitizerConfiguration(type: AntiSamyTask)
 task processDefaultSanitizerConfiguration(type: AntiSamyTask)
+
+processAnotherSanitizerConfiguration {
+
+	sanitizerConfigurationFile = new File("src/main/resources/META-INF/resources/custom-sanitizer-configuration.xml")
+
+	filter {
+		String line ->
+
+			if (line.contains(
+					'<directive name="maxInputSize" value="20000"/>')) {
+				line = line.replace "20000", "321000"
+			}
+
+			return line
+	}
+}
 
 processDefaultSanitizerConfiguration{
 	filter {
 		String line ->
 
-		if (line.contains('<directive name="maxInputSize" value="20000"/>')) {
-			line = line.replace "20000", "200000"
-		}
+			if (line.contains('<directive name="maxInputSize" value="20000"/>')) {
+				line = line.replace "20000", "200000"
+			}
 
-		if (line.contains('<regexp name="onsiteURL" value=')) {
-			line = '		<regexp name="onsiteURL" value="^(?![\\p{L}\\p{N}\\\\\\.\\#@\\$%\\*\\+&amp;;\\-_~,\\?=/!]*(&amp;colon))[\\p{L}\\p{N}\\\\\\.\\#@\\$%\\*\\+&amp;;\\-_~,\\?=/!]*"/>'
-		}
-		else if (line.contains('<regexp name="offsiteURL" value=')) {
-			line = '		<regexp name="offsiteURL" value="(\\s)*((ht|f)tp(s?)://|mailto:)[\\p{L}\\p{N}]+[\\p{L}\\p{N}\\p{Zs}\\.\\#@\\$%\\*\\+&amp;;:\\-_~,\\?=/!\\(\\)]*(\\s)*"/>'
-		}
-		else if (line.contains('<tag-rules>')) {
-			line = """\
+			if (line.contains('<regexp name="onsiteURL" value=')) {
+				line = '		<regexp name="onsiteURL" value="^(?![\\p{L}\\p{N}\\\\\\.\\#@\\$%\\*\\+&amp;;\\-_~,\\?=/!]*(&amp;colon))[\\p{L}\\p{N}\\\\\\.\\#@\\$%\\*\\+&amp;;\\-_~,\\?=/!]*"/>'
+			}
+			else if (line.contains('<regexp name="offsiteURL" value=')) {
+				line = '		<regexp name="offsiteURL" value="(\\s)*((ht|f)tp(s?)://|mailto:)[\\p{L}\\p{N}]+[\\p{L}\\p{N}\\p{Zs}\\.\\#@\\$%\\*\\+&amp;;:\\-_~,\\?=/!\\(\\)]*(\\s)*"/>'
+			}
+			else if (line.contains('<tag-rules>')) {
+				line = """\
 				|	<allowed-empty-tags>
 				|		<literal-list>
 				|			<literal value="br"/>
@@ -105,27 +122,27 @@ processDefaultSanitizerConfiguration{
 				|		<tag name="summary" action="validate" />
 				|		<tag name="time" action="validate" />
 				|		<tag name="wbr" action="validate" />""".stripMargin()
-		}
-		else if (line.contains('<tag name="a" action="validate">')) {
-			line = """\
+			}
+			else if (line.contains('<tag name="a" action="validate">')) {
+				line = """\
 				|		<tag name="a" action="validate">
 				|			<attribute name="target">
 				|				<regexp-list>
 				|					<regexp name="htmlId"/>
 				|				</regexp-list>
 				|			</attribute>""".stripMargin()
-		}
-		else if (line.contains('<tag name="img"')) {
-			line = """\
+			}
+			else if (line.contains('<tag name="img"')) {
+				line = """\
 				|${line}
 				|			<attribute name="data-fileentryid" onInvalid="removeAttribute">
 				|				<regexp-list>
 				|					<regexp name="positiveInteger"/>
 				|				</regexp-list>
 				|			</attribute>""".stripMargin()
-		}
-		else if (line.contains('<tag name="ol" action="validate"/>')) {
-			line = """\
+			}
+			else if (line.contains('<tag name="ol" action="validate"/>')) {
+				line = """\
 				|		<tag name="ol" action="validate">
 				|			<attribute name="type">
 				|				<literal-list>
@@ -137,9 +154,9 @@ processDefaultSanitizerConfiguration{
 				|				</literal-list>
 				|			</attribute>
 				|		</tag>""".stripMargin()
-		}
+			}
 
-		return line
+			return line
 	}
 }
 
@@ -173,4 +190,5 @@ class AntiSamyTask extends Copy {
 
 processResources {
 	dependsOn processDefaultSanitizerConfiguration
+	dependsOn processAnotherSanitizerConfiguration
 }

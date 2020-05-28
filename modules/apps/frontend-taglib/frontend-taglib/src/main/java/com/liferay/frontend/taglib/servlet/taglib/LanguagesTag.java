@@ -15,6 +15,19 @@
 package com.liferay.frontend.taglib.servlet.taglib;
 
 import com.liferay.frontend.taglib.servlet.taglib.base.BaseBarTag;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.WebKeys;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -23,12 +36,28 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class LanguagesTag extends BaseBarTag {
 
+	public Locale[] getSiteAvailableLocales() {
+		return _siteAvailableLocales;
+	}
+
+	public String getSiteDefaultLocaleId() {
+		return _siteDefaultLocaleId;
+	}
+
 	public boolean isInheritLocales() {
 		return _inheritLocales;
 	}
 
 	public void setInheritLocales(boolean inheritLocales) {
 		_inheritLocales = inheritLocales;
+	}
+
+	public void setSiteAvailableLocales(Locale[] siteAvailableLocales) {
+		_siteAvailableLocales = siteAvailableLocales;
+	}
+
+	public void setSiteDefaultLocaleId(String siteDefaultLocaleId) {
+		_siteDefaultLocaleId = siteDefaultLocaleId;
 	}
 
 	@Override
@@ -45,9 +74,69 @@ public class LanguagesTag extends BaseBarTag {
 
 	@Override
 	protected void setAttributes(HttpServletRequest httpServletRequest) {
+		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		JSONArray availableLocalesJSONArray = getAvailableLocalesJSONArray(
+			themeDisplay.getLocale());
+		Locale defaultLocale = null;
+
+		try {
+			defaultLocale = themeDisplay.getCompany().getLocale();
+		}
+		catch (PortalException e) {
+			e.printStackTrace();
+		}
+
+		JSONArray siteAvailableLocalesJSONArray =
+			getSiteAvailableLocalesJSONArray(themeDisplay.getLocale());
+
+		Map<String, Object> data = new HashMap<>();
+
+		data.put("availableLocales", availableLocalesJSONArray);
+		data.put("defaultLocaleId", LocaleUtil.toLanguageId(defaultLocale));
+		data.put("inheritLocales", _inheritLocales);
+		data.put("siteAvailableLocales", siteAvailableLocalesJSONArray);
+		data.put("siteDefaultLocaleId", _siteDefaultLocaleId);
+
 		httpServletRequest.setAttribute(
-			"liferay-frontend:languages:inheritLocales", _inheritLocales);
+			"liferay-frontend:languages:data", data);
+	}
+
+	private JSONArray getAvailableLocalesJSONArray(Locale locale) {
+		JSONArray availableLocalesJSONArray = JSONFactoryUtil.createJSONArray();
+
+		for (Locale availableLocale : LanguageUtil.getAvailableLocales()) {
+			JSONObject languageObject = JSONUtil.put(
+				"displayName", availableLocale.getDisplayName(locale)
+			).put(
+				"localeId", LocaleUtil.toLanguageId(availableLocale)
+			);
+
+			availableLocalesJSONArray.put(languageObject);
+		}
+
+		return availableLocalesJSONArray;
+	}
+
+	private JSONArray getSiteAvailableLocalesJSONArray(Locale locale) {
+		JSONArray siteAvailableLocalesJSONArray =
+			JSONFactoryUtil.createJSONArray();
+
+		for (Locale siteAvailableLocale : _siteAvailableLocales) {
+			siteAvailableLocalesJSONArray.put(
+				JSONUtil.put(
+					"displayName", siteAvailableLocale.getDisplayName(locale)
+				).put(
+					"localeId", LocaleUtil.toLanguageId(siteAvailableLocale)
+				));
+		}
+
+		return siteAvailableLocalesJSONArray;
 	}
 
 	private boolean _inheritLocales;
+	private Locale[] _siteAvailableLocales;
+	private String _siteDefaultLocaleId;
+
 }

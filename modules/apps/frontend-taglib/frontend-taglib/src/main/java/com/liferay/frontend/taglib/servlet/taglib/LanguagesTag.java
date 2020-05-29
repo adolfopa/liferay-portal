@@ -21,13 +21,14 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -42,6 +43,10 @@ public class LanguagesTag extends BaseBarTag {
 
 	public String getSiteDefaultLocaleId() {
 		return _siteDefaultLocaleId;
+	}
+
+	public Object getTranslatedLanguages() {
+		return _translatedLanguages;
 	}
 
 	public boolean isInheritLocales() {
@@ -60,14 +65,9 @@ public class LanguagesTag extends BaseBarTag {
 		_siteDefaultLocaleId = siteDefaultLocaleId;
 	}
 
-	public Object getTranslatedLanguages() {
-		return _translatedLanguages;
-	}
-
 	public void setTranslatedLanguages(Object translatedLanguages) {
-		this._translatedLanguages = translatedLanguages;
+		_translatedLanguages = translatedLanguages;
 	}
-
 
 	@Override
 	protected void cleanUp() {
@@ -89,34 +89,38 @@ public class LanguagesTag extends BaseBarTag {
 		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		JSONArray availableLocalesJSONArray = getAvailableLocalesJSONArray(
-			themeDisplay.getLocale());
 		Locale defaultLocale = null;
 
 		try {
-			defaultLocale = themeDisplay.getCompany().getLocale();
+			Company company = themeDisplay.getCompany();
+
+			defaultLocale = company.getLocale();
 		}
-		catch (PortalException e) {
-			e.printStackTrace();
+		catch (PortalException portalException) {
+			portalException.printStackTrace();
 		}
 
-		JSONArray siteAvailableLocalesJSONArray =
-			getSiteAvailableLocalesJSONArray(themeDisplay.getLocale());
-
-		Map<String, Object> data = new HashMap<>();
-
-		data.put("availableLocales", availableLocalesJSONArray);
-		data.put("defaultLocaleId", LocaleUtil.toLanguageId(defaultLocale));
-		data.put("inheritLocales", _inheritLocales);
-		data.put("siteAvailableLocales", siteAvailableLocalesJSONArray);
-		data.put("siteDefaultLocaleId", _siteDefaultLocaleId);
-		data.put("translatedLanguages", _translatedLanguages);
+		HashMap<String, Object> data = HashMapBuilder.<String, Object>put(
+			"availableLocales",
+			_getAvailableLocalesJSONArray(themeDisplay.getLocale())
+		).put(
+			"defaultLocaleId", LocaleUtil.toLanguageId(defaultLocale)
+		).put(
+			"inheritLocales", _inheritLocales
+		).put(
+			"siteAvailableLocales",
+			_getSiteAvailableLocalesJSONArray(themeDisplay.getLocale())
+		).put(
+			"siteDefaultLocaleId", _siteDefaultLocaleId
+		).put(
+			"translatedLanguages", _translatedLanguages
+		).build();
 
 		httpServletRequest.setAttribute(
 			"liferay-frontend:languages:data", data);
 	}
 
-	private JSONArray getAvailableLocalesJSONArray(Locale locale) {
+	private JSONArray _getAvailableLocalesJSONArray(Locale locale) {
 		JSONArray availableLocalesJSONArray = JSONFactoryUtil.createJSONArray();
 
 		for (Locale availableLocale : LanguageUtil.getAvailableLocales()) {
@@ -132,7 +136,7 @@ public class LanguagesTag extends BaseBarTag {
 		return availableLocalesJSONArray;
 	}
 
-	private JSONArray getSiteAvailableLocalesJSONArray(Locale locale) {
+	private JSONArray _getSiteAvailableLocalesJSONArray(Locale locale) {
 		JSONArray siteAvailableLocalesJSONArray =
 			JSONFactoryUtil.createJSONArray();
 

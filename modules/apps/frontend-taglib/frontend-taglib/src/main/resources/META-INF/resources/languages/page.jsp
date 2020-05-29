@@ -37,9 +37,11 @@
 </liferay-ui:error>
 
 <div class="languages">
+
 	<%
 	Map<String, Object> data = (Map<String, Object>)request.getAttribute("liferay-frontend:languages:data");
 	%>
+
 	<react:component
 		data="<%= data %>"
 		module="languages/components/Languages.es"

@@ -15,3 +15,8 @@
 --%>
 
 <%@ include file="/init.jsp" %>
+
+<%@ page import="com.liferay.portal.kernel.exception.DuplicateGroupException" %><%@
+page import="com.liferay.portal.kernel.exception.LocaleException" %><%@
+page import="com.liferay.portal.kernel.util.LocaleUtil" %><%@
+page import="com.liferay.portal.kernel.util.StringUtil" %>

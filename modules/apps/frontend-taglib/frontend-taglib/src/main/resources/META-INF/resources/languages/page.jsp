@@ -16,11 +16,30 @@
 
 <%@ include file="/languages/init.jsp" %>
 
-<%
-Map<String, Object> data = (Map<String, Object>)request.getAttribute("liferay-frontend:languages:data");
-%>
+<liferay-ui:error exception="<%= LocaleException.class %>">
 
-<div>
+	<%
+	LocaleException le = (LocaleException)errorException;
+	%>
+
+	<c:choose>
+		<c:when test="<%= le.getType() == LocaleException.TYPE_DEFAULT %>">
+			<liferay-ui:message key="you-cannot-remove-a-language-that-is-the-current-default-language" />
+		</c:when>
+		<c:when test="<%= le.getType() == LocaleException.TYPE_DISPLAY_SETTINGS %>">
+			<liferay-ui:message arguments='<%= "<em>" + StringUtil.merge(LocaleUtil.toDisplayNames(le.getSourceAvailableLocales(), locale), StringPool.COMMA_AND_SPACE) + "</em>" %>' key="please-select-the-available-languages-of-the-asset-library-among-the-available-languages-of-the-portal-x" translateArguments="<%= false %>" />
+		</c:when>
+	</c:choose>
+</liferay-ui:error>
+
+<liferay-ui:error exception="<%= DuplicateGroupException.class %>">
+	<liferay-ui:message key="there-is-already-a-workspace-with-the-same-name-in-the-selected-default-language.-please-enter-a-unique-name" />
+</liferay-ui:error>
+
+<div class="languages">
+	<%
+	Map<String, Object> data = (Map<String, Object>)request.getAttribute("liferay-frontend:languages:data");
+	%>
 	<react:component
 		data="<%= data %>"
 		module="languages/components/Languages.es"

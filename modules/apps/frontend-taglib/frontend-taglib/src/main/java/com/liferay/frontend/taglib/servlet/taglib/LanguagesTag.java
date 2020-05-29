@@ -60,11 +60,23 @@ public class LanguagesTag extends BaseBarTag {
 		_siteDefaultLocaleId = siteDefaultLocaleId;
 	}
 
+	public Object getTranslatedLanguages() {
+		return _translatedLanguages;
+	}
+
+	public void setTranslatedLanguages(Object translatedLanguages) {
+		this._translatedLanguages = translatedLanguages;
+	}
+
+
 	@Override
 	protected void cleanUp() {
 		super.cleanUp();
 
 		_inheritLocales = false;
+		_siteAvailableLocales = null;
+		_siteDefaultLocaleId = null;
+		_translatedLanguages = null;
 	}
 
 	@Override
@@ -98,6 +110,7 @@ public class LanguagesTag extends BaseBarTag {
 		data.put("inheritLocales", _inheritLocales);
 		data.put("siteAvailableLocales", siteAvailableLocalesJSONArray);
 		data.put("siteDefaultLocaleId", _siteDefaultLocaleId);
+		data.put("translatedLanguages", _translatedLanguages);
 
 		httpServletRequest.setAttribute(
 			"liferay-frontend:languages:data", data);
@@ -138,5 +151,6 @@ public class LanguagesTag extends BaseBarTag {
 	private boolean _inheritLocales;
 	private Locale[] _siteAvailableLocales;
 	private String _siteDefaultLocaleId;
+	private Object _translatedLanguages;
 
 }

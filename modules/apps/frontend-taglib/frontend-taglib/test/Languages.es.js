@@ -22,7 +22,7 @@ import {
 } from '@testing-library/react';
 import React from 'react';
 
-import Languages from '../src/main/resources/META-INF/resources/js/Languages.es';
+import Languages from '../src/main/resources/META-INF/resources/languages/components/Languages.es';
 
 const availableLocales = [
 	{displayName: 'a', localeId: 'a'},

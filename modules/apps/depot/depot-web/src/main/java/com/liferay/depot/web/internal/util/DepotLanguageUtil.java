@@ -15,10 +15,6 @@
 package com.liferay.depot.web.internal.util;
 
 import com.liferay.petra.string.StringUtil;
-import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
-import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -32,40 +28,6 @@ import java.util.Set;
  * @author Adolfo Pérez
  */
 public class DepotLanguageUtil {
-
-	public static JSONArray getAvailableLocalesJSONArray(Locale locale) {
-		JSONArray availableLocalesJSONArray = JSONFactoryUtil.createJSONArray();
-
-		for (Locale availableLocale : LanguageUtil.getAvailableLocales()) {
-			JSONObject languageObject = JSONUtil.put(
-				"displayName", availableLocale.getDisplayName(locale)
-			).put(
-				"localeId", LocaleUtil.toLanguageId(availableLocale)
-			);
-
-			availableLocalesJSONArray.put(languageObject);
-		}
-
-		return availableLocalesJSONArray;
-	}
-
-	public static JSONArray getDepotAvailableLocalesJSONArray(
-		Group group, Locale locale) {
-
-		JSONArray depotAvailableLocalesJSONArray =
-			JSONFactoryUtil.createJSONArray();
-
-		for (Locale depotAvailableLocale : getDepotAvailableLocales(group)) {
-			depotAvailableLocalesJSONArray.put(
-				JSONUtil.put(
-					"displayName", depotAvailableLocale.getDisplayName(locale)
-				).put(
-					"localeId", LocaleUtil.toLanguageId(depotAvailableLocale)
-				));
-		}
-
-		return depotAvailableLocalesJSONArray;
-	}
 
 	public static Locale[] getDepotAvailableLocales(Group group) {
 		UnicodeProperties typeSettingsUnicodeProperties =

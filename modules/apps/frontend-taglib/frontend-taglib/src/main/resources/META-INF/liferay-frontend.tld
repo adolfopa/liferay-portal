@@ -1042,9 +1042,10 @@
 			<type>java.util.Locale[]</type>
 		</attribute>
 		<attribute>
-			<name>siteDefaultLocaleId</name>
+			<name>siteDefaultLocale</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
+			<type>java.util.Locale</type>
 		</attribute>
 		<attribute>
 			<name>translatedLanguages</name>

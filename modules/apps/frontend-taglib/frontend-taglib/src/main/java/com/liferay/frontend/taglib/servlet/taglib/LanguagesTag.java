@@ -43,8 +43,8 @@ public class LanguagesTag extends BaseBarTag {
 		return _siteAvailableLocales;
 	}
 
-	public String getSiteDefaultLocaleId() {
-		return _siteDefaultLocaleId;
+	public Locale getSiteDefaultLocale() {
+		return _siteDefaultLocale;
 	}
 
 	public Object getTranslatedLanguages() {
@@ -63,8 +63,8 @@ public class LanguagesTag extends BaseBarTag {
 		_siteAvailableLocales = siteAvailableLocales;
 	}
 
-	public void setSiteDefaultLocaleId(String siteDefaultLocaleId) {
-		_siteDefaultLocaleId = siteDefaultLocaleId;
+	public void setSiteDefaultLocale(Locale siteDefaultLocale) {
+		_siteDefaultLocale = siteDefaultLocale;
 	}
 
 	public void setTranslatedLanguages(Object translatedLanguages) {
@@ -77,7 +77,7 @@ public class LanguagesTag extends BaseBarTag {
 
 		_inheritLocales = false;
 		_siteAvailableLocales = null;
-		_siteDefaultLocaleId = null;
+		_siteDefaultLocale = null;
 		_translatedLanguages = null;
 	}
 
@@ -102,7 +102,8 @@ public class LanguagesTag extends BaseBarTag {
 			"siteAvailableLocales",
 			_getSiteAvailableLocalesJSONArray(themeDisplay.getLocale())
 		).put(
-			"siteDefaultLocaleId", _siteDefaultLocaleId
+			"siteDefaultLocaleId",
+			LanguageUtil.getLanguageId(_siteDefaultLocale)
 		).put(
 			"translatedLanguages", _translatedLanguages
 		).build();
@@ -160,7 +161,7 @@ public class LanguagesTag extends BaseBarTag {
 
 	private boolean _inheritLocales;
 	private Locale[] _siteAvailableLocales;
-	private String _siteDefaultLocaleId;
+	private Locale _siteDefaultLocale;
 	private Object _translatedLanguages;
 
 }

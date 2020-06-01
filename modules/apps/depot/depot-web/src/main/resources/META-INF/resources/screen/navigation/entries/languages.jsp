@@ -37,6 +37,6 @@ boolean inheritLocales = GetterUtil.getBoolean(typeSettingsProperties.getPropert
 <liferay-frontend:languages
 	inheritLocales="<%= inheritLocales %>"
 	siteAvailableLocales="<%= DepotLanguageUtil.getDepotAvailableLocales(group) %>"
-	siteDefaultLocaleId="<%= LocaleUtil.toLanguageId(PortalUtil.getSiteDefaultLocale(group.getGroupId())) %>"
+	siteDefaultLocale="<%= PortalUtil.getSiteDefaultLocale(group.getGroupId()) %>"
 	translatedLanguages="<%= group.getNameMap() %>"
 />

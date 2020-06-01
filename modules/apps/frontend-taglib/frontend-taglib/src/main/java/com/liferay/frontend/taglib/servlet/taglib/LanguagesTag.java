@@ -21,6 +21,8 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
@@ -89,22 +91,11 @@ public class LanguagesTag extends BaseBarTag {
 		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		Locale defaultLocale = null;
-
-		try {
-			Company company = themeDisplay.getCompany();
-
-			defaultLocale = company.getLocale();
-		}
-		catch (PortalException portalException) {
-			portalException.printStackTrace();
-		}
-
 		HashMap<String, Object> data = HashMapBuilder.<String, Object>put(
 			"availableLocales",
 			_getAvailableLocalesJSONArray(themeDisplay.getLocale())
 		).put(
-			"defaultLocaleId", LocaleUtil.toLanguageId(defaultLocale)
+			"defaultLocaleId", _getDefaultLanguageId(themeDisplay)
 		).put(
 			"inheritLocales", _inheritLocales
 		).put(
@@ -136,6 +127,19 @@ public class LanguagesTag extends BaseBarTag {
 		return availableLocalesJSONArray;
 	}
 
+	private String _getDefaultLanguageId(ThemeDisplay themeDisplay) {
+		try {
+			Company company = themeDisplay.getCompany();
+
+			return LanguageUtil.getLanguageId(company.getLocale());
+		}
+		catch (PortalException portalException) {
+			_log.error(portalException, portalException);
+
+			return LanguageUtil.getLanguageId(LocaleUtil.getDefault());
+		}
+	}
+
 	private JSONArray _getSiteAvailableLocalesJSONArray(Locale locale) {
 		JSONArray siteAvailableLocalesJSONArray =
 			JSONFactoryUtil.createJSONArray();
@@ -151,6 +155,8 @@ public class LanguagesTag extends BaseBarTag {
 
 		return siteAvailableLocalesJSONArray;
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(LanguagesTag.class);
 
 	private boolean _inheritLocales;
 	private Locale[] _siteAvailableLocales;

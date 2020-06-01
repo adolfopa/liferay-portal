@@ -55,7 +55,7 @@ public class DepotLanguageUtil {
 		JSONArray depotAvailableLocalesJSONArray =
 			JSONFactoryUtil.createJSONArray();
 
-		for (Locale depotAvailableLocale : _getDepotAvailableLocales(group)) {
+		for (Locale depotAvailableLocale : getDepotAvailableLocales(group)) {
 			depotAvailableLocalesJSONArray.put(
 				JSONUtil.put(
 					"displayName", depotAvailableLocale.getDisplayName(locale)
@@ -67,7 +67,7 @@ public class DepotLanguageUtil {
 		return depotAvailableLocalesJSONArray;
 	}
 
-	private static Locale[] _getDepotAvailableLocales(Group group) {
+	public static Locale[] getDepotAvailableLocales(Group group) {
 		UnicodeProperties typeSettingsUnicodeProperties =
 			group.getTypeSettingsProperties();
 

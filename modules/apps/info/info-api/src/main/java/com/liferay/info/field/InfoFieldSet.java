@@ -60,14 +60,7 @@ public class InfoFieldSet implements InfoFieldSetEntry {
 		List<InfoField> allFields = new ArrayList<>();
 
 		for (InfoFieldSetEntry infoFieldSetEntry : _entries.values()) {
-			if (infoFieldSetEntry instanceof InfoField) {
-				allFields.add((InfoField)infoFieldSetEntry);
-			}
-			else if (infoFieldSetEntry instanceof InfoFieldSet) {
-				InfoFieldSet infoFieldSet = (InfoFieldSet)infoFieldSetEntry;
-
-				allFields.addAll(infoFieldSet.getAllInfoFields());
-			}
+			allFields.addAll(infoFieldSetEntry.getAllInfoFields());
 		}
 
 		return allFields;
@@ -101,6 +94,17 @@ public class InfoFieldSet implements InfoFieldSetEntry {
 		int hash = HashUtil.hash(0, _labelInfoLocalizedValue);
 
 		return HashUtil.hash(hash, _name);
+	}
+
+	@Override
+	public InfoFieldSetEntry merge(InfoFieldSetEntry infoFieldSetEntry) {
+		return new Builder(
+			_labelInfoLocalizedValue, _name
+		).addAll(
+			_entries.values()
+		).addAll(
+			infoFieldSetEntry.getInfoFieldSetEntries()
+		).build();
 	}
 
 	@Override

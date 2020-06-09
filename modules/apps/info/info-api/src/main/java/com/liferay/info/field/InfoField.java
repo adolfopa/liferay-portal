@@ -19,6 +19,8 @@ import com.liferay.info.localized.InfoLocalizedValue;
 import com.liferay.petra.lang.HashUtil;
 import com.liferay.petra.string.StringBundler;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -61,6 +63,16 @@ public class InfoField implements InfoFieldSetEntry {
 		return false;
 	}
 
+	@Override
+	public List<InfoField> getAllInfoFields() {
+		return Collections.singletonList(this);
+	}
+
+	@Override
+	public List<InfoFieldSetEntry> getInfoFieldSetEntries() {
+		return Collections.singletonList(this);
+	}
+
 	public InfoFieldType getInfoFieldType() {
 		return _infoFieldType;
 	}
@@ -87,6 +99,11 @@ public class InfoField implements InfoFieldSetEntry {
 		hash = HashUtil.hash(hash, _labelInfoLocalizedValue);
 
 		return HashUtil.hash(hash, _name);
+	}
+
+	@Override
+	public InfoFieldSetEntry merge(InfoFieldSetEntry infoFieldSetEntry) {
+		return infoFieldSetEntry;
 	}
 
 	@Override

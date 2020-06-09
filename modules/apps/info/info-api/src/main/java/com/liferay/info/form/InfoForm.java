@@ -40,12 +40,8 @@ public class InfoForm {
 	public InfoForm add(InfoFieldSet fieldSet) {
 		InfoFieldSetEntry infoFieldSetEntry = _entries.get(fieldSet.getName());
 
-		if ((infoFieldSetEntry != null) &&
-			(infoFieldSetEntry instanceof InfoFieldSet)) {
-
-			InfoFieldSet infoFieldSet = (InfoFieldSet)infoFieldSetEntry;
-
-			infoFieldSet.addAll(fieldSet.getInfoFieldSetEntries());
+		if (infoFieldSetEntry != null) {
+			_entries.put(fieldSet.getName(), infoFieldSetEntry.merge(fieldSet));
 		}
 		else {
 			_entries.put(fieldSet.getName(), fieldSet);
@@ -97,14 +93,7 @@ public class InfoForm {
 		List<InfoField> allFields = new ArrayList<>();
 
 		for (InfoFieldSetEntry infoFieldSetEntry : _entries.values()) {
-			if (infoFieldSetEntry instanceof InfoField) {
-				allFields.add((InfoField)infoFieldSetEntry);
-			}
-			else if (infoFieldSetEntry instanceof InfoFieldSet) {
-				InfoFieldSet infoFieldSet = (InfoFieldSet)infoFieldSetEntry;
-
-				allFields.addAll(infoFieldSet.getAllInfoFields());
-			}
+			allFields.addAll(infoFieldSetEntry.getAllInfoFields());
 		}
 
 		return allFields;

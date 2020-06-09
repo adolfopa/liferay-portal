@@ -39,12 +39,12 @@ public class InfoItemFieldReaderTrackerImpl
 	implements InfoItemFieldReaderTracker {
 
 	@Override
-	public List<InfoItemFieldReader> getInfoItemFieldReaders(
-		String itemClassName) {
+	public <T> List<InfoItemFieldReader<T>> getInfoItemFieldReaders(
+		Class<T> clazz) {
 
 		List<InfoItemFieldReader> infoItemRenderers =
 			_itemClassNameInfoItemFieldReaderServiceTrackerMap.getService(
-				itemClassName);
+				clazz.getName());
 
 		if (infoItemRenderers != null) {
 			return new ArrayList<>(infoItemRenderers);

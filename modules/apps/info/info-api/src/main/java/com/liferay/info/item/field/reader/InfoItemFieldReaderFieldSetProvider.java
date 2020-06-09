@@ -25,9 +25,9 @@ import java.util.List;
  */
 public interface InfoItemFieldReaderFieldSetProvider {
 
-	public InfoFieldSet getInfoFieldSet(String itemClassName);
+	public <T> InfoFieldSet getInfoFieldSet(Class<T> clazz);
 
-	public List<InfoFieldValue<Object>> getInfoFieldValues(
-		String className, Object itemObject);
+	public <T> List<InfoFieldValue<Object>> getInfoFieldValues(
+		Class<T> clazz, T itemObject);
 
 }

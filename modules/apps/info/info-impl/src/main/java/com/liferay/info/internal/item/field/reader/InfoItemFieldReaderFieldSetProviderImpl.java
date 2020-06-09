@@ -46,16 +46,18 @@ public class InfoItemFieldReaderFieldSetProviderImpl
 	implements InfoItemFieldReaderFieldSetProvider {
 
 	@Override
-	public InfoFieldSet getInfoFieldSet(String className) {
+	public <T> InfoFieldSet getInfoFieldSet(Class<T> clazz) {
 		return new InfoFieldSet.Builder(
 			InfoLocalizedValue.localize(getClass(), "fields"), "fields"
 		).add(
 			consumer -> {
-				List<InfoItemFieldReader> infoItemFieldReaders =
+				List<InfoItemFieldReader<T>> infoItemFieldReaders =
 					_infoItemFieldReaderTracker.getInfoItemFieldReaders(
-						className);
+						clazz.getName());
 
-				for (InfoItemFieldReader infoItemFieldReader : infoItemFieldReaders) {
+				for (InfoItemFieldReader<T> infoItemFieldReader :
+						infoItemFieldReaders) {
+
 					consumer.accept(infoItemFieldReader.getField());
 				}
 			}
@@ -63,18 +65,21 @@ public class InfoItemFieldReaderFieldSetProviderImpl
 	}
 
 	@Override
-	public List<InfoFieldValue<Object>> getInfoFieldValues(
-		String className, Object itemObject) {
+	public <T> List<InfoFieldValue<Object>> getInfoFieldValues(
+		Class<T> clazz, T itemObject) {
 
 		List<InfoFieldValue<Object>> infoFieldValues = new ArrayList<>();
 
-		List<InfoItemFieldReader> infoItemFieldReaders =
-			_infoItemFieldReaderTracker.getInfoItemFieldReaders(className);
+		List<InfoItemFieldReader<T>> infoItemFieldReaders =
+			_infoItemFieldReaderTracker.getInfoItemFieldReaders(
+				clazz.getName());
 
 		ServiceContext serviceContext =
 			ServiceContextThreadLocal.getServiceContext();
 
-		for (InfoItemFieldReader infoItemFieldReader : infoItemFieldReaders) {
+		for (InfoItemFieldReader<T> infoItemFieldReader :
+				infoItemFieldReaders) {
+
 			InfoField infoField = infoItemFieldReader.getField();
 			Object value = infoItemFieldReader.getValue(itemObject);
 
@@ -86,7 +91,7 @@ public class InfoItemFieldReaderFieldSetProviderImpl
 					value = SanitizerUtil.sanitize(
 						serviceContext.getCompanyId(),
 						serviceContext.getScopeGroupId(),
-						serviceContext.getUserId(), className, 0,
+						serviceContext.getUserId(), clazz.getName(), 0,
 						ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
 						(String)value, null);
 				}

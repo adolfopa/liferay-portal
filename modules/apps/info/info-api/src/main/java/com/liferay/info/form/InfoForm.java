@@ -18,6 +18,7 @@ import com.liferay.info.field.InfoField;
 import com.liferay.info.field.InfoFieldSet;
 import com.liferay.info.field.InfoFieldSetEntry;
 import com.liferay.info.localized.InfoLocalizedValue;
+import com.liferay.petra.function.UnsafeConsumer;
 import com.liferay.petra.lang.HashUtil;
 
 import java.util.ArrayList;
@@ -33,35 +34,9 @@ import java.util.Objects;
  */
 public class InfoForm {
 
-	public InfoForm(String name) {
+	public InfoForm(Map<String, InfoFieldSetEntry> entries, String name) {
+		_entries = entries;
 		_name = name;
-	}
-
-	public InfoForm add(InfoFieldSet fieldSet) {
-		InfoFieldSetEntry infoFieldSetEntry = _entries.get(fieldSet.getName());
-
-		if (infoFieldSetEntry != null) {
-			_entries.put(fieldSet.getName(), infoFieldSetEntry.merge(fieldSet));
-		}
-		else {
-			_entries.put(fieldSet.getName(), fieldSet);
-		}
-
-		return this;
-	}
-
-	public InfoForm add(InfoFieldSetEntry fieldSetEntry) {
-		_entries.put(fieldSetEntry.getName(), fieldSetEntry);
-
-		return this;
-	}
-
-	public InfoForm addAll(Collection<InfoFieldSetEntry> fieldSetEntries) {
-		for (InfoFieldSetEntry fieldSetEntry : fieldSetEntries) {
-			add(fieldSetEntry);
-		}
-
-		return this;
 	}
 
 	@Override
@@ -144,9 +119,63 @@ public class InfoForm {
 		_labelInfoLocalizedValue = labelInfoLocalizedValue;
 	}
 
+	public static class Builder {
+
+		public Builder(String name) {
+			_name = name;
+		}
+
+		public Builder add(InfoFieldSet fieldSet) {
+			InfoFieldSetEntry infoFieldSetEntry = _entries.get(
+				fieldSet.getName());
+
+			if (infoFieldSetEntry != null) {
+				_entries.put(
+					fieldSet.getName(), infoFieldSetEntry.merge(fieldSet));
+			}
+			else {
+				_entries.put(fieldSet.getName(), fieldSet);
+			}
+
+			return this;
+		}
+
+		public Builder add(InfoFieldSetEntry fieldSetEntry) {
+			_entries.put(fieldSetEntry.getName(), fieldSetEntry);
+
+			return this;
+		}
+
+		public <T extends Throwable> Builder add(
+				UnsafeConsumer<UnsafeConsumer<InfoFieldSetEntry, T>, T>
+					consumer)
+			throws T {
+
+			consumer.accept(this::add);
+
+			return this;
+		}
+
+		public Builder addAll(Collection<InfoFieldSetEntry> fieldSetEntries) {
+			for (InfoFieldSetEntry fieldSetEntry : fieldSetEntries) {
+				add(fieldSetEntry);
+			}
+
+			return this;
+		}
+
+		public InfoForm build() {
+			return new InfoForm(_entries, _name);
+		}
+
+		private final Map<String, InfoFieldSetEntry> _entries =
+			new LinkedHashMap<>();
+		private final String _name;
+
+	}
+
 	private InfoLocalizedValue<String> _descriptionInfoLocalizedValue;
-	private final Map<String, InfoFieldSetEntry> _entries =
-		new LinkedHashMap<>();
+	private final Map<String, InfoFieldSetEntry> _entries;
 	private InfoLocalizedValue<String> _labelInfoLocalizedValue;
 	private final String _name;
 

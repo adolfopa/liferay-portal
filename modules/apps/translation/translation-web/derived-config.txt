@@ -1,0 +1,4 @@
+com/liferay/translation/web/internal/exporter/XLIFFInfoFormTranslationExporter.importXLIFF(Ljava/io/InputStream;)Lcom/liferay/info/field/InfoFormValues;:NULL
+com/liferay/translation/web/internal/exporter/XLIFFInfoFormTranslationExporter.<init>()V
+com/liferay/translation/web/internal/exporter/XLIFFInfoFormTranslationExporter._getStringValue(Ljava/lang/Object;)Ljava/lang/String;:0,NULL
+com/liferay/translation/web/internal/exporter/XLIFFInfoFormTranslationExporter.export(Lcom/liferay/info/field/InfoFormValues;Ljava/util/Locale;Ljava/util/Locale;)Ljava/io/InputStream;:UNKNOWN

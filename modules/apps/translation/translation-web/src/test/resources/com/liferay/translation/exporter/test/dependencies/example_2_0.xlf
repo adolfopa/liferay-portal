@@ -1,0 +1,18 @@
+<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0" version="2.0" srcLang="en" trgLang="fr">
+	<file id="f1">
+		<unit id="u1">
+			<segment state="initial">
+				<source>Start here!</source>
+			</segment>
+		</unit>
+		<unit id="u2">
+			<segment state="initial">
+				<source>Click the <ph id="1" type="image" subFlows="u1"/> button to start. </source>
+			</segment>
+			<segment state="translated">
+				<source>You can also press the Enter key.</source>
+				<target>Vous pouvez aussi appuyez la touche Entrée.</target>
+			</segment>
+		</unit>
+	</file>
+</xliff>

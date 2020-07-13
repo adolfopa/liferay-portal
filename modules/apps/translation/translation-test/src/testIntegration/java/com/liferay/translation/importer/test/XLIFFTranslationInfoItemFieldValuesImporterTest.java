@@ -59,8 +59,67 @@ public class XLIFFTranslationInfoItemFieldValuesImporterTest {
 		_group = GroupTestUtil.addGroup();
 	}
 
+	@Test(expected = XLIFFFileException.MustHaveValidId.class)
+	public void testImportXLIFF12FailsFileInvalidId() throws Exception {
+		_xliffTranslationInfoItemFieldValuesImporter.importInfoItemFieldValues(
+			_group.getGroupId(),
+			new InfoItemClassPKReference(
+				JournalArticle.class.getName(), RandomTestUtil.randomInt(1, 3)),
+			TranslationTestUtil.readFileToInputStream(
+				"example-1_2-simple.xlf"));
+	}
+
+	@Test(expected = XLIFFFileException.MustBeWellFormed.class)
+	public void testImportXLIFF12FailsFileInvalidVersion() throws Exception {
+		_xliffTranslationInfoItemFieldValuesImporter.importInfoItemFieldValues(
+			_group.getGroupId(),
+			new InfoItemClassPKReference(JournalArticle.class.getName(), 122),
+			TranslationTestUtil.readFileToInputStream(
+				"example-1_2-bad-formed.xlf"));
+	}
+
+	@Test
+	public void testImportXLIFF12VersionDocument() throws Exception {
+		InfoItemFieldValues infoItemFieldValues =
+			_xliffTranslationInfoItemFieldValuesImporter.
+				importInfoItemFieldValues(
+					_group.getGroupId(),
+					new InfoItemClassPKReference(
+						JournalArticle.class.getName(), 122),
+					TranslationTestUtil.readFileToInputStream(
+						"example-1_2-oasis.xlf"));
+
+		Assert.assertNotNull(infoItemFieldValues);
+		Assert.assertNotNull(infoItemFieldValues.getInfoFieldValues());
+
+		Collection<InfoFieldValue<Object>> infoFieldValues =
+			infoItemFieldValues.getInfoFieldValues();
+
+		Assert.assertFalse(infoFieldValues.isEmpty());
+	}
+
+	@Test
+	public void testImportXLIFF12VersionSimpleDocument() throws Exception {
+		InfoItemFieldValues infoItemFieldValues =
+			_xliffTranslationInfoItemFieldValuesImporter.
+				importInfoItemFieldValues(
+					_group.getGroupId(),
+					new InfoItemClassPKReference(
+						JournalArticle.class.getName(), 122),
+					TranslationTestUtil.readFileToInputStream(
+						"example-1_2-simple.xlf"));
+
+		Assert.assertNotNull(infoItemFieldValues);
+		Assert.assertNotNull(infoItemFieldValues.getInfoFieldValues());
+
+		Collection<InfoFieldValue<Object>> infoFieldValues =
+			infoItemFieldValues.getInfoFieldValues();
+
+		Assert.assertFalse(infoFieldValues.isEmpty());
+	}
+
 	@Test(expected = XLIFFFileException.MustBeSupportedLanguage.class)
-	public void testImportXLIFF2FailsFileInvalidGroupLanguage()
+	public void testImportXLIFF20FailsFileInvalidGroupLanguage()
 		throws Exception {
 
 		GroupTestUtil.updateDisplaySettings(
@@ -74,7 +133,7 @@ public class XLIFFTranslationInfoItemFieldValuesImporterTest {
 	}
 
 	@Test(expected = XLIFFFileException.MustHaveValidId.class)
-	public void testImportXLIFF2FailsFileInvalidId() throws Exception {
+	public void testImportXLIFF20FailsFileInvalidId() throws Exception {
 		_xliffTranslationInfoItemFieldValuesImporter.importInfoItemFieldValues(
 			_group.getGroupId(),
 			new InfoItemClassPKReference(
@@ -84,7 +143,7 @@ public class XLIFFTranslationInfoItemFieldValuesImporterTest {
 	}
 
 	@Test(expected = XLIFFFileException.MustBeSupportedLanguage.class)
-	public void testImportXLIFF2FailsFileInvalidLanguage() throws Exception {
+	public void testImportXLIFF20FailsFileInvalidLanguage() throws Exception {
 		_xliffTranslationInfoItemFieldValuesImporter.importInfoItemFieldValues(
 			_group.getGroupId(),
 			new InfoItemClassPKReference(JournalArticle.class.getName(), 122),
@@ -92,16 +151,8 @@ public class XLIFFTranslationInfoItemFieldValuesImporterTest {
 				"test-journal-article-122-pt-PT.xlf"));
 	}
 
-	@Test(expected = XLIFFFileException.MustBeValid.class)
-	public void testImportXLIFF2FailsFileInvalidVersion() throws Exception {
-		_xliffTranslationInfoItemFieldValuesImporter.importInfoItemFieldValues(
-			_group.getGroupId(),
-			new InfoItemClassPKReference(JournalArticle.class.getName(), 122),
-			TranslationTestUtil.readFileToInputStream("example-1_2-oasis.xlf"));
-	}
-
 	@Test(expected = XLIFFFileException.MustBeWellFormed.class)
-	public void testImportXLIFF2FailsFileNoTarget() throws Exception {
+	public void testImportXLIFF20FailsFileNoTarget() throws Exception {
 		_xliffTranslationInfoItemFieldValuesImporter.importInfoItemFieldValues(
 			_group.getGroupId(),
 			new InfoItemClassPKReference(JournalArticle.class.getName(), 122),
@@ -110,7 +161,7 @@ public class XLIFFTranslationInfoItemFieldValuesImporterTest {
 	}
 
 	@Test
-	public void testImportXLIFFXLIFFDocument() throws Exception {
+	public void testImportXLIFF20VersionDocument() throws Exception {
 		InfoItemFieldValues infoItemFieldValues =
 			_xliffTranslationInfoItemFieldValuesImporter.
 				importInfoItemFieldValues(

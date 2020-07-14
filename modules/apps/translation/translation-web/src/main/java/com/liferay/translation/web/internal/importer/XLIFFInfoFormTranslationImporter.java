@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import net.sf.okapi.common.Event;
 import net.sf.okapi.common.LocaleId;
@@ -79,9 +81,6 @@ public class XLIFFInfoFormTranslationImporter
 			InputStream inputStream)
 		throws IOException, XLIFFFileException {
 
-		InfoItemFieldValues infoItemFieldValues = new InfoItemFieldValues(
-			infoItemClassPKReference);
-
 		try {
 			File tempFile = FileUtil.createTempFile(inputStream);
 
@@ -97,74 +96,59 @@ public class XLIFFInfoFormTranslationImporter
 			try {
 				filter.open(document);
 
-				List<InfoFieldValue<Object>> infoFieldValues =
-					new ArrayList<>();
-				Locale targetLocale = null;
+				Stream<Event> stream = filter.stream();
 
-				while (filter.hasNext()) {
-					Event event = filter.next();
+				List<Event> events = stream.collect(Collectors.toList());
 
-					if (event.isStartDocument()) {
-						StartDocument startDocument = event.getStartDocument();
+				if (_isVersion20(events)) {
+					return _getInfoItemFieldValuesXLIFFv20(
+						groupId, infoItemClassPKReference, tempFile);
+				}
 
-						Property versionProperty = startDocument.getProperty(
-							"version");
+				return _getInfoItemFieldValuesXLIFFv12(
+					events, infoItemClassPKReference);
+			}
+			catch (OkapiIllegalFilterOperationException
+						okapiIllegalFilterOperationException) {
 
-						if ((versionProperty != null) &&
-							(GetterUtil.getDouble(versionProperty.getValue()) >=
-								2.0) &&
-							(GetterUtil.getDouble(versionProperty.getValue()) <
-								3.0)) {
+				throw new XLIFFFileException.MustBeValid(
+					okapiIllegalFilterOperationException);
+			}
+			finally {
+				filter.close();
+			}
+		}
+		catch (InvalidParameterException invalidParameterException) {
+			throw new XLIFFFileException.MustHaveValidParameter(
+				invalidParameterException);
+		}
+		catch (XLIFFException xliffException) {
+			throw new XLIFFFileException.MustBeValid(xliffException);
+		}
+	}
 
-							infoFieldValues = _getInfoItemValuesXLIFF20(
-								groupId, infoItemClassPKReference, tempFile);
+	private InfoItemFieldValues _getInfoItemFieldValuesXLIFFv12(
+			List<Event> events,
+			InfoItemClassPKReference infoItemClassPKReference)
+		throws XLIFFFileException {
 
-							break;
-						}
-					}
-					else if (event.isStartSubDocument()) {
-						StartSubDocument startSubdocument =
-							event.getStartSubDocument();
+		_validateDocumentPartVersion(events);
 
-						String original =
-							infoItemClassPKReference.getClassName() +
-								StringPool.COLON +
-									infoItemClassPKReference.getClassPK();
+		StartSubDocument startSubDocument = _getStartSubDocument(events);
 
-						if (!Objects.equals(
-								startSubdocument.getName(), original)) {
+		_validateXLIFFStartSubDocument(
+			infoItemClassPKReference, startSubDocument);
 
-							throw new XLIFFFileException.MustHaveValidId(
-								"File ID is invalid");
-						}
+		Locale targetLocale = _getTargetLocale(startSubDocument);
 
-						Property targetLanguageProperty =
-							startSubdocument.getProperty("targetLanguage");
-
-						String targetLanguage =
-							targetLanguageProperty.getValue();
-
-						targetLocale = LocaleUtil.fromLanguageId(
-							targetLanguage);
-					}
-					else if (event.isDocumentPart()) {
-						DocumentPart documentPart = event.getDocumentPart();
-
-						Property version = documentPart.getProperty("version");
-
-						if ((version != null) &&
-							!Objects.equals("1.2", version.getValue())) {
-
-							throw new XLIFFFileException.MustBeValid(
-								"version must be 1.2");
-						}
-					}
-					else if (event.isTextUnit()) {
+		return InfoItemFieldValues.builder(
+		).<XLIFFFileException>infoFieldValue(
+			consumer -> {
+				for (Event event : events) {
+					if (event.isTextUnit()) {
 						ITextUnit textUnit = event.getTextUnit();
 
-						_validateWellFormedXLIFF12(targetLocale, textUnit);
-
-						String field = textUnit.getId();
+						_validateWellFormedTextUnit(targetLocale, textUnit);
 
 						for (LocaleId targetLocaleId :
 								textUnit.getTargetLocales()) {
@@ -178,41 +162,23 @@ public class XLIFFInfoFormTranslationImporter
 								TextInfoFieldType.INSTANCE,
 								InfoLocalizedValue.<String>builder(
 								).value(
-									targetLocaleId.toJavaLocale(), field
+									targetLocale, textUnit.getId()
 								).build(),
-								true, field);
+								true, textUnit.getId());
 
-							infoFieldValues.add(
-								new InfoFieldValue<Object>(
+							consumer.accept(
+								new InfoFieldValue<>(
 									infoField, firstContent.getText()));
 						}
 					}
 				}
-
-				infoItemFieldValues.addAll(infoFieldValues);
 			}
-			catch (OkapiIllegalFilterOperationException
-						okapiIllegalFilterOperationException) {
-
-				throw new XLIFFFileException.MustBeValid(
-					okapiIllegalFilterOperationException);
-			}
-			finally {
-				filter.close();
-			}
-
-			return infoItemFieldValues;
-		}
-		catch (InvalidParameterException invalidParameterException) {
-			throw new XLIFFFileException.MustHaveValidParameter(
-				invalidParameterException);
-		}
-		catch (XLIFFException xliffException) {
-			throw new XLIFFFileException.MustBeValid(xliffException);
-		}
+		).infoItemClassPKReference(
+			infoItemClassPKReference
+		).build();
 	}
 
-	private List<InfoFieldValue<Object>> _getInfoItemValuesXLIFF20(
+	private InfoItemFieldValues _getInfoItemFieldValuesXLIFFv20(
 			long groupId, InfoItemClassPKReference infoItemClassPKReference,
 			File tempFile)
 		throws XLIFFFileException {
@@ -255,8 +221,7 @@ public class XLIFFInfoFormTranslationImporter
 						true, unit.getId());
 
 					consumer.accept(
-						new InfoFieldValue<>(
-							infoField, value.getPlainText()));
+						new InfoFieldValue<>(infoField, value.getPlainText()));
 				}
 			}
 		).infoItemClassPKReference(
@@ -264,7 +229,72 @@ public class XLIFFInfoFormTranslationImporter
 		).build();
 	}
 
-	private void _validateWellFormedXLIFF12(
+	private StartSubDocument _getStartSubDocument(List<Event> events) {
+		for (Event event : events) {
+			if (event.isStartSubDocument()) {
+				return event.getStartSubDocument();
+			}
+		}
+
+		return null;
+	}
+
+	private Locale _getTargetLocale(StartSubDocument startSubDocument) {
+		Property targetLanguageProperty = startSubDocument.getProperty(
+			"targetLanguage");
+
+		if ((targetLanguageProperty == null) ||
+			(targetLanguageProperty.getValue() == null)) {
+
+			return null;
+		}
+
+		String targetLanguage = targetLanguageProperty.getValue();
+
+		return LocaleUtil.fromLanguageId(targetLanguage);
+	}
+
+	private boolean _isVersion20(List<Event> events) {
+		for (Event event : events) {
+			if (event.isStartDocument()) {
+				StartDocument startDocument = event.getStartDocument();
+
+				Property versionProperty = startDocument.getProperty("version");
+
+				if (versionProperty != null) {
+					double version = GetterUtil.getDouble(
+						versionProperty.getValue());
+
+					if ((version >= 2.0) && (version < 3.0)) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	private void _validateDocumentPartVersion(List<Event> events)
+		throws XLIFFFileException.MustBeValid {
+
+		for (Event event : events) {
+			if (event.isDocumentPart()) {
+				DocumentPart documentPart = event.getDocumentPart();
+
+				Property version = documentPart.getProperty("version");
+
+				if ((version != null) &&
+					!Objects.equals("1.2", version.getValue())) {
+
+					throw new XLIFFFileException.MustBeValid(
+						"version must be 1.2");
+				}
+			}
+		}
+	}
+
+	private void _validateWellFormedTextUnit(
 			Locale targetLocale, ITextUnit textUnit)
 		throws XLIFFFileException.MustBeWellFormed {
 
@@ -375,6 +405,35 @@ public class XLIFFInfoFormTranslationImporter
 
 		if (fileNode == null) {
 			throw new XLIFFFileException.MustHaveValidId("File ID is invalid");
+		}
+	}
+
+	private void _validateXLIFFStartSubDocument(
+			InfoItemClassPKReference infoItemClassPKReference,
+			StartSubDocument startSubDocument)
+		throws XLIFFFileException {
+
+		if (startSubDocument == null) {
+			throw new XLIFFFileException.MustBeWellFormed(
+				"The XLIFF file is not well Formed");
+		}
+
+		String original =
+			infoItemClassPKReference.getClassName() + StringPool.COLON +
+				infoItemClassPKReference.getClassPK();
+
+		if (!Objects.equals(startSubDocument.getName(), original)) {
+			throw new XLIFFFileException.MustHaveValidId("File ID is invalid");
+		}
+
+		Property targetLanguageProperty = startSubDocument.getProperty(
+			"targetLanguage");
+
+		if ((targetLanguageProperty == null) ||
+			(targetLanguageProperty.getValue() == null)) {
+
+			throw new XLIFFFileException.MustBeWellFormed(
+				"There is no translation target");
 		}
 	}
 

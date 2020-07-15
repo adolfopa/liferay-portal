@@ -135,9 +135,7 @@ public class XLIFFInfoFormTranslationImporter
 			RawDocument rawDocument = new RawDocument(
 				tempFile.toURI(), encoding, sourceLocaleId, targetLocaleId);
 
-			AutoXLIFFFilter filter = new AutoXLIFFFilter();
-
-			try {
+			try (AutoXLIFFFilter filter = new AutoXLIFFFilter()) {
 				filter.open(rawDocument);
 
 				Stream<Event> stream = filter.stream();
@@ -157,9 +155,6 @@ public class XLIFFInfoFormTranslationImporter
 
 				throw new XLIFFFileException.MustBeValid(
 					okapiIllegalFilterOperationException);
-			}
-			finally {
-				filter.close();
 			}
 		}
 		catch (InvalidParameterException invalidParameterException) {

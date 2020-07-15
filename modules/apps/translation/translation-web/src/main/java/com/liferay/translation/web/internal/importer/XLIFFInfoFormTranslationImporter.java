@@ -197,13 +197,14 @@ public class XLIFFInfoFormTranslationImporter
 
 							TextFragment firstContent = value.getFirstContent();
 
-							InfoField infoField = new InfoField(
-								TextInfoFieldType.INSTANCE,
-								InfoLocalizedValue.<String>builder(
-								).value(
-									targetLocale, textUnit.getId()
-								).build(),
-								true, textUnit.getId());
+							InfoField<TextInfoFieldType> infoField =
+								new InfoField<>(
+									TextInfoFieldType.INSTANCE,
+									InfoLocalizedValue.<String>builder(
+									).value(
+										targetLocale, textUnit.getId()
+									).build(),
+									true, textUnit.getId());
 
 							consumer.accept(
 								new InfoFieldValue<>(
@@ -251,7 +252,7 @@ public class XLIFFInfoFormTranslationImporter
 							"There is no translation target");
 					}
 
-					InfoField infoField = new InfoField(
+					InfoField<TextInfoFieldType> infoField = new InfoField<>(
 						TextInfoFieldType.INSTANCE,
 						InfoLocalizedValue.<String>builder(
 						).value(

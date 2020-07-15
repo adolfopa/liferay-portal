@@ -42,7 +42,9 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -89,46 +91,27 @@ public class XLIFFInfoFormTranslationImporter
 		try (AutoXLIFFFilter filter = new AutoXLIFFFilter()) {
 			File tempFile = FileUtil.createTempFile(inputStream);
 
-			String encoding = StringPool.UTF8;
-
-			LocaleId sourceLocaleId = LocaleId.fromString(
-				LocaleUtil.toLanguageId(LocaleUtil.getDefault()));
-
-			LocaleId targetLocaleId = LocaleId.fromString(
-				LocaleUtil.toLanguageId(LocaleUtil.getDefault()));
-
 			Document document = SAXReaderUtil.read(tempFile);
 
 			Element rootElement = document.getRootElement();
 
-			Attribute encodingAttribute = rootElement.attribute("encoding");
-
-			if (encodingAttribute != null) {
-				encoding = encodingAttribute.getValue();
-			}
+			Optional<String> encodingOptional = _getAttributeValueOptional(
+				rootElement, "encoding", string -> string);
 
 			Element fileElement = rootElement.element("file");
 
-			if (fileElement != null) {
-				Attribute sourceLanguageAttribute = fileElement.attribute(
-					"source-language");
+			Optional<LocaleId> sourceLocaleIdOptional =
+				_getAttributeValueOptional(
+					fileElement, "target-language", LocaleId::fromString);
 
-				if (sourceLanguageAttribute != null) {
-					sourceLocaleId = LocaleId.fromString(
-						sourceLanguageAttribute.getValue());
-				}
-
-				Attribute targetLanguageAttribute = fileElement.attribute(
-					"target-language");
-
-				if (targetLanguageAttribute != null) {
-					targetLocaleId = LocaleId.fromString(
-						targetLanguageAttribute.getValue());
-				}
-			}
+			Optional<LocaleId> targetLocaleIdOptional =
+				_getAttributeValueOptional(
+					fileElement, "target-language", LocaleId::fromString);
 
 			RawDocument rawDocument = new RawDocument(
-				tempFile.toURI(), encoding, sourceLocaleId, targetLocaleId);
+				tempFile.toURI(), encodingOptional.orElse(StringPool.UTF8),
+				sourceLocaleIdOptional.orElse(_defaultLocaleId),
+				targetLocaleIdOptional.orElse(_defaultLocaleId));
 
 			filter.open(rawDocument);
 
@@ -153,6 +136,22 @@ public class XLIFFInfoFormTranslationImporter
 			throw new XLIFFFileException.MustHaveValidParameter(
 				invalidParameterException);
 		}
+	}
+
+	private <T> Optional<T> _getAttributeValueOptional(
+		Element element, String attributeName, Function<String, T> function) {
+
+		if (element == null) {
+			return Optional.empty();
+		}
+
+		Attribute attribute = element.attribute(attributeName);
+
+		if (attribute == null) {
+			return Optional.empty();
+		}
+
+		return Optional.of(function.apply(attribute.getValue()));
 	}
 
 	private InfoItemFieldValues _getInfoItemFieldValuesXLIFFv12(
@@ -465,6 +464,9 @@ public class XLIFFInfoFormTranslationImporter
 				"There is no translation target");
 		}
 	}
+
+	private static final LocaleId _defaultLocaleId = LocaleId.fromString(
+		LocaleUtil.toLanguageId(LocaleUtil.getDefault()));
 
 	@Reference
 	private Language _language;

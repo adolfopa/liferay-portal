@@ -105,7 +105,7 @@ class MapBase extends State {
 				? this.position.location
 				: {};
 
-		if (!geolocation.lat || !geolocation.lng) {
+		if (!geolocation.hasOwnProperty('lat') || !geolocation.hasOwnProperty('lng')) {
 			Liferay.Util.getGeolocation(
 				(lat, lng) => {
 					this._initializeLocation({lat, lng});

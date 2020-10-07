@@ -21,6 +21,9 @@ import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.document.library.kernel.service.DLFolderLocalService;
 import com.liferay.document.library.repository.authorization.capability.AuthorizationCapability;
 import com.liferay.document.library.web.internal.constants.DLWebKeys;
+import com.liferay.document.library.web.internal.display.context.DLAdminDisplayContext;
+import com.liferay.document.library.web.internal.display.context.DLAdminDisplayContextProvider;
+import com.liferay.document.library.web.internal.display.context.DLAdminManagementToolbarDisplayContext;
 import com.liferay.document.library.web.internal.display.context.DLViewFileEntryMetadataSetsDisplayContext;
 import com.liferay.document.library.web.internal.helper.DLTrashHelper;
 import com.liferay.document.library.web.internal.portlet.toolbar.contributor.DLPortletToolbarContributorRegistry;
@@ -80,6 +83,22 @@ public class DLViewMVCRenderCommand extends GetFolderMVCRenderCommand {
 					_portal.getLiferayPortletResponse(renderResponse),
 					_ddmStructureLinkLocalService, _ddmStructureService,
 					_portal));
+
+			DLAdminDisplayContext dlAdminDisplayContext =
+				_dlAdminDisplayContextProvider.getDLAdminDisplayContext(
+					_portal.getHttpServletRequest(renderRequest),
+					_portal.getHttpServletResponse(renderResponse));
+
+			renderRequest.setAttribute(
+				DLAdminDisplayContext.class.getName(), dlAdminDisplayContext);
+
+			renderRequest.setAttribute(
+				DLAdminManagementToolbarDisplayContext.class.getName(),
+				_dlAdminDisplayContextProvider.
+					getDLAdminManagementToolbarDisplayContext(
+						_portal.getHttpServletRequest(renderRequest),
+						_portal.getHttpServletResponse(renderResponse),
+						dlAdminDisplayContext));
 
 			if (_pingFolderRepository(renderRequest, renderResponse)) {
 				return MVCRenderConstants.MVC_PATH_VALUE_SKIP_DISPATCH;
@@ -164,6 +183,9 @@ public class DLViewMVCRenderCommand extends GetFolderMVCRenderCommand {
 
 	@Reference
 	private DDMStructureService _ddmStructureService;
+
+	@Reference
+	private DLAdminDisplayContextProvider _dlAdminDisplayContextProvider;
 
 	@Reference
 	private DLAppService _dlAppService;

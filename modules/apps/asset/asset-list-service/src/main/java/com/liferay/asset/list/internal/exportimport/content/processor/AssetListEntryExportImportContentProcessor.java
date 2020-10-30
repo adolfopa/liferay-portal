@@ -36,6 +36,7 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
@@ -247,6 +248,10 @@ public class AssetListEntryExportImportContentProcessor
 			AssetRendererFactoryRegistryUtil.getAssetRendererFactories(
 				portletDataContext.getCompanyId());
 
+		Map<Long, Long> ddmStructureIds =
+			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
+				DDMStructure.class);
+
 		for (AssetRendererFactory<?> assetRendererFactory :
 				assetRendererFactories) {
 
@@ -264,9 +269,6 @@ public class AssetListEntryExportImportContentProcessor
 
 			LongStream classTypeIdsLongStream = Arrays.stream(classTypeIds);
 
-			Map<Long, Long> ddmStructureIds =
-				(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
-					DDMStructure.class);
 			Map<Long, Long> dlFileEntryTypeIds =
 				(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
 					DLFileEntryType.class);
@@ -297,9 +299,10 @@ public class AssetListEntryExportImportContentProcessor
 
 		for (Map.Entry<String, String> entry : unicodeProperties.entrySet()) {
 			String key = entry.getKey();
+			String value = entry.getValue();
 
 			if (StringUtil.startsWith(key, "queryName") &&
-				Objects.equals(entry.getValue(), "assetCategories")) {
+				Objects.equals(value, "assetCategories")) {
 
 				String index = key.substring(9);
 
@@ -325,6 +328,24 @@ public class AssetListEntryExportImportContentProcessor
 
 				unicodeProperties.setProperty(
 					"queryValues" + index, StringUtil.merge(newCategoryIds));
+			}
+
+			if (StringUtil.startsWith(key, "orderByColumn") &&
+				StringUtil.startsWith(value, "ddm__keyword__")) {
+
+				Long oldId = Long.valueOf(value.substring(14, 19));
+
+				if (ddmStructureIds.containsKey(oldId)) {
+					Long newStructureId = ddmStructureIds.get(oldId);
+
+					StringBundler sb = new StringBundler(3);
+
+					sb.append(value.substring(0, 14));
+					sb.append(newStructureId);
+					sb.append(value.substring(19));
+
+					unicodeProperties.setProperty(key, sb.toString());
+				}
 			}
 		}
 

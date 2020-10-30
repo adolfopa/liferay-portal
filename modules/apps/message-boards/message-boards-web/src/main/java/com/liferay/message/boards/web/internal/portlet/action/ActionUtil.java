@@ -57,7 +57,7 @@ public class ActionUtil {
 		PermissionChecker permissionChecker =
 			themeDisplay.getPermissionChecker();
 
-		if (mvcRenderCommandName.equals("/message_boards/view_banned_users") &&
+		if (mvcRenderCommandName.equals("/message_boards/mb_admin_view_banned_users") &&
 			!MBResourcePermission.contains(
 				permissionChecker, themeDisplay.getScopeGroupId(),
 				ActionKeys.BAN_USER)) {

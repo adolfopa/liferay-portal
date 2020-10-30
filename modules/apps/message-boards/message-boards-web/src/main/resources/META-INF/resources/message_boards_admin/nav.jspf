@@ -49,7 +49,7 @@ boolean hasBanUserPermission = MBResourcePermission.contains(permissionChecker, 
 				if (hasBanUserPermission) {
 					PortletURL bannedUsersURL = renderResponse.createRenderURL();
 
-					bannedUsersURL.setParameter("mvcRenderCommandName", "/message_boards/view_banned_users");
+					bannedUsersURL.setParameter("mvcRenderCommandName", "/message_boards/mb_admin_view_banned_users");
 
 					add(
 						navigationItem -> {

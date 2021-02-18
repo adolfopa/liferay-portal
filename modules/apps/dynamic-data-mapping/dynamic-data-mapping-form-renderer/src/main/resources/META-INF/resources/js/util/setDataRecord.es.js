@@ -49,16 +49,6 @@ export default (
 
 		let availableLanguageIds;
 
-		Object.keys(localizedValue)
-			.filter(
-				(languageId) =>
-					!localizedValueEdited?.[languageId] &&
-					localizedValue[languageId] === ''
-			)
-			.forEach((languageId) => {
-				delete localizedValue[languageId];
-			});
-
 		if (localizedValue) {
 			availableLanguageIds = Object.keys(localizedValue);
 		}

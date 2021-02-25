@@ -162,7 +162,7 @@ public class EditInGoogleDocsMVCActionCommand extends BaseMVCActionCommand {
 			DLVersionNumberIncrease dlVersionNumberIncrease =
 				DLVersionNumberIncrease.valueOf(
 					actionRequest.getParameter("versionIncrease"),
-					DLVersionNumberIncrease.AUTOMATIC);
+					DLVersionNumberIncrease.NONE);
 
 			String changeLog = ParamUtil.getString(actionRequest, "changeLog");
 

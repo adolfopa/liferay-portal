@@ -146,7 +146,9 @@ JournalEditArticleDisplayContext journalEditArticleDisplayContext = new JournalE
 
 			<liferay-ui:error exception="<%= ArticleContentException.class %>" message="please-enter-valid-content" />
 			<liferay-ui:error exception="<%= ArticleContentSizeException.class %>" message="you-have-exceeded-the-maximum-web-content-size-allowed" />
-			<liferay-ui:error exception="<%= ArticleFriendlyURLException.class %>" message="you-must-define-a-friendly-url-for-the-default-language" />
+			<liferay-ui:error exception="<%= ArticleFriendlyURLException.MustDefineDefaultLanguageFriendlyURL.class %>" message="you-must-define-a-friendly-url-for-the-default-language" />
+			<liferay-ui:error exception="<%= ArticleFriendlyURLException.MustNotContainInvalidCharacters.class %>" message="please-enter-a-valid-friendly-url-.-it-must-not-contain-any-slashes" />
+
 			<liferay-ui:error exception="<%= ArticleIdException.class %>" message="please-enter-a-valid-id" />
 
 			<liferay-ui:error exception="<%= ArticleTitleException.class %>">

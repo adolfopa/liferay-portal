@@ -36,4 +36,48 @@ public class ArticleFriendlyURLException extends PortalException {
 		super(throwable);
 	}
 
+	public static class MustDefineDefaultLanguageFriendlyURL
+		extends ArticleFriendlyURLException {
+
+		public MustDefineDefaultLanguageFriendlyURL() {
+		}
+
+		public MustDefineDefaultLanguageFriendlyURL(String msg) {
+			super(msg);
+		}
+
+		public MustDefineDefaultLanguageFriendlyURL(
+			String msg, Throwable throwable) {
+
+			super(msg, throwable);
+		}
+
+		public MustDefineDefaultLanguageFriendlyURL(Throwable throwable) {
+			super(throwable);
+		}
+
+	}
+
+	public static class MustNotContainInvalidCharacters
+		extends ArticleFriendlyURLException {
+
+		public MustNotContainInvalidCharacters() {
+		}
+
+		public MustNotContainInvalidCharacters(String msg) {
+			super(msg);
+		}
+
+		public MustNotContainInvalidCharacters(
+			String msg, Throwable throwable) {
+
+			super(msg, throwable);
+		}
+
+		public MustNotContainInvalidCharacters(Throwable throwable) {
+			super(throwable);
+		}
+
+	}
+
 }

@@ -80,6 +80,7 @@ import com.liferay.journal.util.comparator.ArticleVersionComparator;
 import com.liferay.layout.display.page.LayoutDisplayPageObjectProvider;
 import com.liferay.layout.display.page.LayoutDisplayPageProvider;
 import com.liferay.layout.display.page.LayoutDisplayPageProviderTracker;
+import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.petra.xml.XMLUtil;
@@ -418,6 +419,8 @@ public class JournalArticleLocalServiceImpl
 				throw exportImportContentValidationException;
 			}
 		}
+
+		_validateFriendlyURLMap(friendlyURLMap);
 
 		serviceContext.setAttribute("articleId", articleId);
 
@@ -5644,6 +5647,8 @@ public class JournalArticleLocalServiceImpl
 			}
 		}
 
+		_validateFriendlyURLMap(friendlyURLMap);
+
 		if (addNewVersion) {
 			long id = counterLocalService.increment();
 
@@ -5688,7 +5693,8 @@ public class JournalArticleLocalServiceImpl
 			(classNameLocalService.getClassNameId(DDMStructure.class) !=
 				article.getClassNameId())) {
 
-			throw new ArticleFriendlyURLException();
+			throw new ArticleFriendlyURLException.
+				MustDefineDefaultLanguageFriendlyURL();
 		}
 
 		article.setFolderId(folderId);
@@ -9145,6 +9151,21 @@ public class JournalArticleLocalServiceImpl
 
 		return journalArticleLocalizationPersistence.update(
 			journalArticleLocalization);
+	}
+
+	private void _validateFriendlyURLMap(Map<Locale, String> friendlyURLMap)
+		throws PortalException {
+
+		for (Map.Entry<Locale, String> entry : friendlyURLMap.entrySet()) {
+			String value = entry.getValue();
+
+			if (Validator.isNotNull(value) &&
+				(value.indexOf(CharPool.SLASH) != -1)) {
+
+				throw new ArticleFriendlyURLException.
+					MustNotContainInvalidCharacters();
+			}
+		}
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

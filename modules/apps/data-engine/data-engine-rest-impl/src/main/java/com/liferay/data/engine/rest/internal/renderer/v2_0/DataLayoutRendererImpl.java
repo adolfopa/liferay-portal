@@ -36,6 +36,7 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.util.Locale;
+import java.util.Set;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -112,7 +113,16 @@ public class DataLayoutRendererImpl implements DataLayoutRenderer {
 			StringPool.BLANK);
 
 		if (Validator.isNull(languageId)) {
-			locale = ddmForm.getDefaultLocale();
+			if (dataLayoutRendererContext.getHttpServletRequest() != null) {
+				locale = _portal.getLocale(
+					dataLayoutRendererContext.getHttpServletRequest());
+			}
+
+			Set<Locale> availableLocales = ddmForm.getAvailableLocales();
+
+			if ((locale == null) || !availableLocales.contains(locale)) {
+				locale = ddmForm.getDefaultLocale();
+			}
 		}
 		else {
 			locale = LocaleUtil.fromLanguageId(languageId);

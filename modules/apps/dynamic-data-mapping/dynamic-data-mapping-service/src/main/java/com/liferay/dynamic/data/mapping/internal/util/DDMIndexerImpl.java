@@ -635,6 +635,9 @@ public class DDMIndexerImpl implements DDMIndexer {
 
 		sortedFields.add(
 			new com.liferay.portal.kernel.search.Field(DDM_FIELD_NAME, name));
+		sortedFields.add(
+			new com.liferay.portal.kernel.search.Field(
+				DDM_FIELD_REFERENCE, ddmFormField.getFieldReference()));
 
 		sortedFields.add(
 			new com.liferay.portal.kernel.search.Field(

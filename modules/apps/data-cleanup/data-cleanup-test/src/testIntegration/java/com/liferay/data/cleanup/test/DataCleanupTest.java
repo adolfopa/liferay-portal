@@ -99,6 +99,14 @@ public class DataCleanupTest {
 	}
 
 	@Test
+	public void testDeprecatedModulesUpgradeImageEditor() throws Exception {
+		_testDeprecatedModulesUpgrade(
+			"cleanUpImageEditorModuleData",
+			"com.liferay.frontend.image.editor.web", null,
+			"com_liferay_image_editor_web_portlet_ImageEditorPortlet");
+	}
+
+	@Test
 	public void testDeprecatedModulesUpgradeInvitation() throws Exception {
 		_testDeprecatedModulesUpgrade(
 			"cleanUpInvitationModuleData", "com.liferay.invitation.web", null,

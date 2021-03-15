@@ -21,7 +21,6 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemListBuil
 import com.liferay.knowledge.base.constants.KBActionKeys;
 import com.liferay.knowledge.base.constants.KBFolderConstants;
 import com.liferay.knowledge.base.model.KBArticle;
-import com.liferay.knowledge.base.model.KBArticleSearchDisplay;
 import com.liferay.knowledge.base.model.KBFolder;
 import com.liferay.knowledge.base.model.KBTemplate;
 import com.liferay.knowledge.base.service.KBArticleServiceUtil;
@@ -41,9 +40,18 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.PortletURLUtil;
+import com.liferay.portal.kernel.search.Document;
+import com.liferay.portal.kernel.search.Field;
+import com.liferay.portal.kernel.search.Hits;
+import com.liferay.portal.kernel.search.Indexer;
+import com.liferay.portal.kernel.search.IndexerRegistryUtil;
+import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.kernel.search.SearchContextFactory;
+import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -384,24 +392,21 @@ public class KBAdminManagementToolbarDisplayContext {
 		String keywords = _getKeywords();
 
 		if (Validator.isNotNull(keywords)) {
-			OrderByComparator<KBArticle> kbArticleOrderByComparator =
-				KBUtil.getKBArticleOrderByComparator(
-					_searchContainer.getOrderByCol(),
-					_searchContainer.getOrderByType());
+			Hits hits = _search(
+				keywords, _searchContainer.getStart(),
+				_searchContainer.getEnd());
 
-			_searchContainer.setOrderByComparator(
-				new KBOrderByComparatorAdapter<>(kbArticleOrderByComparator));
+			List<Object> kbArticles = new ArrayList<>();
 
-			KBArticleSearchDisplay kbArticleSearchDisplay =
-				KBArticleServiceUtil.getKBArticleSearchDisplay(
-					_themeDisplay.getScopeGroupId(), keywords, keywords,
-					WorkflowConstants.STATUS_ANY, null, null, false, new int[0],
-					_searchContainer.getCur(), _searchContainer.getDelta(),
-					kbArticleOrderByComparator);
+			for (Document document : hits.getDocs()) {
+				kbArticles.add(
+					KBArticleServiceUtil.getLatestKBArticle(
+						GetterUtil.getLong(document.get(Field.ENTRY_CLASS_PK)),
+						WorkflowConstants.STATUS_ANY));
+			}
 
-			_searchContainer.setResults(
-				new ArrayList<>(kbArticleSearchDisplay.getResults()));
-			_searchContainer.setTotal(kbArticleSearchDisplay.getTotal());
+			_searchContainer.setResults(kbArticles);
+			_searchContainer.setTotal(hits.getLength());
 		}
 		else if (kbFolderView) {
 			_searchContainer.setTotal(
@@ -513,6 +518,33 @@ public class KBAdminManagementToolbarDisplayContext {
 
 	private String _getTemplatePath() {
 		return _portletConfig.getInitParameter("template-path");
+	}
+
+	private Hits _search(String keywords, int start, int end)
+		throws PortalException {
+
+		Indexer<KBArticle> indexer = IndexerRegistryUtil.getIndexer(
+			KBArticle.class);
+
+		SearchContext searchContext = SearchContextFactory.getInstance(
+			_httpServletRequest);
+
+		searchContext.setAttribute(Field.STATUS, WorkflowConstants.STATUS_ANY);
+		searchContext.setEnd(end);
+		searchContext.setIncludeInternalAssetCategories(true);
+		searchContext.setKeywords(keywords);
+		searchContext.setStart(start);
+
+		boolean reverse = true;
+
+		if (Objects.equals(_searchContainer.getOrderByType(), "asc")) {
+			reverse = false;
+		}
+
+		searchContext.setSorts(
+			new Sort(_searchContainer.getOrderByCol(), reverse));
+
+		return indexer.search(searchContext);
 	}
 
 	private final HttpServletRequest _httpServletRequest;

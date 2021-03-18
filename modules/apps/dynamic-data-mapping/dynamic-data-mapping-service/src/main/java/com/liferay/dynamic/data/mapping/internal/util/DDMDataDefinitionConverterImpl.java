@@ -23,6 +23,8 @@ import com.liferay.dynamic.data.mapping.io.DDMFormSerializer;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
+import com.liferay.dynamic.data.mapping.model.DDMFormFieldValidation;
+import com.liferay.dynamic.data.mapping.model.DDMFormFieldValidationExpression;
 import com.liferay.dynamic.data.mapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.model.DDMFormLayoutColumn;
 import com.liferay.dynamic.data.mapping.model.DDMFormLayoutPage;
@@ -356,8 +358,24 @@ public class DDMDataDefinitionConverterImpl
 		if (ddmFormField.hasProperty("validation")) {
 			Object object = ddmFormField.getProperty("validation");
 
-			if (Validator.isNull(object)) {
+			if (!(object instanceof DDMFormFieldValidation)) {
 				ddmFormField.removeProperty("validation");
+			}
+			else {
+				DDMFormFieldValidation ddmFormFieldValidation =
+					(DDMFormFieldValidation)object;
+
+				DDMFormFieldValidationExpression
+					ddmFormFieldValidationExpression =
+						ddmFormFieldValidation.
+							getDDMFormFieldValidationExpression();
+
+				if ((ddmFormFieldValidationExpression == null) ||
+					Validator.isNull(
+						ddmFormFieldValidationExpression.getValue())) {
+
+					ddmFormField.removeProperty("validation");
+				}
 			}
 		}
 

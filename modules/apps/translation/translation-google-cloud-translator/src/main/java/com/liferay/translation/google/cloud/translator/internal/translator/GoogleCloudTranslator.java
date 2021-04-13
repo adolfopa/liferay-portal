@@ -14,14 +14,30 @@
 
 package com.liferay.translation.google.cloud.translator.internal.translator;
 
+import com.google.auth.oauth2.ServiceAccountCredentials;
+import com.google.cloud.translate.Translate;
+import com.google.cloud.translate.TranslateOptions;
+import com.google.cloud.translate.Translation;
+
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
+import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.translation.google.cloud.translator.internal.configuration.GoogleCloudTranslatorConfiguration;
 import com.liferay.translation.translator.Translator;
 import com.liferay.translation.translator.TranslatorPacket;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-
-import java.util.Map;
 
 /**
  * @author Adolfo Pérez
@@ -34,7 +50,51 @@ public class GoogleCloudTranslator implements Translator {
 
 	@Override
 	public TranslatorPacket translate(TranslatorPacket translatorPacket) {
-		return translatorPacket;
+		if (!_googleCloudTranslatorConfiguration.enabled() ||
+			Validator.isBlank(
+				_googleCloudTranslatorConfiguration.
+					serviceAccountPrivateKey())) {
+
+			return translatorPacket;
+		}
+
+		Map<String, String> fieldsMap = translatorPacket.getFieldsMap();
+
+		List<Translation> translations = _translate.translate(
+			new ArrayList<>(fieldsMap.values()),
+			Translate.TranslateOption.sourceLanguage(
+				translatorPacket.getSourceLanguageId()),
+			Translate.TranslateOption.targetLanguage(
+				translatorPacket.getTargetLanguageId()));
+
+		Map<String, String> translationFieldsMap = new HashMap<>();
+
+		Iterator<Translation> iterator = translations.iterator();
+
+		for (String key : fieldsMap.keySet()) {
+			Translation translation = iterator.next();
+
+			translationFieldsMap.put(key, translation.getTranslatedText());
+		}
+
+		return new TranslatorPacket() {
+
+			@Override
+			public Map<String, String> getFieldsMap() {
+				return translationFieldsMap;
+			}
+
+			@Override
+			public String getSourceLanguageId() {
+				return translatorPacket.getSourceLanguageId();
+			}
+
+			@Override
+			public String getTargetLanguageId() {
+				return translatorPacket.getTargetLanguageId();
+			}
+
+		};
 	}
 
 	@Activate
@@ -42,8 +102,43 @@ public class GoogleCloudTranslator implements Translator {
 		_googleCloudTranslatorConfiguration =
 			ConfigurableUtil.createConfigurable(
 				GoogleCloudTranslatorConfiguration.class, properties);
+
+		if (!_googleCloudTranslatorConfiguration.enabled() ||
+			Validator.isBlank(
+				_googleCloudTranslatorConfiguration.
+					serviceAccountPrivateKey())) {
+
+			return;
+		}
+
+		ServiceAccountCredentials serviceAccountCredentials = null;
+
+		String serviceAccountPrivateKey =
+			_googleCloudTranslatorConfiguration.serviceAccountPrivateKey();
+
+		try (InputStream inputStream = new ByteArrayInputStream(
+				serviceAccountPrivateKey.getBytes())) {
+
+			serviceAccountCredentials = ServiceAccountCredentials.fromStream(
+				inputStream);
+		}
+		catch (IOException ioException) {
+			throw new SystemException(
+				"Unable to authenticate with Google Cloud", ioException);
+		}
+
+		TranslateOptions.DefaultTranslateFactory defaultTranslateFactory =
+			new TranslateOptions.DefaultTranslateFactory();
+
+		_translate = defaultTranslateFactory.create(
+			TranslateOptions.newBuilder(
+			).setCredentials(
+				serviceAccountCredentials
+			).build());
 	}
 
-	private GoogleCloudTranslatorConfiguration _googleCloudTranslatorConfiguration;
+	private GoogleCloudTranslatorConfiguration
+		_googleCloudTranslatorConfiguration;
+	private Translate _translate;
 
 }

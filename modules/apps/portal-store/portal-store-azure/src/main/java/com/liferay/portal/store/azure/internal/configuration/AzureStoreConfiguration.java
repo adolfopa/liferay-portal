@@ -23,11 +23,10 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
  */
 @ExtendedObjectClassDefinition(category = "file-storage")
 @Meta.OCD(
-	id = "com.liferay.portal.store.azure.internal.configuration.AzureBlobStorageStoreConfiguration",
-	localization = "content/Language",
-	name = "azure-blob-storage-store-configuration-name"
+	id = "com.liferay.portal.store.azure.internal.configuration.AzureStoreConfiguration",
+	localization = "content/Language", name = "azure-store-configuration-name"
 )
-public interface AzureBlobStorageStoreConfiguration {
+public interface AzureStoreConfiguration {
 
 	@Meta.AD(description = "connection-string-help", name = "connection-string")
 	public String connectionString();

@@ -51,12 +51,21 @@ import org.osgi.service.component.annotations.Component;
 public class GoogleCloudTranslationTranslator implements Translator {
 
 	@Override
-	public TranslatorPacket translate(TranslatorPacket translatorPacket) {
-		if (!_googleCloudTranslationTranslatorConfiguration.enabled() ||
-			Validator.isBlank(
+	public boolean isEnabled() {
+		if (_googleCloudTranslationTranslatorConfiguration.enabled() &&
+			!Validator.isBlank(
 				_googleCloudTranslationTranslatorConfiguration.
 					serviceAccountPrivateKey())) {
 
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public TranslatorPacket translate(TranslatorPacket translatorPacket) {
+		if (!isEnabled()) {
 			return translatorPacket;
 		}
 
@@ -106,11 +115,7 @@ public class GoogleCloudTranslationTranslator implements Translator {
 				GoogleCloudTranslationTranslatorConfiguration.class,
 				properties);
 
-		if (!_googleCloudTranslationTranslatorConfiguration.enabled() ||
-			Validator.isBlank(
-				_googleCloudTranslationTranslatorConfiguration.
-					serviceAccountPrivateKey())) {
-
+		if (!isEnabled()) {
 			return;
 		}
 

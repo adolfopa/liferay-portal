@@ -24,7 +24,7 @@ import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.translation.google.cloud.translator.internal.configuration.GoogleCloudTranslatorConfiguration;
+import com.liferay.translation.google.cloud.translator.internal.configuration.GoogleCloudTranslationTranslatorConfiguration;
 import com.liferay.translation.translator.Translator;
 import com.liferay.translation.translator.TranslatorPacket;
 
@@ -45,16 +45,16 @@ import org.osgi.service.component.annotations.Component;
  * @author Adolfo Pérez
  */
 @Component(
-	configurationPid = "com.liferay.translation.google.cloud.translator.internal.configuration.GoogleCloudTranslatorConfiguration",
+	configurationPid = "com.liferay.translation.google.cloud.translator.internal.configuration.GoogleCloudTranslationTranslatorConfiguration",
 	service = Translator.class
 )
-public class GoogleCloudTranslator implements Translator {
+public class GoogleCloudTranslationTranslator implements Translator {
 
 	@Override
 	public TranslatorPacket translate(TranslatorPacket translatorPacket) {
-		if (!_googleCloudTranslatorConfiguration.enabled() ||
+		if (!_googleCloudTranslationTranslatorConfiguration.enabled() ||
 			Validator.isBlank(
-				_googleCloudTranslatorConfiguration.
+				_googleCloudTranslationTranslatorConfiguration.
 					serviceAccountPrivateKey())) {
 
 			return translatorPacket;
@@ -101,13 +101,14 @@ public class GoogleCloudTranslator implements Translator {
 
 	@Activate
 	protected void activate(Map<String, Object> properties) {
-		_googleCloudTranslatorConfiguration =
+		_googleCloudTranslationTranslatorConfiguration =
 			ConfigurableUtil.createConfigurable(
-				GoogleCloudTranslatorConfiguration.class, properties);
+				GoogleCloudTranslationTranslatorConfiguration.class,
+				properties);
 
-		if (!_googleCloudTranslatorConfiguration.enabled() ||
+		if (!_googleCloudTranslationTranslatorConfiguration.enabled() ||
 			Validator.isBlank(
-				_googleCloudTranslatorConfiguration.
+				_googleCloudTranslationTranslatorConfiguration.
 					serviceAccountPrivateKey())) {
 
 			return;
@@ -116,7 +117,8 @@ public class GoogleCloudTranslator implements Translator {
 		ServiceAccountCredentials serviceAccountCredentials = null;
 
 		String serviceAccountPrivateKey =
-			_googleCloudTranslatorConfiguration.serviceAccountPrivateKey();
+			_googleCloudTranslationTranslatorConfiguration.
+				serviceAccountPrivateKey();
 
 		try (InputStream inputStream = new ByteArrayInputStream(
 				serviceAccountPrivateKey.getBytes())) {
@@ -145,8 +147,8 @@ public class GoogleCloudTranslator implements Translator {
 		return list.get(0);
 	}
 
-	private GoogleCloudTranslatorConfiguration
-		_googleCloudTranslatorConfiguration;
+	private GoogleCloudTranslationTranslatorConfiguration
+		_googleCloudTranslationTranslatorConfiguration;
 	private Translate _translate;
 
 }

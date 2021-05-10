@@ -23,11 +23,11 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
  */
 @ExtendedObjectClassDefinition(category = "translation")
 @Meta.OCD(
-	id = "com.liferay.translation.google.cloud.translator.internal.configuration.GoogleCloudTranslatorConfiguration",
+	id = "com.liferay.translation.google.cloud.translator.internal.configuration.GoogleCloudTranslationTranslatorConfiguration",
 	localization = "content/Language",
 	name = "google-cloud-translator-configuration-name"
 )
-public interface GoogleCloudTranslatorConfiguration {
+public interface GoogleCloudTranslationTranslatorConfiguration {
 
 	@Meta.AD(
 		deflt = "false", description = "enabled-description", name = "enabled",

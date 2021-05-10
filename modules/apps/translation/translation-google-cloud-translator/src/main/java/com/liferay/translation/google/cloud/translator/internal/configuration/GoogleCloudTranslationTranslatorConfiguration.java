@@ -25,7 +25,7 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 @Meta.OCD(
 	id = "com.liferay.translation.google.cloud.translator.internal.configuration.GoogleCloudTranslationTranslatorConfiguration",
 	localization = "content/Language",
-	name = "google-cloud-translator-configuration-name"
+	name = "google-cloud-translation-translator-configuration-name"
 )
 public interface GoogleCloudTranslationTranslatorConfiguration {
 

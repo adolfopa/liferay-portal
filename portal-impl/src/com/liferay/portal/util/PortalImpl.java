@@ -59,6 +59,7 @@ import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.ClassName;
 import com.liferay.portal.kernel.model.ColorScheme;
 import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.Image;
@@ -7027,7 +7028,10 @@ public class PortalImpl implements Portal {
 			}
 		}
 
-		Image image = ImageLocalServiceUtil.moveImage(imageId, bytes);
+		Image image = ImageLocalServiceUtil.moveImage(
+			BeanPropertiesUtil.getLong(
+				baseModel, "companyId", CompanyConstants.SYSTEM),
+			imageId, bytes);
 
 		BeanPropertiesUtil.setProperty(
 			baseModel, fieldName, image.getImageId());

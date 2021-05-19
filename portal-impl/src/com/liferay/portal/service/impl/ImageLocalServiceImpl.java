@@ -27,7 +27,6 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.model.Image;
-import com.liferay.portal.kernel.service.persistence.CompanyUtil;
 import com.liferay.portal.kernel.webserver.WebServerServletTokenUtil;
 import com.liferay.portal.service.base.ImageLocalServiceBaseImpl;
 
@@ -145,6 +144,7 @@ public class ImageLocalServiceImpl extends ImageLocalServiceBaseImpl {
 	@Override
 	public Image moveImage(long companyId, long imageId, byte[] bytes)
 		throws PortalException {
+
 		if (companyId == CompanyConstants.SYSTEM) {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
@@ -354,13 +354,6 @@ public class ImageLocalServiceImpl extends ImageLocalServiceBaseImpl {
 		Image image = getImage(imageId);
 
 		if (image == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					String.format(
-						"Found reference to image %d in System company.",
-						imageId));
-			}
-
 			return CompanyConstants.SYSTEM;
 		}
 

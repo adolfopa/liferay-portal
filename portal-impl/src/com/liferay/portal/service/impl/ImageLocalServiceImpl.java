@@ -27,6 +27,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.model.Image;
+import com.liferay.portal.kernel.service.persistence.CompanyUtil;
 import com.liferay.portal.kernel.webserver.WebServerServletTokenUtil;
 import com.liferay.portal.service.base.ImageLocalServiceBaseImpl;
 
@@ -130,11 +131,31 @@ public class ImageLocalServiceImpl extends ImageLocalServiceBaseImpl {
 		return imagePersistence.findByLtSize(size);
 	}
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #moveImage(long, long, byte[])}
+	 */
+	@Deprecated
 	@Override
 	public Image moveImage(long imageId, byte[] bytes) throws PortalException {
-		Image image = updateImage(
+		return moveImage(
 			_getImageCompanyId(imageId), counterLocalService.increment(),
 			bytes);
+	}
+
+	@Override
+	public Image moveImage(long companyId, long imageId, byte[] bytes)
+		throws PortalException {
+		if (companyId == CompanyConstants.SYSTEM) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					String.format(
+						"Found reference to image %d in System company.",
+						imageId));
+			}
+		}
+
+		Image image = updateImage(
+			companyId, counterLocalService.increment(), bytes);
 
 		deleteImage(imageId);
 

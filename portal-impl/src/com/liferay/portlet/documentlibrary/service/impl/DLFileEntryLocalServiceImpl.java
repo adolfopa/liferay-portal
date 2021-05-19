@@ -1831,7 +1831,7 @@ public class DLFileEntryLocalServiceImpl
 				renderedImage, height, width);
 
 			imageLocalService.updateImage(
-				smallImageId,
+				largeImage.getCompanyId(), smallImageId,
 				ImageToolUtil.getBytes(
 					thumbnailRenderedImage, largeImage.getType()));
 		}

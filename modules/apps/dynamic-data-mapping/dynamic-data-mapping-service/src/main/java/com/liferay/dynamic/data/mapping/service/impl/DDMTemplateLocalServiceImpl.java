@@ -262,8 +262,8 @@ public class DDMTemplateLocalServiceImpl
 		// Small image
 
 		saveImages(
-			smallImage, template.getSmallImageId(), smallImageFile,
-			smallImageBytes);
+			template.getCompanyId(), smallImage, template.getSmallImageId(),
+			smallImageFile, smallImageBytes);
 
 		// Template version
 
@@ -1508,8 +1508,8 @@ public class DDMTemplateLocalServiceImpl
 		// Small image
 
 		saveImages(
-			smallImage, template.getSmallImageId(), smallImageFile,
-			smallImageBytes);
+			user.getCompanyId(), smallImage, template.getSmallImageId(),
+			smallImageFile, smallImageBytes);
 
 		// Template version
 
@@ -1707,8 +1707,8 @@ public class DDMTemplateLocalServiceImpl
 		// Small image
 
 		saveImages(
-			smallImage, newTemplate.getSmallImageId(), smallImageFile,
-			smallImageBytes);
+			template.getCompanyId(), smallImage, newTemplate.getSmallImageId(),
+			smallImageFile, smallImageBytes);
 
 		// Template version
 
@@ -1785,15 +1785,15 @@ public class DDMTemplateLocalServiceImpl
 	}
 
 	protected void saveImages(
-			boolean smallImage, long smallImageId, File smallImageFile,
-			byte[] smallImageBytes)
+			long companyId, boolean smallImage, long smallImageId,
+			File smallImageFile, byte[] smallImageBytes)
 		throws PortalException {
 
 		if (smallImage) {
 			if ((smallImageFile != null) && (smallImageBytes != null)) {
 				try {
 					imageLocalService.updateImage(
-						smallImageId, smallImageBytes);
+						companyId, smallImageId, smallImageBytes);
 				}
 				catch (Exception exception) {
 					throw new TemplateSmallImageContentException(exception);

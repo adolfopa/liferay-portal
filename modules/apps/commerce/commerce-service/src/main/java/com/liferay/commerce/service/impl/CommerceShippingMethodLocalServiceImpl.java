@@ -111,6 +111,7 @@ public class CommerceShippingMethodLocalServiceImpl
 
 		if (imageFile != null) {
 			imageLocalService.updateImage(
+				commerceShippingMethod.getCompanyId(),
 				commerceShippingMethod.getImageId(), imageFile);
 		}
 
@@ -302,6 +303,7 @@ public class CommerceShippingMethodLocalServiceImpl
 
 		if (imageFile != null) {
 			imageLocalService.updateImage(
+				commerceShippingMethod.getCompanyId(),
 				commerceShippingMethod.getImageId(), imageFile);
 		}
 

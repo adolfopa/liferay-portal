@@ -199,8 +199,9 @@ public class ImageLocalServiceImpl extends ImageLocalServiceBaseImpl {
 			Image image = ImageToolUtil.getImage(inputStream, cleanUpStream);
 
 			return updateImage(
-				imageId, image.getTextObj(), image.getType(), image.getHeight(),
-				image.getWidth(), image.getSize());
+				image.getCompanyId(), imageId, image.getTextObj(),
+				image.getType(), image.getHeight(), image.getWidth(),
+				image.getSize());
 		}
 		catch (IOException ioException) {
 			throw new SystemException(ioException);

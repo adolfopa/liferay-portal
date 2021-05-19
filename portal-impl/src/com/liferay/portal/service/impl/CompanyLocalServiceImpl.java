@@ -975,7 +975,7 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 
 		Company company = checkLogo(companyId);
 
-		imageLocalService.updateImage(company.getLogoId(), bytes);
+		imageLocalService.updateImage(companyId, company.getLogoId(), bytes);
 
 		return company;
 	}
@@ -993,7 +993,7 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 
 		Company company = checkLogo(companyId);
 
-		imageLocalService.updateImage(company.getLogoId(), file);
+		imageLocalService.updateImage(companyId, company.getLogoId(), file);
 
 		return company;
 	}
@@ -1011,7 +1011,8 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 
 		Company company = checkLogo(companyId);
 
-		imageLocalService.updateImage(company.getLogoId(), inputStream);
+		imageLocalService.updateImage(
+			companyId, company.getLogoId(), inputStream);
 
 		return company;
 	}

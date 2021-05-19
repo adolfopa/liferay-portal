@@ -511,8 +511,8 @@ public class JournalArticleLocalServiceImpl
 		// Small image
 
 		saveImages(
-			smallImage, article.getSmallImageId(), smallImageFile,
-			smallImageBytes);
+			user.getCompanyId(), smallImage, article.getSmallImageId(),
+			smallImageFile, smallImageBytes);
 
 		// Asset
 
@@ -826,8 +826,8 @@ public class JournalArticleLocalServiceImpl
 		// Small image
 
 		saveImages(
-			smallImage, article.getSmallImageId(), smallImageFile,
-			smallImageBytes);
+			user.getCompanyId(), smallImage, article.getSmallImageId(),
+			smallImageFile, smallImageBytes);
 
 		// Asset
 
@@ -1135,7 +1135,8 @@ public class JournalArticleLocalServiceImpl
 				byte[] smallImageBytes = image.getTextObj();
 
 				imageLocalService.updateImage(
-					newArticle.getSmallImageId(), smallImageBytes);
+					newArticle.getCompanyId(), newArticle.getSmallImageId(),
+					smallImageBytes);
 			}
 		}
 
@@ -4438,11 +4439,11 @@ public class JournalArticleLocalServiceImpl
 	 * @param  displayDateLT the date before which a matching web content
 	 *         article's display date must be before (optionally
 	 *         <code>null</code>)
+	 * @param  reviewDate the web content article's scheduled review date
+	 *         (optionally <code>null</code>)
 	 * @param  status the web content article's workflow status. For more
 	 *         information see {@link WorkflowConstants} for constants starting
 	 *         with the "STATUS_" prefix.
-	 * @param  reviewDate the web content article's scheduled review date
-	 *         (optionally <code>null</code>)
 	 * @param  start the lower bound of the range of web content articles to
 	 *         return
 	 * @param  end the upper bound of the range of web content articles to
@@ -4515,11 +4516,11 @@ public class JournalArticleLocalServiceImpl
 	 * @param  displayDateLT the date before which a matching web content
 	 *         article's display date must be before (optionally
 	 *         <code>null</code>)
+	 * @param  reviewDate the web content article's scheduled review date
+	 *         (optionally <code>null</code>)
 	 * @param  status the web content article's workflow status. For more
 	 *         information see {@link WorkflowConstants} for constants starting
 	 *         with the "STATUS_" prefix.
-	 * @param  reviewDate the web content article's scheduled review date
-	 *         (optionally <code>null</code>)
 	 * @param  andOperator whether every field must match its value or keywords,
 	 *         or just one field must match. Company, group, folder IDs, class
 	 *         name ID, and status must all match their values.
@@ -4599,11 +4600,11 @@ public class JournalArticleLocalServiceImpl
 	 * @param  displayDateLT the date before which a matching web content
 	 *         article's display date must be before (optionally
 	 *         <code>null</code>)
+	 * @param  reviewDate the web content article's scheduled review date
+	 *         (optionally <code>null</code>)
 	 * @param  status the web content article's workflow status. For more
 	 *         information see {@link WorkflowConstants} for constants starting
 	 *         with the "STATUS_" prefix.
-	 * @param  reviewDate the web content article's scheduled review date
-	 *         (optionally <code>null</code>)
 	 * @param  andOperator whether every field must match its value or keywords,
 	 *         or just one field must match.  Company, group, folder IDs, class
 	 *         name ID, and status must all match their values.
@@ -4908,11 +4909,11 @@ public class JournalArticleLocalServiceImpl
 	 * @param  displayDateLT the date before which a matching web content
 	 *         article's display date must be before (optionally
 	 *         <code>null</code>)
+	 * @param  reviewDate the web content article's scheduled review date
+	 *         (optionally <code>null</code>)
 	 * @param  status the web content article's workflow status. For more
 	 *         information see {@link WorkflowConstants} for constants starting
 	 *         with the "STATUS_" prefix.
-	 * @param  reviewDate the web content article's scheduled review date
-	 *         (optionally <code>null</code>)
 	 * @return the number of matching web content articles
 	 */
 	@Override
@@ -4964,11 +4965,11 @@ public class JournalArticleLocalServiceImpl
 	 * @param  displayDateLT the date before which a matching web content
 	 *         article's display date must be before (optionally
 	 *         <code>null</code>)
+	 * @param  reviewDate the web content article's scheduled review date
+	 *         (optionally <code>null</code>)
 	 * @param  status the web content article's workflow status. For more
 	 *         information see {@link WorkflowConstants} for constants starting
 	 *         with the "STATUS_" prefix.
-	 * @param  reviewDate the web content article's scheduled review date
-	 *         (optionally <code>null</code>)
 	 * @param  andOperator whether every field must match its value or keywords,
 	 *         or just one field must match. Group, folder IDs, class name ID,
 	 *         and status must all match their values.
@@ -5027,11 +5028,11 @@ public class JournalArticleLocalServiceImpl
 	 * @param  displayDateLT the date before which a matching web content
 	 *         article's display date must be before (optionally
 	 *         <code>null</code>)
+	 * @param  reviewDate the web content article's scheduled review date
+	 *         (optionally <code>null</code>)
 	 * @param  status the web content article's workflow status. For more
 	 *         information see {@link WorkflowConstants} for constants starting
 	 *         with the "STATUS_" prefix.
-	 * @param  reviewDate the web content article's scheduled review date
-	 *         (optionally <code>null</code>)
 	 * @param  andOperator whether every field must match its value or keywords,
 	 *         or just one field must match.  Group, folder IDs, class name ID,
 	 *         and status must all match their values.
@@ -5732,8 +5733,8 @@ public class JournalArticleLocalServiceImpl
 		// Small image
 
 		saveImages(
-			smallImage, article.getSmallImageId(), smallImageFile,
-			smallImageBytes);
+			user.getCompanyId(), smallImage, article.getSmallImageId(),
+			smallImageFile, smallImageBytes);
 
 		// Email and workflow
 
@@ -6191,8 +6192,8 @@ public class JournalArticleLocalServiceImpl
 		// Small image
 
 		saveImages(
-			smallImage, article.getSmallImageId(), smallImageFile,
-			smallImageBytes);
+			user.getCompanyId(), smallImage, article.getSmallImageId(),
+			smallImageFile, smallImageBytes);
 
 		return journalArticlePersistence.findByPrimaryKey(article.getId());
 	}
@@ -8161,13 +8162,14 @@ public class JournalArticleLocalServiceImpl
 	}
 
 	protected void saveImages(
-			boolean smallImage, long smallImageId, File smallImageFile,
-			byte[] smallImageBytes)
+			long companyId, boolean smallImage, long smallImageId,
+			File smallImageFile, byte[] smallImageBytes)
 		throws PortalException {
 
 		if (smallImage) {
 			if ((smallImageFile != null) && (smallImageBytes != null)) {
-				imageLocalService.updateImage(smallImageId, smallImageBytes);
+				imageLocalService.updateImage(
+					companyId, smallImageId, smallImageBytes);
 			}
 		}
 		else {

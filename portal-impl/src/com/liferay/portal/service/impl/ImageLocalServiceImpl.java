@@ -170,7 +170,7 @@ public class ImageLocalServiceImpl extends ImageLocalServiceBaseImpl {
 	public Image updateImage(long imageId, byte[] bytes)
 		throws PortalException {
 
-		return updateImage(CompanyConstants.SYSTEM, imageId, bytes);
+		return updateImage(_getImageCompanyId(imageId), imageId, bytes);
 	}
 
 	/**
@@ -184,7 +184,8 @@ public class ImageLocalServiceImpl extends ImageLocalServiceBaseImpl {
 		throws PortalException {
 
 		return updateImage(
-			CompanyConstants.SYSTEM, imageId, bytes, type, height, width, size);
+			_getImageCompanyId(imageId), imageId, bytes, type, height, width,
+			size);
 	}
 
 	/**
@@ -193,7 +194,7 @@ public class ImageLocalServiceImpl extends ImageLocalServiceBaseImpl {
 	@Deprecated
 	@Override
 	public Image updateImage(long imageId, File file) throws PortalException {
-		return updateImage(CompanyConstants.SYSTEM, imageId, file);
+		return updateImage(_getImageCompanyId(imageId), imageId, file);
 	}
 
 	/**
@@ -204,7 +205,7 @@ public class ImageLocalServiceImpl extends ImageLocalServiceBaseImpl {
 	public Image updateImage(long imageId, InputStream inputStream)
 		throws PortalException {
 
-		return updateImage(CompanyConstants.SYSTEM, imageId, inputStream);
+		return updateImage(_getImageCompanyId(imageId), imageId, inputStream);
 	}
 
 	/**
@@ -220,7 +221,7 @@ public class ImageLocalServiceImpl extends ImageLocalServiceBaseImpl {
 			Image image = ImageToolUtil.getImage(inputStream, cleanUpStream);
 
 			return updateImage(
-				image.getCompanyId(), imageId, image.getTextObj(),
+				_getImageCompanyId(imageId), imageId, image.getTextObj(),
 				image.getType(), image.getHeight(), image.getWidth(),
 				image.getSize());
 		}

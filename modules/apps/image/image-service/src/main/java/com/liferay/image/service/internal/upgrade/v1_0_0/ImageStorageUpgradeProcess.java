@@ -49,6 +49,10 @@ public class ImageStorageUpgradeProcess extends UpgradeProcess {
 
 		actionableDynamicQuery.setPerformActionMethod(
 			(Image image) -> {
+				if (image.getCompanyId() == CompanyConstants.SYSTEM) {
+					return;
+				}
+
 				String fileName = _getFileName(image);
 
 				try (InputStream inputStream = store.getFileAsStream(

@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Brian Wing Shun Chan
@@ -263,6 +264,12 @@ public class ImageLocalServiceImpl extends ImageLocalServiceBaseImpl {
 
 		if (image == null) {
 			image = imagePersistence.create(imageId);
+
+			image.setCompanyId(companyId);
+		}
+		else if ((companyId != CompanyConstants.SYSTEM) &&
+				 Objects.equals(
+					 image.getCompanyId(), CompanyConstants.SYSTEM)) {
 
 			image.setCompanyId(companyId);
 		}

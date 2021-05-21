@@ -266,7 +266,14 @@ public interface ImageLocalService
 	public PersistedModel getPersistedModel(Serializable primaryKeyObj)
 		throws PortalException;
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #moveImage(long, long, byte[])}
+	 */
+	@Deprecated
 	public Image moveImage(long imageId, byte[] bytes) throws PortalException;
+
+	public Image moveImage(long companyId, long imageId, byte[] bytes)
+		throws PortalException;
 
 	/**
 	 * Updates the image in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
@@ -281,20 +288,60 @@ public interface ImageLocalService
 	@Indexable(type = IndexableType.REINDEX)
 	public Image updateImage(Image image);
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #updateImage(long, long, byte[])}
+	 */
+	@Deprecated
 	public Image updateImage(long imageId, byte[] bytes) throws PortalException;
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #updateImage(long, long, byte[], String, int, int, int)}
+	 */
+	@Deprecated
 	public Image updateImage(
 			long imageId, byte[] bytes, String type, int height, int width,
 			int size)
 		throws PortalException;
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #updateImage(long, long, File)}
+	 */
+	@Deprecated
 	public Image updateImage(long imageId, File file) throws PortalException;
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #updateImage(long, long, InputStream)}
+	 */
+	@Deprecated
 	public Image updateImage(long imageId, InputStream inputStream)
 		throws PortalException;
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #updateImage(long, long, InputStream, boolean)}
+	 */
+	@Deprecated
 	public Image updateImage(
 			long imageId, InputStream inputStream, boolean cleanUpStream)
+		throws PortalException;
+
+	public Image updateImage(long companyId, long imageId, byte[] bytes)
+		throws PortalException;
+
+	public Image updateImage(
+			long companyId, long imageId, byte[] bytes, String type, int height,
+			int width, int size)
+		throws PortalException;
+
+	public Image updateImage(long companyId, long imageId, File file)
+		throws PortalException;
+
+	public Image updateImage(
+			long companyId, long imageId, InputStream inputStream)
+		throws PortalException;
+
+	public Image updateImage(
+			long companyId, long imageId, InputStream inputStream,
+			boolean cleanUpStream)
 		throws PortalException;
 
 	@Override

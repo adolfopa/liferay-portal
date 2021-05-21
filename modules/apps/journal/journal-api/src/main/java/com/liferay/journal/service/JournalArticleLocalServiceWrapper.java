@@ -2934,11 +2934,11 @@ public class JournalArticleLocalServiceWrapper
 	 * @param displayDateLT the date before which a matching web content
 	 article's display date must be before (optionally
 	 <code>null</code>)
+	 * @param reviewDate the web content article's scheduled review date
+	 (optionally <code>null</code>)
 	 * @param status the web content article's workflow status. For more
 	 information see {@link WorkflowConstants} for constants starting
 	 with the "STATUS_" prefix.
-	 * @param reviewDate the web content article's scheduled review date
-	 (optionally <code>null</code>)
 	 * @param start the lower bound of the range of web content articles to
 	 return
 	 * @param end the upper bound of the range of web content articles to
@@ -3013,11 +3013,11 @@ public class JournalArticleLocalServiceWrapper
 	 * @param displayDateLT the date before which a matching web content
 	 article's display date must be before (optionally
 	 <code>null</code>)
+	 * @param reviewDate the web content article's scheduled review date
+	 (optionally <code>null</code>)
 	 * @param status the web content article's workflow status. For more
 	 information see {@link WorkflowConstants} for constants starting
 	 with the "STATUS_" prefix.
-	 * @param reviewDate the web content article's scheduled review date
-	 (optionally <code>null</code>)
 	 * @param andOperator whether every field must match its value or keywords,
 	 or just one field must match. Company, group, folder IDs, class
 	 name ID, and status must all match their values.
@@ -3096,11 +3096,11 @@ public class JournalArticleLocalServiceWrapper
 	 * @param displayDateLT the date before which a matching web content
 	 article's display date must be before (optionally
 	 <code>null</code>)
+	 * @param reviewDate the web content article's scheduled review date
+	 (optionally <code>null</code>)
 	 * @param status the web content article's workflow status. For more
 	 information see {@link WorkflowConstants} for constants starting
 	 with the "STATUS_" prefix.
-	 * @param reviewDate the web content article's scheduled review date
-	 (optionally <code>null</code>)
 	 * @param andOperator whether every field must match its value or keywords,
 	 or just one field must match.  Company, group, folder IDs, class
 	 name ID, and status must all match their values.
@@ -3370,11 +3370,11 @@ public class JournalArticleLocalServiceWrapper
 	 * @param displayDateLT the date before which a matching web content
 	 article's display date must be before (optionally
 	 <code>null</code>)
+	 * @param reviewDate the web content article's scheduled review date
+	 (optionally <code>null</code>)
 	 * @param status the web content article's workflow status. For more
 	 information see {@link WorkflowConstants} for constants starting
 	 with the "STATUS_" prefix.
-	 * @param reviewDate the web content article's scheduled review date
-	 (optionally <code>null</code>)
 	 * @return the number of matching web content articles
 	 */
 	@Override
@@ -3427,11 +3427,11 @@ public class JournalArticleLocalServiceWrapper
 	 * @param displayDateLT the date before which a matching web content
 	 article's display date must be before (optionally
 	 <code>null</code>)
+	 * @param reviewDate the web content article's scheduled review date
+	 (optionally <code>null</code>)
 	 * @param status the web content article's workflow status. For more
 	 information see {@link WorkflowConstants} for constants starting
 	 with the "STATUS_" prefix.
-	 * @param reviewDate the web content article's scheduled review date
-	 (optionally <code>null</code>)
 	 * @param andOperator whether every field must match its value or keywords,
 	 or just one field must match. Group, folder IDs, class name ID,
 	 and status must all match their values.
@@ -3490,11 +3490,11 @@ public class JournalArticleLocalServiceWrapper
 	 * @param displayDateLT the date before which a matching web content
 	 article's display date must be before (optionally
 	 <code>null</code>)
+	 * @param reviewDate the web content article's scheduled review date
+	 (optionally <code>null</code>)
 	 * @param status the web content article's workflow status. For more
 	 information see {@link WorkflowConstants} for constants starting
 	 with the "STATUS_" prefix.
-	 * @param reviewDate the web content article's scheduled review date
-	 (optionally <code>null</code>)
 	 * @param andOperator whether every field must match its value or keywords,
 	 or just one field must match.  Group, folder IDs, class name ID,
 	 and status must all match their values.

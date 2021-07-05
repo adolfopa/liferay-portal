@@ -62,6 +62,11 @@ portletDisplay.setShowStagingIcon(false);
 							module="js/layout/Layout"
 							props="<%= millerColumnsDisplayContext.getLayoutData() %>"
 						/>
+
+						<react:component
+							module="js/layout/LayoutExportTranslation"
+							props="<%= millerColumnsDisplayContext.getExportTranslationData() %>"
+						/>
 					</div>
 				</c:otherwise>
 			</c:choose>

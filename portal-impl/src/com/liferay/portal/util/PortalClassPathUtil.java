@@ -127,7 +127,7 @@ public class PortalClassPathUtil {
 		sb.append(
 			_buildClassPath(
 				classLoader,
-				"com.liferay.shielded.container.ShieldedContainerInitializer"));
+				"com.liferay.portal.internal.servlet.MainServlet"));
 
 		if (servletContext != null) {
 			sb.append(File.pathSeparator);

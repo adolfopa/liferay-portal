@@ -109,13 +109,17 @@ public class PortalClassPathUtil {
 
 		StringBundler sb = new StringBundler(8);
 
-		sb.append(
-			_buildClassPath(classLoader, ServletException.class.getName()));
+		String appServerGlobalClassPath = _buildClassPath(
+			classLoader, ServletException.class.getName());
+
+		sb.append(appServerGlobalClassPath);
 
 		sb.append(File.pathSeparator);
-		sb.append(
-			_buildClassPath(
-				classLoader, CentralizedThreadLocal.class.getName()));
+
+		String portalGlobalClassPath = _buildClassPath(
+			classLoader, CentralizedThreadLocal.class.getName());
+
+		sb.append(portalGlobalClassPath);
 
 		String globalClassPath = sb.toString();
 

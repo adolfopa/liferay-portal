@@ -19,12 +19,14 @@ import com.liferay.fragment.constants.FragmentEntryLinkConstants;
 import com.liferay.fragment.model.FragmentCollection;
 import com.liferay.fragment.model.FragmentEntry;
 import com.liferay.fragment.model.FragmentEntryLink;
+import com.liferay.fragment.model.FragmentEntryLinkTable;
 import com.liferay.fragment.processor.DefaultFragmentEntryProcessorContext;
 import com.liferay.fragment.processor.FragmentEntryProcessorContext;
 import com.liferay.fragment.processor.FragmentEntryProcessorRegistry;
 import com.liferay.fragment.service.base.FragmentEntryLinkLocalServiceBaseImpl;
 import com.liferay.fragment.service.persistence.FragmentCollectionPersistence;
 import com.liferay.fragment.service.persistence.FragmentEntryPersistence;
+import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -56,6 +58,7 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.segments.constants.SegmentsExperienceConstants;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -314,6 +317,32 @@ public class FragmentEntryLinkLocalServiceImpl
 
 		return fragmentEntryLinkPersistence.fetchByG_OFELI_P_First(
 			groupId, originalFragmentEntryLinkId, plid, null);
+	}
+
+	@Override
+	public long[] getFragmentEntryLinkClassPKsByPortletId(
+		long groupId, long classNameId, String portletId) {
+
+		return ArrayUtil.toLongArray(
+			fragmentEntryLinkLocalService.<Collection<Long>>dslQuery(
+				DSLQueryFactoryUtil.select(
+					FragmentEntryLinkTable.INSTANCE.classPK
+				).from(
+					FragmentEntryLinkTable.INSTANCE
+				).where(
+					FragmentEntryLinkTable.INSTANCE.groupId.eq(
+						groupId
+					).and(
+						FragmentEntryLinkTable.INSTANCE.classNameId.eq(
+							classNameId)
+					).and(
+						FragmentEntryLinkTable.INSTANCE.rendererKey.isNull()
+					).and(
+						FragmentEntryLinkTable.INSTANCE.editableValues.like(
+							String.format(
+								"%%\"portletId\":\"%s\"%%", portletId))
+					)
+				)));
 	}
 
 	@Override

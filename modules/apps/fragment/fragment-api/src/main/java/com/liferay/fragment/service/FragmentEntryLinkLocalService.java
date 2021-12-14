@@ -309,6 +309,10 @@ public interface FragmentEntryLinkLocalService
 			String uuid, long groupId)
 		throws PortalException;
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public long[] getFragmentEntryLinkClassPKsByPortletId(
+		long groupId, long classNameId, String portletId);
+
 	/**
 	 * Returns a range of all the fragment entry links.
 	 *

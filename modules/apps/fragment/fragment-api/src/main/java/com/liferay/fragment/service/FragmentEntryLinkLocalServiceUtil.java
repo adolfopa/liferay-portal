@@ -365,6 +365,13 @@ public class FragmentEntryLinkLocalServiceUtil {
 		return getService().getFragmentEntryLinkByUuidAndGroupId(uuid, groupId);
 	}
 
+	public static long[] getFragmentEntryLinkClassPKsByPortletId(
+		long groupId, long classNameId, String portletId) {
+
+		return getService().getFragmentEntryLinkClassPKsByPortletId(
+			groupId, classNameId, portletId);
+	}
+
 	/**
 	 * Returns a range of all the fragment entry links.
 	 *

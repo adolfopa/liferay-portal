@@ -410,6 +410,15 @@ public class FragmentEntryLinkLocalServiceWrapper
 			getFragmentEntryLinkByUuidAndGroupId(uuid, groupId);
 	}
 
+	@Override
+	public long[] getFragmentEntryLinkClassPKsByPortletId(
+		long groupId, long classNameId, String portletId) {
+
+		return _fragmentEntryLinkLocalService.
+			getFragmentEntryLinkClassPKsByPortletId(
+				groupId, classNameId, portletId);
+	}
+
 	/**
 	 * Returns a range of all the fragment entry links.
 	 *

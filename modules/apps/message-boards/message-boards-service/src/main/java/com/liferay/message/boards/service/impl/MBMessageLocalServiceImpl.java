@@ -25,6 +25,7 @@ import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
 import com.liferay.expando.kernel.service.ExpandoRowLocalService;
+import com.liferay.fragment.service.FragmentEntryLinkLocalService;
 import com.liferay.message.boards.constants.MBCategoryConstants;
 import com.liferay.message.boards.constants.MBConstants;
 import com.liferay.message.boards.constants.MBMessageConstants;
@@ -73,6 +74,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.ModelHintsUtil;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.SystemEventConstants;
@@ -97,6 +99,7 @@ import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.ResourceLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
@@ -1942,8 +1945,8 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 		String portletId = PortletProviderUtil.getPortletId(
 			MBMessage.class.getName(), PortletProvider.Action.VIEW);
 
-		String layoutURL = _portal.getLayoutFullURL(
-			message.getGroupId(), portletId);
+		String layoutURL = _getLayoutFullURL(
+			message, portletId, serviceContext);
 
 		if (Validator.isNotNull(layoutURL)) {
 			return StringBundler.concat(
@@ -2601,6 +2604,36 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 		return StringPool.BLANK;
 	}
 
+	private String _getLayoutFullURL(
+			MBMessage message, String portletId, ServiceContext serviceContext)
+		throws PortalException {
+
+		String layoutFullURL = _portal.getLayoutFullURL(
+			message.getGroupId(), portletId);
+
+		if (Validator.isNotNull(layoutFullURL)) {
+			return layoutFullURL;
+		}
+
+		long[] plids =
+			_fragmentEntryLinkLocalService.
+				getFragmentEntryLinkClassPKsByPortletId(
+					message.getGroupId(),
+					_classNameLocalService.getClassNameId(Layout.class),
+					portletId);
+
+		for (long plid : plids) {
+			Layout layout = _layoutLocalService.fetchLayout(plid);
+
+			if ((layout != null) && !layout.isDraftLayout()) {
+				return _portal.getLayoutFullURL(
+					layout, serviceContext.getThemeDisplay(), false);
+			}
+		}
+
+		return null;
+	}
+
 	private String _getLocalizedRootCategoryName(Group group, Locale locale) {
 		try {
 			return LanguageUtil.get(locale, "home") + " - " +
@@ -2865,10 +2898,16 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 	private ExpandoRowLocalService _expandoRowLocalService;
 
 	@Reference
+	private FragmentEntryLinkLocalService _fragmentEntryLinkLocalService;
+
+	@Reference
 	private GroupLocalService _groupLocalService;
 
 	@Reference
 	private Http _http;
+
+	@Reference
+	private LayoutLocalService _layoutLocalService;
 
 	@Reference
 	private LiferayJSONDeserializationWhitelist

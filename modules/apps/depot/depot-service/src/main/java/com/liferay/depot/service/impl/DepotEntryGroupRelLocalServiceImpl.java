@@ -16,7 +16,9 @@ package com.liferay.depot.service.impl;
 
 import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.model.DepotEntryGroupRel;
+import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.depot.service.base.DepotEntryGroupRelLocalServiceBaseImpl;
+import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.SystemEventConstants;
@@ -27,6 +29,7 @@ import com.liferay.portal.kernel.systemevent.SystemEvent;
 import java.util.List;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Brian Wing Shun Chan
@@ -53,7 +56,7 @@ public class DepotEntryGroupRelLocalServiceImpl
 		depotEntryGroupRel = depotEntryGroupRelPersistence.create(
 			counterLocalService.increment());
 
-		depotEntryGroupRel.setGroupId(toGroupId);
+		depotEntryGroupRel.setGroupId(_getDepotGroupId(depotEntryId));
 		depotEntryGroupRel.setDdmStructuresAvailable(ddmStructuresAvailable);
 		depotEntryGroupRel.setDepotEntryId(depotEntryId);
 		depotEntryGroupRel.setSearchable(searchable);
@@ -170,5 +173,20 @@ public class DepotEntryGroupRelLocalServiceImpl
 
 		return depotEntryGroupRelPersistence.update(depotEntryGroupRel);
 	}
+
+	private long _getDepotGroupId(long depotEntryId) {
+		try {
+			DepotEntry depotEntry = _depotEntryLocalService.getDepotEntry(
+				depotEntryId);
+
+			return depotEntry.getGroupId();
+		}
+		catch (PortalException portalException) {
+			return ReflectionUtil.throwException(portalException);
+		}
+	}
+
+	@Reference
+	private DepotEntryLocalService _depotEntryLocalService;
 
 }

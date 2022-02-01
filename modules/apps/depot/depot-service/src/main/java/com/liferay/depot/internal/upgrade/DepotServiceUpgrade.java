@@ -45,7 +45,9 @@ public class DepotServiceUpgrade implements UpgradeStepRegistrator {
 		registry.register(
 			"2.0.0", "2.1.0",
 			new CTModelUpgradeProcess(
-				"DepotAppCustomization", "DepotEntry", "DepotEntryGroupRel"));
+				"DepotAppCustomization", "DepotEntry", "DepotEntryGroupRel"),
+			new com.liferay.depot.internal.upgrade.v2_1_0.
+				DepotEntryGroupRelUpgradeProcess());
 	}
 
 }

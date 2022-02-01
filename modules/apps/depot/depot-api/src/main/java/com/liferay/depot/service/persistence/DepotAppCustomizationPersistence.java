@@ -17,6 +17,7 @@ package com.liferay.depot.service.persistence;
 import com.liferay.depot.exception.NoSuchAppCustomizationException;
 import com.liferay.depot.model.DepotAppCustomization;
 import com.liferay.portal.kernel.service.persistence.BasePersistence;
+import com.liferay.portal.kernel.service.persistence.change.tracking.CTPersistence;
 
 import org.osgi.annotation.versioning.ProviderType;
 
@@ -33,7 +34,8 @@ import org.osgi.annotation.versioning.ProviderType;
  */
 @ProviderType
 public interface DepotAppCustomizationPersistence
-	extends BasePersistence<DepotAppCustomization> {
+	extends BasePersistence<DepotAppCustomization>,
+			CTPersistence<DepotAppCustomization> {
 
 	/*
 	 * NOTE FOR DEVELOPERS:

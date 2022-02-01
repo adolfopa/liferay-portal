@@ -127,6 +127,8 @@ public class DepotEntryGroupRelPersistenceTest {
 
 		newDepotEntryGroupRel.setMvccVersion(RandomTestUtil.nextLong());
 
+		newDepotEntryGroupRel.setCtCollectionId(RandomTestUtil.nextLong());
+
 		newDepotEntryGroupRel.setUuid(RandomTestUtil.randomString());
 
 		newDepotEntryGroupRel.setGroupId(RandomTestUtil.nextLong());
@@ -161,6 +163,9 @@ public class DepotEntryGroupRelPersistenceTest {
 		Assert.assertEquals(
 			existingDepotEntryGroupRel.getMvccVersion(),
 			newDepotEntryGroupRel.getMvccVersion());
+		Assert.assertEquals(
+			existingDepotEntryGroupRel.getCtCollectionId(),
+			newDepotEntryGroupRel.getCtCollectionId());
 		Assert.assertEquals(
 			existingDepotEntryGroupRel.getUuid(),
 			newDepotEntryGroupRel.getUuid());
@@ -295,10 +300,10 @@ public class DepotEntryGroupRelPersistenceTest {
 
 	protected OrderByComparator<DepotEntryGroupRel> getOrderByComparator() {
 		return OrderByComparatorFactoryUtil.create(
-			"DepotEntryGroupRel", "mvccVersion", true, "uuid", true,
-			"depotEntryGroupRelId", true, "groupId", true, "companyId", true,
-			"userId", true, "userName", true, "createDate", true,
-			"modifiedDate", true, "ddmStructuresAvailable", true,
+			"DepotEntryGroupRel", "mvccVersion", true, "ctCollectionId", true,
+			"uuid", true, "depotEntryGroupRelId", true, "groupId", true,
+			"companyId", true, "userId", true, "userName", true, "createDate",
+			true, "modifiedDate", true, "ddmStructuresAvailable", true,
 			"depotEntryId", true, "searchable", true, "toGroupId", true,
 			"lastPublishDate", true);
 	}
@@ -608,6 +613,8 @@ public class DepotEntryGroupRelPersistenceTest {
 		DepotEntryGroupRel depotEntryGroupRel = _persistence.create(pk);
 
 		depotEntryGroupRel.setMvccVersion(RandomTestUtil.nextLong());
+
+		depotEntryGroupRel.setCtCollectionId(RandomTestUtil.nextLong());
 
 		depotEntryGroupRel.setUuid(RandomTestUtil.randomString());
 

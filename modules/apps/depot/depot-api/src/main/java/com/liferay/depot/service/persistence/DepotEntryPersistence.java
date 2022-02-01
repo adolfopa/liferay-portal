@@ -17,6 +17,7 @@ package com.liferay.depot.service.persistence;
 import com.liferay.depot.exception.NoSuchEntryException;
 import com.liferay.depot.model.DepotEntry;
 import com.liferay.portal.kernel.service.persistence.BasePersistence;
+import com.liferay.portal.kernel.service.persistence.change.tracking.CTPersistence;
 
 import org.osgi.annotation.versioning.ProviderType;
 
@@ -32,7 +33,8 @@ import org.osgi.annotation.versioning.ProviderType;
  * @generated
  */
 @ProviderType
-public interface DepotEntryPersistence extends BasePersistence<DepotEntry> {
+public interface DepotEntryPersistence
+	extends BasePersistence<DepotEntry>, CTPersistence<DepotEntry> {
 
 	/*
 	 * NOTE FOR DEVELOPERS:

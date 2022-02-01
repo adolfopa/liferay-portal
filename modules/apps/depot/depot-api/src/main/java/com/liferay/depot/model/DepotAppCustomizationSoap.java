@@ -35,6 +35,7 @@ public class DepotAppCustomizationSoap implements Serializable {
 		DepotAppCustomizationSoap soapModel = new DepotAppCustomizationSoap();
 
 		soapModel.setMvccVersion(model.getMvccVersion());
+		soapModel.setCtCollectionId(model.getCtCollectionId());
 		soapModel.setDepotAppCustomizationId(
 			model.getDepotAppCustomizationId());
 		soapModel.setCompanyId(model.getCompanyId());
@@ -111,6 +112,14 @@ public class DepotAppCustomizationSoap implements Serializable {
 		_mvccVersion = mvccVersion;
 	}
 
+	public long getCtCollectionId() {
+		return _ctCollectionId;
+	}
+
+	public void setCtCollectionId(long ctCollectionId) {
+		_ctCollectionId = ctCollectionId;
+	}
+
 	public long getDepotAppCustomizationId() {
 		return _depotAppCustomizationId;
 	}
@@ -156,6 +165,7 @@ public class DepotAppCustomizationSoap implements Serializable {
 	}
 
 	private long _mvccVersion;
+	private long _ctCollectionId;
 	private long _depotAppCustomizationId;
 	private long _companyId;
 	private long _depotEntryId;

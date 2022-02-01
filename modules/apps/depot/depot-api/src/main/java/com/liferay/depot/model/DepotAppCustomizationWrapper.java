@@ -19,6 +19,8 @@ import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
  * <p>
@@ -44,6 +46,7 @@ public class DepotAppCustomizationWrapper
 		Map<String, Object> attributes = new HashMap<String, Object>();
 
 		attributes.put("mvccVersion", getMvccVersion());
+		attributes.put("ctCollectionId", getCtCollectionId());
 		attributes.put("depotAppCustomizationId", getDepotAppCustomizationId());
 		attributes.put("companyId", getCompanyId());
 		attributes.put("depotEntryId", getDepotEntryId());
@@ -59,6 +62,12 @@ public class DepotAppCustomizationWrapper
 
 		if (mvccVersion != null) {
 			setMvccVersion(mvccVersion);
+		}
+
+		Long ctCollectionId = (Long)attributes.get("ctCollectionId");
+
+		if (ctCollectionId != null) {
+			setCtCollectionId(ctCollectionId);
 		}
 
 		Long depotAppCustomizationId = (Long)attributes.get(
@@ -106,6 +115,16 @@ public class DepotAppCustomizationWrapper
 	@Override
 	public long getCompanyId() {
 		return model.getCompanyId();
+	}
+
+	/**
+	 * Returns the ct collection ID of this depot app customization.
+	 *
+	 * @return the ct collection ID of this depot app customization
+	 */
+	@Override
+	public long getCtCollectionId() {
+		return model.getCtCollectionId();
 	}
 
 	/**
@@ -194,6 +213,16 @@ public class DepotAppCustomizationWrapper
 	}
 
 	/**
+	 * Sets the ct collection ID of this depot app customization.
+	 *
+	 * @param ctCollectionId the ct collection ID of this depot app customization
+	 */
+	@Override
+	public void setCtCollectionId(long ctCollectionId) {
+		model.setCtCollectionId(ctCollectionId);
+	}
+
+	/**
 	 * Sets the depot app customization ID of this depot app customization.
 	 *
 	 * @param depotAppCustomizationId the depot app customization ID of this depot app customization
@@ -251,6 +280,20 @@ public class DepotAppCustomizationWrapper
 	@Override
 	public void setPrimaryKey(long primaryKey) {
 		model.setPrimaryKey(primaryKey);
+	}
+
+	@Override
+	public Map<String, Function<DepotAppCustomization, Object>>
+		getAttributeGetterFunctions() {
+
+		return model.getAttributeGetterFunctions();
+	}
+
+	@Override
+	public Map<String, BiConsumer<DepotAppCustomization, Object>>
+		getAttributeSetterBiConsumers() {
+
+		return model.getAttributeSetterBiConsumers();
 	}
 
 	@Override

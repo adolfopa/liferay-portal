@@ -14,6 +14,7 @@
 
 package com.liferay.depot.internal.upgrade;
 
+import com.liferay.portal.kernel.upgrade.CTModelUpgradeProcess;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
 
 import org.osgi.service.component.annotations.Component;
@@ -40,6 +41,11 @@ public class DepotServiceUpgrade implements UpgradeStepRegistrator {
 			"1.2.0", "2.0.0",
 			new com.liferay.depot.internal.upgrade.v2_0_0.
 				DepotEntryGroupRelUpgradeProcess());
+
+		registry.register(
+			"2.0.0", "2.1.0",
+			new CTModelUpgradeProcess(
+				"DepotAppCustomization", "DepotEntry", "DepotEntryGroupRel"));
 	}
 
 }

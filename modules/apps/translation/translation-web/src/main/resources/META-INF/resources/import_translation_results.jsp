@@ -116,15 +116,19 @@ renderResponse.setTitle(LanguageUtil.get(resourceBundle, "import-translation"));
 					<ul class="list-group list-group-no-bordered">
 
 						<%
-						Map<String, String> failureMessages = importTranslationResultsDisplayContext.getFailureMessages();
-
-						for (Map.Entry<String, String> entry : failureMessages.entrySet()) {
+						for (Map<String, String> failureMessage : importTranslationResultsDisplayContext.getFailureMessages()) {
 						%>
 
 							<li class="align-items-center list-group-item list-group-item-flex">
 								<div class="autofit-col autofit-col-expand">
-									<div class="list-group-title"><%= entry.getKey() %></div>
-									<div class="text-danger"><%= entry.getValue() %></div>
+									<div class="list-group-title"><%= failureMessage.get("fileName") %></div>
+									<div class="text-danger"><%= failureMessage.get("errorMessage") %></div>
+
+									<c:if test='<%= Validator.isNotNull(failureMessage.get("container")) %>'>
+										<div class="list-group-subtext">
+											<%= failureMessage.get("container") %>
+										</div>
+									</c:if>
 								</div>
 
 								<div class="autofit-col text-danger text-right">

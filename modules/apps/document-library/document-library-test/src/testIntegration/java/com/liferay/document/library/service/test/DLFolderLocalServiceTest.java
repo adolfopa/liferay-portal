@@ -21,6 +21,8 @@ import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.document.library.kernel.service.DLFolderLocalService;
+import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -92,6 +94,40 @@ public class DLFolderLocalServiceTest {
 	}
 
 	@Test
+	public void testGetFolderNested() throws Exception {
+		String path = "/folder1/folder2/folder3";
+
+		Assert.assertEquals(
+			DLFolderConstants.DEFAULT_PARENT_FOLDER_ID,
+			_fetchFolderIdByPath(path));
+
+		long folderId = _addFolders(path);
+
+		Assert.assertEquals(folderId, _fetchFolderIdByPath(path));
+
+		DLFolder dlFolder = _dlFolderLocalService.fetchFolder(folderId);
+
+		Assert.assertEquals("folder3", dlFolder.getName());
+	}
+
+	@Test
+	public void testGetFolderRootFolder() throws Exception {
+		String name = RandomTestUtil.randomString();
+
+		Assert.assertNull(
+			_dlFolderLocalService.fetchFolder(
+				_group.getGroupId(), DLFolderConstants.DEFAULT_PARENT_FOLDER_ID,
+				name));
+
+		_addFolders(String.format("/%s", name));
+
+		Assert.assertNotNull(
+			_dlFolderLocalService.fetchFolder(
+				_group.getGroupId(), DLFolderConstants.DEFAULT_PARENT_FOLDER_ID,
+				name));
+	}
+
+	@Test
 	public void testGetNoAssetEntries() throws Exception {
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(
@@ -122,6 +158,39 @@ public class DLFolderLocalServiceTest {
 
 		Assert.assertEquals(dlFolders.toString(), 1, dlFolders.size());
 		Assert.assertEquals(dlFolder, dlFolders.get(0));
+	}
+
+	private long _addFolders(String path) throws Exception {
+		long parentFolderId = DLFolderConstants.DEFAULT_PARENT_FOLDER_ID;
+
+		for (String name : StringUtil.split(path, CharPool.FORWARD_SLASH)) {
+			DLFolder dlFolder = _dlFolderLocalService.addFolder(
+				TestPropsValues.getUserId(), _group.getGroupId(),
+				_group.getGroupId(), false, parentFolderId, name,
+				RandomTestUtil.randomString(), false,
+				ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
+
+			parentFolderId = dlFolder.getFolderId();
+		}
+
+		return parentFolderId;
+	}
+
+	private long _fetchFolderIdByPath(String path) {
+		long parentFolderId = DLFolderConstants.DEFAULT_PARENT_FOLDER_ID;
+
+		for (String name : StringUtil.split(path, CharPool.FORWARD_SLASH)) {
+			DLFolder dlFolder = _dlFolderLocalService.fetchFolder(
+				_group.getGroupId(), parentFolderId, name);
+
+			if (dlFolder == null) {
+				return DLFolderConstants.DEFAULT_PARENT_FOLDER_ID;
+			}
+
+			parentFolderId = dlFolder.getFolderId();
+		}
+
+		return parentFolderId;
 	}
 
 	@Inject

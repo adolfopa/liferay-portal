@@ -23,6 +23,9 @@ import com.liferay.document.library.opener.google.drive.web.internal.DLOpenerGoo
 import com.liferay.document.library.opener.google.drive.web.internal.constants.DLOpenerGoogleDriveConstants;
 import com.liferay.document.library.opener.model.DLOpenerFileEntryReference;
 import com.liferay.document.library.opener.service.DLOpenerFileEntryReferenceLocalService;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownGroupItem;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemBuilder;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -42,6 +45,7 @@ import com.liferay.portal.kernel.servlet.taglib.ui.MenuItem;
 import com.liferay.portal.kernel.servlet.taglib.ui.URLMenuItem;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.Portal;
@@ -50,6 +54,7 @@ import com.liferay.portal.kernel.util.WebKeys;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
@@ -95,6 +100,45 @@ public class DLOpenerGoogleDriveDLViewFileVersionDisplayContext
 	}
 
 	@Override
+	public List<DropdownItem> getActionDropdownItems() throws PortalException {
+		if (!isActionsVisible() ||
+			!DLOpenerGoogleDriveMimeTypes.isGoogleMimeTypeSupported(
+				fileVersion.getMimeType()) ||
+			!_dlOpenerGoogleDriveManager.isConfigured(
+				fileVersion.getCompanyId()) ||
+			!_fileEntryModelResourcePermission.contains(
+				_permissionChecker, fileVersion.getFileEntry(),
+				ActionKeys.UPDATE)) {
+
+			return super.getActionDropdownItems();
+		}
+
+		List<DropdownItem> dropdownItems = super.getActionDropdownItems();
+
+		FileEntry fileEntry = fileVersion.getFileEntry();
+
+		if (_isCheckedOutInGoogleDrive()) {
+			if (fileEntry.hasLock()) {
+				_updateCancelCheckoutAndCheckinDropdownItems(dropdownItems);
+
+				_addEditInGoogleDocsDropdownItem(
+					dropdownItems,
+					_createEditInGoogleDocsDropdownItem(Constants.EDIT));
+			}
+
+			return dropdownItems;
+		}
+
+		if (!_isCheckedOutByAnotherUser(fileEntry)) {
+			_addEditInGoogleDocsDropdownItem(
+				dropdownItems,
+				_createEditInGoogleDocsDropdownItem(Constants.CHECKOUT));
+		}
+
+		return dropdownItems;
+	}
+
+	@Override
 	public Menu getMenu() throws PortalException {
 		if (!isActionsVisible() ||
 			!DLOpenerGoogleDriveMimeTypes.isGoogleMimeTypeSupported(
@@ -134,6 +178,57 @@ public class DLOpenerGoogleDriveDLViewFileVersionDisplayContext
 		return menu;
 	}
 
+	private List<DropdownItem> _addEditInGoogleDocsDropdownItem(
+		List<DropdownItem> dropdownItems,
+		DropdownItem editInGoogleDocsDropdownItem) {
+
+		if (_addEditInGoogleDocsDropdownItemGroup(
+				dropdownItems, editInGoogleDocsDropdownItem)) {
+
+			return dropdownItems;
+		}
+
+		dropdownItems.add(editInGoogleDocsDropdownItem);
+
+		return dropdownItems;
+	}
+
+	private boolean _addEditInGoogleDocsDropdownItemGroup(
+		List<DropdownItem> dropdownItems,
+		DropdownItem editInGoogleDocsDropdownItem) {
+
+		int i = 1;
+
+		for (DropdownItem dropdownItem : dropdownItems) {
+			if (dropdownItem instanceof DropdownGroupItem) {
+				DropdownGroupItem dropdownGroupItem =
+					(DropdownGroupItem)dropdownItem;
+
+				if (_addEditInGoogleDocsDropdownItemGroup(
+						(List<DropdownItem>)dropdownGroupItem.get("items"),
+						editInGoogleDocsDropdownItem)) {
+
+					return true;
+				}
+			}
+			else if (Objects.equals(
+						DLUIItemKeys.EDIT, dropdownItem.get("key"))) {
+
+				break;
+			}
+
+			i++;
+		}
+
+		if (i < dropdownItems.size()) {
+			dropdownItems.add(i, editInGoogleDocsDropdownItem);
+
+			return true;
+		}
+
+		return false;
+	}
+
 	/**
 	 * @see com.liferay.sharing.document.library.internal.display.context.SharingDLViewFileVersionDisplayContext#_addSharingUIItem(List, BaseUIItem)
 	 */
@@ -158,6 +253,18 @@ public class DLOpenerGoogleDriveDLViewFileVersionDisplayContext
 		}
 
 		return uiItems;
+	}
+
+	private DropdownItem _createEditInGoogleDocsDropdownItem(String cmd)
+		throws PortalException {
+
+		return DropdownItemBuilder.setHref(
+			_getActionURL(cmd)
+		).setKey(
+			"#edit-in-google-drive"
+		).setLabel(
+			LanguageUtil.get(_resourceBundle, _getLabelKey())
+		).build();
 	}
 
 	private MenuItem _createEditInGoogleDocsMenuItem(String cmd)
@@ -265,6 +372,44 @@ public class DLOpenerGoogleDriveDLViewFileVersionDisplayContext
 		}
 
 		return false;
+	}
+
+	private void _updateCancelCheckoutAndCheckinDropdownItems(
+			List<DropdownItem> dropdownItems)
+		throws PortalException {
+
+		for (DropdownItem dropdownItem : dropdownItems) {
+			if (DLUIItemKeys.CHECKIN.equals(dropdownItem.get("key"))) {
+				if (_isCheckingInNewFile()) {
+					dropdownItem.setData(
+						HashMapBuilder.<String, Object>put(
+							"action", "checkIn"
+						).put(
+							"checkInURL", _getActionURL(Constants.CHECKIN)
+						).build());
+				}
+				else {
+					dropdownItem.setData(
+						HashMapBuilder.<String, Object>put(
+							"action", "showVersionDetails"
+						).put(
+							"showVersionDetailsURL",
+							_getActionURL(Constants.CHECKIN)
+						).build());
+				}
+			}
+			else if (DLUIItemKeys.CANCEL_CHECKOUT.equals(
+						dropdownItem.get("key"))) {
+
+				dropdownItem.setData(
+					HashMapBuilder.<String, Object>put(
+						"action", "cancelCheckOut"
+					).put(
+						"cancelCheckOutURL",
+						_getActionURL(Constants.CANCEL_CHECKOUT)
+					).build());
+			}
+		}
 	}
 
 	private void _updateCancelCheckoutAndCheckinMenuItems(

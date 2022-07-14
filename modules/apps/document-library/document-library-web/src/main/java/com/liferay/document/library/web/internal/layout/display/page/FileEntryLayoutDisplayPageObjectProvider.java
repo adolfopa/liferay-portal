@@ -28,6 +28,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.util.GroupThreadLocal;
 import com.liferay.portal.kernel.util.PortalUtil;
 
 import java.util.Locale;
@@ -100,6 +101,14 @@ public class FileEntryLayoutDisplayPageObjectProvider
 				_fileEntry.getFileEntryId());
 
 		if (mainFriendlyURLEntry == null) {
+			return String.valueOf(_fileEntry.getFileEntryId());
+		}
+
+		Long groupId = GroupThreadLocal.getGroupId();
+
+		if ((groupId != null) &&
+			(groupId != mainFriendlyURLEntry.getGroupId())) {
+
 			return String.valueOf(_fileEntry.getFileEntryId());
 		}
 

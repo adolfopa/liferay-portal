@@ -21,6 +21,7 @@ import com.liferay.friendly.url.service.FriendlyURLEntryLocalService;
 import com.liferay.friendly.url.util.comparator.FriendlyURLEntryLocalizationComparator;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.util.GroupThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
 
@@ -41,6 +42,12 @@ public class FileEntryInfoItemFriendlyURLProvider
 
 	@Override
 	public String getFriendlyURL(FileEntry fileEntry, String languageId) {
+		Long groupId = GroupThreadLocal.getGroupId();
+
+		if ((groupId != null) && (groupId != fileEntry.getGroupId())) {
+			return String.valueOf(fileEntry.getFileEntryId());
+		}
+
 		FriendlyURLEntry friendlyURLEntry =
 			_friendlyURLEntryLocalService.fetchMainFriendlyURLEntry(
 				_portal.getClassNameId(FileEntry.class),

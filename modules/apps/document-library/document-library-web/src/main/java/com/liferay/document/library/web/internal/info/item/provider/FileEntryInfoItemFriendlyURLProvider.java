@@ -42,22 +42,24 @@ public class FileEntryInfoItemFriendlyURLProvider
 
 	@Override
 	public String getFriendlyURL(FileEntry fileEntry, String languageId) {
-		Long groupId = GroupThreadLocal.getGroupId();
-
-		if ((groupId != null) && (groupId != fileEntry.getGroupId())) {
-			return String.valueOf(fileEntry.getFileEntryId());
-		}
-
-		FriendlyURLEntry friendlyURLEntry =
+		FriendlyURLEntry mainFriendlyURLEntry =
 			_friendlyURLEntryLocalService.fetchMainFriendlyURLEntry(
 				_portal.getClassNameId(FileEntry.class),
 				fileEntry.getFileEntryId());
 
-		if (friendlyURLEntry != null) {
-			return friendlyURLEntry.getUrlTitle();
+		if (mainFriendlyURLEntry == null) {
+			return String.valueOf(fileEntry.getFileEntryId());
 		}
 
-		return null;
+		Long groupId = GroupThreadLocal.getGroupId();
+
+		if ((groupId != null) &&
+			(groupId != mainFriendlyURLEntry.getGroupId())) {
+
+			return String.valueOf(fileEntry.getFileEntryId());
+		}
+
+		return mainFriendlyURLEntry.getUrlTitle();
 	}
 
 	@Override

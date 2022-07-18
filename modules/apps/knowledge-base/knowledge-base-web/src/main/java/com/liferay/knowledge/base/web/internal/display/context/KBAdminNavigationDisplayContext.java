@@ -90,8 +90,8 @@ public class KBAdminNavigationDisplayContext {
 			).setHref(
 				PortletURLBuilder.createRenderURL(
 					_liferayPortletResponse
-				).setMVCPath(
-					"/admin/view.jsp"
+				).setMVCRenderCommandName(
+					"/knowledge_base/view"
 				).buildString()
 			).setLabel(
 				LanguageUtil.get(_httpServletRequest, "articles")

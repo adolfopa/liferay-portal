@@ -85,13 +85,15 @@ public class DeepLClient {
 		options.addPart(DeepLConstants.TEXT, text);
 		options.setMethod(Http.Method.POST);
 
+		String translation = _http.URLtoString(options);
+
 		Http.Response response = options.getResponse();
 
 		Response.Status status = Response.Status.fromStatusCode(
 			response.getResponseCode());
 
 		if (status == Response.Status.OK) {
-			return _http.URLtoString(options);
+			return translation;
 		}
 
 		throw new TranslatorException(
@@ -118,13 +120,15 @@ public class DeepLClient {
 		options.addPart(DeepLConstants.TARGET, target);
 		options.setMethod(Http.Method.POST);
 
+		String supportedLanguage = _http.URLtoString(options);
+
 		Http.Response response = options.getResponse();
 
 		Response.Status status = Response.Status.fromStatusCode(
 			response.getResponseCode());
 
 		if (status == Response.Status.OK) {
-			return _http.URLtoString(options);
+			return supportedLanguage;
 		}
 
 		throw new TranslatorException(

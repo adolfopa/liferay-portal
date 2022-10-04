@@ -31,6 +31,8 @@ RepositoryBrowserTagDisplayContext repositoryBrowserTagDisplayContext = (Reposit
 		breadcrumbEntries="<%= repositoryBrowserTagDisplayContext.getBreadcrumbEntries() %>"
 	/>
 
+	<input id="<portlet:namespace />file" style="display: none;" type="file" />
+
 	<liferay-ui:search-container
 		id="repositoryEntries"
 		searchContainer="<%= repositoryBrowserTagDisplayContext.getSearchContainer() %>"

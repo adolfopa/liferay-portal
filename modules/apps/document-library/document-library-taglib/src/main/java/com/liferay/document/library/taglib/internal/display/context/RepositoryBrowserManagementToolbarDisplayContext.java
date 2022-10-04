@@ -76,6 +76,16 @@ public class RepositoryBrowserManagementToolbarDisplayContext
 	public CreationMenu getCreationMenu() {
 		return CreationMenuBuilder.addPrimaryDropdownItem(
 			dropdownItem -> {
+				dropdownItem.putData("action", "addFile");
+				dropdownItem.putData(
+					"parentFolderId", String.valueOf(_folderId));
+				dropdownItem.putData(
+					"repositoryId", String.valueOf(_repositoryId));
+				dropdownItem.setLabel(
+					LanguageUtil.get(httpServletRequest, "upload"));
+			}
+		).addPrimaryDropdownItem(
+			dropdownItem -> {
 				dropdownItem.putData("action", "addFolder");
 				dropdownItem.putData(
 					"parentFolderId", String.valueOf(_folderId));

@@ -75,6 +75,26 @@ export default function propsTransformer({
 					onFormSuccess: () => window.location.reload(),
 				});
 			}
+			else if (item?.data?.action === 'addFile') {
+				const fileInput = document.getElementById(
+					`${portletNamespace}file`
+				);
+
+				fileInput.addEventListener('change', () => {
+					const formData = new FormData();
+
+					formData.append('file', fileInput.files[0]);
+
+					const uploadFileURL = `${repositoryBrowserURL}?repositoryId=${item.data.repositoryId}&parentFolderId=${item.data.parentFolderId}`;
+
+					fetch(uploadFileURL, {
+						body: formData,
+						method: 'PUT',
+					}).then(() => window.location.reload());
+				});
+
+				fileInput.click();
+			}
 		},
 	};
 }

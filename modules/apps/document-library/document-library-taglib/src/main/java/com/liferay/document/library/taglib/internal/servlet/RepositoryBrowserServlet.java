@@ -193,6 +193,8 @@ public class RepositoryBrowserServlet extends HttpServlet {
 					ServiceContextFactory.getInstance(
 						FileEntry.class.getName(), httpServletRequest));
 
+				SessionMessages.add(httpServletRequest, "requestProcessed");
+
 				httpServletResponse.setContentType(
 					ContentTypes.APPLICATION_JSON);
 				httpServletResponse.setStatus(HttpServletResponse.SC_OK);
@@ -222,6 +224,8 @@ public class RepositoryBrowserServlet extends HttpServlet {
 				repositoryId, parentFolderId, name, StringPool.BLANK,
 				ServiceContextFactory.getInstance(
 					Folder.class.getName(), httpServletRequest));
+
+			SessionMessages.add(httpServletRequest, "requestProcessed");
 
 			httpServletResponse.setContentType(ContentTypes.APPLICATION_JSON);
 			httpServletResponse.setStatus(HttpServletResponse.SC_OK);

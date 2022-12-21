@@ -3733,8 +3733,7 @@ public class DataFactory {
 		// Other fields
 
 		defaultDLFileEntryTypeModel.setFileEntryTypeKey(
-			StringUtil.toUpperCase(
-				DLFileEntryTypeConstants.NAME_BASIC_DOCUMENT));
+			DLFileEntryTypeConstants.FILE_ENTRY_TYPE_KEY_BASIC_DOCUMENT);
 
 		defaultDLFileEntryTypeModel.setName(
 			StringBundler.concat(

@@ -216,6 +216,7 @@ import com.liferay.portal.kernel.model.AddressModel;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.ClassNameModel;
 import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.model.CompanyModel;
 import com.liferay.portal.kernel.model.ContactConstants;
 import com.liferay.portal.kernel.model.ContactModel;
@@ -3718,16 +3719,24 @@ public class DataFactory {
 	}
 
 	public DLFileEntryTypeModel newDLFileEntryTypeModel() {
+		_defaultDLFileEntryTypeId = _counter.get();
+
 		DLFileEntryTypeModel defaultDLFileEntryTypeModel =
 			new DLFileEntryTypeModelImpl();
 
 		// PK fields
 
 		defaultDLFileEntryTypeModel.setFileEntryTypeId(
-			_DEFAULT_DL_FILE_ENTRY_TYPE_ID);
+			_defaultDLFileEntryTypeId);
+
+		// Group instance
+
+		defaultDLFileEntryTypeModel.setGroupId(
+			GroupConstants.DEFAULT_LIVE_GROUP_ID);
 
 		// Audit fields
 
+		defaultDLFileEntryTypeModel.setCompanyId(CompanyConstants.SYSTEM);
 		defaultDLFileEntryTypeModel.setCreateDate(nextFutureDate());
 		defaultDLFileEntryTypeModel.setModifiedDate(nextFutureDate());
 
@@ -6345,7 +6354,7 @@ public class DataFactory {
 		dlFolderModel.setTreePath(treePath);
 		dlFolderModel.setName(name);
 		dlFolderModel.setLastPostDate(nextFutureDate());
-		dlFolderModel.setDefaultFileEntryTypeId(_DEFAULT_DL_FILE_ENTRY_TYPE_ID);
+		dlFolderModel.setDefaultFileEntryTypeId(_defaultDLFileEntryTypeId);
 		dlFolderModel.setLastPublishDate(nextFutureDate());
 		dlFolderModel.setStatusDate(nextFutureDate());
 
@@ -7393,9 +7402,6 @@ public class DataFactory {
 
 	private static final long _CURRENT_TIME = System.currentTimeMillis();
 
-	private static final long _DEFAULT_DL_FILE_ENTRY_TYPE_ID =
-		DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT;
-
 	private static final String _DEPENDENCIES_DIR =
 		"/com/liferay/portal/tools/sample/sql/builder/dependencies/data/";
 
@@ -7447,6 +7453,7 @@ public class DataFactory {
 		_defaultAssetPublisherPortletPreferencesImpl;
 	private long _defaultDLDDMStructureId;
 	private long _defaultDLDDMStructureVersionId;
+	private long _defaultDLFileEntryTypeId;
 	private long _defaultJournalDDMStructureId;
 	private long _defaultJournalDDMStructureVersionId;
 	private long _defaultJournalDDMTemplateId;

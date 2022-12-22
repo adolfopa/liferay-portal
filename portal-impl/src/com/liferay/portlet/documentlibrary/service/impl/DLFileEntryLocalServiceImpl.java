@@ -635,7 +635,14 @@ public class DLFileEntryLocalServiceImpl
 
 		List<DDMStructure> ddmStructures;
 
-		if (fileEntryTypeId > 0) {
+		DLFileEntryType basicDocumentDLFileEntryType =
+			_dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType();
+
+		if ((fileEntryTypeId !=
+				DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_ALL) &&
+			(fileEntryTypeId !=
+				basicDocumentDLFileEntryType.getFileEntryTypeId())) {
+
 			DLFileEntryType dlFileEntryType =
 				_dlFileEntryTypeLocalService.getFileEntryType(fileEntryTypeId);
 
@@ -2111,7 +2118,15 @@ public class DLFileEntryLocalServiceImpl
 
 		dlFileVersion = _dlFileVersionPersistence.update(dlFileVersion);
 
-		if ((fileEntryTypeId > 0) && (ddmFormValuesMap != null)) {
+		DLFileEntryType basicDocumentDLFileEntryType =
+			_dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType();
+
+		if ((fileEntryTypeId !=
+				DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_ALL) &&
+			(fileEntryTypeId !=
+				basicDocumentDLFileEntryType.getFileEntryTypeId()) &&
+			(ddmFormValuesMap != null)) {
+
 			_dlFileEntryMetadataLocalService.updateFileEntryMetadata(
 				fileEntryTypeId, dlFileEntry.getFileEntryId(), fileVersionId,
 				ddmFormValuesMap, serviceContext);
@@ -3445,7 +3460,15 @@ public class DLFileEntryLocalServiceImpl
 
 		dlFileVersion = _dlFileVersionPersistence.update(dlFileVersion);
 
-		if ((fileEntryTypeId > 0) && (ddmFormValuesMap != null)) {
+		DLFileEntryType basicDocumentDLFileEntryType =
+			_dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType();
+
+		if ((fileEntryTypeId !=
+				DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_ALL) &&
+			(fileEntryTypeId !=
+				basicDocumentDLFileEntryType.getFileEntryTypeId()) &&
+			(ddmFormValuesMap != null)) {
+
 			_dlFileEntryMetadataLocalService.updateFileEntryMetadata(
 				fileEntryTypeId, dlFileVersion.getFileEntryId(),
 				dlFileVersion.getFileVersionId(), ddmFormValuesMap,

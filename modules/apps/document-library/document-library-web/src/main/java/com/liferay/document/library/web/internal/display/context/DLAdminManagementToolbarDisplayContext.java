@@ -318,7 +318,9 @@ public class DLAdminManagementToolbarDisplayContext
 		long fileEntryTypeId = _getFileEntryTypeId();
 
 		return LabelItemListBuilder.add(
-			() -> fileEntryTypeId != -1,
+			() ->
+				fileEntryTypeId !=
+					DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_ALL,
 			labelItem -> {
 				labelItem.putData(
 					"removeLabelURL",
@@ -509,7 +511,9 @@ public class DLAdminManagementToolbarDisplayContext
 			() -> {
 				long fileEntryTypeId = _getFileEntryTypeId();
 
-				if (fileEntryTypeId != -1) {
+				if (fileEntryTypeId !=
+						DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_ALL) {
+
 					return fileEntryTypeId;
 				}
 
@@ -615,7 +619,9 @@ public class DLAdminManagementToolbarDisplayContext
 	}
 
 	private long _getFileEntryTypeId() {
-		return ParamUtil.getLong(_httpServletRequest, "fileEntryTypeId", -1);
+		return ParamUtil.getLong(
+			_httpServletRequest, "fileEntryTypeId",
+			DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_ALL);
 	}
 
 	private List<DropdownItem> _getFilterNavigationDropdownItems() {
@@ -626,7 +632,9 @@ public class DLAdminManagementToolbarDisplayContext
 		return DropdownItemListBuilder.add(
 			dropdownItem -> {
 				dropdownItem.setActive(
-					navigation.equals("home") && (fileEntryTypeId == -1));
+					navigation.equals("home") &&
+					(fileEntryTypeId ==
+						DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_ALL));
 				dropdownItem.setHref(
 					PortletURLBuilder.create(
 						PortletURLUtil.clone(
@@ -676,14 +684,18 @@ public class DLAdminManagementToolbarDisplayContext
 			}
 		).add(
 			dropdownItem -> {
-				dropdownItem.setActive(fileEntryTypeId != -1);
+				dropdownItem.setActive(
+					fileEntryTypeId !=
+						DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_ALL);
 
 				dropdownItem.putData("action", "openDocumentTypesSelector");
 
 				String label = LanguageUtil.get(
 					_httpServletRequest, "document-type");
 
-				if (fileEntryTypeId != -1) {
+				if (fileEntryTypeId !=
+						DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_ALL) {
+
 					DLFileEntryType fileEntryType =
 						DLFileEntryTypeLocalServiceUtil.getFileEntryType(
 							fileEntryTypeId);

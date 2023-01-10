@@ -3686,8 +3686,7 @@ public class DataFactory {
 		dlFileEntryModel.setExtension(extension);
 		dlFileEntryModel.setMimeType(mimeType);
 		dlFileEntryModel.setTitle(name);
-		dlFileEntryModel.setFileEntryTypeId(
-			DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT);
+		dlFileEntryModel.setFileEntryTypeId(_DEFAULT_DL_FILE_ENTRY_TYPE_ID);
 		dlFileEntryModel.setVersion(DLFileEntryConstants.VERSION_DEFAULT);
 		dlFileEntryModel.setSize(BenchmarksPropsValues.MAX_DL_FILE_ENTRY_SIZE);
 		dlFileEntryModel.setLastPublishDate(nextFutureDate());
@@ -7394,8 +7393,7 @@ public class DataFactory {
 
 	private static final long _CURRENT_TIME = System.currentTimeMillis();
 
-	private static final long _DEFAULT_DL_FILE_ENTRY_TYPE_ID =
-		DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT;
+	private static final long _DEFAULT_DL_FILE_ENTRY_TYPE_ID = 0L;
 
 	private static final String _DEPENDENCIES_DIR =
 		"/com/liferay/portal/tools/sample/sql/builder/dependencies/data/";

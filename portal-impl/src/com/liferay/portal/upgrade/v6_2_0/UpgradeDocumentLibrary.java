@@ -284,10 +284,7 @@ public class UpgradeDocumentLibrary extends UpgradeProcess {
 				String name = GetterUtil.getString(resultSet.getString("name"));
 				String description = resultSet.getString("description");
 
-				if (fileEntryTypeId ==
-						DLFileEntryTypeConstants.
-							FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT) {
-
+				if (fileEntryTypeId == _FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT) {
 					name = DLFileEntryTypeConstants.NAME_BASIC_DOCUMENT;
 				}
 
@@ -367,6 +364,8 @@ public class UpgradeDocumentLibrary extends UpgradeProcess {
 			runSQL(sql);
 		}
 	}
+
+	private static final long _FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT = 0L;
 
 	private static final String _SELECT_DLFOLDER_BY_PARENT =
 		"select folderId from DLFolder dlFolder where dlFolder.folderId > ? " +

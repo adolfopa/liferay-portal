@@ -18,7 +18,6 @@ import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFileEntryConstants;
-import com.liferay.document.library.kernel.model.DLFileEntryTypeConstants;
 import com.liferay.document.library.kernel.model.DLFileVersion;
 import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
@@ -1666,6 +1665,8 @@ public class DynamicDataMappingUpgradeProcess extends UpgradeProcess {
 		"PERMISSIONS", "SUBSCRIBE", "UPDATE", "VIEW"
 	};
 
+	private static final long _FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT = 0L;
+
 	private static final String _INVALID_FIELD_NAME_CHARS_REGEX =
 		"([\\p{Punct}&&[^_]]|\\p{Space})+";
 
@@ -2634,7 +2635,7 @@ public class DynamicDataMappingUpgradeProcess extends UpgradeProcess {
 					dlFolderId, StringPool.BLANK, name, fileName, extension,
 					MimeTypesUtil.getContentType(fileName), fileName,
 					StringPool.BLANK, StringPool.BLANK,
-					DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT,
+					_FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT,
 					DLFileEntryConstants.VERSION_DEFAULT, file.length(),
 					DLFileEntryConstants.DEFAULT_READ_COUNT, 0, 0, 0, 0, false);
 
@@ -2646,7 +2647,7 @@ public class DynamicDataMappingUpgradeProcess extends UpgradeProcess {
 					fileEntryId, StringPool.BLANK, fileName, extension,
 					MimeTypesUtil.getContentType(fileName), fileName,
 					StringPool.BLANK, StringPool.BLANK, StringPool.BLANK,
-					DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT,
+					_FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT,
 					DLFileEntryConstants.VERSION_DEFAULT, file.length(),
 					StringPool.BLANK, WorkflowConstants.STATUS_APPROVED,
 					_userId, _userName, _createDate);
@@ -2669,9 +2670,8 @@ public class DynamicDataMappingUpgradeProcess extends UpgradeProcess {
 					increment(), _groupId, _companyId, _userId, _userName,
 					_createDate, _createDate,
 					PortalUtil.getClassNameId(DLFileEntry.class), fileEntryId,
-					fileEntryUuid,
-					DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT,
-					false, null, null, null, null,
+					fileEntryUuid, _FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT, false,
+					null, null, null, null,
 					MimeTypesUtil.getContentType(fileName), fileName,
 					StringPool.BLANK, StringPool.BLANK, null, null, 0, 0, 0, 0);
 

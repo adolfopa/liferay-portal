@@ -279,8 +279,7 @@ public class CompanyLocalServiceTest {
 			companyId, GroupConstants.GUEST);
 
 		DLFileEntryType dlFileEntryType =
-			DLFileEntryTypeLocalServiceUtil.getFileEntryType(
-				DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT);
+			DLFileEntryTypeLocalServiceUtil.getBasicDocumentDLFileEntryType();
 
 		ServiceContext serviceContext = getServiceContext(companyId);
 

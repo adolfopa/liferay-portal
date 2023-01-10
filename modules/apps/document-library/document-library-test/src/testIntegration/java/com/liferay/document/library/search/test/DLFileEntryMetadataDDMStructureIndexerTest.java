@@ -16,7 +16,6 @@ package com.liferay.document.library.search.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.document.library.kernel.model.DLFileEntry;
-import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalService;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -124,9 +123,6 @@ public class DLFileEntryMetadataDDMStructureIndexerTest
 
 	@Inject
 	protected DDMStructureLocalService ddmStructureLocalService;
-
-	@Inject
-	protected DLFileEntryTypeLocalService dlFileEntryTypeLocalService;
 
 	protected DLFileEntryMetadataDDMStructureFixture fileEntryMetadataFixture;
 	protected IndexerFixture<DLFileEntry> indexerFixture;

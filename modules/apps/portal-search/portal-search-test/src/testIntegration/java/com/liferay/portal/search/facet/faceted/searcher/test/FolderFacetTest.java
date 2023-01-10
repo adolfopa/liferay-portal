@@ -19,6 +19,7 @@ import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.document.library.kernel.service.DLAppLocalService;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
+import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalService;
 import com.liferay.document.library.kernel.service.DLFolderLocalService;
 import com.liferay.document.library.test.util.DLAppTestUtil;
 import com.liferay.document.library.test.util.search.DLFolderSearchFixture;
@@ -253,7 +254,8 @@ public class FolderFacetTest extends BaseFacetedSearcherTestCase {
 
 	protected void setUpDLFolderSearchFixture() {
 		dlFolderSearchFixture = new DLFolderSearchFixture(
-			dlAppLocalService, dlFileEntryLocalService, dlFolderLocalService);
+			dlAppLocalService, dlFileEntryLocalService,
+			dlFileEntryTypeLocalService, dlFolderLocalService);
 
 		dlFolderSearchFixture.setUp();
 
@@ -280,6 +282,9 @@ public class FolderFacetTest extends BaseFacetedSearcherTestCase {
 
 	@Inject
 	protected DLFileEntryLocalService dlFileEntryLocalService;
+
+	@Inject
+	protected DLFileEntryTypeLocalService dlFileEntryTypeLocalService;
 
 	@Inject
 	protected DLFolderLocalService dlFolderLocalService;

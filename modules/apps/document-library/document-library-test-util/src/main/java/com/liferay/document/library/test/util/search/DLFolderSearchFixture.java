@@ -60,7 +60,8 @@ public class DLFolderSearchFixture {
 			keywords, false, serviceContext);
 
 		DLFileEntryType basicDocumentDLFileEntryType =
-			dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType();
+			dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType(
+				user.getCompanyId());
 
 		dlFileEntryLocalService.addFileEntry(
 			null, user.getUserId(), group.getGroupId(), group.getGroupId(),

@@ -87,7 +87,8 @@ public abstract class BaseDLAppTestCase {
 			ActionKeys.VIEW);
 
 		basicDocumentDLFileEntryType =
-			_dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType();
+			_dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType(
+				group.getCompanyId());
 	}
 
 	@After

@@ -57,7 +57,8 @@ public class DLFileShortcutUADTestUtil {
 			serviceContext);
 
 		DLFileEntryType basicDocumentDLFileEntryType =
-			dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType();
+			dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType(
+				serviceContext.getCompanyId());
 
 		byte[] bytes = TestDataConstants.TEST_BYTE_ARRAY;
 

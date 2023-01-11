@@ -26,7 +26,9 @@ import com.liferay.info.localized.InfoLocalizedValue;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
@@ -78,8 +80,10 @@ public class FileEntryInfoItemFormVariationsProvider
 			List<InfoItemFormVariation> infoItemFormVariations =
 				new ArrayList<>();
 
+			Group group = _groupLocalService.fetchGroup(groupId);
+
 			infoItemFormVariations.add(
-				_getBasicDocumentInfoItemFormVariation());
+				_getBasicDocumentInfoItemFormVariation(group.getCompanyId()));
 
 			return getInfoItemFormVariations(
 				_getCurrentAndAncestorSiteGroupIds(groupId));
@@ -98,8 +102,10 @@ public class FileEntryInfoItemFormVariationsProvider
 			List<InfoItemFormVariation> infoItemFormVariations =
 				new ArrayList<>();
 
+			Group group = _groupLocalService.fetchGroup(groupIds[0]);
+
 			infoItemFormVariations.add(
-				_getBasicDocumentInfoItemFormVariation());
+				_getBasicDocumentInfoItemFormVariation(group.getCompanyId()));
 
 			List<DLFileEntryType> dlFileEntryTypes =
 				_dlFileEntryTypeLocalService.getFileEntryTypes(groupIds);
@@ -122,11 +128,13 @@ public class FileEntryInfoItemFormVariationsProvider
 		}
 	}
 
-	private InfoItemFormVariation _getBasicDocumentInfoItemFormVariation()
+	private InfoItemFormVariation _getBasicDocumentInfoItemFormVariation(
+			long companyId)
 		throws NoSuchFileEntryTypeException {
 
 		DLFileEntryType basicDocumentDLFileEntryType =
-			_dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType();
+			_dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType(
+				companyId);
 
 		return new InfoItemFormVariation(
 			basicDocumentDLFileEntryType.getGroupId(),
@@ -162,6 +170,9 @@ public class FileEntryInfoItemFormVariationsProvider
 
 	@Reference
 	private DLFileEntryTypeLocalService _dlFileEntryTypeLocalService;
+
+	@Reference
+	private GroupLocalService _groupLocalService;
 
 	@Reference
 	private Portal _portal;

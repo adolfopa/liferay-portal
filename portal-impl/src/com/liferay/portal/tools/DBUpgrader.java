@@ -14,7 +14,6 @@
 
 package com.liferay.portal.tools;
 
-import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalServiceUtil;
 import com.liferay.document.library.kernel.store.Store;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.dao.orm.common.SQLTransformer;
@@ -312,8 +311,6 @@ public class DBUpgrader {
 			_checkClassNamesAndResourceActions();
 
 			verify();
-
-			DLFileEntryTypeLocalServiceUtil.getBasicDocumentDLFileEntryType();
 		}
 		finally {
 			UpgradeLogContext.clearContext();

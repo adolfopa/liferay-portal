@@ -407,10 +407,11 @@ public class FolderStagedModelDataHandler
 
 		long defaultFileEntryTypeId =
 			_dlFileEntryTypeLocalService.getDefaultFileEntryTypeId(
-				folder.getFolderId());
+				folder.getCompanyId(), folder.getFolderId());
 
 		DLFileEntryType basicDocumentDLFileEntryType =
-			_dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType();
+			_dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType(
+				folder.getCompanyId());
 
 		String defaultFileEntryTypeUuid = StringPool.BLANK;
 
@@ -495,7 +496,8 @@ public class FolderStagedModelDataHandler
 				folderElement.attributeValue("basic-document"))) {
 
 			DLFileEntryType basicDocumentDLFileEntryType =
-				_dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType();
+				_dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType(
+					portletDataContext.getCompanyId());
 
 			currentFolderFileEntryTypeIds.add(
 				basicDocumentDLFileEntryType.getFileEntryTypeId());

@@ -313,7 +313,7 @@ public class DLItemSelectorViewDisplayContext<T extends ItemSelectorCriterion> {
 				DLFileEntryConstants.getClassName());
 			long defaultFileEntryTypeId =
 				DLFileEntryTypeLocalServiceUtil.getDefaultFileEntryTypeId(
-					getFolderId());
+					_themeDisplay.getCompanyId(), getFolderId());
 
 			for (AssetVocabulary assetVocabulary : assetVocabularies) {
 				if (assetVocabulary.isRequired(
@@ -351,7 +351,7 @@ public class DLItemSelectorViewDisplayContext<T extends ItemSelectorCriterion> {
 					_themeDisplay.getCompanyId(),
 					_themeDisplay.getScopeGroupId(), getFolderId(),
 					DLFileEntryTypeLocalServiceUtil.getDefaultFileEntryTypeId(
-						getFolderId()))) {
+						_themeDisplay.getCompanyId(), getFolderId()))) {
 
 				_showDragAndDropZone = false;
 			}

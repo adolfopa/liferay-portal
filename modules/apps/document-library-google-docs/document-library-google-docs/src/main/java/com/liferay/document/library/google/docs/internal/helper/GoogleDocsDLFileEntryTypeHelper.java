@@ -73,7 +73,8 @@ public class GoogleDocsDLFileEntryTypeHelper {
 
 		DLFileEntryType dlFileEntryType =
 			_dlFileEntryTypeLocalService.fetchDataDefinitionFileEntryType(
-				_company.getGroupId(), ddmStructure.getStructureId());
+				_company.getGroupId(), _company.getCompanyId(),
+				ddmStructure.getStructureId());
 
 		if (dlFileEntryType == null) {
 			_addGoogleDocsDLFileEntryType(ddmStructure.getStructureId());

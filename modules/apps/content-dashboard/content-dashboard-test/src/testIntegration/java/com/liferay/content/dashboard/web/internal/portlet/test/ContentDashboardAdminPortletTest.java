@@ -1045,7 +1045,8 @@ public class ContentDashboardAdminPortletTest {
 
 			DLFileEntryType googleDocsDLFileEntryType =
 				DLFileEntryTypeLocalServiceUtil.getFileEntryType(
-					_company.getGroupId(), "GOOGLE_DOCS");
+					_company.getGroupId(), _company.getCompanyId(),
+					"GOOGLE_DOCS");
 
 			googleDriveShortcutFileEntry.setFileEntryTypeId(
 				googleDocsDLFileEntryType.getFileEntryTypeId());

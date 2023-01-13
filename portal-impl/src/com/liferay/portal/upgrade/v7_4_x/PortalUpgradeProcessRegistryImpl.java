@@ -259,6 +259,10 @@ public class PortalUpgradeProcessRegistryImpl
 
 		upgradeVersionTreeMap.put(
 			new Version(25, 1, 2), new DummyUpgradeProcess());
+
+		upgradeVersionTreeMap.put(
+			new Version(25, 1, 3), new UpgradeBasicDocumentDLFileEntryType(),
+			new UpgradeDLFolder());
 	}
 
 }

@@ -94,6 +94,11 @@ public class AssetListServiceUpgradeStepRegistrator
 			UpgradeProcessFactory.dropColumns(
 				"AssetListEntryUsage", "assetListEntryId", "classPK",
 				"portletId"));
+
+		registry.register(
+			"2.0.0", "2.0.1",
+			new com.liferay.asset.list.internal.upgrade.v2_0_1.
+				AssetListEntryUpgradeProcess());
 	}
 
 	@Reference

@@ -23,6 +23,7 @@ import com.liferay.document.library.constants.DLPortletKeys;
 import com.liferay.document.library.kernel.exception.NoSuchFileEntryException;
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFileEntryType;
+import com.liferay.document.library.kernel.model.DLFileEntryTypeConstants;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.service.DLAppLocalService;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
@@ -237,7 +238,13 @@ public class DLFileEntryAssetRendererFactory
 			PermissionChecker permissionChecker, long groupId, long classTypeId)
 		throws Exception {
 
-		if ((classTypeId > 0) &&
+		DLFileEntryType basicDocumentDLFileEntryType =
+			_dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType(
+				permissionChecker.getCompanyId());
+
+		if ((classTypeId != DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_ALL) &&
+			(classTypeId !=
+				basicDocumentDLFileEntryType.getFileEntryTypeId()) &&
 			!_dlFileEntryTypeModelResourcePermission.contains(
 				permissionChecker, classTypeId, ActionKeys.VIEW)) {
 

@@ -85,6 +85,8 @@ public class TemporaryFileEntriesCapabilityImpl
 			serviceContext.setAddGroupPermissions(true);
 			serviceContext.setAddGuestPermissions(true);
 
+			serviceContext.setCompanyId(folder.getCompanyId());
+
 			return _documentRepository.addFileEntry(
 				null, temporaryFileEntriesScope.getUserId(),
 				folder.getFolderId(), fileName, mimeType, fileName, fileName,

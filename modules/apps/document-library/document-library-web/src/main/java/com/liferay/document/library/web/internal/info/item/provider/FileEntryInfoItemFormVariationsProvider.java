@@ -56,9 +56,8 @@ public class FileEntryInfoItemFormVariationsProvider
 	public InfoItemFormVariation getInfoItemFormVariation(
 		long groupId, String formVariationKey) {
 
-		DLFileEntryType dlFileEntryType =
-			_dlFileEntryTypeLocalService.fetchDLFileEntryType(
-				GetterUtil.getLong(formVariationKey));
+		DLFileEntryType dlFileEntryType = _getDLFileEntryType(
+			groupId, formVariationKey);
 
 		if (dlFileEntryType == null) {
 			return null;
@@ -159,6 +158,24 @@ public class FileEntryInfoItemFormVariationsProvider
 				depotEntryLocalService.getGroupConnectedDepotEntries(
 					groupId, true, QueryUtil.ALL_POS, QueryUtil.ALL_POS),
 				DepotEntry::getGroupId));
+	}
+
+	private DLFileEntryType _getDLFileEntryType(
+		long groupId, String formVariationKey) {
+
+		long fileEntryTypeId = GetterUtil.getLong(formVariationKey);
+
+		if (fileEntryTypeId !=
+				DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT) {
+
+			return _dlFileEntryTypeLocalService.fetchDLFileEntryType(
+				fileEntryTypeId);
+		}
+
+		Group group = _groupLocalService.fetchGroup(groupId);
+
+		return _dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType(
+			group.getCompanyId());
 	}
 
 	@Reference(

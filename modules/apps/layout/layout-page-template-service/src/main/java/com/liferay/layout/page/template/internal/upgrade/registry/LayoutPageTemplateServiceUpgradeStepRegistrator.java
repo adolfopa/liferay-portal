@@ -14,6 +14,7 @@
 
 package com.liferay.layout.page.template.internal.upgrade.registry;
 
+import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalService;
 import com.liferay.fragment.service.FragmentEntryLinkLocalService;
 import com.liferay.fragment.util.configuration.FragmentEntryConfigurationParser;
 import com.liferay.layout.helper.CollectionPaginationHelper;
@@ -26,6 +27,8 @@ import com.liferay.layout.page.template.internal.upgrade.v2_1_0.LayoutUpgradePro
 import com.liferay.layout.page.template.internal.upgrade.v3_1_4.ResourcePermissionUpgradeProcess;
 import com.liferay.layout.page.template.internal.upgrade.v3_3_0.LayoutPageTemplateStructureRelUpgradeProcess;
 import com.liferay.layout.page.template.internal.upgrade.v3_4_1.FragmentEntryLinkEditableValuesUpgradeProcess;
+import com.liferay.layout.page.template.internal.upgrade.v5_1_2.FileEntryLayoutPageTemplateEntryUpgradeProcess;
+import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.LayoutPrototypeLocalService;
@@ -193,13 +196,25 @@ public class LayoutPageTemplateServiceUpgradeStepRegistrator
 			"5.1.0", "5.1.1",
 			new com.liferay.layout.page.template.internal.upgrade.v5_1_1.
 				LayoutPageTemplateStructureUpgradeProcess(_layoutLocalService));
+
+		registry.register(
+			"5.1.1", "5.1.2",
+			new FileEntryLayoutPageTemplateEntryUpgradeProcess(
+				_classNameLocalService, _companyLocalService,
+				_dlFileEntryTypeLocalService));
 	}
+
+	@Reference
+	private ClassNameLocalService _classNameLocalService;
 
 	@Reference
 	private CollectionPaginationHelper _collectionPaginationHelper;
 
 	@Reference
 	private CompanyLocalService _companyLocalService;
+
+	@Reference
+	private DLFileEntryTypeLocalService _dlFileEntryTypeLocalService;
 
 	@Reference
 	private FragmentEntryConfigurationParser _fragmentEntryConfigurationParser;

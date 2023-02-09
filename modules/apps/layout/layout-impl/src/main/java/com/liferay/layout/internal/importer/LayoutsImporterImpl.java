@@ -1946,21 +1946,29 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 				displayPageTemplate.getContentSubtype();
 
 			if (contentSubtype == null) {
-				return 0;
+				return _resolveSubtypeKey(classNameId, null);
 			}
 
 			Long subtypeId = contentSubtype.getSubtypeId();
 
 			if (subtypeId != null) {
+				if (subtypeId == 0) {
+					return _resolveSubtypeKey(classNameId, null);
+				}
+
 				return subtypeId;
 			}
 
 			String subtypeKey = contentSubtype.getSubtypeKey();
 
 			if (Validator.isNull(subtypeKey)) {
-				return 0;
+				return _resolveSubtypeKey(classNameId, null);
 			}
 
+			return _resolveSubtypeKey(classNameId, subtypeKey);
+		}
+
+		private long _resolveSubtypeKey(long classNameId, String subtypeKey) {
 			InfoItemFormVariationsProvider<?> infoItemFormVariationsProvider =
 				_infoItemServiceRegistry.getFirstInfoItemService(
 					InfoItemFormVariationsProvider.class,

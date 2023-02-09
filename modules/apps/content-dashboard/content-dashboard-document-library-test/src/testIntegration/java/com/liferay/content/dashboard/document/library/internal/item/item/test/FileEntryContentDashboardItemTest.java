@@ -28,10 +28,12 @@ import com.liferay.content.dashboard.item.ContentDashboardItemVersion;
 import com.liferay.content.dashboard.item.VersionableContentDashboardItem;
 import com.liferay.content.dashboard.item.action.ContentDashboardItemAction;
 import com.liferay.content.dashboard.item.type.ContentDashboardItemSubtype;
+import com.liferay.document.library.kernel.model.DLFileEntryType;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.model.DLVersionNumberIncrease;
 import com.liferay.document.library.kernel.service.DLAppLocalService;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
+import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalService;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateEntryTypeConstants;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalService;
@@ -713,10 +715,15 @@ public class FileEntryContentDashboardItemTest {
 			fileEntry.getExpirationDate(), fileEntry.getReviewDate(),
 			serviceContext);
 
+		DLFileEntryType basicDocumentDLFileEntryType =
+			_dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType(
+				_group.getCompanyId());
+
 		LayoutPageTemplateEntry layoutPageTemplateEntry =
 			_layoutPageTemplateEntryLocalService.addLayoutPageTemplateEntry(
 				_group.getCreatorUserId(), _group.getGroupId(), 0,
-				_portal.getClassNameId(FileEntry.class.getName()), 0,
+				_portal.getClassNameId(FileEntry.class.getName()),
+				basicDocumentDLFileEntryType.getFileEntryTypeId(),
 				RandomTestUtil.randomString(),
 				LayoutPageTemplateEntryTypeConstants.TYPE_DISPLAY_PAGE, 0, true,
 				0, 0, 0, 0, serviceContext);
@@ -765,6 +772,9 @@ public class FileEntryContentDashboardItemTest {
 
 	@Inject
 	private DLFileEntryLocalService _dlFileEntryLocalService;
+
+	@Inject
+	private DLFileEntryTypeLocalService _dlFileEntryTypeLocalService;
 
 	@DeleteAfterTestRun
 	private Group _group;

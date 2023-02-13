@@ -122,6 +122,12 @@ public class DLFileEntryTypeServiceImpl extends DLFileEntryTypeServiceBaseImpl {
 	}
 
 	@Override
+	public DLFileEntryType getBasicDocumentDLFileEntryType(long company) {
+		return dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType(
+			company);
+	}
+
+	@Override
 	public DLFileEntryType getFileEntryType(long fileEntryTypeId)
 		throws PortalException {
 

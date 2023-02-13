@@ -95,6 +95,11 @@ public class DLFileEntryTypeServiceWrapper
 	}
 
 	@Override
+	public DLFileEntryType getBasicDocumentDLFileEntryType(long company) {
+		return _dlFileEntryTypeService.getBasicDocumentDLFileEntryType(company);
+	}
+
+	@Override
 	public DLFileEntryType getFileEntryType(long fileEntryTypeId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 

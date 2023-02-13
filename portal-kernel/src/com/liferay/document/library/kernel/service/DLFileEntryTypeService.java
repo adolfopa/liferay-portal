@@ -90,6 +90,9 @@ public interface DLFileEntryTypeService extends BaseService {
 		throws PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public DLFileEntryType getBasicDocumentDLFileEntryType(long company);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public DLFileEntryType getFileEntryType(long fileEntryTypeId)
 		throws PortalException;
 

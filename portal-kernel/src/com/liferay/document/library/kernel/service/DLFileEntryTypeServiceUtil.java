@@ -93,6 +93,12 @@ public class DLFileEntryTypeServiceUtil {
 		getService().deleteFileEntryType(fileEntryTypeId);
 	}
 
+	public static DLFileEntryType getBasicDocumentDLFileEntryType(
+		long company) {
+
+		return getService().getBasicDocumentDLFileEntryType(company);
+	}
+
 	public static DLFileEntryType getFileEntryType(long fileEntryTypeId)
 		throws PortalException {
 

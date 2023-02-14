@@ -1,5 +1,21 @@
 definition {
 
+	@summary = "Get the basic fileEntryTypeId in the current company."
+	macro _getBasicFileEntryTypeIdWithCurrentCompany {
+		var portalURL = JSONCompany.getPortalURL();
+		var companyId = JSONCompany.getCompanyId();
+
+		var curl = '''
+			${portalURL}/api/jsonws/dlfileentrytype/get-basic-document-dl-file-entry-type \
+				-u test@liferay.com:test \
+				-d company=${companyId}
+		''';
+
+		var fileEntryTypeId = JSONCurlUtil.post(${curl}, "$..fileEntryTypeId");
+
+		return ${fileEntryTypeId};
+	}
+
 	@summary = "Get a fileEntryTypeId from dlFileEntryType"
 	macro _getFileEntryTypeId {
 		Variables.assertDefined(parameterList = "${fileEntryTypeName},${groupId}");

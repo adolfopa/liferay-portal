@@ -34,6 +34,9 @@ definition {
 					fileEntryTypeName = ${subType},
 					groupId = ${globalGroupId});
 			}
+			else if (${subType} == "Basic Document") {
+				var classTypeId = JSONDLfileentrytype._getBasicFileEntryTypeIdWithCurrentCompany();
+			}
 			else {
 				if (isSet(depotName)) {
 					var depotId = JSONLayoutpagetemplateSetter.setGroupId(

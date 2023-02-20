@@ -313,7 +313,7 @@ public class FragmentEntryProcessorFreemarkerTest {
 			FileUtil.getBytes(
 				FragmentEntryProcessorFreemarkerTest.class,
 				"dependencies/image.jpg"),
-			null, null, new ServiceContext());
+			null, null, ServiceContextTestUtil.getServiceContext());
 
 		FragmentEntry fragmentEntry = _addFragmentEntry(
 			"fragment_entry_with_configuration_itemselector_file_entry.html",

@@ -33,8 +33,10 @@ import com.liferay.dynamic.data.mapping.kernel.DDMStructure;
 import com.liferay.dynamic.data.mapping.kernel.StorageEngineManagerUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.repository.capabilities.Capability;
 import com.liferay.portal.kernel.repository.capabilities.CapabilityProvider;
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.RepositoryLocalService;
 import com.liferay.portal.kernel.service.RepositoryService;
 import com.liferay.portal.kernel.service.ResourceLocalService;
@@ -113,7 +115,7 @@ public abstract class LiferayRepositoryBase implements CapabilityProvider {
 
 		DLFileEntryType basicDocumentDLFileEntryType =
 			DLFileEntryTypeLocalServiceUtil.getBasicDocumentDLFileEntryType(
-				serviceContext.getCompanyId());
+				_getCompanyId(serviceContext));
 
 		if ((fileEntryTypeId ==
 				DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_ALL) ||
@@ -152,10 +154,10 @@ public abstract class LiferayRepositoryBase implements CapabilityProvider {
 		throws PortalException {
 
 		folderId = dlFolderLocalService.getFolderId(
-			serviceContext.getCompanyId(), folderId);
+			_getCompanyId(serviceContext), folderId);
 
 		return dlFileEntryTypeLocalService.getDefaultFileEntryTypeId(
-			serviceContext.getCompanyId(), folderId);
+			_getCompanyId(serviceContext), folderId);
 	}
 
 	protected long getGroupId() {
@@ -221,6 +223,14 @@ public abstract class LiferayRepositoryBase implements CapabilityProvider {
 	protected RepositoryLocalService repositoryLocalService;
 	protected RepositoryService repositoryService;
 	protected ResourceLocalService resourceLocalService;
+
+	private long _getCompanyId(ServiceContext serviceContext) {
+		if (serviceContext.getCompanyId() != CompanyConstants.SYSTEM) {
+			return serviceContext.getCompanyId();
+		}
+
+		return CompanyThreadLocal.getCompanyId();
+	}
 
 	private final long _dlFolderId;
 	private final long _groupId;

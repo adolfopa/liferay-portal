@@ -32,7 +32,6 @@ import com.liferay.portal.kernel.model.ClassName;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
-import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.servlet.taglib.DynamicInclude;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
@@ -114,7 +113,8 @@ public class AnalyticsRenderFragmentLayoutPostDynamicIncludeTest {
 			FileUtil.getBytes(
 				AnalyticsRenderFragmentLayoutPreDynamicIncludeTest.class,
 				"dependencies/image.jpg"),
-			null, null, new ServiceContext());
+			null, null,
+			ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
 
 		mockHttpServletRequest.setAttribute(
 			LayoutDisplayPageWebKeys.LAYOUT_DISPLAY_PAGE_OBJECT_PROVIDER,

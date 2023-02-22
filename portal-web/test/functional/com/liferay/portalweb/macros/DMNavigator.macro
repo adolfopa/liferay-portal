@@ -360,7 +360,7 @@ definition {
 			}
 		}
 		else {
-			var typeId = 0;
+			var typeId = JSONDLfileentrytype._getBasicFileEntryTypeIdWithCurrentCompany();
 		}
 
 		if (isSet(folderName)) {

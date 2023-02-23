@@ -220,9 +220,6 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 			DBPartitionUtil.setDefaultCompanyId(company.getCompanyId());
 		}
 
-		boolean newDBPartitionAdded = DBPartitionUtil.addDBPartition(
-			company.getCompanyId());
-
 		SafeCloseable safeCloseable =
 			CompanyThreadLocal.setInitializingCompanyIdWithSafeCloseable(
 				company.getCompanyId());
@@ -238,11 +235,6 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 			// Virtual host
 
 			updateVirtualHostname(company.getCompanyId(), virtualHostname);
-
-			if (newDBPartitionAdded) {
-				_dlFileEntryTypeLocalService.
-					createBasicDocumentDLFileEntryType();
-			}
 
 			String name = webId;
 

@@ -75,6 +75,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.repository.liferayrepository.model.LiferayFileEntry;
 import com.liferay.portal.repository.liferayrepository.model.LiferayFileVersion;
+import com.liferay.portlet.documentlibrary.model.impl.DLFileEntryTypeImpl;
 import com.liferay.portlet.documentlibrary.service.base.DLFileEntryTypeLocalServiceBaseImpl;
 
 import java.util.ArrayList;
@@ -431,15 +432,7 @@ public class DLFileEntryTypeLocalServiceImpl
 	public DLFileEntryType getBasicDocumentDLFileEntryType()
 		throws NoSuchFileEntryTypeException {
 
-		DLFileEntryType dlFileEntryType =
-			dlFileEntryTypePersistence.fetchByPrimaryKey(
-				DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT);
-
-		if (dlFileEntryType != null) {
-			return dlFileEntryType;
-		}
-
-		return dlFileEntryTypeLocalService.createBasicDocumentDLFileEntryType();
+		return (DLFileEntryType)_basicDocumentDLFileEntryType.clone();
 	}
 
 	@Override
@@ -1102,6 +1095,20 @@ public class DLFileEntryTypeLocalServiceImpl
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		DLFileEntryTypeLocalServiceImpl.class);
+
+	private static final DLFileEntryType _basicDocumentDLFileEntryType =
+		new DLFileEntryTypeImpl() {
+			{
+				setFileEntryTypeId(
+					DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT);
+				setFileEntryTypeKey(
+					StringUtil.toUpperCase(
+						DLFileEntryTypeConstants.NAME_BASIC_DOCUMENT));
+				setName(
+					DLFileEntryTypeConstants.NAME_BASIC_DOCUMENT,
+					LocaleUtil.getDefault());
+			}
+		};
 
 	@BeanReference(type = ClassNameLocalService.class)
 	private ClassNameLocalService _classNameLocalService;

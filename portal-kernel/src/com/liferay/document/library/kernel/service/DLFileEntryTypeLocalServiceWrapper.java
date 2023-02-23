@@ -181,12 +181,6 @@ public class DLFileEntryTypeLocalServiceWrapper
 		_dlFileEntryTypeLocalService.clearDLFolderDLFileEntryTypes(folderId);
 	}
 
-	@Override
-	public DLFileEntryType createBasicDocumentDLFileEntryType() {
-		return _dlFileEntryTypeLocalService.
-			createBasicDocumentDLFileEntryType();
-	}
-
 	/**
 	 * Creates a new document library file entry type with the primary key. Does not add the document library file entry type to the database.
 	 *

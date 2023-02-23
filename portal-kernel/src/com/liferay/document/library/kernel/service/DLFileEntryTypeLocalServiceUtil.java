@@ -170,10 +170,6 @@ public class DLFileEntryTypeLocalServiceUtil {
 		getService().clearDLFolderDLFileEntryTypes(folderId);
 	}
 
-	public static DLFileEntryType createBasicDocumentDLFileEntryType() {
-		return getService().createBasicDocumentDLFileEntryType();
-	}
-
 	/**
 	 * Creates a new document library file entry type with the primary key. Does not add the document library file entry type to the database.
 	 *

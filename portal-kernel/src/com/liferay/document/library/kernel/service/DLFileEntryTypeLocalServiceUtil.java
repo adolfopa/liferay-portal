@@ -400,10 +400,7 @@ public class DLFileEntryTypeLocalServiceUtil {
 		return getService().getActionableDynamicQuery();
 	}
 
-	public static DLFileEntryType getBasicDocumentDLFileEntryType()
-		throws com.liferay.document.library.kernel.exception.
-			NoSuchFileEntryTypeException {
-
+	public static DLFileEntryType getBasicDocumentDLFileEntryType() {
 		return getService().getBasicDocumentDLFileEntryType();
 	}
 

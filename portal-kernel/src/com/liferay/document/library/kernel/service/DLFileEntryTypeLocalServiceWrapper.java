@@ -459,10 +459,7 @@ public class DLFileEntryTypeLocalServiceWrapper
 	}
 
 	@Override
-	public DLFileEntryType getBasicDocumentDLFileEntryType()
-		throws com.liferay.document.library.kernel.exception.
-			NoSuchFileEntryTypeException {
-
+	public DLFileEntryType getBasicDocumentDLFileEntryType() {
 		return _dlFileEntryTypeLocalService.getBasicDocumentDLFileEntryType();
 	}
 

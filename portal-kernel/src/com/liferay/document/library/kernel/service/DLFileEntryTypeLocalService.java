@@ -14,7 +14,6 @@
 
 package com.liferay.document.library.kernel.service;
 
-import com.liferay.document.library.kernel.exception.NoSuchFileEntryTypeException;
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFileEntryType;
 import com.liferay.document.library.kernel.model.DLFolder;
@@ -328,8 +327,7 @@ public interface DLFileEntryTypeLocalService
 	public ActionableDynamicQuery getActionableDynamicQuery();
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public DLFileEntryType getBasicDocumentDLFileEntryType()
-		throws NoSuchFileEntryTypeException;
+	public DLFileEntryType getBasicDocumentDLFileEntryType();
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public long getDefaultFileEntryTypeId(long folderId) throws PortalException;

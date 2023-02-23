@@ -15,7 +15,6 @@
 package com.liferay.portlet.documentlibrary.service.impl;
 
 import com.liferay.document.library.kernel.exception.DuplicateFileEntryTypeException;
-import com.liferay.document.library.kernel.exception.NoSuchFileEntryTypeException;
 import com.liferay.document.library.kernel.exception.NoSuchFolderException;
 import com.liferay.document.library.kernel.exception.NoSuchMetadataSetException;
 import com.liferay.document.library.kernel.exception.RequiredFileEntryTypeException;
@@ -397,8 +396,21 @@ public class DLFileEntryTypeLocalServiceImpl
 	}
 
 	@Override
+	public DLFileEntryType fetchDLFileEntryType(long fileEntryTypeId) {
+		if (fileEntryTypeId ==
+				DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT) {
+
+			return dlFileEntryTypeLocalService.
+				getBasicDocumentDLFileEntryType();
+		}
+
+		return super.fetchDLFileEntryType(fileEntryTypeId);
+	}
+
+	@Override
 	public DLFileEntryType fetchFileEntryType(long fileEntryTypeId) {
-		return dlFileEntryTypePersistence.fetchByPrimaryKey(fileEntryTypeId);
+		return dlFileEntryTypeLocalService.fetchDLFileEntryType(
+			fileEntryTypeId);
 	}
 
 	@Override
@@ -412,9 +424,7 @@ public class DLFileEntryTypeLocalServiceImpl
 	}
 
 	@Override
-	public DLFileEntryType getBasicDocumentDLFileEntryType()
-		throws NoSuchFileEntryTypeException {
-
+	public DLFileEntryType getBasicDocumentDLFileEntryType() {
 		return (DLFileEntryType)_basicDocumentDLFileEntryType.clone();
 	}
 
@@ -434,10 +444,24 @@ public class DLFileEntryTypeLocalServiceImpl
 	}
 
 	@Override
+	public DLFileEntryType getDLFileEntryType(long fileEntryTypeId)
+		throws PortalException {
+
+		if (fileEntryTypeId ==
+				DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT) {
+
+			return dlFileEntryTypeLocalService.
+				getBasicDocumentDLFileEntryType();
+		}
+
+		return super.getDLFileEntryType(fileEntryTypeId);
+	}
+
+	@Override
 	public DLFileEntryType getFileEntryType(long fileEntryTypeId)
 		throws PortalException {
 
-		return dlFileEntryTypePersistence.findByPrimaryKey(fileEntryTypeId);
+		return dlFileEntryTypeLocalService.getDLFileEntryType(fileEntryTypeId);
 	}
 
 	@Override

@@ -47,7 +47,6 @@ import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.model.ResourceAction;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.SystemEventConstants;
@@ -314,22 +313,6 @@ public class DLFileEntryTypeLocalServiceImpl
 			userId, dlFolder.getGroupId(), dlFolder.getFolderId(),
 			defaultFileEntryTypeId, getFileEntryTypeIds(dlFileEntryTypes),
 			serviceContext);
-	}
-
-	@Override
-	public DLFileEntryType createBasicDocumentDLFileEntryType() {
-		DLFileEntryType dlFileEntryType = dlFileEntryTypePersistence.create(
-			DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT);
-
-		dlFileEntryType.setCompanyId(CompanyConstants.SYSTEM);
-		dlFileEntryType.setFileEntryTypeKey(
-			StringUtil.toUpperCase(
-				DLFileEntryTypeConstants.NAME_BASIC_DOCUMENT));
-		dlFileEntryType.setName(
-			DLFileEntryTypeConstants.NAME_BASIC_DOCUMENT,
-			LocaleUtil.getDefault());
-
-		return dlFileEntryTypePersistence.update(dlFileEntryType);
 	}
 
 	@Override

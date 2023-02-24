@@ -78,7 +78,7 @@ definition {
 		var externalVideoShortcutClassTypeId = JSONDLfileentrytype._getFileEntryTypeId(
 			fileEntryTypeName = "External Video Shortcut",
 			groupId = ${globalGroupId});
-		var basicDocumentClassTypeId = 0;
+		var basicDocumentClassTypeId = JSONDLfileentrytype._getBasicFileEntryTypeIdWithCurrentCompany();
 		var classTypeIdsDLFileEntry = JSONDLfileentrytype._getFileEntryTypeIds(groupId = ${groupId});
 
 		if (${classTypeIdsDLFileEntry} == "") {

@@ -44,6 +44,7 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItemList;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
@@ -608,6 +609,11 @@ public class DLAdminManagementToolbarDisplayContext
 		sortingURL.setParameter("folderId", String.valueOf(folderId));
 		sortingURL.setParameter(
 			"fileEntryTypeId", String.valueOf(_getFileEntryTypeId()));
+		sortingURL.setParameter(
+			"fileExtensions",
+			JSONUtil.putAll(
+				_getFileExtensions()
+			).toString());
 
 		return sortingURL;
 	}
@@ -625,6 +631,10 @@ public class DLAdminManagementToolbarDisplayContext
 
 	private long _getFileEntryTypeId() {
 		return ParamUtil.getLong(_httpServletRequest, "fileEntryTypeId", -1);
+	}
+
+	private String[] _getFileExtensions() {
+		return ParamUtil.getStringValues(_httpServletRequest, "fileExtensions");
 	}
 
 	private List<DropdownItem> _getFilterNavigationDropdownItems() {
@@ -712,6 +722,22 @@ public class DLAdminManagementToolbarDisplayContext
 				}
 
 				dropdownItem.setLabel(label);
+			}
+		).add(
+			dropdownItem -> {
+				dropdownItem.putData("action", "openExtensionSelector");
+
+				String extensionsFilterURL = PortletURLBuilder.createRenderURL(
+					_liferayPortletResponse
+				).setMVCPath(
+					"/document_library/filter_by_extensions.jsp"
+				).buildString();
+
+				dropdownItem.putData(
+					"extensionsFilterURL", extensionsFilterURL);
+
+				dropdownItem.setLabel(
+					LanguageUtil.get(_httpServletRequest, "Extensions..."));
 			}
 		).build();
 	}

@@ -1623,6 +1623,11 @@ public class ServletDataImpl implements ServletData {
 							DocumentResourceImpl.class,
 							"getAssetLibraryDocumentPermissionsPage"));
 					put(
+						"query#assetLibraryDocumentsRatedByMe",
+						new ObjectValuePair<>(
+							DocumentResourceImpl.class,
+							"getAssetLibraryDocumentsRatedByMePage"));
+					put(
 						"query#documentFolderDocuments",
 						new ObjectValuePair<>(
 							DocumentResourceImpl.class,
@@ -1660,6 +1665,11 @@ public class ServletDataImpl implements ServletData {
 						new ObjectValuePair<>(
 							DocumentResourceImpl.class,
 							"getSiteDocumentPermissionsPage"));
+					put(
+						"query#documentsRatedByMe",
+						new ObjectValuePair<>(
+							DocumentResourceImpl.class,
+							"getSiteDocumentsRatedByMePage"));
 					put(
 						"query#assetLibraryDocumentFolders",
 						new ObjectValuePair<>(

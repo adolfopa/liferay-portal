@@ -16,6 +16,7 @@ package com.liferay.portal.store.file.system;
 
 import com.liferay.document.library.kernel.exception.NoSuchFileException;
 import com.liferay.document.library.kernel.store.Store;
+import com.liferay.document.library.kernel.store.StoreArea;
 import com.liferay.document.library.kernel.util.DLUtil;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringPool;
@@ -311,7 +312,9 @@ public class FileSystemStore implements Store {
 
 	protected File getRepositoryDir(long companyId, long repositoryId) {
 		File repositoryDir = new File(
-			_rootDir, companyId + StringPool.SLASH + repositoryId);
+			_rootDir,
+			StoreArea.getPath(
+				String.valueOf(companyId), String.valueOf(repositoryId)));
 
 		if (!repositoryDir.exists()) {
 			repositoryDir.mkdirs();

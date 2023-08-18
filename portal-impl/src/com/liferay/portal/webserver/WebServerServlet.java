@@ -166,10 +166,8 @@ public class WebServerServlet extends HttpServlet {
 					PortalUtil.getUserPassword(httpServletRequest));
 			}
 
-			String path = HttpComponentsUtil.fixPath(
-				httpServletRequest.getPathInfo());
-
-			String[] pathArray = StringUtil.split(path, CharPool.SLASH);
+			String[] pathArray = StringUtil.split(
+				_getPath(httpServletRequest), CharPool.SLASH);
 
 			if (pathArray.length == 0) {
 				return true;
@@ -711,10 +709,8 @@ public class WebServerServlet extends HttpServlet {
 				modifiedDate = image.getModifiedDate();
 			}
 			else {
-				String path = HttpComponentsUtil.fixPath(
-					httpServletRequest.getPathInfo());
-
-				String[] pathArray = StringUtil.split(path, CharPool.SLASH);
+				String[] pathArray = StringUtil.split(
+					_getPath(httpServletRequest), CharPool.SLASH);
 
 				if ((pathArray.length == 0) ||
 					pathArray[0].equals("language")) {
@@ -1476,6 +1472,18 @@ public class WebServerServlet extends HttpServlet {
 		return user.getGroup();
 	}
 
+	private static String _getPath(HttpServletRequest httpServletRequest) {
+		String path = httpServletRequest.getRequestURI();
+
+		String location = httpServletRequest.getServletPath();
+
+		if (location.isEmpty()) {
+			location = httpServletRequest.getContextPath();
+		}
+
+		return path.substring(location.length() + 1);
+	}
+
 	private static User _getUser(HttpServletRequest httpServletRequest)
 		throws Exception {
 
@@ -1612,10 +1620,8 @@ public class WebServerServlet extends HttpServlet {
 			HttpServletResponse httpServletResponse)
 		throws Exception {
 
-		String path = HttpComponentsUtil.fixPath(
-			httpServletRequest.getPathInfo());
-
-		String[] pathArray = StringUtil.split(path, CharPool.SLASH);
+		String[] pathArray = StringUtil.split(
+			_getPath(httpServletRequest), CharPool.SLASH);
 
 		if (pathArray.length == 0) {
 
@@ -1670,7 +1676,8 @@ public class WebServerServlet extends HttpServlet {
 			String path = HttpComponentsUtil.fixPath(
 				httpServletRequest.getPathInfo());
 
-			String[] pathArray = StringUtil.split(path, CharPool.SLASH);
+			String[] pathArray = StringUtil.split(
+				_getPath(httpServletRequest), CharPool.SLASH);
 
 			if (pathArray.length == 0) {
 				sendGroups(

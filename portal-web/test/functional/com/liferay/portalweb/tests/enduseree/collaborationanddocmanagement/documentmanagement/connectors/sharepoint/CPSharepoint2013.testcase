@@ -91,7 +91,7 @@ definition {
 
 			User.firstLoginUI(
 				authenticationMethod = "By Screen Name",
-				password = "test",
+				password = PropsUtil.get("default.admin.password"),
 				userScreenName = "test");
 		}
 	}

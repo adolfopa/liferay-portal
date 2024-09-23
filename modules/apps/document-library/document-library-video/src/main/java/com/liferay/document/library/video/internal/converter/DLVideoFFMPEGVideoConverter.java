@@ -156,14 +156,19 @@ public class DLVideoFFMPEGVideoConverter implements VideoConverter {
 				DLVideoFFMPEGVideoConverterConfiguration.class, properties);
 	}
 
-	private void _consumeProcessInputStream(InputStream inputStream)
+	private void _consumeProcessInputStream(
+			InputStream inputStream, String name)
 		throws IOException {
 
 		BufferedReader bufferedReader = new BufferedReader(
 			new InputStreamReader(inputStream));
 
 		while (bufferedReader.ready()) {
-			bufferedReader.readLine();
+			String line = bufferedReader.readLine();
+
+			if (_log.isErrorEnabled()) {
+				_log.error(name + StringPool.COLON + line);
+			}
 		}
 	}
 
@@ -214,14 +219,19 @@ public class DLVideoFFMPEGVideoConverter implements VideoConverter {
 		Process process = processBuilder.start();
 
 		InputStream inputStream = process.getInputStream();
+		InputStream errorInputStream = process.getErrorStream();
 
 		while (true) {
 			try {
-				_consumeProcessInputStream(inputStream);
+				_consumeProcessInputStream(inputStream, "stdout");
+				_consumeProcessInputStream(errorInputStream, "stderr");
 
 				if (!process.waitFor(5, TimeUnit.SECONDS)) {
 					continue;
 				}
+
+				_consumeProcessInputStream(inputStream, "stdout");
+				_consumeProcessInputStream(errorInputStream, "stderr");
 
 				if (process.exitValue() != 0) {
 					throw new Exception(

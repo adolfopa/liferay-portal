@@ -68,7 +68,7 @@ public class ObjectEntryCacheModel
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(35);
+		StringBundler sb = new StringBundler(37);
 
 		sb.append("{mvccVersion=");
 		sb.append(mvccVersion);
@@ -92,6 +92,8 @@ public class ObjectEntryCacheModel
 		sb.append(modifiedDate);
 		sb.append(", objectDefinitionId=");
 		sb.append(objectDefinitionId);
+		sb.append(", objectEntryFolderId=");
+		sb.append(objectEntryFolderId);
 		sb.append(", rootObjectEntryId=");
 		sb.append(rootObjectEntryId);
 		sb.append(", lastPublishDate=");
@@ -156,6 +158,7 @@ public class ObjectEntryCacheModel
 		}
 
 		objectEntryImpl.setObjectDefinitionId(objectDefinitionId);
+		objectEntryImpl.setObjectEntryFolderId(objectEntryFolderId);
 		objectEntryImpl.setRootObjectEntryId(rootObjectEntryId);
 
 		if (lastPublishDate == Long.MIN_VALUE) {
@@ -206,6 +209,8 @@ public class ObjectEntryCacheModel
 
 		objectDefinitionId = objectInput.readLong();
 
+		objectEntryFolderId = objectInput.readLong();
+
 		rootObjectEntryId = objectInput.readLong();
 		lastPublishDate = objectInput.readLong();
 
@@ -254,6 +259,8 @@ public class ObjectEntryCacheModel
 
 		objectOutput.writeLong(objectDefinitionId);
 
+		objectOutput.writeLong(objectEntryFolderId);
+
 		objectOutput.writeLong(rootObjectEntryId);
 		objectOutput.writeLong(lastPublishDate);
 
@@ -282,6 +289,7 @@ public class ObjectEntryCacheModel
 	public long createDate;
 	public long modifiedDate;
 	public long objectDefinitionId;
+	public long objectEntryFolderId;
 	public long rootObjectEntryId;
 	public long lastPublishDate;
 	public int status;

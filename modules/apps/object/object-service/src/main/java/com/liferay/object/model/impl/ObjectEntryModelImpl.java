@@ -71,6 +71,7 @@ public class ObjectEntryModelImpl
 		{"companyId", Types.BIGINT}, {"userId", Types.BIGINT},
 		{"userName", Types.VARCHAR}, {"createDate", Types.TIMESTAMP},
 		{"modifiedDate", Types.TIMESTAMP}, {"objectDefinitionId", Types.BIGINT},
+		{"objectEntryFolderId", Types.BIGINT},
 		{"rootObjectEntryId", Types.BIGINT},
 		{"lastPublishDate", Types.TIMESTAMP}, {"status", Types.INTEGER},
 		{"statusByUserId", Types.BIGINT}, {"statusByUserName", Types.VARCHAR},
@@ -92,6 +93,7 @@ public class ObjectEntryModelImpl
 		TABLE_COLUMNS_MAP.put("createDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("modifiedDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("objectDefinitionId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("objectEntryFolderId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("rootObjectEntryId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("lastPublishDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("status", Types.INTEGER);
@@ -101,7 +103,7 @@ public class ObjectEntryModelImpl
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table ObjectEntry (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,externalReferenceCode VARCHAR(75) null,objectEntryId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,objectDefinitionId LONG,rootObjectEntryId LONG,lastPublishDate DATE null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null)";
+		"create table ObjectEntry (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,externalReferenceCode VARCHAR(75) null,objectEntryId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,objectDefinitionId LONG,objectEntryFolderId LONG,rootObjectEntryId LONG,lastPublishDate DATE null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null)";
 
 	public static final String TABLE_SQL_DROP = "drop table ObjectEntry";
 
@@ -300,6 +302,8 @@ public class ObjectEntryModelImpl
 			attributeGetterFunctions.put(
 				"objectDefinitionId", ObjectEntry::getObjectDefinitionId);
 			attributeGetterFunctions.put(
+				"objectEntryFolderId", ObjectEntry::getObjectEntryFolderId);
+			attributeGetterFunctions.put(
 				"rootObjectEntryId", ObjectEntry::getRootObjectEntryId);
 			attributeGetterFunctions.put(
 				"lastPublishDate", ObjectEntry::getLastPublishDate);
@@ -360,6 +364,10 @@ public class ObjectEntryModelImpl
 				"objectDefinitionId",
 				(BiConsumer<ObjectEntry, Long>)
 					ObjectEntry::setObjectDefinitionId);
+			attributeSetterBiConsumers.put(
+				"objectEntryFolderId",
+				(BiConsumer<ObjectEntry, Long>)
+					ObjectEntry::setObjectEntryFolderId);
 			attributeSetterBiConsumers.put(
 				"rootObjectEntryId",
 				(BiConsumer<ObjectEntry, Long>)
@@ -656,6 +664,21 @@ public class ObjectEntryModelImpl
 
 	@JSON
 	@Override
+	public long getObjectEntryFolderId() {
+		return _objectEntryFolderId;
+	}
+
+	@Override
+	public void setObjectEntryFolderId(long objectEntryFolderId) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_objectEntryFolderId = objectEntryFolderId;
+	}
+
+	@JSON
+	@Override
 	public long getRootObjectEntryId() {
 		return _rootObjectEntryId;
 	}
@@ -928,6 +951,7 @@ public class ObjectEntryModelImpl
 		objectEntryImpl.setCreateDate(getCreateDate());
 		objectEntryImpl.setModifiedDate(getModifiedDate());
 		objectEntryImpl.setObjectDefinitionId(getObjectDefinitionId());
+		objectEntryImpl.setObjectEntryFolderId(getObjectEntryFolderId());
 		objectEntryImpl.setRootObjectEntryId(getRootObjectEntryId());
 		objectEntryImpl.setLastPublishDate(getLastPublishDate());
 		objectEntryImpl.setStatus(getStatus());
@@ -964,6 +988,8 @@ public class ObjectEntryModelImpl
 			this.<Date>getColumnOriginalValue("modifiedDate"));
 		objectEntryImpl.setObjectDefinitionId(
 			this.<Long>getColumnOriginalValue("objectDefinitionId"));
+		objectEntryImpl.setObjectEntryFolderId(
+			this.<Long>getColumnOriginalValue("objectEntryFolderId"));
 		objectEntryImpl.setRootObjectEntryId(
 			this.<Long>getColumnOriginalValue("rootObjectEntryId"));
 		objectEntryImpl.setLastPublishDate(
@@ -1118,6 +1144,8 @@ public class ObjectEntryModelImpl
 
 		objectEntryCacheModel.objectDefinitionId = getObjectDefinitionId();
 
+		objectEntryCacheModel.objectEntryFolderId = getObjectEntryFolderId();
+
 		objectEntryCacheModel.rootObjectEntryId = getRootObjectEntryId();
 
 		Date lastPublishDate = getLastPublishDate();
@@ -1223,6 +1251,7 @@ public class ObjectEntryModelImpl
 	private Date _modifiedDate;
 	private boolean _setModifiedDate;
 	private long _objectDefinitionId;
+	private long _objectEntryFolderId;
 	private long _rootObjectEntryId;
 	private Date _lastPublishDate;
 	private int _status;
@@ -1272,6 +1301,7 @@ public class ObjectEntryModelImpl
 		_columnOriginalValues.put("createDate", _createDate);
 		_columnOriginalValues.put("modifiedDate", _modifiedDate);
 		_columnOriginalValues.put("objectDefinitionId", _objectDefinitionId);
+		_columnOriginalValues.put("objectEntryFolderId", _objectEntryFolderId);
 		_columnOriginalValues.put("rootObjectEntryId", _rootObjectEntryId);
 		_columnOriginalValues.put("lastPublishDate", _lastPublishDate);
 		_columnOriginalValues.put("status", _status);
@@ -1323,17 +1353,19 @@ public class ObjectEntryModelImpl
 
 		columnBitmasks.put("objectDefinitionId", 1024L);
 
-		columnBitmasks.put("rootObjectEntryId", 2048L);
+		columnBitmasks.put("objectEntryFolderId", 2048L);
 
-		columnBitmasks.put("lastPublishDate", 4096L);
+		columnBitmasks.put("rootObjectEntryId", 4096L);
 
-		columnBitmasks.put("status", 8192L);
+		columnBitmasks.put("lastPublishDate", 8192L);
 
-		columnBitmasks.put("statusByUserId", 16384L);
+		columnBitmasks.put("status", 16384L);
 
-		columnBitmasks.put("statusByUserName", 32768L);
+		columnBitmasks.put("statusByUserId", 32768L);
 
-		columnBitmasks.put("statusDate", 65536L);
+		columnBitmasks.put("statusByUserName", 65536L);
+
+		columnBitmasks.put("statusDate", 131072L);
 
 		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
 	}

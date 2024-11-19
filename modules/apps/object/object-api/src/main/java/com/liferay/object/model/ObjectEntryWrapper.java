@@ -47,6 +47,7 @@ public class ObjectEntryWrapper
 		attributes.put("createDate", getCreateDate());
 		attributes.put("modifiedDate", getModifiedDate());
 		attributes.put("objectDefinitionId", getObjectDefinitionId());
+		attributes.put("objectEntryFolderId", getObjectEntryFolderId());
 		attributes.put("rootObjectEntryId", getRootObjectEntryId());
 		attributes.put("lastPublishDate", getLastPublishDate());
 		attributes.put("status", getStatus());
@@ -124,6 +125,12 @@ public class ObjectEntryWrapper
 
 		if (objectDefinitionId != null) {
 			setObjectDefinitionId(objectDefinitionId);
+		}
+
+		Long objectEntryFolderId = (Long)attributes.get("objectEntryFolderId");
+
+		if (objectEntryFolderId != null) {
+			setObjectEntryFolderId(objectEntryFolderId);
 		}
 
 		Long rootObjectEntryId = (Long)attributes.get("rootObjectEntryId");
@@ -258,6 +265,16 @@ public class ObjectEntryWrapper
 	@Override
 	public long getObjectDefinitionId() {
 		return model.getObjectDefinitionId();
+	}
+
+	/**
+	 * Returns the object entry folder ID of this object entry.
+	 *
+	 * @return the object entry folder ID of this object entry
+	 */
+	@Override
+	public long getObjectEntryFolderId() {
+		return model.getObjectEntryFolderId();
 	}
 
 	/**
@@ -555,6 +572,16 @@ public class ObjectEntryWrapper
 	@Override
 	public void setObjectDefinitionId(long objectDefinitionId) {
 		model.setObjectDefinitionId(objectDefinitionId);
+	}
+
+	/**
+	 * Sets the object entry folder ID of this object entry.
+	 *
+	 * @param objectEntryFolderId the object entry folder ID of this object entry
+	 */
+	@Override
+	public void setObjectEntryFolderId(long objectEntryFolderId) {
+		model.setObjectEntryFolderId(objectEntryFolderId);
 	}
 
 	/**

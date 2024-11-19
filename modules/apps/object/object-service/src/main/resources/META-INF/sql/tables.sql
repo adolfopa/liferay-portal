@@ -75,12 +75,28 @@ create table ObjectEntry (
 	createDate DATE null,
 	modifiedDate DATE null,
 	objectDefinitionId LONG,
+	objectEntryFolderId LONG,
 	rootObjectEntryId LONG,
 	lastPublishDate DATE null,
 	status INTEGER,
 	statusByUserId LONG,
 	statusByUserName VARCHAR(75) null,
 	statusDate DATE null
+);
+
+create table ObjectEntryFolder (
+	mvccVersion LONG default 0 not null,
+	uuid_ VARCHAR(75) null,
+	objectEntryFolderId LONG not null primary key,
+	groupId LONG,
+	companyId LONG,
+	userId LONG,
+	userName VARCHAR(75) null,
+	createDate DATE null,
+	modifiedDate DATE null,
+	externalReferenceCode VARCHAR(75) null,
+	label STRING null,
+	parentObjectEntryFolderId LONG
 );
 
 create table ObjectField (

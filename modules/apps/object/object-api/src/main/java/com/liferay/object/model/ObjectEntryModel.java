@@ -245,6 +245,20 @@ public interface ObjectEntryModel
 	public void setObjectDefinitionId(long objectDefinitionId);
 
 	/**
+	 * Returns the object entry folder ID of this object entry.
+	 *
+	 * @return the object entry folder ID of this object entry
+	 */
+	public long getObjectEntryFolderId();
+
+	/**
+	 * Sets the object entry folder ID of this object entry.
+	 *
+	 * @param objectEntryFolderId the object entry folder ID of this object entry
+	 */
+	public void setObjectEntryFolderId(long objectEntryFolderId);
+
+	/**
 	 * Returns the root object entry ID of this object entry.
 	 *
 	 * @return the root object entry ID of this object entry

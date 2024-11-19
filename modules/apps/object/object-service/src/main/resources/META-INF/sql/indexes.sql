@@ -26,6 +26,9 @@ create index IX_A388E5A0 on ObjectEntry (objectDefinitionId, status);
 create index IX_68B7FB2 on ObjectEntry (objectDefinitionId, userId, createDate);
 create index IX_BD205C3B on ObjectEntry (uuid_[$COLUMN_LENGTH:75$]);
 
+create index IX_308310DD on ObjectEntryFolder (groupId, companyId, parentObjectEntryFolderId);
+create unique index IX_C10E319D on ObjectEntryFolder (uuid_[$COLUMN_LENGTH:75$], groupId);
+
 create index IX_EAECE0E1 on ObjectField (companyId, userId);
 create index IX_6DCE835D on ObjectField (listTypeDefinitionId, state_);
 create index IX_87111650 on ObjectField (objectDefinitionId, businessType[$COLUMN_LENGTH:75$]);

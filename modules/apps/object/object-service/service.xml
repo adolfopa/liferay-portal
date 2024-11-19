@@ -199,6 +199,7 @@
 		<!-- Other fields -->
 
 		<column name="objectDefinitionId" type="long" />
+		<column name="objectEntryFolderId" type="long" />
 		<column name="rootObjectEntryId" type="long" />
 		<column name="lastPublishDate" type="Date" />
 		<column name="status" type="int" />
@@ -248,6 +249,38 @@
 			<finder-column name="userId" />
 			<finder-column comparator="&gt;" name="createDate" />
 			<finder-column name="objectDefinitionId" />
+		</finder>
+	</entity>
+	<entity local-service="true" name="ObjectEntryFolder" remote-service="true" uuid="true">
+
+		<!-- PK fields -->
+
+		<column name="objectEntryFolderId" primary="true" type="long" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+
+		<column name="externalReferenceCode" type="String" />
+		<column localized="true" name="label" type="String" />
+		<column name="parentObjectEntryFolderId" type="long" />
+
+		<!-- Finder methods -->
+
+		<finder name="G_C_P" return-type="ObjectEntryFolder">
+			<finder-column name="groupId" />
+			<finder-column name="companyId" />
+			<finder-column name="parentObjectEntryFolderId" />
 		</finder>
 	</entity>
 	<entity local-service="true" name="ObjectField" remote-service="true" uuid="true">

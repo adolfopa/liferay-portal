@@ -651,7 +651,7 @@ definition {
 			AssertElementNotPresent(locator1 = "Message#WORKFLOW_UNAPPROVED");
 		}
 
-		Portlet.clickPortletPlusIconPG(portletName = "Documents and Media");
+		Click(locator1 = "Button#PLUS");
 
 		if (isSet(dmDocumentTypeName)) {
 			var key_dmDocumentTypeName = ${dmDocumentTypeName};

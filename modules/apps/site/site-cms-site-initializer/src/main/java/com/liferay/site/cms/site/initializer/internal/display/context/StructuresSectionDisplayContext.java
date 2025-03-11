@@ -75,6 +75,11 @@ public class StructuresSectionDisplayContext extends BaseSectionDisplayContext {
 				"get", null, null));
 	}
 
+	@Override
+	protected String getCMSSectionFilter() {
+		return StringPool.BLANK;
+	}
+
 	private String _getHref(String objectFolderExternalReferenceCode) {
 		try {
 			return HttpComponentsUtil.addParameters(

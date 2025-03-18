@@ -212,6 +212,20 @@ public abstract class BaseUserGroupResourceTestCase {
 				deleteAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCodeHttpResponse(
 					testDeleteAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_getAssetLibraryExternalReferenceCode(),
 					testDeleteAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_getUserGroupExternalReferenceCode()));
+
+		assertHttpResponseStatusCode(
+			404,
+			userGroupResource.
+				getAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCodeHttpResponse(
+					testDeleteAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_getAssetLibraryExternalReferenceCode(),
+					testDeleteAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_getUserGroupExternalReferenceCode()));
+
+		assertHttpResponseStatusCode(
+			404,
+			userGroupResource.
+				getAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCodeHttpResponse(
+					testDeleteAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_getAssetLibraryExternalReferenceCode(),
+					testDeleteAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_getUserGroupExternalReferenceCode()));
 	}
 
 	protected String
@@ -234,37 +248,102 @@ public abstract class BaseUserGroupResourceTestCase {
 			testDeleteAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_addUserGroup()
 		throws Exception {
 
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
+		return userGroupResource.postAssetLibraryUserGroup(
+			testDepotEntry.getDepotEntryId(), randomUserGroup());
 	}
 
 	@Test
-	public void testPostAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode()
+	public void testGetAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode()
 		throws Exception {
 
-		@SuppressWarnings("PMD.UnusedLocalVariable")
-		UserGroup userGroup =
-			testPostAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_addUserGroup();
+		UserGroup postUserGroup =
+			testGetAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_addUserGroup();
 
-		assertHttpResponseStatusCode(
-			204,
+		UserGroup getUserGroup =
 			userGroupResource.
-				postAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCodeHttpResponse(
-					null, null));
+				getAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode(
+					testGetAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_getAssetLibraryExternalReferenceCode(),
+					testGetAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_getUserGroupExternalReferenceCode());
 
-		assertHttpResponseStatusCode(
-			404,
-			userGroupResource.
-				postAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCodeHttpResponse(
-					null, null));
+		assertEquals(postUserGroup, getUserGroup);
+		assertValid(getUserGroup);
 	}
 
-	protected UserGroup
-			testPostAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_addUserGroup()
+	protected String
+			testGetAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_getAssetLibraryExternalReferenceCode()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
 			"This method needs to be implemented");
+	}
+
+	protected String
+			testGetAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_getUserGroupExternalReferenceCode()
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	protected UserGroup
+			testGetAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_addUserGroup()
+		throws Exception {
+
+		return userGroupResource.postAssetLibraryUserGroup(
+			testDepotEntry.getDepotEntryId(), randomUserGroup());
+	}
+
+	@Test
+	public void testPutAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode()
+		throws Exception {
+
+		UserGroup postUserGroup =
+			testPutAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_addUserGroup();
+
+		UserGroup randomUserGroup = randomUserGroup();
+
+		UserGroup putUserGroup =
+			userGroupResource.
+				putAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode(
+					testPutAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_getAssetLibraryExternalReferenceCode(),
+					testPutAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_getUserGroupExternalReferenceCode(),
+					randomUserGroup);
+
+		assertEquals(randomUserGroup, putUserGroup);
+		assertValid(putUserGroup);
+
+		UserGroup getUserGroup =
+			userGroupResource.
+				getAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode(
+					testPutAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_getAssetLibraryExternalReferenceCode(),
+					testPutAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_getUserGroupExternalReferenceCode());
+
+		assertEquals(randomUserGroup, getUserGroup);
+		assertValid(getUserGroup);
+	}
+
+	protected String
+			testPutAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_getAssetLibraryExternalReferenceCode()
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	protected String
+			testPutAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_getUserGroupExternalReferenceCode()
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	protected UserGroup
+			testPutAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode_addUserGroup()
+		throws Exception {
+
+		return userGroupResource.postAssetLibraryUserGroup(
+			testDepotEntry.getDepotEntryId(), randomUserGroup());
 	}
 
 	@Test
@@ -721,6 +800,29 @@ public abstract class BaseUserGroupResourceTestCase {
 	}
 
 	@Test
+	public void testPostAssetLibraryByExternalReferenceCodeUserGroup()
+		throws Exception {
+
+		UserGroup randomUserGroup = randomUserGroup();
+
+		UserGroup postUserGroup =
+			testPostAssetLibraryByExternalReferenceCodeUserGroup_addUserGroup(
+				randomUserGroup);
+
+		assertEquals(randomUserGroup, postUserGroup);
+		assertValid(postUserGroup);
+	}
+
+	protected UserGroup
+			testPostAssetLibraryByExternalReferenceCodeUserGroup_addUserGroup(
+				UserGroup userGroup)
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	@Test
 	public void testGetAssetLibraryUserGroupsPage() throws Exception {
 		Long assetLibraryId =
 			testGetAssetLibraryUserGroupsPage_getAssetLibraryId();
@@ -1118,8 +1220,8 @@ public abstract class BaseUserGroupResourceTestCase {
 			Long assetLibraryId, UserGroup userGroup)
 		throws Exception {
 
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
+		return userGroupResource.postAssetLibraryUserGroup(
+			assetLibraryId, userGroup);
 	}
 
 	protected Long testGetAssetLibraryUserGroupsPage_getAssetLibraryId()
@@ -1136,6 +1238,25 @@ public abstract class BaseUserGroupResourceTestCase {
 	}
 
 	@Test
+	public void testPostAssetLibraryUserGroup() throws Exception {
+		UserGroup randomUserGroup = randomUserGroup();
+
+		UserGroup postUserGroup = testPostAssetLibraryUserGroup_addUserGroup(
+			randomUserGroup);
+
+		assertEquals(randomUserGroup, postUserGroup);
+		assertValid(postUserGroup);
+	}
+
+	protected UserGroup testPostAssetLibraryUserGroup_addUserGroup(
+			UserGroup userGroup)
+		throws Exception {
+
+		return userGroupResource.postAssetLibraryUserGroup(
+			testGetAssetLibraryUserGroupsPage_getAssetLibraryId(), userGroup);
+	}
+
+	@Test
 	public void testDeleteAssetLibraryUserGroup() throws Exception {
 		@SuppressWarnings("PMD.UnusedLocalVariable")
 		UserGroup userGroup = testDeleteAssetLibraryUserGroup_addUserGroup();
@@ -1145,6 +1266,17 @@ public abstract class BaseUserGroupResourceTestCase {
 			userGroupResource.deleteAssetLibraryUserGroupHttpResponse(
 				testDeleteAssetLibraryUserGroup_getAssetLibraryId(),
 				userGroup.getId()));
+
+		assertHttpResponseStatusCode(
+			404,
+			userGroupResource.getAssetLibraryUserGroupHttpResponse(
+				testDeleteAssetLibraryUserGroup_getAssetLibraryId(),
+				userGroup.getId()));
+
+		assertHttpResponseStatusCode(
+			404,
+			userGroupResource.getAssetLibraryUserGroupHttpResponse(
+				testDeleteAssetLibraryUserGroup_getAssetLibraryId(), 0L));
 	}
 
 	protected Long testDeleteAssetLibraryUserGroup_getAssetLibraryId()
@@ -1157,31 +1289,34 @@ public abstract class BaseUserGroupResourceTestCase {
 	protected UserGroup testDeleteAssetLibraryUserGroup_addUserGroup()
 		throws Exception {
 
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
+		return userGroupResource.postAssetLibraryUserGroup(
+			testDepotEntry.getDepotEntryId(), randomUserGroup());
 	}
 
 	@Test
-	public void testPostAssetLibraryUserGroup() throws Exception {
-		@SuppressWarnings("PMD.UnusedLocalVariable")
-		UserGroup userGroup = testPostAssetLibraryUserGroup_addUserGroup();
+	public void testGetAssetLibraryUserGroup() throws Exception {
+		UserGroup postUserGroup = testGetAssetLibraryUserGroup_addUserGroup();
 
-		assertHttpResponseStatusCode(
-			204,
-			userGroupResource.postAssetLibraryUserGroupHttpResponse(
-				testDepotEntry.getDepotEntryId(), userGroup.getId()));
+		UserGroup getUserGroup = userGroupResource.getAssetLibraryUserGroup(
+			testGetAssetLibraryUserGroup_getAssetLibraryId(),
+			postUserGroup.getId());
 
-		assertHttpResponseStatusCode(
-			404,
-			userGroupResource.postAssetLibraryUserGroupHttpResponse(
-				testDepotEntry.getDepotEntryId(), 0L));
+		assertEquals(postUserGroup, getUserGroup);
+		assertValid(getUserGroup);
 	}
 
-	protected UserGroup testPostAssetLibraryUserGroup_addUserGroup()
+	protected Long testGetAssetLibraryUserGroup_getAssetLibraryId()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
 			"This method needs to be implemented");
+	}
+
+	protected UserGroup testGetAssetLibraryUserGroup_addUserGroup()
+		throws Exception {
+
+		return userGroupResource.postAssetLibraryUserGroup(
+			testDepotEntry.getDepotEntryId(), randomUserGroup());
 	}
 
 	@Rule

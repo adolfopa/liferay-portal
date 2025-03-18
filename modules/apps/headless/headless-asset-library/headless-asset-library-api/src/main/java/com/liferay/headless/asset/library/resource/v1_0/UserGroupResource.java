@@ -49,10 +49,16 @@ public interface UserGroupResource {
 				String userGroupExternalReferenceCode)
 		throws Exception;
 
-	public void
-			postAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode(
+	public UserGroup
+			getAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode(
 				String assetLibraryExternalReferenceCode,
 				String userGroupExternalReferenceCode)
+		throws Exception;
+
+	public UserGroup
+			putAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserGroupByExternalReferenceCodeUserGroupExternalReferenceCode(
+				String assetLibraryExternalReferenceCode,
+				String userGroupExternalReferenceCode, UserGroup userGroup)
 		throws Exception;
 
 	public Page<UserGroup> getAssetLibraryByExternalReferenceCodeUserGroupsPage(
@@ -62,6 +68,10 @@ public interface UserGroupResource {
 			com.liferay.portal.kernel.search.Sort[] sorts)
 		throws Exception;
 
+	public UserGroup postAssetLibraryByExternalReferenceCodeUserGroup(
+			String externalReferenceCode, UserGroup userGroup)
+		throws Exception;
+
 	public Page<UserGroup> getAssetLibraryUserGroupsPage(
 			Long assetLibraryId, String keywords, String search,
 			com.liferay.portal.kernel.search.filter.Filter filter,
@@ -69,11 +79,16 @@ public interface UserGroupResource {
 			com.liferay.portal.kernel.search.Sort[] sorts)
 		throws Exception;
 
+	public UserGroup postAssetLibraryUserGroup(
+			Long assetLibraryId, UserGroup userGroup)
+		throws Exception;
+
 	public void deleteAssetLibraryUserGroup(
 			Long assetLibraryId, Long userGroupId)
 		throws Exception;
 
-	public void postAssetLibraryUserGroup(Long assetLibraryId, Long userGroupId)
+	public UserGroup getAssetLibraryUserGroup(
+			Long assetLibraryId, Long userGroupId)
 		throws Exception;
 
 	public default void setContextAcceptLanguage(

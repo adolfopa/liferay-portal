@@ -9,6 +9,7 @@ import com.liferay.headless.asset.library.dto.v1_0.UserGroup;
 import com.liferay.headless.asset.library.resource.v1_0.UserGroupResource;
 import com.liferay.portal.kernel.exception.NoSuchGroupException;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.search.BooleanClauseOccur;
 import com.liferay.portal.kernel.search.Field;
@@ -49,6 +50,10 @@ public class UserGroupResourceImpl extends BaseUserGroupResourceImpl {
 				String userGroupExternalReferenceCode)
 		throws Exception {
 
+		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
+			throw new UnsupportedOperationException();
+		}
+
 		Group group = _getGroup(assetLibraryExternalReferenceCode);
 
 		com.liferay.portal.kernel.model.UserGroup userGroup =
@@ -64,6 +69,10 @@ public class UserGroupResourceImpl extends BaseUserGroupResourceImpl {
 			Long assetLibraryId, Long userGroupId)
 		throws PortalException {
 
+		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
+			throw new UnsupportedOperationException();
+		}
+
 		_userGroupService.unsetGroupUserGroups(
 			assetLibraryId, new long[] {userGroupId});
 	}
@@ -74,6 +83,10 @@ public class UserGroupResourceImpl extends BaseUserGroupResourceImpl {
 				String assetLibraryExternalReferenceCode,
 				String userGroupExternalReferenceCode)
 		throws Exception {
+
+		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
+			throw new UnsupportedOperationException();
+		}
 
 		return _toUserGroup(
 			_userGroupService.getUserGroupByExternalReferenceCode(
@@ -86,6 +99,10 @@ public class UserGroupResourceImpl extends BaseUserGroupResourceImpl {
 			Filter filter, Pagination pagination, Sort[] sorts)
 		throws Exception {
 
+		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
+			throw new UnsupportedOperationException();
+		}
+
 		Group group = _getGroup(externalReferenceCode);
 
 		return _getUserGroupPage(
@@ -96,6 +113,10 @@ public class UserGroupResourceImpl extends BaseUserGroupResourceImpl {
 	public UserGroup getAssetLibraryUserGroup(
 			Long assetLibraryId, Long userGroupId)
 		throws Exception {
+
+		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
+			throw new UnsupportedOperationException();
+		}
 
 		return _toUserGroup(_userGroupService.getUserGroup(userGroupId));
 	}
@@ -115,6 +136,10 @@ public class UserGroupResourceImpl extends BaseUserGroupResourceImpl {
 			String externalReferenceCode, UserGroup userGroup)
 		throws Exception {
 
+		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
+			throw new UnsupportedOperationException();
+		}
+
 		Group group = _getGroup(externalReferenceCode);
 
 		return postAssetLibraryUserGroup(group.getGroupId(), userGroup);
@@ -124,6 +149,10 @@ public class UserGroupResourceImpl extends BaseUserGroupResourceImpl {
 	public UserGroup postAssetLibraryUserGroup(
 			Long assetLibraryId, UserGroup userGroup)
 		throws Exception {
+
+		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
+			throw new UnsupportedOperationException();
+		}
 
 		_userGroupService.addGroupUserGroups(
 			assetLibraryId, new long[] {userGroup.getId()});

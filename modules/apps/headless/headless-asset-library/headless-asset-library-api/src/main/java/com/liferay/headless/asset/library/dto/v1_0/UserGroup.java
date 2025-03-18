@@ -85,7 +85,7 @@ public class UserGroup implements Serializable {
 	}
 
 	@GraphQLField(description = "The user group's external reference code.")
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected String externalReferenceCode;
 
 	@JsonIgnore
@@ -126,7 +126,7 @@ public class UserGroup implements Serializable {
 	}
 
 	@GraphQLField(description = "The user group's ID.")
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected Long id;
 
 	@JsonIgnore

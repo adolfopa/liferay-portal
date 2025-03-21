@@ -5,33 +5,18 @@
 
 import {IInternalRenderer} from '@liferay/frontend-data-set-web';
 
-import createFolderAction from './actions/createFolderAction';
 import AuthorRenderer from './cell_renderers/AuthorRenderer';
 import NameRenderer from './cell_renderers/NameRenderer';
 import SpaceRenderer from './cell_renderers/SpaceRenderer';
 import TypeRenderer from './cell_renderers/TypeRenderer';
-import addOnClickToCreationMenuItems from './utils/addOnClickToCreationMenuItems';
 
-const ACTIONS = {
-	createFolder: createFolderAction,
-};
-
-export default function ContentFDSPropsTransformer({
-	creationMenu,
+export default function AllFDSPropsTransformer({
 	...otherProps
 }: {
-	creationMenu: any;
 	otherProps: any;
 }) {
 	return {
 		...otherProps,
-		creationMenu: {
-			...creationMenu,
-			primaryItems: addOnClickToCreationMenuItems(
-				creationMenu.primaryItems,
-				ACTIONS
-			),
-		},
 		customRenderers: {
 			tableCell: [
 				{

@@ -47,6 +47,7 @@ import com.liferay.portal.search.rest.dto.v1_0.SearchResult;
 import com.liferay.portal.search.rest.internal.facet.FacetRequestContributor;
 import com.liferay.portal.search.rest.internal.facet.FacetResponseProcessor;
 import com.liferay.portal.search.rest.internal.odata.entity.v1_0.SearchResultEntityModel;
+import com.liferay.portal.search.rest.internal.util.FilterUtil;
 import com.liferay.portal.search.rest.internal.util.ScopeUtil;
 import com.liferay.portal.search.rest.internal.util.ValueUtil;
 import com.liferay.portal.search.rest.pagination.SearchPage;
@@ -116,6 +117,17 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 			).put(
 				"search.experiences.blueprint.external.reference.code",
 				blueprintExternalReferenceCode
+			).put(
+				"status",
+				() -> {
+					int[] statuses = FilterUtil.getStatuses(filter);
+
+					if (ArrayUtil.isNotEmpty(statuses)) {
+						return statuses;
+					}
+
+					return null;
+				}
 			).build());
 
 		return _postSearchPage(
@@ -132,6 +144,20 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 
 		if (!FeatureFlagManagerUtil.isEnabled("LPS-179669")) {
 			throw new NotFoundException();
+		}
+
+		int[] statuses = FilterUtil.getStatuses(filter);
+
+		if (ArrayUtil.isNotEmpty(statuses)) {
+			Map<String, Object> attributes = searchRequestBody.getAttributes();
+
+			if (attributes == null) {
+				attributes = new HashMap<>();
+			}
+
+			attributes.put("status", statuses);
+
+			searchRequestBody.setAttributes(attributes);
 		}
 
 		return _postSearchPage(
@@ -258,7 +284,7 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 
 	private boolean _isAllowedSearchContextAttribute(String key) {
 		if (key.startsWith("search.experiences.") ||
-			key.equals("search.empty.search")) {
+			key.equals("search.empty.search") || key.equals("status")) {
 
 			return true;
 		}

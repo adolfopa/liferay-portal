@@ -47,6 +47,7 @@ import com.liferay.portal.search.rest.dto.v1_0.SearchResult;
 import com.liferay.portal.search.rest.internal.facet.FacetRequestContributor;
 import com.liferay.portal.search.rest.internal.facet.FacetResponseProcessor;
 import com.liferay.portal.search.rest.internal.odata.entity.v1_0.SearchResultEntityModel;
+import com.liferay.portal.search.rest.internal.util.FilterUtil;
 import com.liferay.portal.search.rest.internal.util.ScopeUtil;
 import com.liferay.portal.search.rest.internal.util.ValueUtil;
 import com.liferay.portal.search.rest.pagination.SearchPage;
@@ -116,6 +117,17 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 			).put(
 				"search.experiences.blueprint.external.reference.code",
 				blueprintExternalReferenceCode
+			).put(
+				"status",
+				() -> {
+					int[] statuses = FilterUtil.getStatuses(filter);
+
+					if (statuses.length > 0) {
+						return statuses;
+					}
+
+					return null;
+				}
 			).build());
 
 		return _postSearchPage(

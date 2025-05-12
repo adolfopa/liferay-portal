@@ -16,18 +16,19 @@ export type FolderData = {
 	assetLibraries: AssetLibrary[];
 	baseAssetLibraryViewURL: string;
 	baseFolderViewURL: string;
+	parentObjectEntryFolderExternalReferenceCode: string;
 };
 
 export default function createFolderAction(
 	data: FolderData,
-	additionalProps: {parentObjectEntryFolderExternalReferenceCode: string},
 	loadData?: () => {}
 ) {
 	openModal({
 		center: true,
 		contentComponent: ({closeModal}: {closeModal: () => void}) =>
 			CreationModalContent({
-				...data,
+				action: data.action,
+				assetLibraries: data.assetLibraries,
 				closeModal,
 				onSubmit: async ({groupId, name: title}) => {
 					const {
@@ -35,13 +36,13 @@ export default function createFolderAction(
 						errorMessage,
 						success,
 					} = await postScopeScopeKeyObjectEntryFolder<{
-						id: string;
-						scopeKey: string;
+						groupId: number;
+						parentObjectEntryFolderExternalReferenceCode: string;
 						title: string;
 					}>(
 						groupId,
-						title,
-						additionalProps.parentObjectEntryFolderExternalReferenceCode
+						data.parentObjectEntryFolderExternalReferenceCode,
+						title
 					);
 
 					if (success) {

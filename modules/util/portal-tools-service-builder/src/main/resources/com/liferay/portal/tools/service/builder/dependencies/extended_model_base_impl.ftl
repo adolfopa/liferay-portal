@@ -74,6 +74,10 @@ public abstract class ${entity.name}BaseImpl extends ${entity.name}ModelImpl imp
 					${entity.name} ${entity.variableName} = this;
 
 					while (${entity.variableName} != null) {
+						if (${entity.pluralVariableName}.contains(${entity.variableName})) {
+							throw new SystemException("Tree path cycle detected for ${entity.name} " + this);
+						}
+
 						${entity.pluralVariableName}.add(${entity.variableName});
 
 						${entity.variableName} = ${entity.name}LocalServiceUtil.fetch${entity.name}(${entity.variableName}.getParent${pkEntityColumn.methodName}());

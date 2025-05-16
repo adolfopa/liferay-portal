@@ -9,6 +9,7 @@ import com.liferay.object.model.ObjectEntryFolder;
 import com.liferay.object.service.ObjectEntryFolderLocalServiceUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +53,11 @@ public abstract class ObjectEntryFolderBaseImpl
 		ObjectEntryFolder objectEntryFolder = this;
 
 		while (objectEntryFolder != null) {
+			if (objectEntryFolders.contains(objectEntryFolder)) {
+				throw new SystemException(
+					"Tree path cycle detected for ObjectEntryFolder " + this);
+			}
+
 			objectEntryFolders.add(objectEntryFolder);
 
 			objectEntryFolder =

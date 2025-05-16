@@ -9,6 +9,7 @@ import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.document.library.kernel.service.DLFolderLocalServiceUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +52,11 @@ public abstract class DLFolderBaseImpl
 		DLFolder dlFolder = this;
 
 		while (dlFolder != null) {
+			if (dlFolders.contains(dlFolder)) {
+				throw new SystemException(
+					"Tree path cycle detected for DLFolder " + this);
+			}
+
 			dlFolders.add(dlFolder);
 
 			dlFolder = DLFolderLocalServiceUtil.fetchDLFolder(

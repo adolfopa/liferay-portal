@@ -9,6 +9,7 @@ import com.liferay.message.boards.model.MBMessage;
 import com.liferay.message.boards.service.MBMessageLocalServiceUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +52,11 @@ public abstract class MBMessageBaseImpl
 		MBMessage mbMessage = this;
 
 		while (mbMessage != null) {
+			if (mbMessages.contains(mbMessage)) {
+				throw new SystemException(
+					"Tree path cycle detected for MBMessage " + this);
+			}
+
 			mbMessages.add(mbMessage);
 
 			mbMessage = MBMessageLocalServiceUtil.fetchMBMessage(

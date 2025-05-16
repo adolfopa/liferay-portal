@@ -9,6 +9,7 @@ import com.liferay.bookmarks.model.BookmarksFolder;
 import com.liferay.bookmarks.service.BookmarksFolderLocalServiceUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +53,11 @@ public abstract class BookmarksFolderBaseImpl
 		BookmarksFolder bookmarksFolder = this;
 
 		while (bookmarksFolder != null) {
+			if (bookmarksFolders.contains(bookmarksFolder)) {
+				throw new SystemException(
+					"Tree path cycle detected for BookmarksFolder " + this);
+			}
+
 			bookmarksFolders.add(bookmarksFolder);
 
 			bookmarksFolder =

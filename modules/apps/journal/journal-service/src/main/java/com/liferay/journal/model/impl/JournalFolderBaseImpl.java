@@ -9,6 +9,7 @@ import com.liferay.journal.model.JournalFolder;
 import com.liferay.journal.service.JournalFolderLocalServiceUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +52,11 @@ public abstract class JournalFolderBaseImpl
 		JournalFolder journalFolder = this;
 
 		while (journalFolder != null) {
+			if (journalFolders.contains(journalFolder)) {
+				throw new SystemException(
+					"Tree path cycle detected for JournalFolder " + this);
+			}
+
 			journalFolders.add(journalFolder);
 
 			journalFolder = JournalFolderLocalServiceUtil.fetchJournalFolder(

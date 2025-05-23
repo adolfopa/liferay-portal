@@ -137,8 +137,7 @@ DLViewEntriesDisplayContext dlViewEntriesDisplayContext = new DLViewEntriesDispl
 														<clay:link
 															cssClass="card-title text-truncate"
 															href="<%= dlViewEntriesDisplayContext.getViewFileEntryURL(fileEntry) %>"
-															label="<%= latestFileVersion.getTitle() %>"
-															title="<%= HtmlUtil.escapeAttribute(latestFileVersion.getTitle()) %>"
+															label="<%= HtmlUtil.unescape(latestFileVersion.getTitle()) %>"
 														/>
 
 														<c:if test="<%= !dlViewEntriesDisplayContext.hasGuestViewPermission(fileEntry) %>">

@@ -142,6 +142,7 @@ public class HtmlUtilTest {
 		Assert.assertEquals("&lt;script&gt;", HtmlUtil.escape("<script>"));
 	}
 
+
 	@Test
 	public void testEscapeJS() {
 		Assert.assertEquals("\\u2028", HtmlUtil.escapeJS("\u2028"));
@@ -407,6 +408,16 @@ public class HtmlUtilTest {
 	@Test
 	public void testUnescapeHtmlEncodingRightSingleQuote() {
 		Assert.assertEquals("\u2019", HtmlUtil.unescape("&rsquo;"));
+	}
+
+	@Test
+	public void testUnescapeHtmlEncodingEnDash() {
+		Assert.assertEquals("\u2013", HtmlUtil.unescape("#8211"));
+	}
+
+	@Test
+	public void testUnescapeHtmlEncodingEmDash() {
+		Assert.assertEquals("\u2014", HtmlUtil.unescape("#8212"));
 	}
 
 	protected void assertUnchangedEscape(String input) {

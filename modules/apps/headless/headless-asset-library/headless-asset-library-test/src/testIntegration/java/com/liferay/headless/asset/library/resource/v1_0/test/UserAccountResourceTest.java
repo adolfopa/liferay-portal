@@ -57,24 +57,18 @@ public class UserAccountResourceTest extends BaseUserAccountResourceTestCase {
 
 	@Override
 	protected UserAccount
-			testDeleteAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserAccountByExternalReferenceCodeUserExternalReferenceCode_addUserAccount()
+			testDeleteAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserAccountByExternalReferenceCodeUserAccountExternalReferenceCode_addUserAccount()
 		throws Exception {
 
 		return _addUserAccount();
 	}
 
+	@Override
 	protected String
-			testDeleteAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserAccountByExternalReferenceCodeUserExternalReferenceCode_getAssetLibraryExternalReferenceCode()
+			testDeleteAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserAccountByExternalReferenceCodeUserAccountExternalReferenceCode_getAssetLibraryExternalReferenceCode()
 		throws Exception {
 
 		return _getGroupExternalReferenceCode();
-	}
-
-	protected String
-			testDeleteAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserAccountByExternalReferenceCodeUserExternalReferenceCode_getUserExternalReferenceCode()
-		throws Exception {
-
-		return _testUser.getExternalReferenceCode();
 	}
 
 	@Override
@@ -85,39 +79,27 @@ public class UserAccountResourceTest extends BaseUserAccountResourceTestCase {
 	}
 
 	@Override
-	protected Long testDeleteAssetLibraryUserAccount_getAssetLibraryId()
-		throws Exception {
-
+	protected Long testDeleteAssetLibraryUserAccount_getAssetLibraryId() {
 		return testDepotEntry.getGroupId();
 	}
 
 	@Override
-	protected Long testDeleteAssetLibraryUserAccount_getUserId() {
-		return _testUser.getUserId();
-	}
-
-	@Override
 	protected UserAccount
-			testGetAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserAccountByExternalReferenceCodeUserExternalReferenceCode_addUserAccount()
+			testGetAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserAccountByExternalReferenceCodeUserAccountExternalReferenceCode_addUserAccount()
 		throws Exception {
 
 		return _addUserAccount();
 	}
 
+	@Override
 	protected String
-			testGetAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserAccountByExternalReferenceCodeUserExternalReferenceCode_getAssetLibraryExternalReferenceCode()
+			testGetAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserAccountByExternalReferenceCodeUserAccountExternalReferenceCode_getAssetLibraryExternalReferenceCode()
 		throws Exception {
 
 		return _getGroupExternalReferenceCode();
 	}
 
-	protected String
-			testGetAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserAccountByExternalReferenceCodeUserExternalReferenceCode_getUserExternalReferenceCode()
-		throws Exception {
-
-		return _testUser.getExternalReferenceCode();
-	}
-
+	@Override
 	protected UserAccount
 			testGetAssetLibraryByExternalReferenceCodeUserAccountsPage_addUserAccount(
 				String externalReferenceCode, UserAccount userAccount)
@@ -127,6 +109,7 @@ public class UserAccountResourceTest extends BaseUserAccountResourceTestCase {
 			testDepotEntry.getGroupId(), userAccount.getId());
 	}
 
+	@Override
 	protected String
 			testGetAssetLibraryByExternalReferenceCodeUserAccountsPage_getExternalReferenceCode()
 		throws Exception {
@@ -142,15 +125,8 @@ public class UserAccountResourceTest extends BaseUserAccountResourceTestCase {
 	}
 
 	@Override
-	protected Long testGetAssetLibraryUserAccount_getAssetLibraryId()
-		throws Exception {
-
+	protected Long testGetAssetLibraryUserAccount_getAssetLibraryId() {
 		return testDepotEntry.getGroupId();
-	}
-
-	@Override
-	protected Long testGetAssetLibraryUserAccount_getUserId() throws Exception {
-		return _testUser.getUserId();
 	}
 
 	@Override
@@ -162,25 +138,20 @@ public class UserAccountResourceTest extends BaseUserAccountResourceTestCase {
 			assetLibraryId, userAccount.getId());
 	}
 
+	@Override
 	protected UserAccount
-			testPutAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserAccountByExternalReferenceCodeUserExternalReferenceCode_addUserAccount()
+			testPutAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserAccountByExternalReferenceCodeUserAccountExternalReferenceCode_addUserAccount()
 		throws Exception {
 
 		return _addUserAccount();
 	}
 
+	@Override
 	protected String
-			testPutAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserAccountByExternalReferenceCodeUserExternalReferenceCode_getAssetLibraryExternalReferenceCode()
+			testPutAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserAccountByExternalReferenceCodeUserAccountExternalReferenceCode_getAssetLibraryExternalReferenceCode()
 		throws Exception {
 
 		return _getGroupExternalReferenceCode();
-	}
-
-	protected String
-			testPutAssetLibraryByExternalReferenceCodeAssetLibraryExternalReferenceCodeUserAccountByExternalReferenceCodeUserExternalReferenceCode_getUserExternalReferenceCode()
-		throws Exception {
-
-		return _testUser.getExternalReferenceCode();
 	}
 
 	@Override
@@ -191,15 +162,8 @@ public class UserAccountResourceTest extends BaseUserAccountResourceTestCase {
 	}
 
 	@Override
-	protected Long testPutAssetLibraryUserAccount_getAssetLibraryId()
-		throws Exception {
-
+	protected Long testPutAssetLibraryUserAccount_getAssetLibraryId() {
 		return testDepotEntry.getGroupId();
-	}
-
-	@Override
-	protected Long testPutAssetLibraryUserAccount_getUserId() throws Exception {
-		return _testUser.getUserId();
 	}
 
 	private UserAccount _addUserAccount() throws Exception {

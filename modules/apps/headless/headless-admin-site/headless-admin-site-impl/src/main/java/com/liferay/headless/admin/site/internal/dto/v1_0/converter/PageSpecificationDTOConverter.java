@@ -16,7 +16,9 @@ import com.liferay.headless.admin.site.dto.v1_0.ItemExternalReference;
 import com.liferay.headless.admin.site.dto.v1_0.PageExperience;
 import com.liferay.headless.admin.site.dto.v1_0.PageSpecification;
 import com.liferay.headless.admin.site.dto.v1_0.Settings;
+import com.liferay.headless.admin.site.dto.v1_0.WidgetPageSection;
 import com.liferay.headless.admin.site.dto.v1_0.WidgetPageSpecification;
+import com.liferay.headless.admin.site.dto.v1_0.WidgetPageWidgetInstance;
 import com.liferay.headless.admin.site.internal.resource.v1_0.util.LayoutUtil;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateEntryTypeConstants;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
@@ -26,7 +28,9 @@ import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalServ
 import com.liferay.layout.page.template.service.LayoutPageTemplateStructureLocalService;
 import com.liferay.layout.page.template.service.LayoutPageTemplateStructureRelLocalService;
 import com.liferay.petra.function.transform.TransformUtil;
+import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutTypePortlet;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.MapUtil;
@@ -37,6 +41,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.vulcan.custom.field.CustomFieldsUtil;
 import com.liferay.portal.vulcan.dto.converter.DTOConverter;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterContext;
+import com.liferay.portal.vulcan.dto.converter.DefaultDTOConverterContext;
 import com.liferay.segments.service.SegmentsExperienceService;
 import com.liferay.style.book.model.StyleBookEntry;
 import com.liferay.style.book.service.StyleBookEntryLocalService;
@@ -68,7 +73,12 @@ public class PageSpecificationDTOConverter
 			return _toContentPageSpecification(dtoConverterContext, layout);
 		}
 
-		return _toWidgetPageSpecification(layout);
+		if (dtoConverterContext == null) {
+			dtoConverterContext = new DefaultDTOConverterContext(
+				null, null, null, null, null);
+		}
+
+		return _toWidgetPageSpecification(dtoConverterContext, layout);
 	}
 
 	private ClientExtension _getClientExtension(
@@ -167,7 +177,7 @@ public class PageSpecificationDTOConverter
 			PageExperience.class);
 	}
 
-	private Settings _setSettings(Layout layout) throws Exception {
+	private Settings _getSettings(Layout layout) throws Exception {
 		long classNameId = _portal.getClassNameId(Layout.class.getName());
 		UnicodeProperties unicodeProperties =
 			layout.getTypeSettingsProperties();
@@ -322,6 +332,41 @@ public class PageSpecificationDTOConverter
 		};
 	}
 
+	private WidgetPageSection[] _getWidgetPageSections(
+		DTOConverterContext dtoConverterContext, Layout layout) {
+
+		LayoutTypePortlet layoutTypePortlet =
+			(LayoutTypePortlet)layout.getLayoutType();
+
+		return TransformUtil.transformToArray(
+			layoutTypePortlet.getColumns(),
+			column -> new WidgetPageSection() {
+				{
+					setCustomizable(
+						() -> layoutTypePortlet.isColumnCustomizable(column));
+					setId(() -> column);
+					setWidgetPageWidgetInstances(
+						() -> _getWidgetPageWidgetInstances(
+							column, dtoConverterContext, layout));
+				}
+			},
+			WidgetPageSection.class);
+	}
+
+	private WidgetPageWidgetInstance[] _getWidgetPageWidgetInstances(
+		String column, DTOConverterContext dtoConverterContext, Layout layout) {
+
+		return TransformUtil.transformToArray(
+			StringUtil.split(layout.getTypeSettingsProperty(column)),
+			portletId -> {
+				dtoConverterContext.setAttribute("portletId", portletId);
+
+				return _widgetPageWidgetInstanceDTOConverter.toDTO(
+					dtoConverterContext, layout);
+			},
+			WidgetPageWidgetInstance.class);
+	}
+
 	private PageSpecification _toContentPageSpecification(
 		DTOConverterContext dtoConverterContext, Layout layout) {
 
@@ -350,7 +395,7 @@ public class PageSpecificationDTOConverter
 				setExternalReferenceCode(layout::getExternalReferenceCode);
 				setPageExperiences(
 					() -> _getPageExperiences(dtoConverterContext, layout));
-				setSettings(() -> _setSettings(layout));
+				setSettings(() -> _getSettings(layout));
 				setSiteTemplatePageSpecificationExternalReferenceCode(
 					() -> {
 						Layout layoutSetPrototypeLayout =
@@ -384,7 +429,9 @@ public class PageSpecificationDTOConverter
 		};
 	}
 
-	private PageSpecification _toWidgetPageSpecification(Layout layout) {
+	private PageSpecification _toWidgetPageSpecification(
+		DTOConverterContext dtoConverterContext, Layout layout) {
+
 		return new WidgetPageSpecification() {
 			{
 				setCustomFields(
@@ -409,7 +456,7 @@ public class PageSpecificationDTOConverter
 						return layoutPageTemplateEntry.
 							getExternalReferenceCode();
 					});
-				setSettings(() -> _setSettings(layout));
+				setSettings(() -> _getSettings(layout));
 				setSiteTemplatePageSpecificationExternalReferenceCode(
 					() -> {
 						Layout layoutSetPrototypeLayout =
@@ -424,6 +471,8 @@ public class PageSpecificationDTOConverter
 					});
 				setStatus(() -> Status.APPROVED);
 				setType(() -> Type.WIDGET_PAGE_SPECIFICATION);
+				setWidgetPageSections(
+					() -> _getWidgetPageSections(dtoConverterContext, layout));
 			}
 		};
 	}
@@ -461,5 +510,11 @@ public class PageSpecificationDTOConverter
 
 	@Reference
 	private StyleBookEntryLocalService _styleBookEntryLocalService;
+
+	@Reference(
+		target = "(component.name=com.liferay.headless.admin.site.internal.dto.v1_0.converter.WidgetPageWidgetInstanceDTOConverter)"
+	)
+	private DTOConverter<Layout, WidgetPageWidgetInstance>
+		_widgetPageWidgetInstanceDTOConverter;
 
 }

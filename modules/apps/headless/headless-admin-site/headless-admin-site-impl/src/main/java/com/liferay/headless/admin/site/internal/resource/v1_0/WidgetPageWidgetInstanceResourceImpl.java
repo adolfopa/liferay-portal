@@ -7,24 +7,23 @@ package com.liferay.headless.admin.site.internal.resource.v1_0;
 
 import com.liferay.headless.admin.site.dto.v1_0.WidgetPageWidgetInstance;
 import com.liferay.headless.admin.site.internal.resource.v1_0.util.GroupUtil;
+import com.liferay.headless.admin.site.internal.resource.v1_0.util.LayoutUtil;
 import com.liferay.headless.admin.site.resource.v1_0.WidgetPageWidgetInstanceResource;
 import com.liferay.petra.string.StringBundler;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.NoSuchPortletException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutType;
 import com.liferay.portal.kernel.model.LayoutTypePortlet;
 import com.liferay.portal.kernel.portlet.PortletIdCodec;
 import com.liferay.portal.kernel.service.LayoutLocalService;
-import com.liferay.portal.kernel.util.ListUtil;
-import com.liferay.portal.kernel.util.UnicodeProperties;
+import com.liferay.portal.vulcan.dto.converter.DTOConverter;
+import com.liferay.portal.vulcan.dto.converter.DTOConverterContext;
+import com.liferay.portal.vulcan.dto.converter.DTOConverterRegistry;
+import com.liferay.portal.vulcan.dto.converter.DefaultDTOConverterContext;
 import com.liferay.portal.vulcan.pagination.Page;
 
-import java.util.List;
 import java.util.Objects;
 
 import org.osgi.service.component.annotations.Component;
@@ -117,10 +116,18 @@ public class WidgetPageWidgetInstanceResourceImpl
 		LayoutTypePortlet layoutTypePortlet =
 			(LayoutTypePortlet)layout.getLayoutType();
 
+		DTOConverterContext dtoConverterContext =
+			new DefaultDTOConverterContext(
+				contextAcceptLanguage.isAcceptAllLanguages(), null,
+				_dtoConverterRegistry, contextHttpServletRequest,
+				layout.getPlid(), contextAcceptLanguage.getPreferredLocale(),
+				contextUriInfo, contextUser);
+
 		return Page.of(
 			transform(
 				layoutTypePortlet.getPortletIds(),
-				portletId -> _toWidgetPageWidgetInstance(layout, portletId)));
+				portletId -> _toWidgetPageWidgetInstance(
+					dtoConverterContext, layout, portletId)));
 	}
 
 	@Override
@@ -245,10 +252,10 @@ public class WidgetPageWidgetInstanceResourceImpl
 
 		if (!Objects.equals(
 				widgetPageWidgetInstance.getParentSectionId(),
-				_getParentSectionId(layout, portletId)) ||
+				LayoutUtil.getParentSectionId(layout, portletId)) ||
 			!Objects.equals(
 				widgetPageWidgetInstance.getPosition(),
-				_getPosition(layout, portletId))) {
+				LayoutUtil.getPosition(layout, portletId))) {
 
 			layoutTypePortlet.movePortletId(
 				contextUser.getUserId(), portletId,
@@ -287,68 +294,42 @@ public class WidgetPageWidgetInstanceResourceImpl
 		return _toWidgetPageWidgetInstance(layout, addedPortletId);
 	}
 
-	private String _getParentSectionId(Layout layout, String portletId) {
-		LayoutTypePortlet layoutTypePortlet =
-			(LayoutTypePortlet)layout.getLayoutType();
+	private WidgetPageWidgetInstance _toWidgetPageWidgetInstance(
+			DTOConverterContext dtoConverterContext, Layout layout,
+			String portletId)
+		throws Exception {
 
-		return layoutTypePortlet.getColumn(portletId);
-	}
+		dtoConverterContext.setAttribute("portletId", portletId);
 
-	private Integer _getPosition(Layout layout, String portletId) {
-		LayoutTypePortlet layoutTypePortlet =
-			(LayoutTypePortlet)layout.getLayoutType();
-
-		List<String> columns = layoutTypePortlet.getColumns();
-
-		UnicodeProperties typeSettingsUnicodeProperties =
-			layout.getTypeSettingsProperties();
-
-		for (String columnId : columns) {
-			String columnValue = typeSettingsUnicodeProperties.getProperty(
-				columnId, StringPool.BLANK);
-
-			List<String> portletIds = ListUtil.fromString(
-				columnValue, StringPool.COMMA);
-
-			int position = portletIds.indexOf(portletId);
-
-			if (position >= 0) {
-				return position;
-			}
-		}
-
-		if (_log.isInfoEnabled()) {
-			_log.info(
-				StringBundler.concat(
-					"Position for portlet cannot be obtained since portlet ",
-					portletId, " cannot be found in layout ",
-					layout.getPlid()));
-		}
-
-		return null;
+		return _widgetPageWidgetInstanceDTOConverter.toDTO(
+			dtoConverterContext, layout);
 	}
 
 	private WidgetPageWidgetInstance _toWidgetPageWidgetInstance(
-		Layout layout, String portletId) {
+			Layout layout, String portletId)
+		throws Exception {
 
-		return new WidgetPageWidgetInstance() {
-			{
-				setExternalReferenceCode(() -> portletId);
-				setParentSectionId(
-					() -> _getParentSectionId(layout, portletId));
-				setPosition(() -> _getPosition(layout, portletId));
-				setWidgetInstanceId(
-					() -> PortletIdCodec.decodeInstanceId(portletId));
-				setWidgetName(
-					() -> PortletIdCodec.decodePortletName(portletId));
-			}
-		};
+		DTOConverterContext dtoConverterContext =
+			new DefaultDTOConverterContext(
+				contextAcceptLanguage.isAcceptAllLanguages(), null,
+				_dtoConverterRegistry, contextHttpServletRequest,
+				layout.getPlid(), contextAcceptLanguage.getPreferredLocale(),
+				contextUriInfo, contextUser);
+
+		return _toWidgetPageWidgetInstance(
+			dtoConverterContext, layout, portletId);
 	}
 
-	private static final Log _log = LogFactoryUtil.getLog(
-		WidgetPageWidgetInstanceResourceImpl.class);
+	@Reference
+	private DTOConverterRegistry _dtoConverterRegistry;
 
 	@Reference
 	private LayoutLocalService _layoutLocalService;
+
+	@Reference(
+		target = "(component.name=com.liferay.headless.admin.site.internal.dto.v1_0.converter.WidgetPageWidgetInstanceDTOConverter)"
+	)
+	private DTOConverter<Layout, WidgetPageWidgetInstance>
+		_widgetPageWidgetInstanceDTOConverter;
 
 }

@@ -13,6 +13,7 @@ import com.liferay.headless.asset.library.dto.v1_0.AssetLibrary;
 import com.liferay.headless.asset.library.dto.v1_0.MimeTypeLimit;
 import com.liferay.headless.asset.library.dto.v1_0.Settings;
 import com.liferay.headless.asset.library.internal.resource.v1_0.BaseAssetLibraryResourceImpl;
+import com.liferay.headless.asset.library.internal.util.AssetLibraryUtil;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.UserGroupLocalService;
@@ -115,6 +116,9 @@ public class AssetLibraryDTOConverter
 								group.getGroupId())));
 				setSettings(() -> _toSettings(group));
 				setSiteId(group::getGroupId);
+				setType(
+					() -> AssetLibraryUtil.getAssetLibraryType(
+						depotEntry.getType()));
 			}
 		};
 	}

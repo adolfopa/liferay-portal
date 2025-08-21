@@ -19,16 +19,26 @@ import com.liferay.headless.admin.site.dto.v1_0.PageExperience;
 import com.liferay.headless.admin.site.dto.v1_0.PageSpecification;
 import com.liferay.headless.admin.site.dto.v1_0.Scope;
 import com.liferay.headless.admin.site.dto.v1_0.Settings;
+import com.liferay.headless.admin.site.dto.v1_0.WidgetPageSection;
 import com.liferay.headless.admin.site.dto.v1_0.WidgetPageSpecification;
+import com.liferay.headless.admin.site.dto.v1_0.WidgetPageWidgetInstance;
 import com.liferay.layout.constants.LayoutTypeSettingsConstants;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateEntryTypeConstants;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalServiceUtil;
 import com.liferay.layout.page.template.service.LayoutPageTemplateEntryServiceUtil;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.CustomizedPages;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.model.LayoutSetPrototype;
+import com.liferay.portal.kernel.model.LayoutTypePortlet;
+import com.liferay.portal.kernel.model.LayoutTypePortletConstants;
+import com.liferay.portal.kernel.portlet.PortletIdCodec;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutServiceUtil;
@@ -44,6 +54,7 @@ import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.util.PropsValues;
 import com.liferay.portal.vulcan.custom.field.CustomFieldsUtil;
 import com.liferay.segments.model.SegmentsExperience;
 import com.liferay.segments.service.SegmentsExperienceServiceUtil;
@@ -303,10 +314,14 @@ public class LayoutUtil {
 
 		_setExpandoBridgeAttributes(widgetPageSpecification, serviceContext);
 
-		return LayoutServiceUtil.addLayout(
-			externalReferenceCode, groupId, false, parentLayoutId, nameMap,
-			null, null, null, null, LayoutConstants.TYPE_PORTLET, typeSettings,
-			hiddenFromNavigation, friendlyURLMap, 0, serviceContext);
+		return _updatePortletLayout(
+			LayoutServiceUtil.addLayout(
+				externalReferenceCode, groupId, false, parentLayoutId, nameMap,
+				null, null, null, null, LayoutConstants.TYPE_PORTLET,
+				typeSettings, hiddenFromNavigation, friendlyURLMap, 0,
+				serviceContext),
+			serviceContext, typeSettingsUnicodeProperties,
+			widgetPageSpecification);
 	}
 
 	public static Layout getLayoutPrototypeLayout(
@@ -370,6 +385,45 @@ public class LayoutUtil {
 			pageSpecification.
 				getSiteTemplatePageSpecificationExternalReferenceCode(),
 			layoutSetPrototype.getGroupId(), privateLayout);
+	}
+
+	public static String getParentSectionId(Layout layout, String portletId) {
+		LayoutTypePortlet layoutTypePortlet =
+			(LayoutTypePortlet)layout.getLayoutType();
+
+		return layoutTypePortlet.getColumn(portletId);
+	}
+
+	public static Integer getPosition(Layout layout, String portletId) {
+		UnicodeProperties typeSettingsUnicodeProperties =
+			layout.getTypeSettingsProperties();
+
+		LayoutTypePortlet layoutTypePortlet =
+			(LayoutTypePortlet)layout.getLayoutType();
+
+		for (String columnId : layoutTypePortlet.getColumns()) {
+			String columnValue = typeSettingsUnicodeProperties.getProperty(
+				columnId, StringPool.BLANK);
+
+			List<String> portletIds = ListUtil.fromString(
+				columnValue, StringPool.COMMA);
+
+			int position = portletIds.indexOf(portletId);
+
+			if (position >= 0) {
+				return position;
+			}
+		}
+
+		if (_log.isInfoEnabled()) {
+			_log.info(
+				StringBundler.concat(
+					"Position for portlet cannot be obtained since portlet ",
+					portletId, " cannot be found in layout ",
+					layout.getPlid()));
+		}
+
+		return null;
 	}
 
 	public static boolean isPublished(Layout layout) {
@@ -554,18 +608,34 @@ public class LayoutUtil {
 			layout.getDescriptionMap(), layout.getRobotsMap(), friendlyURLMap,
 			widgetPageSpecification, serviceContext);
 
-		if (typeSettingsUnicodeProperties == null) {
-			return layout;
+		UnicodeProperties unicodeProperties = UnicodePropertiesBuilder.create(
+			true
+		).fastLoad(
+			layout.getTypeSettings()
+		).build();
+
+		if (typeSettingsUnicodeProperties != null) {
+			String layoutTemplateId = GetterUtil.getString(
+				typeSettingsUnicodeProperties.remove(
+					LayoutTypePortletConstants.LAYOUT_TEMPLATE_ID),
+				PropsValues.DEFAULT_LAYOUT_TEMPLATE_ID);
+
+			LayoutTypePortlet layoutTypePortlet =
+				(LayoutTypePortlet)layout.getLayoutType();
+
+			if (!Objects.equals(
+					layoutTemplateId,
+					layoutTypePortlet.getLayoutTemplateId())) {
+
+				layoutTypePortlet.setLayoutTemplateId(
+					serviceContext.getUserId(), layoutTemplateId);
+			}
+
+			unicodeProperties.putAll(typeSettingsUnicodeProperties);
 		}
 
-		UnicodeProperties unicodeProperties =
-			layout.getTypeSettingsProperties();
-
-		unicodeProperties.putAll(typeSettingsUnicodeProperties);
-
-		return LayoutServiceUtil.updateLayout(
-			layout.getGroupId(), layout.isPrivateLayout(), layout.getLayoutId(),
-			typeSettingsUnicodeProperties.toString());
+		return _updatePortletLayout(
+			layout, serviceContext, unicodeProperties, widgetPageSpecification);
 	}
 
 	private static long _getFaviconFileEntryId(
@@ -918,5 +988,96 @@ public class LayoutUtil {
 				layout, pageExperience, segmentsExperience, serviceContext);
 		}
 	}
+
+	private static Layout _updatePortletLayout(
+			Layout layout, ServiceContext serviceContext,
+			UnicodeProperties typeSettingsUnicodeProperties,
+			WidgetPageSpecification widgetPageSpecification)
+		throws Exception {
+
+		UnicodeProperties unicodeProperties =
+			layout.getTypeSettingsProperties();
+
+		LayoutTypePortlet layoutTypePortlet =
+			(LayoutTypePortlet)layout.getLayoutType();
+
+		boolean layoutCustomizable = GetterUtil.getBoolean(
+			typeSettingsUnicodeProperties.get(
+				LayoutConstants.CUSTOMIZABLE_LAYOUT));
+
+		if (!layoutCustomizable) {
+			layoutTypePortlet.removeCustomization(unicodeProperties);
+		}
+
+		if (widgetPageSpecification == null) {
+			return LayoutServiceUtil.updateLayout(
+				layout.getGroupId(), layout.isPrivateLayout(),
+				layout.getLayoutId(), unicodeProperties.toString());
+		}
+
+		WidgetPageSection[] widgetPageSections =
+			widgetPageSpecification.getWidgetPageSections();
+
+		List<String> columns = layoutTypePortlet.getColumns();
+
+		if (widgetPageSections.length != columns.size()) {
+			throw new UnsupportedOperationException();
+		}
+
+		List<String> portletIds = layoutTypePortlet.getPortletIds();
+
+		for (WidgetPageSection widgetPageSection : widgetPageSections) {
+			boolean customizable = GetterUtil.getBoolean(
+				typeSettingsUnicodeProperties.get(
+					CustomizedPages.namespaceColumnId(
+						widgetPageSection.getId())));
+
+			if (!columns.contains(widgetPageSection.getId()) ||
+				(!layoutCustomizable && customizable)) {
+
+				throw new UnsupportedOperationException();
+			}
+
+			for (WidgetPageWidgetInstance widgetPageWidgetInstance :
+					widgetPageSection.getWidgetPageWidgetInstances()) {
+
+				String portletId = PortletIdCodec.encode(
+					widgetPageWidgetInstance.getWidgetName(),
+					widgetPageWidgetInstance.getWidgetInstanceId());
+
+				if (!layoutTypePortlet.hasPortletId(portletId)) {
+					layoutTypePortlet.addPortletId(
+						serviceContext.getUserId(), portletId,
+						widgetPageWidgetInstance.getParentSectionId(),
+						widgetPageWidgetInstance.getPosition());
+				}
+				else if (!Objects.equals(
+							widgetPageWidgetInstance.getParentSectionId(),
+							getParentSectionId(layout, portletId)) ||
+						 !Objects.equals(
+							 widgetPageWidgetInstance.getPosition(),
+							 getPosition(layout, portletId))) {
+
+					layoutTypePortlet.movePortletId(
+						serviceContext.getUserId(), portletId,
+						widgetPageWidgetInstance.getParentSectionId(),
+						widgetPageWidgetInstance.getPosition());
+				}
+
+				portletIds.remove(portletId);
+			}
+		}
+
+		for (String portletId : portletIds) {
+			layoutTypePortlet.removePortletId(
+				serviceContext.getUserId(), portletId);
+		}
+
+		return LayoutServiceUtil.updateLayout(
+			layout.getGroupId(), layout.isPrivateLayout(), layout.getLayoutId(),
+			unicodeProperties.toString());
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(LayoutUtil.class);
 
 }

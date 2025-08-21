@@ -34,6 +34,7 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portlet.PortletIdCodec;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
+import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.LayoutRevisionLocalService;
 import com.liferay.portal.kernel.service.PortletLocalService;
 import com.liferay.portal.kernel.service.PortletPreferenceValueLocalService;
@@ -932,12 +933,26 @@ public class PortletPreferencesLocalServiceImpl
 			return plid;
 		}
 
-		if (!MergeLayoutPrototypesThreadLocal.isInProgress()) {
-			serviceContext.setWorkflowAction(
-				WorkflowConstants.ACTION_SAVE_DRAFT);
-		}
-
 		try {
+			String typeSettings = null;
+
+			Layout layout = _layoutLocalService.getLayout(
+				layoutRevision.getPlid());
+
+			Layout draftLayout = layout.fetchDraftLayout();
+
+			if (draftLayout != null) {
+				typeSettings = draftLayout.getTypeSettings();
+			}
+			else {
+				typeSettings = layoutRevision.getTypeSettings();
+			}
+
+			if (!MergeLayoutPrototypesThreadLocal.isInProgress()) {
+				serviceContext.setWorkflowAction(
+					WorkflowConstants.ACTION_SAVE_DRAFT);
+			}
+
 			boolean hasWorkflowTask = StagingUtil.hasWorkflowTask(
 				serviceContext.getUserId(), layoutRevision);
 
@@ -949,7 +964,7 @@ public class PortletPreferencesLocalServiceImpl
 				layoutRevision.getLayoutBranchId(), layoutRevision.getName(),
 				layoutRevision.getTitle(), layoutRevision.getDescription(),
 				layoutRevision.getKeywords(), layoutRevision.getRobots(),
-				layoutRevision.getTypeSettings(), layoutRevision.getIconImage(),
+				typeSettings, layoutRevision.getIconImage(),
 				layoutRevision.getIconImageId(), layoutRevision.getThemeId(),
 				layoutRevision.getColorSchemeId(), layoutRevision.getCss(),
 				serviceContext);
@@ -1153,6 +1168,9 @@ public class PortletPreferencesLocalServiceImpl
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		PortletPreferencesLocalServiceImpl.class);
+
+	@BeanReference(type = LayoutLocalService.class)
+	private LayoutLocalService _layoutLocalService;
 
 	@BeanReference(type = LayoutPersistence.class)
 	private LayoutPersistence _layoutPersistence;

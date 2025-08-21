@@ -5,6 +5,7 @@
 
 package com.liferay.headless.admin.site.resource.v1_0.test.util;
 
+import com.liferay.asset.publisher.constants.AssetPublisherPortletKeys;
 import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.expando.kernel.model.ExpandoColumnConstants;
 import com.liferay.expando.kernel.model.ExpandoTable;
@@ -17,8 +18,11 @@ import com.liferay.headless.admin.site.client.dto.v1_0.PageElement;
 import com.liferay.headless.admin.site.client.dto.v1_0.PageExperience;
 import com.liferay.headless.admin.site.client.dto.v1_0.PageSpecification;
 import com.liferay.headless.admin.site.client.dto.v1_0.Settings;
+import com.liferay.headless.admin.site.client.dto.v1_0.WidgetPageSection;
 import com.liferay.headless.admin.site.client.dto.v1_0.WidgetPageSpecification;
+import com.liferay.headless.admin.site.client.dto.v1_0.WidgetPageWidgetInstance;
 import com.liferay.headless.admin.site.client.problem.Problem;
+import com.liferay.journal.constants.JournalContentPortletKeys;
 import com.liferay.layout.constants.LayoutTypeSettingsConstants;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateEntryTypeConstants;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
@@ -26,7 +30,9 @@ import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalServ
 import com.liferay.layout.test.util.ContentLayoutTestUtil;
 import com.liferay.petra.function.UnsafeFunction;
 import com.liferay.petra.function.UnsafeRunnable;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.portlet.PortletIdCodec;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
@@ -43,8 +49,10 @@ import com.liferay.segments.constants.SegmentsExperienceConstants;
 
 import java.io.Serializable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -284,10 +292,25 @@ public class PageSpecificationsTestUtil {
 			expectedWidgetPageSpecification.getSettings(),
 			actualWidgetPageSpecification.getSettings());
 
-		Assert.assertTrue(
-			Objects.deepEquals(
-				expectedWidgetPageSpecification.getWidgetPageSections(),
-				actualWidgetPageSpecification.getWidgetPageSections()));
+		Assert.assertArrayEquals(
+			expectedWidgetPageSpecification.getWidgetPageSections(),
+			actualWidgetPageSpecification.getWidgetPageSections());
+	}
+
+	public static void assertWidgetPageSpecifications(
+		PageSpecification[] expectedPageSpecifications,
+		PageSpecification[] actualPageSpecifications) {
+
+		Assert.assertEquals(
+			actualPageSpecifications.toString(),
+			expectedPageSpecifications.length, actualPageSpecifications.length);
+		Assert.assertEquals(
+			actualPageSpecifications.toString(), 1,
+			actualPageSpecifications.length);
+
+		assertWidgetPageSpecification(
+			(WidgetPageSpecification)expectedPageSpecifications[0],
+			(WidgetPageSpecification)actualPageSpecifications[0]);
 	}
 
 	public static ContentPageSpecification getContentPageSpecification(
@@ -343,6 +366,15 @@ public class PageSpecificationsTestUtil {
 			draftContentPageSpecificationExternalReferenceCode, null, status);
 	}
 
+	public static PageSpecification[] getContentPageSpecifications(
+		String publishedPageSpecificationExternalReferenceCode) {
+
+		return _getContentPageSpecifications(
+			getCustomFields(), RandomTestUtil.randomString(), null,
+			getCustomFields(), publishedPageSpecificationExternalReferenceCode,
+			null);
+	}
+
 	public static CustomField[] getCustomFields() {
 		return new CustomField[] {
 			_getCustomField(_EXPANDO_ATTRIBUTE_NAMES[0], (String)null),
@@ -355,30 +387,6 @@ public class PageSpecificationsTestUtil {
 		throws Exception {
 
 		return new ExpandoTableAutocloseable();
-	}
-
-	public static PageSpecification[] getPageSpecificationsWithCustomFields(
-		String publishedPageSpecificationExternalReferenceCode,
-		PageSpecification.Type type) {
-
-		PageSpecification[] pageSpecifications;
-
-		if (type == PageSpecification.Type.CONTENT_PAGE_SPECIFICATION) {
-			pageSpecifications = _getContentPageSpecifications(
-				getCustomFields(), RandomTestUtil.randomString(), null,
-				getCustomFields(),
-				publishedPageSpecificationExternalReferenceCode, null);
-		}
-		else {
-			pageSpecifications = new PageSpecification[] {
-				getWidgetPageSpecification(
-					getCustomFields(),
-					publishedPageSpecificationExternalReferenceCode, null,
-					PageSpecification.Status.APPROVED)
-			};
-		}
-
-		return pageSpecifications;
 	}
 
 	public static PageSpecification[] getPatchPageSpecifications(
@@ -421,13 +429,41 @@ public class PageSpecificationsTestUtil {
 			getWidgetPageSpecification(
 				getCustomFields(),
 				widgetPageSpecification.getExternalReferenceCode(), null,
-				PageSpecification.Status.APPROVED)
+				PageSpecification.Status.APPROVED,
+				widgetPageSpecification.getWidgetPageSections())
 		};
+	}
+
+	public static WidgetPageSection[] getWidgetPageSections(
+		String layoutTemplateId) {
+
+		List<String> columns = new ArrayList<>();
+
+		if (Objects.equals(layoutTemplateId, "1_column")) {
+			columns.add("column-1");
+		}
+		else if (Objects.equals(layoutTemplateId, "2_columns_ii")) {
+			columns.add("column-1");
+			columns.add("column-2");
+		}
+
+		return TransformUtil.transformToArray(
+			columns,
+			column -> new WidgetPageSection() {
+				{
+					setCustomizable(() -> Boolean.FALSE);
+					setId(() -> column);
+					setWidgetPageWidgetInstances(
+						() -> _getWidgetPageWidgetInstances(column));
+				}
+			},
+			WidgetPageSection.class);
 	}
 
 	public static WidgetPageSpecification getWidgetPageSpecification(
 		CustomField[] customFields, String externalReferenceCode,
-		Settings settings, PageSpecification.Status status) {
+		Settings settings, PageSpecification.Status status,
+		WidgetPageSection[] widgetPageSections) {
 
 		WidgetPageSpecification widgetPageSpecification =
 			new WidgetPageSpecification() {
@@ -440,8 +476,21 @@ public class PageSpecificationsTestUtil {
 		widgetPageSpecification.setExternalReferenceCode(externalReferenceCode);
 		widgetPageSpecification.setSettings(settings);
 		widgetPageSpecification.setStatus(status);
+		widgetPageSpecification.setWidgetPageSections(widgetPageSections);
 
 		return widgetPageSpecification;
+	}
+
+	public static PageSpecification[] getWidgetPageSpecifications(
+		CustomField[] customFields, String layoutTemplateId,
+		String publishedPageSpecificationExternalReferenceCode) {
+
+		return new PageSpecification[] {
+			getWidgetPageSpecification(
+				customFields, publishedPageSpecificationExternalReferenceCode,
+				new Settings(), PageSpecification.Status.APPROVED,
+				getWidgetPageSections(layoutTemplateId))
+		};
 	}
 
 	public static void testPostSiteSiteByExternalReferenceCodePageSpecification(
@@ -725,6 +774,39 @@ public class PageSpecificationsTestUtil {
 		}
 
 		return expectedCustomFields;
+	}
+
+	private static WidgetPageWidgetInstance[] _getWidgetPageWidgetInstances(
+		String column) {
+
+		List<WidgetPageWidgetInstance> widgetPageWidgetInstances =
+			new ArrayList<>();
+
+		for (int i = 0; i < RandomTestUtil.randomInt(0, 3); i++) {
+			WidgetPageWidgetInstance widgetPageWidgetInstance =
+				new WidgetPageWidgetInstance();
+
+			String widgetName = AssetPublisherPortletKeys.ASSET_PUBLISHER;
+
+			if (RandomTestUtil.randomBoolean()) {
+				widgetName = JournalContentPortletKeys.JOURNAL_CONTENT;
+			}
+
+			String widgetInstanceId = RandomTestUtil.randomString();
+
+			widgetPageWidgetInstance.setExternalReferenceCode(
+				PortletIdCodec.encode(widgetName, widgetInstanceId));
+
+			widgetPageWidgetInstance.setParentSectionId(column);
+			widgetPageWidgetInstance.setPosition(i);
+			widgetPageWidgetInstance.setWidgetInstanceId(widgetInstanceId);
+			widgetPageWidgetInstance.setWidgetName(widgetName);
+
+			widgetPageWidgetInstances.add(widgetPageWidgetInstance);
+		}
+
+		return widgetPageWidgetInstances.toArray(
+			new WidgetPageWidgetInstance[0]);
 	}
 
 	private static boolean _isPublished(Layout draftLayout) {

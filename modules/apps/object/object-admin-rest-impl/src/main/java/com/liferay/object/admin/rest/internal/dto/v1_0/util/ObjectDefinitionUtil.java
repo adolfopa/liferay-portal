@@ -29,6 +29,7 @@ import com.liferay.object.system.JaxRsApplicationDescriptor;
 import com.liferay.object.system.SystemObjectDefinitionManager;
 import com.liferay.object.system.SystemObjectDefinitionManagerRegistry;
 import com.liferay.object.util.comparator.ObjectFieldCreateDateComparator;
+import com.liferay.petra.function.UnsafeFunction;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -221,7 +222,8 @@ public class ObjectDefinitionUtil {
 						serviceBuilderObjectDefinition.
 							getObjectDefinitionSettings(),
 						objectDefinitionSetting -> _toObjectDefinitionSetting(
-							groupLocalService, objectDefinitionSetting),
+							groupLocalService, objectDefinitionLocalService,
+							objectDefinitionSetting),
 						ObjectDefinitionSetting.class));
 				setObjectFields(
 					() -> TransformUtil.transformToArray(
@@ -349,8 +351,18 @@ public class ObjectDefinitionUtil {
 		};
 	}
 
+	private static String _getValue(
+		UnsafeFunction<String, String, Exception> unsafeFunction,
+		String value) {
+
+		return StringUtil.merge(
+			TransformUtil.transform(
+				value.split("\\s*,\\s*"), unsafeFunction, String.class));
+	}
+
 	private static ObjectDefinitionSetting _toObjectDefinitionSetting(
 		GroupLocalService groupLocalService,
+		ObjectDefinitionLocalService objectDefinitionLocalService,
 		com.liferay.object.model.ObjectDefinitionSetting
 			serviceBuilderObjectDefinitionSetting) {
 
@@ -358,51 +370,72 @@ public class ObjectDefinitionUtil {
 			return null;
 		}
 
-		return new ObjectDefinitionSetting() {
-			{
-				setName(
-					() -> {
-						if (StringUtil.equals(
-								ObjectDefinitionSettingConstants.
-									NAME_ACCEPTED_GROUP_IDS,
-								serviceBuilderObjectDefinitionSetting.
-									getName())) {
+		ObjectDefinitionSetting objectDefinitionSetting =
+			new ObjectDefinitionSetting();
 
-							return ObjectDefinitionSettingConstants.
-								NAME_ACCEPTED_GROUP_EXTERNAL_REFERENCE_CODES;
-						}
+		objectDefinitionSetting.setName(
+			() -> {
+				if (StringUtil.equals(
+						ObjectDefinitionSettingConstants.
+							NAME_ACCEPTED_GROUP_IDS,
+						serviceBuilderObjectDefinitionSetting.getName())) {
 
-						return serviceBuilderObjectDefinitionSetting.getName();
-					});
-				setValue(
-					() -> {
-						if (StringUtil.equals(
-								ObjectDefinitionSettingConstants.
-									NAME_ACCEPTED_GROUP_IDS,
-								serviceBuilderObjectDefinitionSetting.
-									getName())) {
+					return ObjectDefinitionSettingConstants.
+						NAME_ACCEPTED_GROUP_EXTERNAL_REFERENCE_CODES;
+				}
 
-							String groupIds = String.valueOf(
-								serviceBuilderObjectDefinitionSetting.
-									getValue());
+				if (StringUtil.equals(
+						ObjectDefinitionSettingConstants.
+							NAME_ROOT_OBJECT_DEFINITION_IDS,
+						serviceBuilderObjectDefinitionSetting.getName())) {
 
-							return StringUtil.merge(
-								TransformUtil.transform(
-									groupIds.split("\\s*,\\s*"),
-									groupId -> {
-										Group group =
-											groupLocalService.getGroup(
-												GetterUtil.getLong(groupId));
+					return ObjectDefinitionSettingConstants.
+						NAME_ROOT_OBJECT_DEFINITION_EXTERNAL_REFERENCE_CODES;
+				}
 
-										return group.getExternalReferenceCode();
-									},
-									String.class));
-						}
+				return serviceBuilderObjectDefinitionSetting.getName();
+			});
+		objectDefinitionSetting.setValue(
+			() -> {
+				if (StringUtil.equals(
+						ObjectDefinitionSettingConstants.
+							NAME_ACCEPTED_GROUP_IDS,
+						serviceBuilderObjectDefinitionSetting.getName())) {
 
-						return serviceBuilderObjectDefinitionSetting.getValue();
-					});
-			}
-		};
+					return _getValue(
+						groupId -> {
+							Group group = groupLocalService.getGroup(
+								GetterUtil.getLong(groupId));
+
+							return group.getExternalReferenceCode();
+						},
+						serviceBuilderObjectDefinitionSetting.getValue());
+				}
+
+				if (StringUtil.equals(
+						ObjectDefinitionSettingConstants.
+							NAME_ROOT_OBJECT_DEFINITION_IDS,
+						serviceBuilderObjectDefinitionSetting.getName())) {
+
+					return _getValue(
+						rootObjectDefinitionId -> {
+							com.liferay.object.model.ObjectDefinition
+								serviceBuilderObjectDefinition =
+									objectDefinitionLocalService.
+										getObjectDefinition(
+											GetterUtil.getLong(
+												rootObjectDefinitionId));
+
+							return serviceBuilderObjectDefinition.
+								getExternalReferenceCode();
+						},
+						serviceBuilderObjectDefinitionSetting.getValue());
+				}
+
+				return serviceBuilderObjectDefinitionSetting.getValue();
+			});
+
+		return objectDefinitionSetting;
 	}
 
 }

@@ -60,7 +60,7 @@ export default function ViewVersionHistoryFDSPropsTransformer({
 			else if (action?.data?.id === 'view-file') {
 				return {
 					...action,
-					isVisible: (item: any) => Boolean(item?.file?.link?.href),
+					isVisible: (item: any) => Boolean(item?.file?.thumbnailURL),
 				};
 			}
 
@@ -183,6 +183,9 @@ export default function ViewVersionHistoryFDSPropsTransformer({
 			}
 			else if (action?.data?.id === 'view-file') {
 				openModal({
+					containerProps: {
+						className: '',
+					},
 					contentComponent: () =>
 						FilePreviewerModalContent(itemData.file),
 					size: 'full-screen',

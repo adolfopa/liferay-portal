@@ -28,15 +28,19 @@ import com.liferay.object.constants.ObjectDefinitionConstants;
 import com.liferay.object.constants.ObjectEntryFolderConstants;
 import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.constants.ObjectFieldSettingConstants;
+import com.liferay.object.constants.ObjectRelationshipConstants;
+import com.liferay.object.exception.NoSuchObjectEntryException;
 import com.liferay.object.field.setting.builder.ObjectFieldSettingBuilder;
 import com.liferay.object.field.util.ObjectFieldUtil;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
+import com.liferay.object.model.ObjectRelationship;
 import com.liferay.object.service.ObjectEntryLocalService;
+import com.liferay.object.service.ObjectRelationshipLocalService;
 import com.liferay.object.test.util.ObjectDefinitionTestUtil;
+import com.liferay.object.test.util.ObjectRelationshipTestUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
-import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -49,6 +53,7 @@ import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.service.CompanyLocalService;
+import com.liferay.portal.kernel.test.AssertUtils;
 import com.liferay.portal.kernel.test.TestInfo;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.FeatureFlagTestUtil;
@@ -62,7 +67,9 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TempFileEntryUtil;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReader;
@@ -236,6 +243,22 @@ public class BatchEnginePortletDataHandlerTest {
 					objectDefinition.getName())));
 	}
 
+	@Test
+	@TestInfo("LPD-61997")
+	public void testExportImportCompanyGroupObjectEntriesWithRelatedObjectEntries()
+		throws Exception {
+
+		Group group = _stagingGroupHelper.fetchCompanyGroup(
+			TestPropsValues.getCompanyId());
+
+		_testExportImportObjectEntriesWithRelatedObjectEntries(
+			group, ObjectDefinitionConstants.SCOPE_COMPANY,
+			ObjectRelationshipConstants.TYPE_ONE_TO_MANY);
+		_testExportImportObjectEntriesWithRelatedObjectEntries(
+			group, ObjectDefinitionConstants.SCOPE_COMPANY,
+			ObjectRelationshipConstants.TYPE_MANY_TO_MANY);
+	}
+
 	@Ignore("LPD-40798")
 	@Test
 	@TestInfo("LPD-57756")
@@ -358,6 +381,21 @@ public class BatchEnginePortletDataHandlerTest {
 	}
 
 	@Test
+	@TestInfo("LPD-61997")
+	public void testExportImportSiteObjectEntriesWithRelatedObjectEntries()
+		throws Exception {
+
+		Group group = GroupTestUtil.addGroup();
+
+		_testExportImportObjectEntriesWithRelatedObjectEntries(
+			group, ObjectDefinitionConstants.SCOPE_SITE,
+			ObjectRelationshipConstants.TYPE_ONE_TO_MANY);
+		_testExportImportObjectEntriesWithRelatedObjectEntries(
+			group, ObjectDefinitionConstants.SCOPE_SITE,
+			ObjectRelationshipConstants.TYPE_MANY_TO_MANY);
+	}
+
+	@Test
 	@TestInfo("LPD-50142")
 	public void testExportIndividualDeletionsCompanyGroup() throws Exception {
 		Group group = _stagingGroupHelper.fetchCompanyGroup(
@@ -477,19 +515,19 @@ public class BatchEnginePortletDataHandlerTest {
 			false, false, larFile1, group.getGroupId(), objectDefinition);
 
 		_assertObjectEntries(
-			objectDefinition.getObjectDefinitionId(), objectEntries);
+			false, objectDefinition.getObjectDefinitionId(), objectEntries);
 
 		_importLayouts(
 			false, false, larFile2, group.getGroupId(), objectDefinition);
 
 		_assertObjectEntries(
-			objectDefinition.getObjectDefinitionId(), objectEntries);
+			false, objectDefinition.getObjectDefinitionId(), objectEntries);
 
 		_importLayouts(
 			true, false, larFile2, group.getGroupId(), objectDefinition);
 
 		_assertObjectEntries(
-			objectDefinition.getObjectDefinitionId(), objectEntries[2]);
+			false, objectDefinition.getObjectDefinitionId(), objectEntries[2]);
 		_assertNull(
 			objectDefinition.getObjectDefinitionId(), objectEntries[0],
 			objectEntries[1]);
@@ -715,7 +753,8 @@ public class BatchEnginePortletDataHandlerTest {
 	}
 
 	private void _assertObjectEntries(
-			long objectDefinitionId, ObjectEntry... objectEntries)
+			boolean empty, long objectDefinitionId,
+			ObjectEntry... objectEntries)
 		throws Exception {
 
 		for (ObjectEntry objectEntry : objectEntries) {
@@ -723,6 +762,14 @@ public class BatchEnginePortletDataHandlerTest {
 				_objectEntryLocalService.getObjectEntry(
 					objectEntry.getExternalReferenceCode(),
 					objectEntry.getGroupId(), objectDefinitionId);
+
+			if (empty) {
+				Assert.assertEquals(
+					WorkflowConstants.STATUS_EMPTY,
+					importedObjectEntry.getStatus());
+
+				return;
+			}
 
 			DLFileEntry dlFileEntry = _dlFileEntryLocalService.getFileEntry(
 				MapUtil.getLong(
@@ -963,7 +1010,120 @@ public class BatchEnginePortletDataHandlerTest {
 			false, false, larFile, group.getGroupId(), objectDefinition);
 
 		_assertObjectEntries(
-			objectDefinition.getObjectDefinitionId(), objectEntries);
+			false, objectDefinition.getObjectDefinitionId(), objectEntries);
+	}
+
+	private void _testExportImportObjectEntriesWithRelatedObjectEntries(
+			boolean childFirst, Group group, String scope, String type)
+		throws Exception {
+
+		ObjectDefinition objectDefinition1 = _addObjectDefinition(scope);
+
+		ObjectEntry[] objectEntries1 = _addObjectEntries(
+			3, _getObjectEntryGroupId(group.getGroupId(), scope),
+			objectDefinition1);
+
+		ObjectDefinition objectDefinition2 = _addObjectDefinition(scope);
+
+		ObjectEntry[] objectEntries2 = _addObjectEntries(
+			3, _getObjectEntryGroupId(group.getGroupId(), scope),
+			objectDefinition2);
+
+		ObjectRelationship objectRelationship =
+			ObjectRelationshipTestUtil.addObjectRelationship(
+				_objectRelationshipLocalService, objectDefinition1,
+				objectDefinition2,
+				ObjectRelationshipConstants.DELETION_TYPE_CASCADE,
+				StringUtil.randomId(), type);
+
+		for (int i = 0; i < objectEntries1.length; i++) {
+			ObjectRelationshipTestUtil.relateObjectEntries(
+				objectEntries1[i].getPrimaryKey(),
+				objectEntries2[i].getPrimaryKey(), objectRelationship,
+				TestPropsValues.getUserId());
+		}
+
+		// TODO: Export both portlets at once after LPD-62165 is fixed
+
+		File larFile1 = _exportLayouts(
+			false, group.getGroupId(), false, new long[0], objectDefinition1);
+		File larFile2 = _exportLayouts(
+			false, group.getGroupId(), false, new long[0], objectDefinition2);
+
+		_deleteObjectEntries(objectEntries1);
+		_deleteObjectEntries(objectEntries2);
+
+		if (childFirst) {
+			_importLayouts(
+				false, false, larFile2, group.getGroupId(), objectDefinition2);
+
+			_assertObjectEntries(
+				true, objectDefinition1.getObjectDefinitionId(),
+				objectEntries1);
+			_assertObjectEntries(
+				false, objectDefinition2.getObjectDefinitionId(),
+				objectEntries2);
+
+			_importLayouts(
+				false, false, larFile1, group.getGroupId(), objectDefinition1);
+
+			_assertObjectEntries(
+				false, objectDefinition1.getObjectDefinitionId(),
+				objectEntries1);
+		}
+		else {
+			_importLayouts(
+				false, false, larFile1, group.getGroupId(), objectDefinition1);
+
+			_assertObjectEntries(
+				false, objectDefinition1.getObjectDefinitionId(),
+				objectEntries1);
+
+			if (Objects.equals(
+					ObjectRelationshipConstants.TYPE_MANY_TO_MANY, type)) {
+
+				_assertObjectEntries(
+					true, objectDefinition2.getObjectDefinitionId(),
+					objectEntries2);
+			}
+			else if (Objects.equals(
+						ObjectRelationshipConstants.TYPE_ONE_TO_MANY, type)) {
+
+				for (ObjectEntry objectEntry : objectEntries2) {
+					AssertUtils.assertFailure(
+						NoSuchObjectEntryException.class,
+						String.format(
+							"No ObjectEntry exists with the key {" +
+								"externalReferenceCode=%s, groupId=%s, " +
+									"companyId=%s, objectDefinitionId=%s}",
+							objectEntry.getExternalReferenceCode(),
+							objectEntry.getGroupId(),
+							objectEntry.getCompanyId(),
+							objectDefinition2.getObjectDefinitionId()),
+						() -> _objectEntryLocalService.getObjectEntry(
+							objectEntry.getExternalReferenceCode(),
+							objectEntry.getGroupId(),
+							objectDefinition2.getObjectDefinitionId()));
+				}
+			}
+
+			_importLayouts(
+				false, false, larFile2, group.getGroupId(), objectDefinition2);
+
+			_assertObjectEntries(
+				false, objectDefinition2.getObjectDefinitionId(),
+				objectEntries2);
+		}
+	}
+
+	private void _testExportImportObjectEntriesWithRelatedObjectEntries(
+			Group group, String scope, String type)
+		throws Exception {
+
+		_testExportImportObjectEntriesWithRelatedObjectEntries(
+			false, group, scope, type);
+		_testExportImportObjectEntriesWithRelatedObjectEntries(
+			true, group, scope, type);
 	}
 
 	private static final String _OBJECT_FIELD_NAME_ATTACHMENT_DOCS_AND_MEDIA =
@@ -1011,6 +1171,9 @@ public class BatchEnginePortletDataHandlerTest {
 
 	@Inject
 	private ObjectEntryLocalService _objectEntryLocalService;
+
+	@Inject
+	private ObjectRelationshipLocalService _objectRelationshipLocalService;
 
 	@Inject
 	private SAXReader _saxReader;

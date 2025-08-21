@@ -766,20 +766,6 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 		};
 	}
 
-	private PageSpecification.Type _getPageSpecificationType(
-		SitePage.Type type) {
-
-		PageSpecification.Type pageSpecificationType =
-			PageSpecification.Type.CONTENT_PAGE_SPECIFICATION;
-
-		if (type == SitePage.Type.WIDGET_PAGE) {
-			pageSpecificationType =
-				PageSpecification.Type.WIDGET_PAGE_SPECIFICATION;
-		}
-
-		return pageSpecificationType;
-	}
-
 	private SitePage _getRandomSitePage(
 			ServiceContext serviceContext, SitePage.Type type)
 		throws Exception {
@@ -878,12 +864,17 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 
 		SitePage randomSitePage = _getRandomSitePage(type);
 
-		PageSpecification[] pageSpecifications =
-			PageSpecificationsTestUtil.getPageSpecificationsWithCustomFields(
-				randomSitePage.getExternalReferenceCode(),
-				_getPageSpecificationType(type));
-
-		randomSitePage.setPageSpecifications(pageSpecifications);
+		if (type == SitePage.Type.CONTENT_PAGE) {
+			randomSitePage.setPageSpecifications(
+				PageSpecificationsTestUtil.getContentPageSpecifications(
+					randomSitePage.getExternalReferenceCode()));
+		}
+		else {
+			randomSitePage.setPageSpecifications(
+				PageSpecificationsTestUtil.getWidgetPageSpecifications(
+					PageSpecificationsTestUtil.getCustomFields(), "1_column",
+					randomSitePage.getExternalReferenceCode()));
+		}
 
 		SitePageResource sitePageResource = _getSitePageResource(
 			"pageSpecifications");
@@ -894,7 +885,7 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 
 		PageSpecificationsTestUtil.assertCustomFields(
 			TransformUtil.transform(
-				pageSpecifications,
+				randomSitePage.getPageSpecifications(),
 				pageSpecification -> pageSpecification.getCustomFields(),
 				CustomField[].class),
 			testGroup.getGroupId(), postSitePage.getPageSpecifications());
@@ -1101,6 +1092,7 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 			PageSpecification.Status.DRAFT, PageSpecification.Status.DRAFT,
 			PageSpecification.Status.APPROVED, PageSpecification.Status.DRAFT);
 		_testPatchSiteSiteByExternalReferenceCodeSitePageWithPageSpecificationsWithCustomFields();
+		_testPatchSiteSiteByExternalReferenceCodeSitePageWithPageSpecificationsWithWidgetPageSpecification();
 	}
 
 	private void
@@ -1211,6 +1203,50 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 			testGroup.getGroupId(), patchSitePage.getPageSpecifications());
 	}
 
+	private void _testPatchSiteSiteByExternalReferenceCodeSitePageWithPageSpecificationsWithWidgetPageSpecification()
+		throws Exception {
+
+		SitePageResource sitePageResource = _getSitePageResource(
+			"pageSpecifications");
+
+		SitePage randomSitePage = _getRandomSitePage(SitePage.Type.WIDGET_PAGE);
+
+		randomSitePage.setPageSpecifications(
+			PageSpecificationsTestUtil.getWidgetPageSpecifications(
+				null, "1_column", randomSitePage.getExternalReferenceCode()));
+
+		SitePage sitePage =
+			sitePageResource.postByExternalReferenceCodeSitePage(
+				testGroup.getExternalReferenceCode(), randomSitePage);
+
+		WidgetPageSettings widgetPageSettings =
+			(WidgetPageSettings)sitePage.getPageSettings();
+
+		widgetPageSettings.setLayoutTemplateId("2_columns_ii");
+
+		PageSpecification[] widgetPageSpecifications =
+			PageSpecificationsTestUtil.getWidgetPageSpecifications(
+				null, "2_columns_ii",
+				randomSitePage.getExternalReferenceCode());
+
+		SitePage patchSitePage =
+			sitePageResource.patchSiteSiteByExternalReferenceCodeSitePage(
+				testGroup.getExternalReferenceCode(),
+				sitePage.getExternalReferenceCode(),
+				new SitePage() {
+					{
+						setExternalReferenceCode(
+							sitePage.getExternalReferenceCode());
+						setPageSettings(widgetPageSettings);
+						setPageSpecifications(widgetPageSpecifications);
+						setType(Type.WIDGET_PAGE);
+					}
+				});
+
+		PageSpecificationsTestUtil.assertWidgetPageSpecifications(
+			widgetPageSpecifications, patchSitePage.getPageSpecifications());
+	}
+
 	private void _testPatchSiteSiteByExternalReferenceCodeSitePageWithPriority()
 		throws Exception {
 
@@ -1282,6 +1318,7 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 		_testPostByExternalReferenceCodeSitePageWithPageSpecifications(
 			PageSpecification.Status.DRAFT, PageSpecification.Status.DRAFT);
 		_testPostByExternalReferenceCodeSitePageWithPageSpecificationsWithCustomFields();
+		_testPostSiteSiteByExternalReferenceCodeSitePageWithPageSpecificationsWithWidgetPageSpecification();
 
 		SitePage sitePage = _getRandomSitePage(SitePage.Type.CONTENT_PAGE);
 
@@ -1357,6 +1394,27 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 		}
 	}
 
+	private void _testPostSiteSiteByExternalReferenceCodeSitePageWithPageSpecificationsWithWidgetPageSpecification()
+		throws Exception {
+
+		SitePageResource sitePageResource = _getSitePageResource(
+			"pageSpecifications");
+
+		SitePage randomSitePage = _getRandomSitePage(SitePage.Type.WIDGET_PAGE);
+
+		randomSitePage.setPageSpecifications(
+			PageSpecificationsTestUtil.getWidgetPageSpecifications(
+				null, "1_column", randomSitePage.getExternalReferenceCode()));
+
+		SitePage sitePage =
+			sitePageResource.postByExternalReferenceCodeSitePage(
+				testGroup.getExternalReferenceCode(), randomSitePage);
+
+		PageSpecificationsTestUtil.assertWidgetPageSpecifications(
+			randomSitePage.getPageSpecifications(),
+			sitePage.getPageSpecifications());
+	}
+
 	private void _testPutSiteSiteByExternalReferenceCodeSitePage(
 			ServiceContext serviceContext, SitePage.Type type)
 		throws Exception {
@@ -1417,6 +1475,7 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 			PageSpecification.Status.DRAFT, PageSpecification.Status.DRAFT,
 			PageSpecification.Status.APPROVED, PageSpecification.Status.DRAFT);
 		_testPutSiteSiteByExternalReferenceCodeSitePageWithPageSpecificationsWithCustomFields();
+		_testPutSiteSiteByExternalReferenceCodeSitePageWithPageSpecificationsWithWidgetPageSpecification();
 	}
 
 	private void
@@ -1515,6 +1574,41 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 				pageSpecification -> pageSpecification.getCustomFields(),
 				CustomField[].class),
 			testGroup.getGroupId(), updateSitePage.getPageSpecifications());
+	}
+
+	private void _testPutSiteSiteByExternalReferenceCodeSitePageWithPageSpecificationsWithWidgetPageSpecification()
+		throws Exception {
+
+		SitePageResource sitePageResource = _getSitePageResource(
+			"pageSpecifications");
+
+		SitePage randomSitePage = _getRandomSitePage(SitePage.Type.WIDGET_PAGE);
+
+		randomSitePage.setPageSpecifications(
+			PageSpecificationsTestUtil.getWidgetPageSpecifications(
+				null, "1_column", randomSitePage.getExternalReferenceCode()));
+
+		SitePage sitePage =
+			sitePageResource.postByExternalReferenceCodeSitePage(
+				testGroup.getExternalReferenceCode(), randomSitePage);
+
+		WidgetPageSettings widgetPageSettings =
+			(WidgetPageSettings)sitePage.getPageSettings();
+
+		widgetPageSettings.setLayoutTemplateId("2_columns_ii");
+
+		sitePage.setPageSpecifications(
+			() -> PageSpecificationsTestUtil.getWidgetPageSpecifications(
+				null, "2_columns_ii", sitePage.getExternalReferenceCode()));
+
+		SitePage putSitePage =
+			sitePageResource.putSiteSiteByExternalReferenceCodeSitePage(
+				testGroup.getExternalReferenceCode(),
+				sitePage.getExternalReferenceCode(), sitePage);
+
+		PageSpecificationsTestUtil.assertWidgetPageSpecifications(
+			sitePage.getPageSpecifications(),
+			putSitePage.getPageSpecifications());
 	}
 
 	private void _testPutSiteSiteByExternalReferenceCodeSitePageWithPriority()

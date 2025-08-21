@@ -110,6 +110,7 @@ import com.liferay.object.service.ObjectValidationRuleLocalService;
 import com.liferay.object.service.base.ObjectEntryLocalServiceBaseImpl;
 import com.liferay.object.service.persistence.ObjectDefinitionPersistence;
 import com.liferay.object.service.persistence.ObjectEntryFolderPersistence;
+import com.liferay.object.service.persistence.ObjectEntryVersionPersistence;
 import com.liferay.object.service.persistence.ObjectFieldPersistence;
 import com.liferay.object.service.persistence.ObjectFieldSettingPersistence;
 import com.liferay.object.service.persistence.ObjectRelationshipPersistence;
@@ -254,8 +255,12 @@ import com.liferay.portal.vulcan.dto.converter.DTOConverterRegistry;
 import com.liferay.portal.vulcan.util.LocalizedMapUtil;
 import com.liferay.sharing.service.SharingEntryLocalService;
 import com.liferay.subscription.service.SubscriptionLocalService;
+import com.liferay.trash.exception.RestoreEntryException;
 import com.liferay.trash.exception.TrashEntryException;
+import com.liferay.trash.model.TrashEntry;
+import com.liferay.trash.model.TrashVersion;
 import com.liferay.trash.service.TrashEntryLocalService;
+import com.liferay.trash.service.TrashVersionLocalService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -294,7 +299,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import javax.crypto.spec.SecretKeySpec;
 
@@ -694,9 +698,11 @@ public class ObjectEntryLocalServiceImpl
 				objectEntry.getObjectEntryId());
 		}
 
-		_deleteFileEntries(
-			Collections.emptyMap(), objectDefinition.getObjectDefinitionId(),
-			objectEntry::getValues);
+		_dlFileEntryLocalService.deleteFileEntries(
+			objectDefinition.getCompanyId(),
+			_classNameLocalService.getClassNameId(
+				objectDefinition.getClassName()),
+			objectEntry.getObjectEntryId());
 
 		if (!ObjectDefinitionThreadLocal.isDeleteObjectDefinitionId(
 				objectDefinition.getObjectDefinitionId())) {
@@ -1688,7 +1694,7 @@ public class ObjectEntryLocalServiceImpl
 			long userId, ObjectEntry objectEntry, ServiceContext serviceContext)
 		throws PortalException {
 
-		if (objectEntry.getStatus() == WorkflowConstants.STATUS_IN_TRASH) {
+		if (objectEntry.isInTrash()) {
 			throw new TrashEntryException();
 		}
 
@@ -1768,6 +1774,92 @@ public class ObjectEntryLocalServiceImpl
 
 		return _updateObjectEntry(
 			objectEntryId, true, serviceContext, userId, values);
+	}
+
+	@Override
+	public ObjectEntry restoreObjectEntryFromTrash(
+			long userId, ObjectEntry objectEntry, ServiceContext serviceContext)
+		throws PortalException {
+
+		if (!objectEntry.isInTrash()) {
+			throw new RestoreEntryException(
+				RestoreEntryException.INVALID_STATUS);
+		}
+
+		if (objectEntry.getObjectEntryFolderId() !=
+				ObjectEntryFolderConstants.
+					PARENT_OBJECT_ENTRY_FOLDER_ID_DEFAULT) {
+
+			ObjectEntryFolder objectEntryFolder =
+				_objectEntryFolderPersistence.fetchByPrimaryKey(
+					objectEntry.getObjectEntryFolderId());
+
+			while ((objectEntryFolder != null) &&
+				   (objectEntryFolder.getStatus() ==
+					   WorkflowConstants.STATUS_IN_TRASH)) {
+
+				objectEntryFolder =
+					_objectEntryFolderPersistence.fetchByPrimaryKey(
+						objectEntryFolder.getParentObjectEntryFolderId());
+			}
+
+			if (objectEntryFolder == null) {
+				objectEntry.setObjectEntryFolderId(
+					ObjectEntryFolderConstants.
+						PARENT_OBJECT_ENTRY_FOLDER_ID_DEFAULT);
+			}
+			else {
+				objectEntry.setObjectEntryFolderId(
+					objectEntryFolder.getObjectEntryFolderId());
+			}
+
+			objectEntry = objectEntryPersistence.update(objectEntry);
+		}
+
+		ObjectDefinition objectDefinition =
+			_objectDefinitionPersistence.findByPrimaryKey(
+				objectEntry.getObjectDefinitionId());
+
+		TrashEntry trashEntry = _trashEntryLocalService.getEntry(
+			objectDefinition.getClassName(), objectEntry.getObjectEntryId());
+
+		objectEntry = updateStatus(
+			userId, objectEntry, trashEntry.getStatus(), serviceContext);
+
+		for (TrashVersion trashVersion :
+				_trashVersionLocalService.getVersions(
+					trashEntry.getEntryId())) {
+
+			ObjectEntryVersion objectEntryVersion =
+				_objectEntryVersionPersistence.findByPrimaryKey(
+					trashVersion.getClassPK());
+
+			objectEntryVersion.setStatus(trashVersion.getStatus());
+
+			_objectEntryVersionPersistence.update(objectEntryVersion);
+		}
+
+		_trashEntryLocalService.deleteEntry(
+			objectDefinition.getClassName(), objectEntry.getObjectEntryId());
+
+		if (objectDefinition.isEnableComments()) {
+			_commentManager.restoreDiscussionFromTrash(
+				objectDefinition.getClassName(),
+				objectEntry.getObjectEntryId());
+		}
+
+		try {
+			ObjectEntryThreadLocal.setSkipObjectEntryResourcePermission(true);
+
+			_restoreRelatedModelsFromTrash(
+				objectEntry.getGroupId(), objectEntry.getObjectDefinitionId(),
+				objectEntry.getObjectEntryId());
+		}
+		finally {
+			ObjectEntryThreadLocal.setSkipObjectEntryResourcePermission(false);
+		}
+
+		return objectEntry;
 	}
 
 	@Override
@@ -2101,7 +2193,7 @@ public class ObjectEntryLocalServiceImpl
 				_updateLatestObjectEntryVersion(objectDefinition, objectEntry);
 			}
 		}
-		else {
+		else if (!objectEntry.isInTrash() && !originalObjectEntry.isInTrash()) {
 			objectEntry = _addObjectEntryVersion(objectDefinition, objectEntry);
 		}
 
@@ -2114,7 +2206,11 @@ public class ObjectEntryLocalServiceImpl
 			String objectActionTriggerKey =
 				ObjectActionTriggerConstants.KEY_ON_AFTER_UPDATE;
 
-			if (status == WorkflowConstants.STATUS_IN_TRASH) {
+			if (originalObjectEntry.isInTrash()) {
+				objectActionTriggerKey =
+					ObjectActionTriggerConstants.KEY_ON_AFTER_ADD;
+			}
+			else if (objectEntry.isInTrash()) {
 				objectActionTriggerKey =
 					ObjectActionTriggerConstants.KEY_ON_AFTER_DELETE;
 			}
@@ -2779,18 +2875,9 @@ public class ObjectEntryLocalServiceImpl
 		Map<String, Serializable> newValues, long objectDefinitionId,
 		Map<String, Serializable> oldValues) {
 
-		_deleteFileEntries(newValues, objectDefinitionId, () -> oldValues);
-	}
-
-	private void _deleteFileEntries(
-		Map<String, Serializable> newValues, long objectDefinitionId,
-		Supplier<Map<String, Serializable>> oldValuesSupplier) {
-
 		List<ObjectField> objectFields =
 			_objectFieldPersistence.findByObjectDefinitionId(
 				objectDefinitionId);
-
-		Map<String, Serializable> oldValues = null;
 
 		for (ObjectField objectField : objectFields) {
 			if (objectField.isSystem() ||
@@ -2799,10 +2886,6 @@ public class ObjectEntryLocalServiceImpl
 					ObjectFieldConstants.BUSINESS_TYPE_ATTACHMENT)) {
 
 				continue;
-			}
-
-			if (oldValues == null) {
-				oldValues = oldValuesSupplier.get();
 			}
 
 			ObjectFieldSetting objectFieldSetting =
@@ -5322,6 +5405,36 @@ public class ObjectEntryLocalServiceImpl
 		}
 	}
 
+	private void _restoreRelatedModelsFromTrash(
+			long groupId, long objectDefinitionId, long objectEntryId)
+		throws PortalException {
+
+		for (ObjectRelationship objectRelationship :
+				_objectRelationshipPersistence.findByObjectDefinitionId1(
+					objectDefinitionId)) {
+
+			ObjectDefinition objectDefinition2 =
+				_objectDefinitionPersistence.findByPrimaryKey(
+					objectRelationship.getObjectDefinitionId2());
+
+			if (!objectDefinition2.isApproved()) {
+				continue;
+			}
+
+			ObjectRelatedModelsProvider objectRelatedModelsProvider =
+				_objectRelatedModelsProviderRegistry.
+					getObjectRelatedModelsProvider(
+						objectDefinition2.getClassName(),
+						objectDefinition2.getCompanyId(),
+						objectRelationship.getType());
+
+			objectRelatedModelsProvider.restoreRelatedModelsFromTrash(
+				PrincipalThreadLocal.getUserId(), groupId,
+				objectRelationship.getObjectRelationshipId(), objectEntryId,
+				objectRelationship.getDeletionType());
+		}
+	}
+
 	private void _setColumn(
 			Column<?, ?> column, List<String> columnNames, int index,
 			Map<String, Serializable> insertedValues, ObjectField objectField,
@@ -5616,6 +5729,10 @@ public class ObjectEntryLocalServiceImpl
 			long userId, ObjectEntry objectEntry, ServiceContext serviceContext,
 			boolean skipModelListener)
 		throws PortalException {
+
+		if (objectEntry.isInTrash()) {
+			return;
+		}
 
 		ObjectDefinition objectDefinition =
 			_objectDefinitionPersistence.findByPrimaryKey(
@@ -7150,6 +7267,9 @@ public class ObjectEntryLocalServiceImpl
 	private ObjectEntryVersionLocalService _objectEntryVersionLocalService;
 
 	@Reference
+	private ObjectEntryVersionPersistence _objectEntryVersionPersistence;
+
+	@Reference
 	private ObjectFieldBusinessTypeRegistry _objectFieldBusinessTypeRegistry;
 
 	@Reference
@@ -7231,6 +7351,9 @@ public class ObjectEntryLocalServiceImpl
 
 	@Reference
 	private TrashEntryLocalService _trashEntryLocalService;
+
+	@Reference
+	private TrashVersionLocalService _trashVersionLocalService;
 
 	@Reference
 	private UserLocalService _userLocalService;

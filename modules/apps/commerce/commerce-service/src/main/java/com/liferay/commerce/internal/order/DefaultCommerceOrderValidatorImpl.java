@@ -21,16 +21,18 @@ import com.liferay.commerce.product.model.CommerceChannel;
 import com.liferay.commerce.product.service.CPConfigurationEntryLocalService;
 import com.liferay.commerce.product.service.CommerceChannelLocalService;
 import com.liferay.commerce.service.CPDefinitionInventoryLocalService;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
-import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.BigDecimalUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 
 import java.math.BigDecimal;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -148,13 +150,18 @@ public class DefaultCommerceOrderValidatorImpl
 					new Object[] {maxOrderQuantity}));
 		}
 
-		String[] allowedOrderQuantities =
+		List<BigDecimal> allowedOrderQuantities = TransformUtil.transformToList(
 			cpDefinitionInventoryEngine.getAllowedOrderQuantities(
-				cpConfigurationListId, cpInstance);
+				cpConfigurationListId, cpInstance),
+			allowedOrderQuantity -> {
+				BigDecimal allowedOrderQuantityBigDecimal = BigDecimal.valueOf(
+					GetterUtil.getDouble(allowedOrderQuantity));
 
-		if ((allowedOrderQuantities.length > 0) &&
-			!ArrayUtil.contains(
-				allowedOrderQuantities, String.valueOf(quantity.intValue()))) {
+				return allowedOrderQuantityBigDecimal.stripTrailingZeros();
+			});
+
+		if (!allowedOrderQuantities.isEmpty() &&
+			!allowedOrderQuantities.contains(quantity.stripTrailingZeros())) {
 
 			return new CommerceOrderValidatorResult(
 				false,
@@ -268,13 +275,18 @@ public class DefaultCommerceOrderValidatorImpl
 					new Object[] {maxOrderQuantity}));
 		}
 
-		String[] allowedOrderQuantities =
+		List<BigDecimal> allowedOrderQuantities = TransformUtil.transformToList(
 			cpDefinitionInventoryEngine.getAllowedOrderQuantities(
-				cpConfigurationListId, cpInstance);
+				cpConfigurationListId, cpInstance),
+			allowedOrderQuantity -> {
+				BigDecimal allowedOrderQuantityBigDecimal = BigDecimal.valueOf(
+					GetterUtil.getDouble(allowedOrderQuantity));
 
-		if ((allowedOrderQuantities.length > 0) &&
-			!ArrayUtil.contains(
-				allowedOrderQuantities, String.valueOf(quantity.intValue()))) {
+				return allowedOrderQuantityBigDecimal.stripTrailingZeros();
+			});
+
+		if (!allowedOrderQuantities.isEmpty() &&
+			!allowedOrderQuantities.contains(quantity.stripTrailingZeros())) {
 
 			return new CommerceOrderValidatorResult(
 				commerceOrderItem.getCommerceOrderItemId(), false,

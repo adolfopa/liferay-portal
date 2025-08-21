@@ -1,47 +1,38 @@
 locals {
+	bucket_active=local.is_active_data_blue ? module.s3_bucket_blue : module.s3_bucket_green
+	db_active=local.is_active_data_blue ? module.postgres_blue[0] : module.postgres_green[0]
+	is_active_data_blue=var.active_data=="blue"
+	is_active_data_green=var.active_data=="green"
 	oidc_provider=replace(data.aws_eks_cluster.cluster.identity[0].oidc[0].issuer, "https://", "")
 	oidc_provider_arn="arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_provider}"
 }
-module "s3_bucket" {
-	block_public_acls=true
-	block_public_policy=true
-	bucket="${var.deployment_name}-s3-bucket-${random_password.s3_bucket_suffix.result}"
-	force_destroy=true
-	ignore_public_acls=true
-	restrict_public_buckets=true
-	server_side_encryption_configuration={
-		rule={
-			apply_server_side_encryption_by_default={
-				sse_algorithm="aws:kms"
-			}
-			bucket_key_enabled=true
-		}
-	}
-	source="terraform-aws-modules/s3-bucket/aws"
-	tags={
-		Backup="true",
-	}
-	version="~> 4.1.1"
-}
-resource "aws_db_instance" "postgres" {
-	allocated_storage=20
-	backup_retention_period=7
-	db_name="lportal"
+module "postgres_blue" {
+	count=local.is_active_data_blue || var.is_restoring ? 1 : 0
 	db_subnet_group_name=aws_db_subnet_group.rds.name
-	engine="postgres"
-	engine_version="14"
-	identifier="${var.deployment_name}-postgres-db"
-	instance_class="db.t3.medium"
-	multi_az=false
+	identifier="${var.deployment_name}-postgres-db-blue"
 	password=random_password.postgres_password.result
-	skip_final_snapshot=true
-	storage_type="gp2"
-	tags={
-		Backup="true",
-		Name="${var.deployment_name}-postgres-db"
-	}
+	snapshot_identifier=var.is_restoring && local.is_active_data_green ? var.db_restore_snapshot_identifier : null
+	source="../modules/db-instance"
 	username=random_password.postgres_username.result
 	vpc_security_group_ids=[var.cluster_security_group_id]
+}
+module "postgres_green" {
+	count=local.is_active_data_green || var.is_restoring ? 1 : 0
+	db_subnet_group_name=aws_db_subnet_group.rds.name
+	identifier="${var.deployment_name}-postgres-db-green"
+	password=random_password.postgres_password.result
+	snapshot_identifier=var.is_restoring && local.is_active_data_blue ? var.db_restore_snapshot_identifier : null
+	source="../modules/db-instance"
+	username=random_password.postgres_username.result
+	vpc_security_group_ids=[var.cluster_security_group_id]
+}
+module "s3_bucket_blue" {
+	deployment_name=var.deployment_name
+	source="../modules/s3-bucket"
+}
+module "s3_bucket_green" {
+	deployment_name=var.deployment_name
+	source="../modules/s3-bucket"
 }
 resource "aws_db_subnet_group" "rds" {
 	name="${var.deployment_name}-rds-sub-grp"
@@ -61,8 +52,10 @@ resource "aws_iam_policy" "s3" {
 					]
 					Effect="Allow"
 					Resource=[
-						module.s3_bucket.s3_bucket_arn,
-						"${module.s3_bucket.s3_bucket_arn}/*"
+						module.s3_bucket_blue.s3_bucket_arn,
+						"${module.s3_bucket_blue.s3_bucket_arn}/*",
+						module.s3_bucket_green.s3_bucket_arn,
+						"${module.s3_bucket_green.s3_bucket_arn}/*"
 					]
 					Sid="AllowObjectOperations"
 				}
@@ -190,15 +183,15 @@ resource "kubernetes_namespace" "liferay" {
 }
 resource "kubernetes_secret" "managed_service_details" {
 	data={
-		"DATABASE_ENDPOINT"=aws_db_instance.postgres.address
+		"DATABASE_ENDPOINT"=local.db_active.address
 		"DATABASE_PASSWORD"=random_password.postgres_password.result
-		"DATABASE_PORT"=aws_db_instance.postgres.port
+		"DATABASE_PORT"=local.db_active.port
 		"DATABASE_USERNAME"=random_password.postgres_username.result
 		"OPENSEARCH_ENDPOINT"=aws_opensearch_domain.os.endpoint
 		"OPENSEARCH_PASSWORD"=random_password.opensearch_password.result
 		"OPENSEARCH_USERNAME"=random_password.opensearch_username.result
-		"S3_BUCKET_ID"=module.s3_bucket.s3_bucket_id
-		"S3_BUCKET_REGION"=module.s3_bucket.s3_bucket_region
+		"S3_BUCKET_ID"=local.bucket_active.s3_bucket_id
+		"S3_BUCKET_REGION"=var.region
 	}
 	metadata {
 		name="managed-service-details"

@@ -224,6 +224,11 @@ public class BatchTestEntityExportImportTest {
 							HashMapBuilder.put(
 								PortletDataHandlerKeys.PORTLET_DATA,
 								new String[] {Boolean.TRUE.toString()}
+							).put(
+								PortletDataHandlerKeys.PORTLET_DATA + "_" +
+									"com_liferay_portal_tools_rest_builder_" +
+										"test_portlet_BatchTestEntityPortlet",
+								new String[] {Boolean.TRUE.toString()}
 							).build())),
 			larFile);
 
@@ -356,6 +361,11 @@ public class BatchTestEntityExportImportTest {
 							false, new long[0],
 							HashMapBuilder.put(
 								PortletDataHandlerKeys.PORTLET_DATA,
+								new String[] {Boolean.TRUE.toString()}
+							).put(
+								PortletDataHandlerKeys.PORTLET_DATA + "_" +
+									"com_liferay_portal_tools_rest_builder_" +
+										"test_portlet_BatchTestEntityPortlet",
 								new String[] {Boolean.TRUE.toString()}
 							).build()));
 
@@ -513,6 +523,11 @@ public class BatchTestEntityExportImportTest {
 							false, new long[0],
 							HashMapBuilder.put(
 								PortletDataHandlerKeys.PORTLET_DATA,
+								new String[] {Boolean.TRUE.toString()}
+							).put(
+								PortletDataHandlerKeys.PORTLET_DATA + "_" +
+									"com_liferay_portal_tools_rest_builder_" +
+										"test_portlet_BatchTestEntityPortlet",
 								new String[] {Boolean.TRUE.toString()}
 							).build()));
 

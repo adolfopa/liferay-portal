@@ -49,6 +49,7 @@ import com.liferay.layout.util.structure.CollectionStyledLayoutStructureItem;
 import com.liferay.layout.util.structure.ColumnLayoutStructureItem;
 import com.liferay.layout.util.structure.ContainerStyledLayoutStructureItem;
 import com.liferay.layout.util.structure.DropZoneLayoutStructureItem;
+import com.liferay.layout.util.structure.FormRelationshipStyledLayoutStructureItem;
 import com.liferay.layout.util.structure.FormStepContainerStyledLayoutStructureItem;
 import com.liferay.layout.util.structure.FormStyledLayoutStructureItem;
 import com.liferay.layout.util.structure.FragmentStyledLayoutStructureItem;
@@ -60,6 +61,7 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
@@ -582,13 +584,18 @@ public class LayoutStructureRenderer {
 
 				ColTag colTag = new ColTag();
 
-				int numberOfColumns =
-					collectionStyledLayoutStructureItem.getNumberOfColumns();
+				if (Validator.isNull(
+						collectionStyledLayoutStructureItem.getListStyle())) {
 
-				colTag.setCssClass(
-					ResponsiveLayoutStructureUtil.getColumnCssClass(
-						collectionStyledLayoutStructureItem,
-						i % numberOfColumns));
+					int numberOfColumns =
+						collectionStyledLayoutStructureItem.
+							getNumberOfColumns();
+
+					colTag.setCssClass(
+						ResponsiveLayoutStructureUtil.getColumnCssClass(
+							collectionStyledLayoutStructureItem,
+							i % numberOfColumns));
+				}
 
 				colTag.setPageContext(_pageContext);
 
@@ -926,6 +933,71 @@ public class LayoutStructureRenderer {
 		jspWriter.write(message);
 
 		jspWriter.write("</div></div>");
+	}
+
+	private void _renderFormRelationshipStyledLayoutStructureItem(
+			InfoForm infoForm,
+			FormRelationshipStyledLayoutStructureItem
+				formRelationshipStyledLayoutStructureItem)
+		throws Exception {
+
+		JspWriter jspWriter = _pageContext.getOut();
+
+		jspWriter.write("<div class=\"");
+		jspWriter.write(
+			formRelationshipStyledLayoutStructureItem.getUniqueCssClass());
+		jspWriter.write(StringPool.SPACE);
+		jspWriter.write(
+			formRelationshipStyledLayoutStructureItem.getCssClass());
+		jspWriter.write("\" data-layout-structure-item-id=\"");
+		jspWriter.write(formRelationshipStyledLayoutStructureItem.getItemId());
+		jspWriter.write("\"");
+
+		String style = _renderLayoutStructureDisplayContext.getStyle(
+			formRelationshipStyledLayoutStructureItem);
+
+		if (Validator.isNotNull(style)) {
+			jspWriter.write("\" style=\"");
+			jspWriter.write(style);
+		}
+
+		jspWriter.write("\">");
+
+		_renderLayoutStructure(
+			formRelationshipStyledLayoutStructureItem.getChildrenItemIds(),
+			infoForm);
+
+		_renderReactComponent(
+			"{FormRelationshipAddButton} from layout-taglib/render",
+			HashMapBuilder.<String, Object>put(
+				"addButtonLabel",
+				() -> {
+					JSONObject buttonLabelJSONObject =
+						formRelationshipStyledLayoutStructureItem.
+							getButtonLabelJSONObject();
+
+					String label = StringPool.BLANK;
+
+					if (buttonLabelJSONObject != null) {
+						String siteDefaultLanguageId =
+							LanguageUtil.getLanguageId(
+								PortalUtil.getSiteDefaultLocale(
+									_themeDisplay.getScopeGroupId()));
+
+						label = buttonLabelJSONObject.getString(
+							_themeDisplay.getLanguageId(),
+							siteDefaultLanguageId);
+					}
+
+					if (Validator.isNotNull(label)) {
+						return label;
+					}
+
+					return LanguageUtil.get(_httpServletRequest, "add-new");
+				}
+			).build());
+
+		jspWriter.write("</div>");
 	}
 
 	private void _renderFormStepContainerStyledLayoutStructureItem(
@@ -1398,6 +1470,14 @@ public class LayoutStructureRenderer {
 					infoForm, layoutStructureItem);
 			}
 			else if (layoutStructureItem instanceof
+						FormRelationshipStyledLayoutStructureItem) {
+
+				_renderFormRelationshipStyledLayoutStructureItem(
+					infoForm,
+					(FormRelationshipStyledLayoutStructureItem)
+						layoutStructureItem);
+			}
+			else if (layoutStructureItem instanceof
 						FormStepContainerStyledLayoutStructureItem) {
 
 				_renderFormStepContainerStyledLayoutStructureItem(
@@ -1477,6 +1557,31 @@ public class LayoutStructureRenderer {
 				new LayoutStructureItemRenderTime(
 					layoutStructureItem, System.currentTimeMillis() - start));
 		}
+	}
+
+	private void _renderReactComponent(String module, Map<String, Object> props)
+		throws Exception {
+
+		JspWriter jspWriter = _pageContext.getOut();
+
+		jspWriter.write("<div><span aria-hidden=\"true\" class=\"");
+		jspWriter.write("loading-animation\"></span>");
+
+		com.liferay.frontend.taglib.react.servlet.taglib.ComponentTag
+			componentTag =
+				new com.liferay.frontend.taglib.react.servlet.taglib.
+					ComponentTag();
+
+		componentTag.setModule(module);
+		componentTag.setPageContext(_pageContext);
+		componentTag.setProps(props);
+		componentTag.setServletContext(ServletContextUtil.getServletContext());
+
+		componentTag.doStartTag();
+
+		componentTag.doEndTag();
+
+		jspWriter.write("</div>");
 	}
 
 	private void _renderRowStyledLayoutStructureItem(

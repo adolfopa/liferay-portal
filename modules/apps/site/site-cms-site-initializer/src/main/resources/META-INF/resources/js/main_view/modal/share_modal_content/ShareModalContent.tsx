@@ -71,7 +71,7 @@ function CollaboratorListItem({
 			className="border-0 c-px-0 c-py-1 list-group-item list-group-item-flex"
 			key={`collaborator-${user.id}`}
 		>
-			<div className="autofit-col">
+			<div className="autofit-col pl-0">
 				<ClaySticker displayType="secondary" shape="circle" size="sm">
 					{type === COLLABORATOR_TYPE.USER ? (
 						'image' in user && user.image ? (
@@ -90,18 +90,27 @@ function CollaboratorListItem({
 			</div>
 
 			<div className="autofit-col autofit-col-expand">
-				<div className="align-items-center d-flex">
-					<span className="text-3 text-truncate text-weight-semi-bold">
-						{user.name}
-					</span>
-
-					{toBeShared && (
-						<span className="inline-item inline-item-after label label-inverse-light">
-							<span className="label-item label-item-expand">
-								{Liferay.Language.get('to-be-shared')}
-							</span>
+				<div className="align-items-center d-flex justify-content-between">
+					<div className="d-flex text-truncate">
+						<span className="text-3 text-truncate text-weight-semi-bold">
+							{user.name}
 						</span>
-					)}
+
+						{toBeShared && (
+							<span className="inline-item inline-item-after label label-inverse-light">
+								<span className="label-item label-item-expand text-nowrap">
+									{Liferay.Language.get('to-be-shared')}
+								</span>
+							</span>
+						)}
+					</div>
+
+					<div>
+						<PermissionSelector
+							actionIds={actionIds}
+							onChange={handleChangeUserProperties}
+						/>
+					</div>
 				</div>
 
 				{error ? (
@@ -136,14 +145,7 @@ function CollaboratorListItem({
 				)}
 			</div>
 
-			<div className="autofit-col">
-				<PermissionSelector
-					actionIds={actionIds}
-					onChange={handleChangeUserProperties}
-				/>
-			</div>
-
-			<div className="autofit-col">
+			<div className="autofit-col p-0">
 				<div className="d-flex">
 					<ExpirationDateSelector
 						dateExpired={dateExpired}
@@ -496,7 +498,7 @@ export default function ShareModalContent({
 										className="border-0 c-px-0 c-py-1 list-group-item list-group-item-flex"
 										key={`listItem-creator-${creator.id}`}
 									>
-										<div className="autofit-col">
+										<div className="autofit-col pl-0">
 											<ClaySticker
 												displayType="secondary"
 												shape="circle"

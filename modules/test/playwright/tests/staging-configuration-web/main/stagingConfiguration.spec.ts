@@ -4,6 +4,8 @@
  */
 
 import {expect, mergeTests} from '@playwright/test';
+import {createReadStream} from 'fs';
+import path from 'path';
 
 import {apiHelpersTest} from '../../../fixtures/apiHelpersTest';
 import {applicationsMenuPageTest} from '../../../fixtures/applicationsMenuPageTest';
@@ -19,9 +21,12 @@ import {productMenuPageTest} from '../../../fixtures/productMenuPageTest';
 import {uiElementsPageTest} from '../../../fixtures/uiElementsTest';
 import {webContentDisplayPageTest} from '../../../fixtures/webContentDisplayPageTest';
 import getRandomString from '../../../utils/getRandomString';
+import {PORTLET_URLS} from '../../../utils/portletUrls';
+import {enableLocalStaging} from '../../../utils/staging';
 import getBasicWebContentStructureId from '../../../utils/structured-content/getBasicWebContentStructureId';
 import {stagingPageTest} from '../../export-import-web/main/fixtures/stagingPageTest';
 import {journalPagesTest} from '../../journal-web/main/fixtures/journalPagesTest';
+import {portletPublishToLivePageTest} from './fixtures/portletPublishToLivePageTest';
 import {stagingConfigurationPageTest} from './fixtures/stagingConfigurationPageTest';
 
 export const test = mergeTests(
@@ -31,8 +36,9 @@ export const test = mergeTests(
 	instanceSettingsPagesTest,
 	pageViewModePagesTest,
 	pagesAdminPagesTest,
-	productMenuPageTest,
 	pageEditorPagesTest,
+	productMenuPageTest,
+	portletPublishToLivePageTest,
 	stagingConfigurationPageTest,
 	webContentDisplayPageTest,
 	uiElementsPageTest,
@@ -49,12 +55,13 @@ export const testFlagsEnabled = mergeTests(
 	dataApiHelpersTest,
 	loginTest(),
 	portletConfigurationPermissionsPageTest,
+	portletPublishToLivePageTest,
 	stagingPageTest,
 	test,
 	webContentDisplayPageTest
 );
 
-test('Check if local staging can be enabled', async ({
+test('check if local staging can be enabled', async ({
 	apiHelpers,
 	applicationsMenuPage,
 	stagingConfigurationPage,
@@ -75,7 +82,7 @@ test('Check if local staging can be enabled', async ({
 });
 
 test(
-	'Validate friendlyURL with special characters',
+	'validate friendlyURL with special characters',
 	{tag: ['@LPS-89116']},
 	async ({
 		apiHelpers,
@@ -142,7 +149,90 @@ test(
 );
 
 test(
-	'Verify if information about staging system settings are present',
+	'verify that the admin could configure staging to ignore previews and thumbnails during the local staging publish process',
+	{tag: ['@LPS-189191', '@LPS-190360']},
+	async ({
+		apiHelpers,
+		instanceSettingsPage,
+		page,
+		portletPublishToLivePage,
+	}) => {
+		const site = await apiHelpers.headlessSite.createSite({
+			name: getRandomString(),
+		});
+
+		apiHelpers.data.push({id: site.id, type: 'site'});
+
+		const layout = await apiHelpers.jsonWebServicesLayout.addLayout({
+			groupId: site.id,
+			options: {type: 'content'},
+			title: getRandomString(),
+		});
+
+		await instanceSettingsPage.goToInstanceSetting(
+			'Infrastructure',
+			'Export/Import, Staging'
+		);
+
+		await instanceSettingsPage.checkRadioSetting(
+			'Include Thumbnails And Previews During Staging'
+		);
+
+		await enableLocalStaging(apiHelpers, page, site);
+
+		const stagingSite =
+			await apiHelpers.headlessAdminUser.getSiteByFriendlyUrlPath(
+				`${site.friendlyUrlPath}-staging`
+			);
+
+		await apiHelpers.headlessDelivery.postDocument(
+			stagingSite.id,
+			createReadStream(
+				path.join(__dirname, '/dependencies/Document.jpg')
+			),
+			{
+				fileName: 'Document.jpg',
+				title: 'Document.jpg',
+			}
+		);
+
+		await page.goto(
+			`/web${stagingSite.friendlyUrlPath}${layout.friendlyURL}`
+		);
+
+		await portletPublishToLivePage.goToPortletAdvancedStagings();
+
+		const documentsAndMedia = portletPublishToLivePage.publishToLiveIframe
+			.locator(
+				'[id="_com_liferay_exportimport_web_portlet_ExportImportPortlet_selectContents"] ul'
+			)
+			.filter({hasText: 'Documents and Media '});
+		await documentsAndMedia.getByRole('button', {name: 'Change'}).click();
+		await documentsAndMedia.getByLabel('Previews and Thumbnails').check();
+
+		await portletPublishToLivePage.publishToLiveIframe
+			.getByRole('button', {name: 'Publish to Live'})
+			.click();
+
+		await expect(
+			portletPublishToLivePage.publishToLiveSuccessStatus
+		).toBeVisible();
+
+		await page.goto(
+			`/group${stagingSite.friendlyUrlPath}${PORTLET_URLS.documentLibrary}`
+		);
+
+		expect(
+			await page
+				.locator('.card')
+				.filter({has: page.getByRole('link', {name: 'Document.jpg'})})
+				.locator('img')
+		).toBeVisible();
+	}
+);
+
+test(
+	'verify if information about staging system settings are present',
 	{tag: ['@LPS-123156']},
 	async ({instanceSettingsPage}) => {
 		await instanceSettingsPage.goToInstanceSetting(
@@ -177,7 +267,7 @@ test(
 );
 
 testFlagsEnabled(
-	'Check if local staging with page-scoped Web Content can be enabled',
+	'check if local staging with page-scoped Web Content can be enabled',
 	{tag: ['@LPS-83147']},
 	async ({apiHelpers, page, webContentDisplayPage, widgetPagePage}) => {
 		const siteName = getRandomString();
@@ -240,9 +330,7 @@ testFlagsEnabled(
 			webContentName,
 		});
 
-		await apiHelpers.jsonWebServicesStaging.enableLocalStaging({
-			groupId: site.id,
-		});
+		await enableLocalStaging(apiHelpers, page, site);
 
 		await webContentDisplayPage.gotoWebContentAdmin(layout.plid);
 		await page

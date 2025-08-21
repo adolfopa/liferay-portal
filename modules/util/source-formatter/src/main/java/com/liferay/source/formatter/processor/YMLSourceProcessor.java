@@ -57,15 +57,40 @@ public class YMLSourceProcessor extends BaseSourceProcessor {
 	}
 
 	private String _postProcess(String content) {
-		content = content.replaceAll("(?m)^( *-)\n +(.*)", "$1   $2");
+		StringBuffer sb = new StringBuffer();
 
-		return content.replaceAll("\\n +\\n", "\n\n");
+		Matcher matcher = _dashPattern2.matcher(content);
+
+		while (matcher.find()) {
+			String firstLine = matcher.group(1);
+			String indent = matcher.group(2);
+
+			if (indent.length() <= firstLine.length()) {
+				continue;
+			}
+
+			String secondLine = matcher.group(2) + matcher.group(3);
+
+			String replacement =
+				firstLine + secondLine.substring(firstLine.length());
+
+			matcher.appendReplacement(
+				sb, "\n" + Matcher.quoteReplacement(replacement));
+		}
+
+		if (sb.length() > 0) {
+			matcher.appendTail(sb);
+
+			return sb.toString();
+		}
+
+		return content;
 	}
 
 	private String _preProcess(String content) {
-		content = content.replaceAll("\\n +\\n", "\n\n");
-
 		StringBundler sb = new StringBundler();
+
+		content = content.replaceAll("\\n +\\n", "\n\n");
 
 		String[] lines = content.split("\n");
 
@@ -78,7 +103,7 @@ public class YMLSourceProcessor extends BaseSourceProcessor {
 				continue;
 			}
 
-			Matcher matcher = _dashPattern.matcher(line);
+			Matcher matcher = _dashPattern1.matcher(line);
 
 			if (matcher.matches()) {
 				String indent = matcher.group(1);
@@ -108,6 +133,8 @@ public class YMLSourceProcessor extends BaseSourceProcessor {
 		"**/templates/*.tpl", "**/*.yaml", "**/*.yml"
 	};
 
-	private static final Pattern _dashPattern = Pattern.compile("( +- +)(.+)");
+	private static final Pattern _dashPattern1 = Pattern.compile("( +- +)(.+)");
+	private static final Pattern _dashPattern2 = Pattern.compile(
+		"\n( *-)\n( +)(.+)");
 
 }

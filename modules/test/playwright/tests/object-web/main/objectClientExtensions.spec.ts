@@ -18,7 +18,8 @@ import {objectPagesTest} from '../../../fixtures/objectPagesTest';
 import {getRandomInt} from '../../../utils/getRandomInt';
 import getRandomString from '../../../utils/getRandomString';
 import {waitForAlert} from '../../../utils/waitForAlert';
-import {createObjectFields, mockObjectFields} from './utils/mockObjectFields';
+import {generateObjectEntryValues} from './utils/generateObjectEntry';
+import {generateObjectFields} from './utils/generateObjectFields';
 
 export const test = mergeTests(
 	apiHelpersTest,
@@ -53,12 +54,9 @@ test.afterEach(async ({apiHelpers}) => {
 });
 
 test.beforeEach(async ({apiHelpers}) => {
-	const objectFields = createObjectFields('text', [
-		{
-			label: 'Name',
-			name: 'name',
-		},
-	]);
+	const objectFields = generateObjectFields({
+		objectFieldBusinessTypes: ['Text'],
+	});
 
 	const objectDefinitionAPIClient =
 		await apiHelpers.buildRestClient(ObjectDefinitionAPI);
@@ -123,10 +121,8 @@ test('Can create, read, update, and delete object entries that use the client ex
 
 	await objectFieldsPage.goto(objectDefinition.label['en_US']);
 
-	const {objectEntry, objectFields} = await mockObjectFields({
-		apiHelpers,
-		objectEntryReturn: {format: 'UI'},
-		objectFieldBusinessTypes: ['text'],
+	const objectFields = generateObjectFields({
+		objectFieldBusinessTypes: ['Text'],
 	});
 
 	const [{businessType, label, name}] = objectFields;
@@ -149,6 +145,11 @@ test('Can create, read, update, and delete object entries that use the client ex
 	await viewObjectEntriesPage.clickAddObjectEntry(
 		objectDefinition.label['en_US']
 	);
+
+	const {objectEntry} = await generateObjectEntryValues({
+		objectEntryFormat: 'UI',
+		objectFields,
+	});
 
 	await viewObjectEntriesPage.fillObjectEntry({
 		objectFieldBusinessType: businessType,

@@ -6,7 +6,6 @@
 package com.liferay.headless.asset.library.internal.resource.v1_0;
 
 import com.liferay.depot.constants.DepotActionKeys;
-import com.liferay.depot.constants.DepotConstants;
 import com.liferay.depot.model.DepotAppCustomization;
 import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.model.DepotEntryPin;
@@ -18,6 +17,8 @@ import com.liferay.document.library.configuration.DLSizeLimitConfigurationProvid
 import com.liferay.headless.asset.library.dto.v1_0.AssetLibrary;
 import com.liferay.headless.asset.library.dto.v1_0.MimeTypeLimit;
 import com.liferay.headless.asset.library.dto.v1_0.Settings;
+import com.liferay.headless.asset.library.internal.odata.entity.v1_0.AssetLibraryEntityModel;
+import com.liferay.headless.asset.library.internal.util.AssetLibraryUtil;
 import com.liferay.headless.asset.library.resource.v1_0.AssetLibraryResource;
 import com.liferay.petra.function.UnsafeSupplier;
 import com.liferay.petra.string.StringPool;
@@ -39,6 +40,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.odata.entity.EntityModel;
 import com.liferay.portal.vulcan.dto.converter.DTOConverter;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterRegistry;
 import com.liferay.portal.vulcan.dto.converter.DefaultDTOConverterContext;
@@ -46,6 +48,8 @@ import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.vulcan.util.LocalizedMapUtil;
 import com.liferay.portal.vulcan.util.SearchUtil;
+
+import jakarta.ws.rs.core.MultivaluedMap;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,8 +79,7 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 			throw new UnsupportedOperationException();
 		}
 
-		DepotEntry depotEntry = _depotEntryService.getGroupDepotEntry(
-			assetLibraryId);
+		DepotEntry depotEntry = _getGroupDepotEntry(assetLibraryId);
 
 		_depotEntryService.deleteDepotEntry(depotEntry.getDepotEntryId());
 	}
@@ -113,8 +116,7 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 			throw new UnsupportedOperationException();
 		}
 
-		DepotEntry depotEntry = _depotEntryService.getGroupDepotEntry(
-			assetLibraryId);
+		DepotEntry depotEntry = _getGroupDepotEntry(assetLibraryId);
 
 		_depotEntryPinService.deleteDepotEntryPin(
 			contextUser.getUserId(), depotEntry.getDepotEntryId());
@@ -186,8 +188,7 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 			throw new UnsupportedOperationException();
 		}
 
-		return _toAssetLibrary(
-			_depotEntryService.getGroupDepotEntry(assetLibraryId));
+		return _toAssetLibrary(_getGroupDepotEntry(assetLibraryId));
 	}
 
 	@Override
@@ -205,6 +206,11 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 	}
 
 	@Override
+	public EntityModel getEntityModel(MultivaluedMap multivaluedMap) {
+		return _assetLibraryEntityModel;
+	}
+
+	@Override
 	public AssetLibrary patchAssetLibrary(
 			Long assetLibraryId, AssetLibrary assetLibrary)
 		throws Exception {
@@ -213,8 +219,7 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 			throw new UnsupportedOperationException();
 		}
 
-		DepotEntry depotEntry = _depotEntryService.getGroupDepotEntry(
-			assetLibraryId);
+		DepotEntry depotEntry = _getGroupDepotEntry(assetLibraryId);
 
 		Group group = depotEntry.getGroup();
 
@@ -335,8 +340,7 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 			throw new UnsupportedOperationException();
 		}
 
-		DepotEntry depotEntry = _depotEntryService.getGroupDepotEntry(
-			assetLibraryId);
+		DepotEntry depotEntry = _getGroupDepotEntry(assetLibraryId);
 
 		_depotEntryPinService.addDepotEntryPin(
 			contextUser.getUserId(), depotEntry.getDepotEntryId());
@@ -384,7 +388,11 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 		}
 
 		DepotEntry depotEntry = _depotEntryService.addDepotEntry(
-			nameMap, descriptionMap, DepotConstants.TYPE_ASSET_LIBRARY,
+			nameMap, descriptionMap,
+			AssetLibraryUtil.getDepotEntryType(
+				GetterUtil.getObject(
+					assetLibrary.getType(),
+					() -> AssetLibrary.Type.ASSET_LIBRARY)),
 			serviceContext);
 
 		group = depotEntry.getGroup();
@@ -443,6 +451,19 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 		}
 
 		return depotAppCustomizationMap;
+	}
+
+	private DepotEntry _getGroupDepotEntry(Long assetLibraryId)
+		throws Exception {
+
+		DepotEntry depotEntry = _depotEntryService.fetchGroupDepotEntry(
+			assetLibraryId);
+
+		if (depotEntry != null) {
+			return depotEntry;
+		}
+
+		return _depotEntryService.getDepotEntry(assetLibraryId);
 	}
 
 	private long _getGroupIdByExternalReferenceCode(
@@ -690,6 +711,9 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 		_dlSizeLimitConfigurationProvider.updateGroupSizeLimit(
 			groupId, 0L, 0L, mimeTypeSizeLimits);
 	}
+
+	private static final AssetLibraryEntityModel _assetLibraryEntityModel =
+		new AssetLibraryEntityModel();
 
 	@Reference(
 		target = "(component.name=com.liferay.headless.asset.library.internal.dto.v1_0.converter.AssetLibraryDTOConverter)"

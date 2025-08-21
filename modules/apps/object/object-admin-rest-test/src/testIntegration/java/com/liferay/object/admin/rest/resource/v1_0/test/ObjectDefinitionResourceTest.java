@@ -40,12 +40,12 @@ import com.liferay.object.constants.ObjectFolderConstants;
 import com.liferay.object.constants.ObjectRelationshipConstants;
 import com.liferay.object.constants.ObjectValidationRuleConstants;
 import com.liferay.object.constants.ObjectValidationRuleSettingConstants;
-import com.liferay.object.exception.NoSuchObjectDefinitionException;
 import com.liferay.object.model.ObjectFolder;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.object.service.ObjectFolderLocalService;
 import com.liferay.object.service.ObjectRelationshipLocalService;
+import com.liferay.object.test.util.TreeTestUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
@@ -55,8 +55,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
@@ -92,7 +90,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -123,33 +120,13 @@ public class ObjectDefinitionResourceTest
 			RandomTestUtil.randomString());
 	}
 
-	@After
-	@Override
-	public void tearDown() throws Exception {
-		super.tearDown();
-
-		for (ObjectDefinition objectDefinition : _objectDefinitions) {
-			try {
-				_objectDefinitionLocalService.deleteObjectDefinition(
-					objectDefinition.getId());
-			}
-			catch (NoSuchObjectDefinitionException
-						noSuchObjectDefinitionException) {
-
-				if (_log.isDebugEnabled()) {
-					_log.debug(noSuchObjectDefinitionException);
-				}
-			}
-		}
-	}
-
 	@Override
 	@Test
 	public void testGetObjectDefinition() throws Exception {
 		super.testGetObjectDefinition();
 
 		ObjectDefinition objectDefinition =
-			testGetObjectDefinitionsPage_addObjectDefinition(
+			objectDefinitionResource.postObjectDefinition(
 				randomObjectDefinition());
 
 		String objectDefinitionPluralName = StringUtil.lowerCaseFirstLetter(
@@ -158,6 +135,8 @@ public class ObjectDefinitionResourceTest
 		Assert.assertEquals(
 			"/o/c/" + objectDefinitionPluralName,
 			objectDefinition.getRestContextPath());
+
+		_testGetObjectDefinitionWithRootObjectDefinitionExternalReferenceCodes();
 	}
 
 	@Override
@@ -1565,7 +1544,9 @@ public class ObjectDefinitionResourceTest
 		objectDefinition = objectDefinitionResource.postObjectDefinition(
 			objectDefinition);
 
-		_objectDefinitions.add(objectDefinition);
+		_objectDefinitions.add(
+			_objectDefinitionLocalService.fetchObjectDefinition(
+				objectDefinition.getId()));
 
 		return objectDefinition;
 	}
@@ -1775,6 +1756,50 @@ public class ObjectDefinitionResourceTest
 		return objectDefinition;
 	}
 
+	private void _testGetObjectDefinitionWithRootObjectDefinitionExternalReferenceCodes()
+		throws Exception {
+
+		ObjectDefinition objectDefinitionA =
+			objectDefinitionResource.postObjectDefinition(
+				randomObjectDefinition());
+
+		ObjectDefinition objectDefinitionAA =
+			objectDefinitionResource.postObjectDefinition(
+				randomObjectDefinition());
+
+		TreeTestUtil.bind(
+			objectDefinitionA.getId(), objectDefinitionAA.getId(),
+			_objectRelationshipLocalService);
+
+		ObjectDefinition objectDefinitionB =
+			objectDefinitionResource.postObjectDefinition(
+				randomObjectDefinition());
+
+		TreeTestUtil.bind(
+			objectDefinitionB.getId(), objectDefinitionAA.getId(),
+			_objectRelationshipLocalService);
+
+		objectDefinitionAA = objectDefinitionResource.getObjectDefinition(
+			objectDefinitionAA.getId());
+
+		Assert.assertEquals(
+			new ObjectDefinitionSetting[] {
+				new ObjectDefinitionSetting() {
+					{
+						setName(
+							ObjectDefinitionSettingConstants.
+								NAME_ROOT_OBJECT_DEFINITION_EXTERNAL_REFERENCE_CODES);
+						setValue(
+							StringBundler.concat(
+								objectDefinitionA.getExternalReferenceCode(),
+								",",
+								objectDefinitionB.getExternalReferenceCode()));
+					}
+				}
+			},
+			objectDefinitionAA.getObjectDefinitionSettings());
+	}
+
 	private void _testPostObjectDefinitionBatch() throws Exception {
 		String externalReferenceCode1 = RandomTestUtil.randomString();
 		String externalReferenceCode2 = RandomTestUtil.randomString();
@@ -1971,9 +1996,6 @@ public class ObjectDefinitionResourceTest
 		}
 	}
 
-	private static final Log _log = LogFactoryUtil.getLog(
-		ObjectDefinitionResourceTest.class);
-
 	@Inject
 	private DepotEntryLocalService _depotEntryLocalService;
 
@@ -1986,7 +2008,9 @@ public class ObjectDefinitionResourceTest
 	@Inject
 	private ObjectDefinitionLocalService _objectDefinitionLocalService;
 
-	private final List<ObjectDefinition> _objectDefinitions = new ArrayList<>();
+	@DeleteAfterTestRun
+	private final List<com.liferay.object.model.ObjectDefinition>
+		_objectDefinitions = new ArrayList<>();
 
 	@Inject
 	private ObjectFieldLocalService _objectFieldLocalService;

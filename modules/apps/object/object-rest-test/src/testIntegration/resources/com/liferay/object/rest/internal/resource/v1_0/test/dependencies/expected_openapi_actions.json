@@ -1716,6 +1716,41 @@
 				]
 			}
 		},
+		"/by-external-reference-code/{externalReferenceCode}/restore": {
+			"put": {
+				"operationId": "putByExternalReferenceCodeRestore",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "externalReferenceCode",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"default": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Object1"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/Object1"
+								}
+							}
+						},
+						"description": "default response"
+					}
+				},
+				"tags": [
+					"Object1"
+				]
+			}
+		},
 		"/by-external-reference-code/{externalReferenceCode}/subscribe": {
 			"post": {
 				"operationId": "postByExternalReferenceCodeSubscribe",
@@ -1782,6 +1817,13 @@
 						"in": "path",
 						"name": "externalReferenceCode",
 						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "nestedFields",
 						"schema": {
 							"type": "string"
 						}
@@ -3193,6 +3235,13 @@
 						"in": "path",
 						"name": "object1Id",
 						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "nestedFields",
 						"schema": {
 							"type": "string"
 						}

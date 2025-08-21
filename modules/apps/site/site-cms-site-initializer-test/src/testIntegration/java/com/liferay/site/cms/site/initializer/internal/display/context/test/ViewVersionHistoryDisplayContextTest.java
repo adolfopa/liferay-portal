@@ -88,19 +88,14 @@ public class ViewVersionHistoryDisplayContextTest
 	@Test
 	public void testGetAPIURL() throws Exception {
 		Assert.assertEquals(
-			_getAPIURL(_objectEntry, _objectDefinition),
+			StringBundler.concat(
+				"/o", _objectDefinition.getRESTContextPath(), StringPool.SLASH,
+				_objectEntry.getObjectEntryId(),
+				"/versions?nestedFields=file.thumbnailURL"),
 			ReflectionTestUtil.invoke(
 				_getViewVersionHistoryDisplayContext(
 					_getMockHttpServletRequest(_objectEntry)),
 				"getAPIURL", new Class<?>[0]));
-	}
-
-	private String _getAPIURL(
-		ObjectEntry objectEntry, ObjectDefinition objectDefinition) {
-
-		return StringBundler.concat(
-			"/o", objectDefinition.getRESTContextPath(), StringPool.SLASH,
-			objectEntry.getObjectEntryId(), "/versions");
 	}
 
 	private MockHttpServletRequest _getMockHttpServletRequest(

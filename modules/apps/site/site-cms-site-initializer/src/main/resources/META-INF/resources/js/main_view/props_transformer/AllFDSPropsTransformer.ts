@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import {IInternalRenderer} from '@liferay/frontend-data-set-web';
+import {IInternalRenderer, IView} from '@liferay/frontend-data-set-web';
 import {openModal} from 'frontend-js-components-web';
 
 import AssetTypeInfoPanel from '../info_panel/AssetTypeInfoPanelContent';
@@ -11,11 +11,13 @@ import {EVENTS} from '../info_panel/util/constants';
 import FilePreviewerModalContent from '../modal/FilePreviewerModalContent';
 import createAssetAction from './actions/createAssetAction';
 import multipleFilesUploadAction from './actions/multipleFilesUploadAction';
+import shareAction from './actions/shareAction';
 import AuthorRenderer from './cell_renderers/AuthorRenderer';
 import NameRenderer from './cell_renderers/NameRenderer';
 import SpaceRenderer from './cell_renderers/SpaceRenderer';
 import TypeRenderer from './cell_renderers/TypeRenderer';
 import addOnClickToCreationMenuItems from './utils/addOnClickToCreationMenuItems';
+import transformViewsItemsProps from './utils/transformViewsItemProps';
 
 const ACTIONS = {
 	createAsset: createAssetAction,
@@ -23,13 +25,21 @@ const ACTIONS = {
 };
 
 export default function AllFDSPropsTransformer({
+	additionalProps,
 	creationMenu,
 	itemsActions = [],
+	views,
 	...otherProps
 }: {
+	additionalProps: {
+		autocompleteURL: string;
+		cmsGroupId?: number;
+		collaboratorURLs: Record<string, string>;
+	};
 	creationMenu: any;
 	itemsActions?: any[];
 	otherProps: any;
+	views: IView[];
 }) {
 	return {
 		...otherProps,
@@ -64,7 +74,7 @@ export default function AllFDSPropsTransformer({
 				} as IInternalRenderer,
 			],
 		},
-		infoPanelComponent: () => AssetTypeInfoPanel(otherProps),
+		infoPanelComponent: () => AssetTypeInfoPanel({additionalProps}),
 		itemsActions: itemsActions.map((action) => {
 			if (action?.data?.id === 'download') {
 				return {
@@ -114,10 +124,22 @@ export default function AllFDSPropsTransformer({
 					size: 'full-screen',
 				});
 			}
+			else if (action?.data?.id === 'share') {
+				const {autocompleteURL, collaboratorURLs} = additionalProps;
+
+				shareAction({
+					autocompleteURL,
+					collaboratorURL: collaboratorURLs[itemData.entryClassName],
+					creator: itemData.embedded.creator,
+					itemId: itemData.embedded.id,
+					title: itemData.embedded?.title,
+				});
+			}
 		},
 
 		onSelectedItemsChange: (selectedItems: any[]) => {
 			Liferay.fire(EVENTS.ASSET_DATA, {items: selectedItems});
 		},
+		views: transformViewsItemsProps(views),
 	};
 }

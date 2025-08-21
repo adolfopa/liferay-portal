@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
+import {ComponentProps} from 'react';
 import {useNavigate} from 'react-router-dom';
 import useSWR from 'swr';
 
@@ -12,8 +13,9 @@ import {AccountType} from '../../../enums/Account';
 import {ProductType, ProductWorkflowStatusCode} from '../../../enums/Product';
 import useListTypeDefinition from '../../../hooks/useListTypeDefinition';
 import useModalContext from '../../../hooks/useModalContext';
-import marketplaceOAuth2 from '../../../services/oauth/Marketplace';
 import HeadlessCommerceAdminCatalog from '../../../services/rest/HeadlessCommerceAdminCatalog';
+import GraphQL from '../../../services/rest/HeadlessGraphQL';
+import {safeJSONParse} from '../../../utils/util';
 import ProjectsUsingMarketplaceModalBody from '../components/ProjectsUsingMarketplace';
 
 const baseSearchBuilder = new SearchBuilder()
@@ -59,6 +61,47 @@ const getAnnualTargetValues = (kpiTarget: string, value: number) => {
 	};
 };
 
+const queries = [
+	HeadlessCommerceAdminCatalog.getProductsDashboardKPI(
+		{
+			appsAndConnectorSupportingQRelease:
+				appsAndConnectorSupportingQReleaseFilter,
+			lowCodeConfigurationsPublished:
+				lowCodeConfigurationsPublishedFilter,
+			partnershipIntegration: technologyPartnershipIntegrationFilter,
+		},
+		{
+			appsAndConnectorSupportingQRelease: {
+				body: ` items { catalogExternalReferenceCode, id, name, thumbnail } `,
+				pageSize: -1,
+			},
+		}
+	),
+	HeadlessCommerceAdminCatalog.getCatalogs(
+		new URLSearchParams({
+			fields: 'externalReferenceCode,name',
+			pageSize: '-1',
+		})
+	),
+	GraphQL.metrics<{name: string; value: string}>(
+		{
+			group: 'c',
+			name: 'reports',
+			options: {
+				body: `items { name, value }`,
+				sort: 'dateCreated:desc',
+			},
+		},
+		{
+			projectsUsingMarketplace: SearchBuilder.eq(
+				'name',
+				'projectsUsingMarketplace'
+			),
+			totalAmount: SearchBuilder.eq('name', 'totalAmount'),
+		}
+	),
+] as const;
+
 const useKPI = () => {
 	const {data: liferayVersionsPicklist} =
 		useListTypeDefinition('LIFERAY-VERSIONS');
@@ -101,34 +144,14 @@ const useKPI = () => {
 			},
 			catalogsResponse,
 			projectsKPI,
-		] = await Promise.all([
-			HeadlessCommerceAdminCatalog.getProductsDashboardKPI(
-				{
-					appsAndConnectorSupportingQRelease:
-						appsAndConnectorSupportingQReleaseFilter,
-					lowCodeConfigurationsPublished:
-						lowCodeConfigurationsPublishedFilter,
-					partnershipIntegration:
-						technologyPartnershipIntegrationFilter,
-				},
-				{
-					appsAndConnectorSupportingQRelease: {
-						body: ` items { catalogExternalReferenceCode, id, name, thumbnail } `,
-						pageSize: -1,
-					},
-				}
-			),
-			HeadlessCommerceAdminCatalog.getCatalogs(
-				new URLSearchParams({
-					fields: 'externalReferenceCode,name',
-					pageSize: '-1',
-				})
-			),
-			marketplaceOAuth2.getMarketplaceProjectsKPI(),
-		]);
+		] = await Promise.all(queries);
 
 		const projectsUsingMarkeplaceApps = Object.entries(
-			projectsKPI?.projectsUsingMarketplace ?? {}
+			safeJSONParse(
+				projectsKPI?.data?.metrics?.projectsUsingMarketplace?.items?.[0]
+					?.value,
+				{}
+			)
 		);
 
 		const catalogs = Object.groupBy(
@@ -163,7 +186,9 @@ const useKPI = () => {
 									body: (
 										<ProjectsUsingMarketplaceModalBody
 											projectsUsingMarkeplaceApps={
-												projectsUsingMarkeplaceApps
+												projectsUsingMarkeplaceApps as ComponentProps<
+													typeof ProjectsUsingMarketplaceModalBody
+												>['projectsUsingMarkeplaceApps']
 											}
 										/>
 									),
@@ -255,7 +280,14 @@ const useKPI = () => {
 					title: 'Low Code Configurations Published',
 				},
 			],
-			projectsKPI,
+			projectsKPI: {
+				...projectsKPI,
+				totalAmount: safeJSONParse(
+					projectsKPI?.data.metrics.totalAmount.items?.[0]
+						?.value as string,
+					{USD: 0}
+				),
+			},
 		};
 	});
 };

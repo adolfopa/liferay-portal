@@ -19,9 +19,11 @@ import com.liferay.petra.io.unsync.UnsyncStringWriter;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.NoSuchLayoutException;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.login.AuthLoginGroupSettingsUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.LayoutTypeController;
@@ -118,6 +120,15 @@ public class DisplayPageLayoutTypeController
 			HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse, Layout layout)
 		throws Exception {
+
+		Group group = layout.getGroup();
+
+		if (group.isCMS() &&
+			!FeatureFlagManagerUtil.isEnabled(
+				layout.getCompanyId(), "LPD-17564")) {
+
+			throw new NoSuchLayoutException();
+		}
 
 		ThemeDisplay themeDisplay =
 			(ThemeDisplay)httpServletRequest.getAttribute(

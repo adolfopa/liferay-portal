@@ -95,20 +95,19 @@ public class ContentLayoutTypeController extends BaseLayoutTypeControllerImpl {
 			HttpServletResponse httpServletResponse, Layout layout)
 		throws Exception {
 
-		Group group = layout.getGroup();
-
-		if (group.isCMS() &&
-			!FeatureFlagManagerUtil.isEnabled(
-				layout.getCompanyId(), "LPD-17564")) {
-
-			throw new NoSuchLayoutException();
-		}
-
 		ThemeDisplay themeDisplay =
 			(ThemeDisplay)httpServletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
 
+		Group group = layout.getGroup();
+
 		if (group.isCMS()) {
+			if (!FeatureFlagManagerUtil.isEnabled(
+					layout.getCompanyId(), "LPD-17564")) {
+
+				throw new NoSuchLayoutException();
+			}
+
 			PermissionChecker permissionChecker =
 				themeDisplay.getPermissionChecker();
 

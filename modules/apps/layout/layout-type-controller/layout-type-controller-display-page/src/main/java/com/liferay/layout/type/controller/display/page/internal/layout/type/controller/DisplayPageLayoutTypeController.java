@@ -7,6 +7,7 @@ package com.liferay.layout.type.controller.display.page.internal.layout.type.con
 
 import com.liferay.depot.constants.DepotActionKeys;
 import com.liferay.depot.constants.DepotConstants;
+import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.info.display.request.attributes.contributor.InfoDisplayRequestAttributesContributor;
 import com.liferay.info.item.InfoItemServiceRegistry;
@@ -30,11 +31,15 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.LayoutTypeController;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.model.UserGroup;
+import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
 import com.liferay.portal.kernel.service.LayoutLocalService;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.service.permission.LayoutPermissionUtil;
 import com.liferay.portal.kernel.servlet.PipingServletResponse;
 import com.liferay.portal.kernel.servlet.TransferHeadersHelperUtil;
@@ -142,13 +147,16 @@ public class DisplayPageLayoutTypeController
 				WebKeys.THEME_DISPLAY);
 
 		if (group.isCMS()) {
+			PermissionChecker permissionChecker =
+				themeDisplay.getPermissionChecker();
+
 			int depotEntriesCount =
 				_depotEntryLocalService.getDepotEntriesCount(
 					group.getCompanyId(), DepotConstants.TYPE_SPACE);
 
 			if (depotEntriesCount == 0) {
 				_portletResourcePermission.check(
-					themeDisplay.getPermissionChecker(), group.getGroupId(),
+					permissionChecker, group.getGroupId(),
 					DepotActionKeys.ADD_DEPOT_ENTRY);
 
 				if (!Objects.equals(layout.getFriendlyURL(), "/new-space")) {
@@ -158,6 +166,14 @@ public class DisplayPageLayoutTypeController
 				}
 
 				return false;
+			}
+			else if (!permissionChecker.isGroupAdmin(layout.getGroupId()) &&
+					 !_userLocalService.hasRoleUser(
+						 group.getCompanyId(), RoleConstants.CMS_ADMINISTRATOR,
+						 themeDisplay.getUserId(), true) &&
+					 !_isSpaceMember(themeDisplay.getUser())) {
+
+				throw new NoSuchLayoutException();
 			}
 		}
 
@@ -399,6 +415,24 @@ public class DisplayPageLayoutTypeController
 		return false;
 	}
 
+	private boolean _isSpaceMember(User user) throws Exception {
+		for (UserGroup userGroup : user.getUserGroups()) {
+			Group group = userGroup.getGroup();
+
+			if (group.isDepot()) {
+				DepotEntry depotEntry =
+					_depotEntryLocalService.getGroupDepotEntry(
+						group.getGroupId());
+
+				if (depotEntry.getType() == DepotConstants.TYPE_SPACE) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	private static final String _EDIT_PAGE = "/layout/edit/display_page.jsp";
 
 	private static final String _URL =
@@ -447,5 +481,8 @@ public class DisplayPageLayoutTypeController
 		target = "(osgi.web.symbolicname=com.liferay.layout.type.controller.display.page)"
 	)
 	private ServletContext _servletContext;
+
+	@Reference
+	private UserLocalService _userLocalService;
 
 }

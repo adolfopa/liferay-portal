@@ -5,6 +5,9 @@
 
 package com.liferay.layout.type.controller.display.page.internal.layout.type.controller;
 
+import com.liferay.depot.constants.DepotActionKeys;
+import com.liferay.depot.constants.DepotConstants;
+import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.info.display.request.attributes.contributor.InfoDisplayRequestAttributesContributor;
 import com.liferay.info.item.InfoItemServiceRegistry;
 import com.liferay.info.search.InfoSearchClassMapperRegistry;
@@ -30,6 +33,7 @@ import com.liferay.portal.kernel.model.LayoutTypeController;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.permission.LayoutPermissionUtil;
 import com.liferay.portal.kernel.servlet.PipingServletResponse;
@@ -50,9 +54,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 /**
  * @author Juergen Kappler
@@ -133,6 +140,26 @@ public class DisplayPageLayoutTypeController
 		ThemeDisplay themeDisplay =
 			(ThemeDisplay)httpServletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
+
+		if (group.isCMS()) {
+			int depotEntriesCount =
+				_depotEntryLocalService.getDepotEntriesCount(
+					group.getCompanyId(), DepotConstants.TYPE_SPACE);
+
+			if (depotEntriesCount == 0) {
+				_portletResourcePermission.check(
+					themeDisplay.getPermissionChecker(), group.getGroupId(),
+					DepotActionKeys.ADD_DEPOT_ENTRY);
+
+				if (!Objects.equals(layout.getFriendlyURL(), "/new-space")) {
+					httpServletResponse.sendRedirect("/web/cms/new-space");
+
+					return false;
+				}
+
+				return false;
+			}
+		}
 
 		if (layout.isDraftLayout()) {
 			if (!themeDisplay.isSignedIn()) {
@@ -384,6 +411,9 @@ public class DisplayPageLayoutTypeController
 		DisplayPageLayoutTypeController.class);
 
 	@Reference
+	private DepotEntryLocalService _depotEntryLocalService;
+
+	@Reference
 	private volatile List<InfoDisplayRequestAttributesContributor>
 		_infoDisplayRequestAttributesContributors;
 
@@ -405,6 +435,13 @@ public class DisplayPageLayoutTypeController
 
 	@Reference
 	private Portal _portal;
+
+	@Reference(
+		policy = ReferencePolicy.DYNAMIC,
+		policyOption = ReferencePolicyOption.GREEDY,
+		target = "(resource.name=" + DepotConstants.RESOURCE_NAME + ")"
+	)
+	private volatile PortletResourcePermission _portletResourcePermission;
 
 	@Reference(
 		target = "(osgi.web.symbolicname=com.liferay.layout.type.controller.display.page)"

@@ -307,6 +307,10 @@ public class DepotEntryLocalServiceUtil {
 		return getService().getDepotEntriesCount();
 	}
 
+	public static int getDepotEntriesCount(long companyId, int type) {
+		return getService().getDepotEntriesCount(companyId, type);
+	}
+
 	/**
 	 * Returns the depot entry with the primary key.
 	 *

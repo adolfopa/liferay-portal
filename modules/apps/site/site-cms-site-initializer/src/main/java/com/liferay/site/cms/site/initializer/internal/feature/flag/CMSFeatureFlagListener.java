@@ -32,21 +32,35 @@ public class CMSFeatureFlagListener implements FeatureFlagListener {
 	public void onValue(
 		long companyId, String featureFlagKey, boolean enabled) {
 
-		if (enabled && Objects.equals(featureFlagKey, "LPD-17564")) {
+		if(Objects.equals(featureFlagKey, "LPD-17564")) {
 			Group group = _groupLocalService.fetchGroup(
 				companyId, GroupConstants.CMS);
 
-			if (group != null) {
-				return;
-			}
+			if(enabled) {
+				if (group != null) {
+					if(!group.getActive()) {
+						group.setActive(true);
+						_groupLocalService.updateGroup(group);
+					}
 
-			try {
-				_groupLocalService.checkSystemGroups(companyId);
+					return;
+				}
 
-				SiteInitializerUtil.initialize(companyId, _siteInitializer);
+				try {
+					_groupLocalService.checkSystemGroups(companyId);
+
+					SiteInitializerUtil.initialize(companyId, _siteInitializer);
+				}
+				catch (PortalException portalException) {
+					_log.error(portalException);
+				}
 			}
-			catch (PortalException portalException) {
-				_log.error(portalException);
+			else if (group != null) {
+				if(group.getActive()) {
+					group.setActive(false);
+					_groupLocalService.updateGroup(group);
+				}
+
 			}
 		}
 	}

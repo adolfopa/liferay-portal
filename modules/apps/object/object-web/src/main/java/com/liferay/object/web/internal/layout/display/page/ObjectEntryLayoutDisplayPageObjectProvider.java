@@ -102,14 +102,16 @@ public class ObjectEntryLayoutDisplayPageObjectProvider
 			if (Validator.isNotNull(titleValue)) {
 				return titleValue;
 			}
+
+			return _objectDefinition.getLabel(locale);
 		}
 		catch (PortalException portalException) {
 			if (_log.isDebugEnabled()) {
 				_log.debug(portalException);
 			}
-		}
 
-		return StringPool.BLANK;
+			return StringPool.BLANK;
+		}
 	}
 
 	@Override

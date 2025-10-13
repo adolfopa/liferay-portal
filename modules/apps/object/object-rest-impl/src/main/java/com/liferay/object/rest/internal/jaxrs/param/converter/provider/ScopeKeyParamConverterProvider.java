@@ -68,10 +68,11 @@ public class ScopeKeyParamConverterProvider
 					_objectDefinition.getScope(),
 					ObjectDefinitionConstants.SCOPE_SITE)) {
 
-			String groupId = _getGroupId(_company.getCompanyId(), parameter);
+			Long groupId = GroupUtil.getGroupId(
+				_company.getCompanyId(), parameter, _groupLocalService);
 
 			if (groupId != null) {
-				return groupId;
+				return String.valueOf(groupId);
 			}
 
 			throw new NotFoundException(
@@ -95,17 +96,6 @@ public class ScopeKeyParamConverterProvider
 	@Override
 	public String toString(String parameter) {
 		return String.valueOf(parameter);
-	}
-
-	private String _getGroupId(long companyId, String scopeKey) {
-		Long groupId = GroupUtil.getGroupId(
-			companyId, scopeKey, _groupLocalService);
-
-		if (groupId == null) {
-			return null;
-		}
-
-		return String.valueOf(groupId);
 	}
 
 	private boolean _hasScopeKeyAnnotation(Annotation[] annotations) {

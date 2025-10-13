@@ -6128,8 +6128,18 @@ public class DefaultObjectEntryManagerImplTest
 
 		assertEquals(
 			_getObjectEntries(
+				objectDefinition,
+				String.valueOf(depotEntry1.getDepotEntryId())),
+			Collections.singletonList(objectEntry1));
+		assertEquals(
+			_getObjectEntries(
 				objectDefinition, String.valueOf(depotEntry1.getGroupId())),
 			Collections.singletonList(objectEntry1));
+		assertEquals(
+			_getObjectEntries(
+				objectDefinition,
+				String.valueOf(depotEntry2.getDepotEntryId())),
+			Collections.singletonList(objectEntry2));
 		assertEquals(
 			_getObjectEntries(
 				objectDefinition, String.valueOf(depotEntry2.getGroupId())),

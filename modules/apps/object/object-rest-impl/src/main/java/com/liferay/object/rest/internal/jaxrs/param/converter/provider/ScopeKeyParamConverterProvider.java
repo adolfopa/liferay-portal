@@ -5,9 +5,9 @@
 
 package com.liferay.object.rest.internal.jaxrs.param.converter.provider;
 
+import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.object.constants.ObjectDefinitionConstants;
 import com.liferay.object.model.ObjectDefinition;
-import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -34,7 +34,11 @@ import org.apache.cxf.jaxrs.utils.AnnotationUtils;
 public class ScopeKeyParamConverterProvider
 	implements ParamConverter<String>, ParamConverterProvider {
 
-	public ScopeKeyParamConverterProvider(GroupLocalService groupLocalService) {
+	public ScopeKeyParamConverterProvider(
+		DepotEntryLocalService depotEntryLocalService,
+		GroupLocalService groupLocalService) {
+
+		_depotEntryLocalService = depotEntryLocalService;
 		_groupLocalService = groupLocalService;
 	}
 
@@ -46,10 +50,23 @@ public class ScopeKeyParamConverterProvider
 
 		if (StringUtil.equals(
 				_objectDefinition.getScope(),
-				ObjectDefinitionConstants.SCOPE_DEPOT) ||
-			StringUtil.equals(
-				_objectDefinition.getScope(),
-				ObjectDefinitionConstants.SCOPE_SITE)) {
+				ObjectDefinitionConstants.SCOPE_DEPOT)) {
+
+			Long groupId = GroupUtil.getDepotGroupId(
+				parameter, _company.getCompanyId(), _depotEntryLocalService,
+				_groupLocalService);
+
+			if (groupId != null) {
+				return String.valueOf(groupId);
+			}
+
+			throw new NotFoundException(
+				"Unable to get a valid asset library with group ID " +
+					parameter);
+		}
+		else if (StringUtil.equals(
+					_objectDefinition.getScope(),
+					ObjectDefinitionConstants.SCOPE_SITE)) {
 
 			String groupId = _getGroupId(_company.getCompanyId(), parameter);
 
@@ -57,19 +74,8 @@ public class ScopeKeyParamConverterProvider
 				return groupId;
 			}
 
-			String groupType = "asset library";
-
-			if (StringUtil.equals(
-					_objectDefinition.getScope(),
-					ObjectDefinitionConstants.SCOPE_SITE)) {
-
-				groupType = "site";
-			}
-
 			throw new NotFoundException(
-				StringBundler.concat(
-					"Unable to get a valid ", groupType, " with group ID ",
-					parameter));
+				"Unable to get a valid site with group ID " + parameter);
 		}
 
 		throw new InternalServerErrorException("Unexpected scopeKey parameter");
@@ -119,6 +125,7 @@ public class ScopeKeyParamConverterProvider
 	@Context
 	private Company _company;
 
+	private final DepotEntryLocalService _depotEntryLocalService;
 	private final GroupLocalService _groupLocalService;
 
 	@Context

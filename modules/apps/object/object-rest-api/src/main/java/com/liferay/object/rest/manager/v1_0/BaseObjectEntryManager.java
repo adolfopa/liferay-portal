@@ -10,6 +10,7 @@ import com.liferay.dynamic.data.mapping.expression.DDMExpressionFactory;
 import com.liferay.list.type.entry.util.ListTypeEntryUtil;
 import com.liferay.list.type.model.ListTypeEntry;
 import com.liferay.list.type.service.ListTypeEntryLocalService;
+import com.liferay.object.constants.ObjectDefinitionConstants;
 import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.constants.ObjectFieldSettingConstants;
 import com.liferay.object.exception.ObjectEntryScopeException;
@@ -134,6 +135,16 @@ public abstract class BaseObjectEntryManager {
 					StringBundler.concat(
 						"No scope key was provided for the \"",
 						objectDefinition.getName(), "\" entry."));
+			}
+
+			if (Objects.equals(
+					objectScopeProvider.getKey(),
+					ObjectDefinitionConstants.SCOPE_DEPOT)) {
+
+				return GetterUtil.getLong(
+					GroupUtil.getDepotGroupId(
+						scopeKey, objectDefinition.getCompanyId(),
+						depotEntryLocalService, groupLocalService));
 			}
 
 			return GetterUtil.getLong(

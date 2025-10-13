@@ -5,6 +5,7 @@
 
 package com.liferay.object.rest.internal.jaxrs.feature;
 
+import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.object.rest.internal.jaxrs.container.request.filter.NestedFieldsContainerRequestFilter;
 import com.liferay.object.rest.internal.jaxrs.param.converter.provider.ScopeKeyParamConverterProvider;
 import com.liferay.object.service.ObjectDefinitionLocalService;
@@ -38,10 +39,14 @@ public class ObjectFeature implements Feature {
 				_objectDefinitionLocalService, _objectRelationshipLocalService),
 			Priorities.USER + 10);
 		featureContext.register(
-			new ScopeKeyParamConverterProvider(_groupLocalService));
+			new ScopeKeyParamConverterProvider(
+				_depotEntryLocalService, _groupLocalService));
 
 		return true;
 	}
+
+	@Reference
+	private DepotEntryLocalService _depotEntryLocalService;
 
 	@Reference
 	private GroupLocalService _groupLocalService;

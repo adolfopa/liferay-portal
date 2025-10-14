@@ -219,7 +219,7 @@ test(
 
 test(
 	'Open the default permissions modal',
-	{tag: '@LPD-68097'},
+	{tag: '@LPD-68433'},
 	async ({apiHelpers, page, spaceSummaryPage}) => {
 		const spaceName = `Space ${getRandomString()}`;
 
@@ -240,8 +240,7 @@ test(
 			action: 'Default Permissions',
 		});
 
-		const editConfirmationModal = page.locator('.modal-content');
-		await expect(editConfirmationModal).toBeVisible();
+		await expect(page.locator('.modal-content')).toBeVisible();
 		await expect(
 			page.getByRole('heading', {name: 'Edit Default Permissions'})
 		).toBeVisible();

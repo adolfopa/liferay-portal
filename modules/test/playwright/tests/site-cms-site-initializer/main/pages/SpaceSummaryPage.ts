@@ -13,7 +13,7 @@ type UserOrUserGroupType = 'groups' | 'users';
 export class SpaceSummaryPage {
 	readonly page: Page;
 
-	readonly actionButton: Locator;
+	readonly moreActionsButton: Locator;
 	readonly closeButton: Locator;
 	readonly userGroupsTab: Locator;
 	readonly usersTab: Locator;
@@ -25,7 +25,7 @@ export class SpaceSummaryPage {
 	constructor(page: Page) {
 		this.page = page;
 
-		this.actionButton = this.page.getByLabel('More Actions');
+		this.moreActionsButton = this.page.getByLabel('More Actions');
 
 		this.closeButton = this.page
 			.locator('.modal-header')
@@ -128,7 +128,7 @@ export class SpaceSummaryPage {
 			| 'Default Permissions'
 			| 'Delete';
 	}) {
-		await this.actionButton.click();
+		await this.moreActionsButton.click();
 
 		await this.page
 			.getByRole('menuitem', {exact: true, name: action})

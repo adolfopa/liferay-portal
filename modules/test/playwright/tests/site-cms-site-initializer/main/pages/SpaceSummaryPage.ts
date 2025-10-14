@@ -13,6 +13,7 @@ type UserOrUserGroupType = 'groups' | 'users';
 export class SpaceSummaryPage {
 	readonly page: Page;
 
+	readonly actionButton: Locator;
 	readonly closeButton: Locator;
 	readonly userGroupsTab: Locator;
 	readonly usersTab: Locator;
@@ -23,6 +24,8 @@ export class SpaceSummaryPage {
 
 	constructor(page: Page) {
 		this.page = page;
+
+		this.actionButton = this.page.getByLabel('More Actions');
 
 		this.closeButton = this.page
 			.locator('.modal-header')
@@ -114,5 +117,21 @@ export class SpaceSummaryPage {
 		this.page.getByLabel('Connected Sites').getByText(siteName).waitFor();
 
 		await this.closeButton.click();
+	}
+
+	async execAction({
+		action,
+	}: {
+		action:
+			| 'Space Settings'
+			| 'Permissions'
+			| 'Default Permissions'
+			| 'Delete';
+	}) {
+		await this.actionButton.click();
+
+		await this.page
+			.getByRole('menuitem', {exact: true, name: action})
+			.click();
 	}
 }

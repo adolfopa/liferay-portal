@@ -63,3 +63,43 @@ test(
 		});
 	}
 );
+
+test(
+	'Open the default permissions modal to a space',
+	{tag: '@LPD-68097'},
+	async ({apiHelpers, page}) => {
+		const spaceName = getRandomString();
+
+		await test.step('Create a new space', async () => {
+			await apiHelpers.headlessAssetLibrary.createAssetLibrary({
+				name: spaceName,
+				settings: {},
+				type: 'Space',
+			});
+		});
+
+		await test.step('Check the space is visible in All Spaces and left panel', async () => {
+			await page.goto(PORTLET_URLS.cmsAllSpaces);
+
+			expect(page.getByRole('menuitem', {name: spaceName})).toBeVisible();
+			expect(page.getByRole('link', {name: spaceName})).toBeVisible();
+		});
+
+		await test.step('open the default permission modal from All Spaces', async () => {
+			await page.getByRole('cell', {name: 'Actions'}).nth(2).click();
+			await page
+				.getByRole('menuitem', {
+					exact: true,
+					name: 'Default Permissions',
+				})
+				.click();
+
+			const editConfirmationModal = page.locator('.modal-content');
+			await expect(editConfirmationModal).toBeVisible();
+
+			await expect(
+				page.getByRole('heading', {name: 'Edit Default Permissions'})
+			).toBeVisible();
+		});
+	}
+);

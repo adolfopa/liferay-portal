@@ -216,3 +216,34 @@ test(
 		}
 	}
 );
+
+test(
+	'Open the default permissions modal',
+	{tag: '@LPD-68097'},
+	async ({apiHelpers, page, spaceSummaryPage}) => {
+		const spaceName = `Space ${getRandomString()}`;
+
+		await test.step('Create a new space', async () => {
+			await apiHelpers.headlessAssetLibrary.createAssetLibrary({
+				name: spaceName,
+				settings: {
+					logoColor: 'outline-3',
+					sharingEnabled: true,
+				},
+				type: 'Space',
+			});
+		});
+
+		await spaceSummaryPage.goto(spaceName);
+
+		await spaceSummaryPage.execAction({
+			action: 'Default Permissions',
+		});
+
+		const editConfirmationModal = page.locator('.modal-content');
+		await expect(editConfirmationModal).toBeVisible();
+		await expect(
+			page.getByRole('heading', {name: 'Edit Default Permissions'})
+		).toBeVisible();
+	}
+);

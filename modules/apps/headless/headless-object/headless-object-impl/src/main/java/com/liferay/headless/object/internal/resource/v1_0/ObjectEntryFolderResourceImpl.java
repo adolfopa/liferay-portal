@@ -458,7 +458,7 @@ public class ObjectEntryFolderResourceImpl
 
 	private long _getGroupId(String scopeKey) throws Exception {
 		Long groupId = GroupUtil.getGroupId(
-			contextCompany.getCompanyId(), scopeKey, _groupLocalService);
+			contextCompany.getCompanyId(), scopeKey);
 
 		if (groupId != null) {
 			return groupId;

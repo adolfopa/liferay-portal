@@ -6,7 +6,6 @@
 package com.liferay.exportimport.rest.resource.v1_0.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.exportimport.kernel.background.task.BackgroundTaskExecutorNames;
 import com.liferay.exportimport.rest.client.dto.v1_0.ImportProcess;
 import com.liferay.portal.background.task.model.BackgroundTask;
@@ -68,8 +67,7 @@ public class ImportProcessResourceTest
 
 		return _addImportProcess(
 			GroupUtil.getDepotGroupId(
-				String.valueOf(assetLibraryId), TestPropsValues.getCompanyId(),
-				_depotEntryLocalService, _groupLocalService),
+				String.valueOf(assetLibraryId), TestPropsValues.getCompanyId()),
 			randomImportProcess());
 	}
 
@@ -134,9 +132,6 @@ public class ImportProcessResourceTest
 
 	@DeleteAfterTestRun
 	private final List<BackgroundTask> _backgroundTasks = new ArrayList<>();
-
-	@Inject
-	private DepotEntryLocalService _depotEntryLocalService;
 
 	@Inject
 	private GroupLocalService _groupLocalService;

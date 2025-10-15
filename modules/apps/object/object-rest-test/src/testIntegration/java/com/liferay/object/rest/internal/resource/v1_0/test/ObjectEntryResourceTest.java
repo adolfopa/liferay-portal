@@ -18495,8 +18495,8 @@ public class ObjectEntryResourceTest {
 				if (!Validator.isNumber(scopeKey)) {
 					errorScopeKey = String.valueOf(
 						GroupUtil.getGroupId(
-							TestPropsValues.getCompanyId(), scopeKey,
-							_groupLocalService));
+							TestPropsValues.getCompanyId(), scopeKey
+						));
 				}
 			}
 

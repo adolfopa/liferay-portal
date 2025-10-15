@@ -11,7 +11,6 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.NoSuchGroupException;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.UserGroup;
-import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserGroupLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
@@ -183,13 +182,10 @@ public class CollaboratorUtil {
 				classNameId, classPK));
 	}
 
-	public static long getGroupId(
-			long companyId, GroupLocalService groupLocalService,
-			String scopeKey)
+	public static long getGroupId(long companyId, String scopeKey)
 		throws Exception {
 
-		Long groupId = GroupUtil.getGroupId(
-			companyId, scopeKey, groupLocalService);
+		Long groupId = GroupUtil.getGroupId(companyId, scopeKey);
 
 		if (groupId != null) {
 			return groupId;

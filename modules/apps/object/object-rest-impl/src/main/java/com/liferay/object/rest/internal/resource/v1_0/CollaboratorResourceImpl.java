@@ -85,7 +85,7 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 		ObjectEntry objectEntry = _objectEntryLocalService.getObjectEntry(
 			externalReferenceCode,
 			CollaboratorUtil.getGroupId(
-				contextCompany.getCompanyId(), _groupLocalService, scopeKey),
+				contextCompany.getCompanyId(), scopeKey),
 			_objectDefinition.getObjectDefinitionId());
 
 		CollaboratorUtil.deleteCollaborator(
@@ -152,7 +152,7 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 		ObjectEntry objectEntry = _objectEntryLocalService.getObjectEntry(
 			externalReferenceCode,
 			CollaboratorUtil.getGroupId(
-				contextCompany.getCompanyId(), _groupLocalService, scopeKey),
+				contextCompany.getCompanyId(), scopeKey),
 			_objectDefinition.getObjectDefinitionId());
 
 		return CollaboratorUtil.getCollaborator(
@@ -178,7 +178,7 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 		ObjectEntry objectEntry = _objectEntryLocalService.getObjectEntry(
 			externalReferenceCode,
 			CollaboratorUtil.getGroupId(
-				contextCompany.getCompanyId(), _groupLocalService, scopeKey),
+				contextCompany.getCompanyId(), scopeKey),
 			_objectDefinition.getObjectDefinitionId());
 
 		return CollaboratorUtil.getCollaborators(
@@ -227,7 +227,7 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 		ObjectEntry objectEntry = _objectEntryLocalService.getObjectEntry(
 			externalReferenceCode,
 			CollaboratorUtil.getGroupId(
-				contextCompany.getCompanyId(), _groupLocalService, scopeKey),
+				contextCompany.getCompanyId(), scopeKey),
 			_objectDefinition.getObjectDefinitionId());
 
 		return CollaboratorUtil.addOrUpdateCollaborators(
@@ -278,7 +278,7 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 		ObjectEntry objectEntry = _objectEntryLocalService.getObjectEntry(
 			externalReferenceCode,
 			CollaboratorUtil.getGroupId(
-				contextCompany.getCompanyId(), _groupLocalService, scopeKey),
+				contextCompany.getCompanyId(), scopeKey),
 			_objectDefinition.getObjectDefinitionId());
 
 		return CollaboratorUtil.addOrUpdateCollaborator(

@@ -6,9 +6,9 @@
 package com.liferay.portal.vulcan.util;
 
 import com.liferay.depot.model.DepotEntry;
-import com.liferay.depot.service.DepotEntryLocalService;
+import com.liferay.depot.service.DepotEntryLocalServiceUtil;
 import com.liferay.portal.kernel.model.Group;
-import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 
 /**
@@ -24,14 +24,8 @@ public class GroupUtil {
 		return null;
 	}
 
-	public static Long getDepotGroupId(
-		String assetLibraryKey, long companyId,
-		DepotEntryLocalService depotEntryLocalService,
-		GroupLocalService groupLocalService) {
-
-		Group group = _getGroup(
-			assetLibraryKey, companyId, depotEntryLocalService,
-			groupLocalService);
+	public static Long getDepotGroupId(String assetLibraryKey, long companyId) {
+		Group group = _getGroup(assetLibraryKey, companyId);
 
 		if (_checkGroup(group)) {
 			return group.getGroupId();
@@ -40,13 +34,12 @@ public class GroupUtil {
 		return null;
 	}
 
-	public static Long getGroupId(
-		long companyId, String siteKey, GroupLocalService groupLocalService) {
-
-		Group group = groupLocalService.fetchGroup(companyId, siteKey);
+	public static Long getGroupId(long companyId, String siteKey) {
+		Group group = GroupLocalServiceUtil.fetchGroup(companyId, siteKey);
 
 		if (group == null) {
-			group = groupLocalService.fetchGroup(GetterUtil.getLong(siteKey));
+			group = GroupLocalServiceUtil.fetchGroup(
+				GetterUtil.getLong(siteKey));
 
 			if ((group != null) && (group.getCompanyId() != companyId)) {
 				group = null;
@@ -54,7 +47,7 @@ public class GroupUtil {
 		}
 
 		if (group == null) {
-			group = groupLocalService.fetchGroupByExternalReferenceCode(
+			group = GroupLocalServiceUtil.fetchGroupByExternalReferenceCode(
 				siteKey, companyId);
 		}
 
@@ -92,12 +85,9 @@ public class GroupUtil {
 		return false;
 	}
 
-	private static Group _getGroup(
-		String assetLibraryKey, long companyId,
-		DepotEntryLocalService depotEntryLocalService,
-		GroupLocalService groupLocalService) {
-
-		Group group = groupLocalService.fetchGroup(companyId, assetLibraryKey);
+	private static Group _getGroup(String assetLibraryKey, long companyId) {
+		Group group = GroupLocalServiceUtil.fetchGroup(
+			companyId, assetLibraryKey);
 
 		if (group != null) {
 			return group;
@@ -105,11 +95,11 @@ public class GroupUtil {
 
 		long assetLibraryId = GetterUtil.getLong(assetLibraryKey);
 
-		DepotEntry depotEntry = depotEntryLocalService.fetchDepotEntry(
+		DepotEntry depotEntry = DepotEntryLocalServiceUtil.fetchDepotEntry(
 			assetLibraryId);
 
 		if (depotEntry != null) {
-			Group depotEntryGroup = groupLocalService.fetchGroup(
+			Group depotEntryGroup = GroupLocalServiceUtil.fetchGroup(
 				depotEntry.getGroupId());
 
 			if (depotEntryGroup != null) {
@@ -117,7 +107,7 @@ public class GroupUtil {
 			}
 		}
 
-		return groupLocalService.fetchGroup(assetLibraryId);
+		return GroupLocalServiceUtil.fetchGroup(assetLibraryId);
 	}
 
 	private static boolean _isDepotOrSite(Group group) {

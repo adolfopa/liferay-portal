@@ -201,7 +201,7 @@ public class ReportEntryResourceImpl extends BaseReportEntryResourceImpl {
 			Group group = _groupLocalService.fetchGroup(
 				GroupUtil.getGroupId(
 					contextCompany.getCompanyId(),
-					exportImportReportEntry.getScopeKey(), _groupLocalService));
+					exportImportReportEntry.getScopeKey()));
 
 			if (group != null) {
 				return group.getDescriptiveName(

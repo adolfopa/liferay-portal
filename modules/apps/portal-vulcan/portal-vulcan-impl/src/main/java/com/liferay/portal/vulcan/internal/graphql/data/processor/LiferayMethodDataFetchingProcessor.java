@@ -7,7 +7,6 @@ package com.liferay.portal.vulcan.internal.graphql.data.processor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerList;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
@@ -94,7 +93,6 @@ public class LiferayMethodDataFetchingProcessor {
 
 	public LiferayMethodDataFetchingProcessor(
 		BundleContext bundleContext, CompanyLocalService companyLocalService,
-		DepotEntryLocalService depotEntryLocalService,
 		ExpressionConvert<Filter> expressionConvert,
 		FilterParserProvider filterParserProvider,
 		ServiceTrackerList<GraphQLContributor>
@@ -110,7 +108,6 @@ public class LiferayMethodDataFetchingProcessor {
 
 		_bundleContext = bundleContext;
 		_companyLocalService = companyLocalService;
-		_depotEntryLocalService = depotEntryLocalService;
 		_expressionConvert = expressionConvert;
 		_filterParserProvider = filterParserProvider;
 		_graphQLContributorServiceTrackerList =
@@ -172,8 +169,8 @@ public class LiferayMethodDataFetchingProcessor {
 				try {
 					argument = String.valueOf(
 						GroupUtil.getDepotGroupId(
-							(String)argument, CompanyThreadLocal.getCompanyId(),
-							_depotEntryLocalService, _groupLocalService));
+							(String)argument,
+							CompanyThreadLocal.getCompanyId()));
 
 					instanceArguments.putSingle(
 						"assetLibraryId", (String)argument);
@@ -198,8 +195,8 @@ public class LiferayMethodDataFetchingProcessor {
 				try {
 					argument = String.valueOf(
 						GroupUtil.getGroupId(
-							CompanyThreadLocal.getCompanyId(), (String)argument,
-							_groupLocalService));
+							CompanyThreadLocal.getCompanyId(),
+							(String)argument));
 
 					instanceArguments.putSingle("siteId", (String)argument);
 				}
@@ -695,7 +692,6 @@ public class LiferayMethodDataFetchingProcessor {
 
 	private final BundleContext _bundleContext;
 	private final CompanyLocalService _companyLocalService;
-	private final DepotEntryLocalService _depotEntryLocalService;
 	private final ExpressionConvert<Filter> _expressionConvert;
 	private final FilterParserProvider _filterParserProvider;
 	private final ServiceTrackerList<GraphQLContributor>

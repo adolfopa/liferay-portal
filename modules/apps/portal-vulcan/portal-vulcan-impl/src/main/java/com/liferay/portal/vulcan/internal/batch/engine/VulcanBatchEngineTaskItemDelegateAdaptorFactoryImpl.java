@@ -6,7 +6,6 @@
 package com.liferay.portal.vulcan.internal.batch.engine;
 
 import com.liferay.batch.engine.BatchEngineTaskItemDelegate;
-import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ResourceActionLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
@@ -30,13 +29,10 @@ public class VulcanBatchEngineTaskItemDelegateAdaptorFactoryImpl
 			vulcanBatchEngineTaskItemDelegate) {
 
 		return new VulcanBatchEngineTaskItemDelegateAdaptor<>(
-			_depotEntryLocalService, _groupLocalService,
-			_resourceActionLocalService, _resourcePermissionLocalService,
-			_roleLocalService, vulcanBatchEngineTaskItemDelegate);
+			_groupLocalService, _resourceActionLocalService,
+			_resourcePermissionLocalService, _roleLocalService,
+			vulcanBatchEngineTaskItemDelegate);
 	}
-
-	@Reference
-	private DepotEntryLocalService _depotEntryLocalService;
 
 	@Reference
 	private GroupLocalService _groupLocalService;

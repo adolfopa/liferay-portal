@@ -9,7 +9,6 @@ import com.liferay.batch.engine.BatchEngineTaskItemDelegate;
 import com.liferay.batch.engine.pagination.Page;
 import com.liferay.batch.engine.pagination.Pagination;
 import com.liferay.batch.engine.strategy.BatchEngineImportStrategy;
-import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Sort;
@@ -42,7 +41,6 @@ public class VulcanBatchEngineTaskItemDelegateAdaptor<T>
 	implements BatchEngineTaskItemDelegate<T> {
 
 	public VulcanBatchEngineTaskItemDelegateAdaptor(
-		DepotEntryLocalService depotEntryLocalService,
 		GroupLocalService groupLocalService,
 		ResourceActionLocalService resourceActionLocalService,
 		ResourcePermissionLocalService resourcePermissionLocalService,
@@ -50,8 +48,6 @@ public class VulcanBatchEngineTaskItemDelegateAdaptor<T>
 		VulcanBatchEngineTaskItemDelegate<T>
 			vulcanBatchEngineTaskItemDelegate) {
 
-		_depotEntryLocalService = depotEntryLocalService;
-		_groupLocalService = groupLocalService;
 		_vulcanBatchEngineTaskItemDelegate = vulcanBatchEngineTaskItemDelegate;
 
 		vulcanBatchEngineTaskItemDelegate.setGroupLocalService(
@@ -205,15 +201,13 @@ public class VulcanBatchEngineTaskItemDelegateAdaptor<T>
 				parameters.put(
 					key,
 					GroupUtil.getDepotGroupId(
-						String.valueOf(value), _company.getCompanyId(),
-						_depotEntryLocalService, _groupLocalService));
+						String.valueOf(value), _company.getCompanyId()));
 			}
 			else if (key.equals("siteId") && (value != null)) {
 				parameters.put(
 					key,
 					GroupUtil.getGroupId(
-						_company.getCompanyId(), String.valueOf(value),
-						_groupLocalService));
+						_company.getCompanyId(), String.valueOf(value)));
 			}
 		}
 
@@ -245,8 +239,6 @@ public class VulcanBatchEngineTaskItemDelegateAdaptor<T>
 	}
 
 	private Company _company;
-	private final DepotEntryLocalService _depotEntryLocalService;
-	private final GroupLocalService _groupLocalService;
 	private final VulcanBatchEngineTaskItemDelegate<T>
 		_vulcanBatchEngineTaskItemDelegate;
 

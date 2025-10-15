@@ -5,16 +5,13 @@
 
 package com.liferay.object.rest.internal.jaxrs.param.converter.provider;
 
-import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.object.constants.ObjectDefinitionConstants;
 import com.liferay.object.model.ObjectDefinition;
+import com.liferay.object.rest.util.GroupUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.model.Company;
-import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.vulcan.util.GroupUtil;
 
-import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Context;
@@ -35,21 +32,15 @@ import org.apache.cxf.jaxrs.utils.AnnotationUtils;
 public class ScopeKeyParamConverterProvider
 	implements ParamConverter<String>, ParamConverterProvider {
 
-	public ScopeKeyParamConverterProvider(
-		DepotEntryLocalService depotEntryLocalService,
-		GroupLocalService groupLocalService) {
-
-		_depotEntryLocalService = depotEntryLocalService;
-		_groupLocalService = groupLocalService;
-	}
-
 	@Override
 	public String fromString(String parameter) {
 		if (parameter == null) {
 			return null;
 		}
 
-		Long groupId = _getGroupId(parameter);
+		Long groupId = GroupUtil.getGroupId(
+			_objectDefinition.getCompanyId(), _objectDefinition.getScope(),
+			parameter);
 
 		if (groupId != null) {
 			return String.valueOf(groupId);
@@ -91,26 +82,6 @@ public class ScopeKeyParamConverterProvider
 		return String.valueOf(parameter);
 	}
 
-	private Long _getGroupId(String parameter) {
-		if (StringUtil.equals(
-				_objectDefinition.getScope(),
-				ObjectDefinitionConstants.SCOPE_DEPOT)) {
-
-			return GroupUtil.getDepotGroupId(
-				parameter, _company.getCompanyId(), _depotEntryLocalService,
-				_groupLocalService);
-		}
-		else if (StringUtil.equals(
-					_objectDefinition.getScope(),
-					ObjectDefinitionConstants.SCOPE_SITE)) {
-
-			return GroupUtil.getGroupId(
-				_company.getCompanyId(), parameter, _groupLocalService);
-		}
-
-		throw new InternalServerErrorException("Unexpected scopeKey parameter");
-	}
-
 	private boolean _hasScopeKeyAnnotation(Annotation[] annotations) {
 		for (Annotation annotation : annotations) {
 			if ((annotation.annotationType() == PathParam.class) &&
@@ -127,9 +98,6 @@ public class ScopeKeyParamConverterProvider
 
 	@Context
 	private Company _company;
-
-	private final DepotEntryLocalService _depotEntryLocalService;
-	private final GroupLocalService _groupLocalService;
 
 	@Context
 	private ObjectDefinition _objectDefinition;

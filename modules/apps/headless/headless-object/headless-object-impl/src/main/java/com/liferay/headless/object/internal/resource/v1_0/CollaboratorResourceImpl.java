@@ -72,8 +72,7 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 				getObjectEntryFolderByExternalReferenceCode(
 					externalReferenceCode,
 					CollaboratorUtil.getGroupId(
-						contextCompany.getCompanyId(), _groupLocalService,
-						scopeKey),
+						contextCompany.getCompanyId(), scopeKey),
 					contextCompany.getCompanyId());
 
 		CollaboratorUtil.deleteCollaborator(
@@ -145,8 +144,7 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 				getObjectEntryFolderByExternalReferenceCode(
 					externalReferenceCode,
 					CollaboratorUtil.getGroupId(
-						contextCompany.getCompanyId(), _groupLocalService,
-						scopeKey),
+						contextCompany.getCompanyId(), scopeKey),
 					contextCompany.getCompanyId());
 
 		return CollaboratorUtil.getCollaborator(
@@ -174,8 +172,7 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 				getObjectEntryFolderByExternalReferenceCode(
 					externalReferenceCode,
 					CollaboratorUtil.getGroupId(
-						contextCompany.getCompanyId(), _groupLocalService,
-						scopeKey),
+						contextCompany.getCompanyId(), scopeKey),
 					contextCompany.getCompanyId());
 
 		return CollaboratorUtil.getCollaborators(
@@ -229,8 +226,7 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 				getObjectEntryFolderByExternalReferenceCode(
 					externalReferenceCode,
 					CollaboratorUtil.getGroupId(
-						contextCompany.getCompanyId(), _groupLocalService,
-						scopeKey),
+						contextCompany.getCompanyId(), scopeKey),
 					contextCompany.getCompanyId());
 
 		return CollaboratorUtil.addOrUpdateCollaborators(
@@ -285,8 +281,7 @@ public class CollaboratorResourceImpl extends BaseCollaboratorResourceImpl {
 				getObjectEntryFolderByExternalReferenceCode(
 					externalReferenceCode,
 					CollaboratorUtil.getGroupId(
-						contextCompany.getCompanyId(), _groupLocalService,
-						scopeKey),
+						contextCompany.getCompanyId(), scopeKey),
 					contextCompany.getCompanyId());
 
 		return CollaboratorUtil.addOrUpdateCollaborator(

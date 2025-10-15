@@ -80,19 +80,16 @@ public class GroupUtilTest {
 			Long.valueOf(depotEntryGroup.getGroupId()),
 			GroupUtil.getDepotGroupId(
 				String.valueOf(_depotEntry.getDepotEntryId()),
-				depotEntryGroup.getCompanyId(), _depotEntryLocalService,
-				_groupLocalService));
+				depotEntryGroup.getCompanyId()));
 		Assert.assertEquals(
 			Long.valueOf(depotEntryGroup.getGroupId()),
 			GroupUtil.getDepotGroupId(
 				String.valueOf(depotEntryGroup.getGroupId()),
-				depotEntryGroup.getCompanyId(), _depotEntryLocalService,
-				_groupLocalService));
+				depotEntryGroup.getCompanyId()));
 		Assert.assertEquals(
 			Long.valueOf(depotEntryGroup.getGroupId()),
 			GroupUtil.getDepotGroupId(
-				depotEntryGroup.getGroupKey(), depotEntryGroup.getCompanyId(),
-				_depotEntryLocalService, _groupLocalService));
+				depotEntryGroup.getGroupKey(), depotEntryGroup.getCompanyId()));
 	}
 
 	@Test
@@ -117,8 +114,7 @@ public class GroupUtilTest {
 		Assert.assertNull(
 			GroupUtil.getGroupId(
 				RandomTestUtil.randomLong(),
-				String.valueOf(TestPropsValues.getGroupId()),
-				_groupLocalService));
+				String.valueOf(TestPropsValues.getGroupId())));
 	}
 
 	@FeatureFlag("LPD-17564")
@@ -158,17 +154,14 @@ public class GroupUtilTest {
 		Assert.assertEquals(
 			Long.valueOf(group.getGroupId()),
 			GroupUtil.getGroupId(
-				group.getCompanyId(), group.getExternalReferenceCode(),
-				_groupLocalService));
+				group.getCompanyId(), group.getExternalReferenceCode()));
 		Assert.assertEquals(
 			Long.valueOf(group.getGroupId()),
 			GroupUtil.getGroupId(
-				group.getCompanyId(), String.valueOf(group.getGroupId()),
-				_groupLocalService));
+				group.getCompanyId(), String.valueOf(group.getGroupId())));
 		Assert.assertEquals(
 			Long.valueOf(group.getGroupId()),
-			GroupUtil.getGroupId(
-				group.getCompanyId(), group.getGroupKey(), _groupLocalService));
+			GroupUtil.getGroupId(group.getCompanyId(), group.getGroupKey()));
 	}
 
 	private DepotEntry _depotEntry;

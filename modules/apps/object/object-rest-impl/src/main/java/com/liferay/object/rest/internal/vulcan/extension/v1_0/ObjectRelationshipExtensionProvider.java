@@ -25,7 +25,6 @@ import com.liferay.object.service.ObjectRelationshipService;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -295,8 +294,7 @@ public class ObjectRelationshipExtensionProvider
 		}
 
 		return GetterUtil.getLong(
-			GroupUtil.getGroupId(
-				objectDefinition.getCompanyId(), scopeKey, _groupLocalService));
+			GroupUtil.getGroupId(objectDefinition.getCompanyId(), scopeKey));
 	}
 
 	private PropertyDefinition.PropertyType _getPropertyType(
@@ -357,9 +355,6 @@ public class ObjectRelationshipExtensionProvider
 
 	@Reference
 	private DTOConverterRegistry _dtoConverterRegistry;
-
-	@Reference
-	private GroupLocalService _groupLocalService;
 
 	@Reference
 	private ObjectEntryManagerRegistry _objectEntryManagerRegistry;

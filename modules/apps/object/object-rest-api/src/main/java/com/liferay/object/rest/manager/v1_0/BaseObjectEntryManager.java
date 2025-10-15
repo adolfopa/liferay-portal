@@ -10,7 +10,6 @@ import com.liferay.dynamic.data.mapping.expression.DDMExpressionFactory;
 import com.liferay.list.type.entry.util.ListTypeEntryUtil;
 import com.liferay.list.type.model.ListTypeEntry;
 import com.liferay.list.type.service.ListTypeEntryLocalService;
-import com.liferay.object.constants.ObjectDefinitionConstants;
 import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.constants.ObjectFieldSettingConstants;
 import com.liferay.object.exception.ObjectEntryScopeException;
@@ -24,6 +23,7 @@ import com.liferay.object.model.ObjectField;
 import com.liferay.object.rest.dto.v1_0.ListEntry;
 import com.liferay.object.rest.dto.v1_0.Status;
 import com.liferay.object.rest.dto.v1_0.util.CreatorUtil;
+import com.liferay.object.rest.util.GroupUtil;
 import com.liferay.object.scope.ObjectScopeProvider;
 import com.liferay.object.scope.ObjectScopeProviderRegistry;
 import com.liferay.object.service.ObjectEntryLocalService;
@@ -54,7 +54,6 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterContext;
-import com.liferay.portal.vulcan.util.GroupUtil;
 import com.liferay.portal.vulcan.util.LocalizedMapUtil;
 
 import java.math.BigDecimal;
@@ -137,31 +136,9 @@ public abstract class BaseObjectEntryManager {
 						objectDefinition.getName(), "\" entry."));
 			}
 
-			if (Objects.equals(
-					objectScopeProvider.getKey(),
-					ObjectDefinitionConstants.SCOPE_DEPOT)) {
-
-				Long groupId = GroupUtil.getDepotGroupId(
-					scopeKey, objectDefinition.getCompanyId(),
-					depotEntryLocalService, groupLocalService);
-
-				if (groupId == null) {
-					throw new ObjectEntryScopeException(
-						"No asset library found with scope key " + scopeKey);
-				}
-
-				return groupId;
-			}
-
-			Long groupId = GroupUtil.getGroupId(
-				objectDefinition.getCompanyId(), scopeKey, groupLocalService);
-
-			if (groupId == null) {
-				throw new ObjectEntryScopeException(
-					"No site found with scope key " + scopeKey);
-			}
-
-			return groupId;
+			return GroupUtil.getGroupId(
+				objectDefinition.getCompanyId(), objectDefinition.getScope(),
+				scopeKey);
 		}
 
 		if (useCompanyGroup) {

@@ -5,10 +5,8 @@
 
 package com.liferay.portal.vulcan.internal.jaxrs.param.converter.provider;
 
-import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.model.Company;
-import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.vulcan.util.GroupUtil;
 
 import jakarta.ws.rs.NotFoundException;
@@ -34,14 +32,6 @@ import org.apache.cxf.jaxrs.utils.AnnotationUtils;
 @Provider
 public class SiteParamConverterProvider
 	implements ParamConverter<Long>, ParamConverterProvider {
-
-	public SiteParamConverterProvider(
-		DepotEntryLocalService depotEntryLocalService,
-		GroupLocalService groupLocalService) {
-
-		_depotEntryLocalService = depotEntryLocalService;
-		_groupLocalService = groupLocalService;
-	}
 
 	@Override
 	public Long fromString(String parameter) {
@@ -87,9 +77,7 @@ public class SiteParamConverterProvider
 			return null;
 		}
 
-		return GroupUtil.getDepotGroupId(
-			assetLibraryKey, companyId, _depotEntryLocalService,
-			_groupLocalService);
+		return GroupUtil.getDepotGroupId(assetLibraryKey, companyId);
 	}
 
 	public Long getGroupId(long companyId, String siteKey) {
@@ -97,7 +85,7 @@ public class SiteParamConverterProvider
 			return null;
 		}
 
-		return GroupUtil.getGroupId(companyId, siteKey, _groupLocalService);
+		return GroupUtil.getGroupId(companyId, siteKey);
 	}
 
 	@Override
@@ -148,9 +136,6 @@ public class SiteParamConverterProvider
 
 	@Context
 	private Company _company;
-
-	private final DepotEntryLocalService _depotEntryLocalService;
-	private final GroupLocalService _groupLocalService;
 
 	@Context
 	private UriInfo _uriInfo;

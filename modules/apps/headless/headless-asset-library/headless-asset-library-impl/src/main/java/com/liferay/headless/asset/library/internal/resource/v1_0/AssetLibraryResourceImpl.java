@@ -27,6 +27,10 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.ResourceAction;
+import com.liferay.portal.kernel.model.ResourceConstants;
+import com.liferay.portal.kernel.model.ResourcePermission;
+import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.Filter;
@@ -35,8 +39,10 @@ import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.service.PermissionService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
+import com.liferay.portal.kernel.service.permission.ModelPermissions;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -51,7 +57,9 @@ import com.liferay.portal.vulcan.dto.converter.DefaultDTOConverterContext;
 import com.liferay.portal.vulcan.fields.NestedFieldsSupplier;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
+import com.liferay.portal.vulcan.permission.ModelPermissionsUtil;
 import com.liferay.portal.vulcan.permission.Permission;
+import com.liferay.portal.vulcan.permission.PermissionUtil;
 import com.liferay.portal.vulcan.util.LocalizedMapUtil;
 import com.liferay.portal.vulcan.util.SearchUtil;
 import com.liferay.sharing.constants.SharingConfigurationConstants;
@@ -149,7 +157,10 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 			throw new UnsupportedOperationException();
 		}
 
-		return getAssetLibraryPermissionsPage(externalReferenceCode, roleNames);
+		DepotEntry depotEntry = _getGroupDepotEntry(
+			_getGroupIdByExternalReferenceCode(externalReferenceCode));
+
+		return _getAssetLibraryPermissionsPage(depotEntry, roleNames);
 	}
 
 	@Override
@@ -234,8 +245,10 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 			throw new UnsupportedOperationException();
 		}
 
-		return putAssetLibraryPermissionsPage(
-			externalReferenceCode, permissions);
+		DepotEntry depotEntry = _getGroupDepotEntry(
+			_getGroupIdByExternalReferenceCode(externalReferenceCode));
+
+		return _putAssetLibraryPermissionsPage(depotEntry, permissions);
 	}
 
 	@Override
@@ -343,6 +356,29 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 				new LinkedHashMap<>()));
 	}
 
+	protected Page<Permission> toPermissionPage(
+			Map<String, Map<String, String>> actions, long id,
+			String resourceName, String roleNames)
+		throws Exception {
+
+		List<ResourceAction> resourceActions =
+			resourceActionLocalService.getResourceActions(resourceName);
+
+		if (Validator.isNotNull(roleNames)) {
+			return Page.of(
+				actions,
+				PermissionUtil.getPermissions(
+					contextCompany.getCompanyId(), resourceActions, id,
+					resourceName, StringUtil.split(roleNames)));
+		}
+
+		return Page.of(
+			actions,
+			PermissionUtil.getPermissions(
+				contextCompany.getCompanyId(), resourceActions, id,
+				resourceName, null));
+	}
+
 	private DepotEntry _addOrUpdateDepotEntry(
 			AssetLibrary assetLibrary, Map<Locale, String> descriptionMap,
 			String externalReferenceCode, Map<Locale, String> nameMap,
@@ -425,6 +461,32 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 		}
 
 		return depotEntry;
+	}
+
+	private Page<Permission> _getAssetLibraryPermissionsPage(
+			DepotEntry depotEntry, String roleNames)
+		throws Exception {
+
+		_permissionService.checkPermission(
+			depotEntry.getGroupId(), DepotEntry.class.getName(),
+			depotEntry.getDepotEntryId());
+
+		return toPermissionPage(
+			HashMapBuilder.put(
+				"get",
+				addAction(
+					ActionKeys.PERMISSIONS, depotEntry.getDepotEntryId(),
+					"getAssetLibraryPermissionsPage", null,
+					DepotEntry.class.getName(), depotEntry.getGroupId())
+			).put(
+				"replace",
+				addAction(
+					ActionKeys.PERMISSIONS, depotEntry.getDepotEntryId(),
+					"putAssetLibraryPermissionsPage", null,
+					DepotEntry.class.getName(), depotEntry.getGroupId())
+			).build(),
+			depotEntry.getDepotEntryId(), DepotEntry.class.getName(),
+			roleNames);
 	}
 
 	private Boolean _getBooleanValue(Object defaultValue, Boolean value) {
@@ -592,6 +654,70 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 				GetterUtil.getInteger(
 					unicodeProperties.getProperty("trashEntriesMaxAge")))
 		).build();
+	}
+
+	private Page<Permission> _putAssetLibraryPermissionsPage(
+			DepotEntry depotEntry, Permission[] permissions)
+		throws Exception {
+
+		_permissionService.checkPermission(
+			depotEntry.getGroupId(), DepotEntry.class.getName(),
+			depotEntry.getDepotEntryId());
+
+		ModelPermissions modelPermissions =
+			ModelPermissionsUtil.toModelPermissions(
+				contextCompany.getCompanyId(), permissions,
+				depotEntry.getDepotEntryId(), DepotEntry.class.getName(),
+				resourceActionLocalService, resourcePermissionLocalService,
+				roleLocalService);
+
+		Collection<String> roleNames = modelPermissions.getRoleNames();
+
+		for (ResourcePermission resourcePermission :
+				resourcePermissionLocalService.getResourcePermissions(
+					contextCompany.getCompanyId(), DepotEntry.class.getName(),
+					ResourceConstants.SCOPE_INDIVIDUAL,
+					String.valueOf(depotEntry.getDepotEntryId()))) {
+
+			Role role = roleLocalService.fetchRole(
+				resourcePermission.getRoleId());
+
+			if ((role == null) || roleNames.contains(role.getName())) {
+				continue;
+			}
+
+			for (ResourceAction resourceAction :
+					resourceActionLocalService.getResourceActions(
+						DepotEntry.class.getName())) {
+
+				resourcePermissionLocalService.removeResourcePermission(
+					contextCompany.getCompanyId(), DepotEntry.class.getName(),
+					ResourceConstants.SCOPE_INDIVIDUAL,
+					String.valueOf(depotEntry.getDepotEntryId()),
+					role.getRoleId(), resourceAction.getActionId());
+			}
+		}
+
+		resourcePermissionLocalService.updateResourcePermissions(
+			contextCompany.getCompanyId(), (Long)depotEntry.getGroupId(),
+			DepotEntry.class.getName(),
+			String.valueOf(depotEntry.getDepotEntryId()), modelPermissions);
+
+		return toPermissionPage(
+			HashMapBuilder.put(
+				"get",
+				addAction(
+					ActionKeys.PERMISSIONS, depotEntry.getDepotEntryId(),
+					"getAssetLibraryPermissionsPage", null,
+					DepotEntry.class.getName(), depotEntry.getGroupId())
+			).put(
+				"replace",
+				addAction(
+					ActionKeys.PERMISSIONS, depotEntry.getDepotEntryId(),
+					"putAssetLibraryPermissionsPage", null,
+					DepotEntry.class.getName(), depotEntry.getGroupId())
+			).build(),
+			depotEntry.getDepotEntryId(), DepotEntry.class.getName(), null);
 	}
 
 	private UnicodeProperties _putUnicodeProperties(Settings settings) {
@@ -797,5 +923,8 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 		target = "(model.class.name=com.liferay.portal.kernel.model.Group)"
 	)
 	private ModelResourcePermission<Group> _groupModelResourcePermission;
+
+	@Reference
+	private PermissionService _permissionService;
 
 }

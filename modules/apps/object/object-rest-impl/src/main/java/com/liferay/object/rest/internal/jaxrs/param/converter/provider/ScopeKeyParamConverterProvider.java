@@ -8,6 +8,7 @@ package com.liferay.object.rest.internal.jaxrs.param.converter.provider;
 import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.object.constants.ObjectDefinitionConstants;
 import com.liferay.object.model.ObjectDefinition;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -48,38 +49,30 @@ public class ScopeKeyParamConverterProvider
 			return null;
 		}
 
+		Long groupId = _getGroupId(parameter);
+
+		if (groupId != null) {
+			return String.valueOf(groupId);
+		}
+
+		StringBundler sb = new StringBundler(4);
+
+		sb.append("Unable to get a valid ");
+
 		if (StringUtil.equals(
 				_objectDefinition.getScope(),
 				ObjectDefinitionConstants.SCOPE_DEPOT)) {
 
-			Long groupId = GroupUtil.getDepotGroupId(
-				parameter, _company.getCompanyId(), _depotEntryLocalService,
-				_groupLocalService);
-
-			if (groupId != null) {
-				return String.valueOf(groupId);
-			}
-
-			throw new NotFoundException(
-				"Unable to get a valid asset library with group ID " +
-					parameter);
+			sb.append("asset library");
 		}
-		else if (StringUtil.equals(
-					_objectDefinition.getScope(),
-					ObjectDefinitionConstants.SCOPE_SITE)) {
-
-			Long groupId = GroupUtil.getGroupId(
-				_company.getCompanyId(), parameter, _groupLocalService);
-
-			if (groupId != null) {
-				return String.valueOf(groupId);
-			}
-
-			throw new NotFoundException(
-				"Unable to get a valid site with group ID " + parameter);
+		else {
+			sb.append("site");
 		}
 
-		throw new InternalServerErrorException("Unexpected scopeKey parameter");
+		sb.append(" with scopeKey ");
+		sb.append(parameter);
+
+		throw new NotFoundException(sb.toString());
 	}
 
 	@Override
@@ -96,6 +89,26 @@ public class ScopeKeyParamConverterProvider
 	@Override
 	public String toString(String parameter) {
 		return String.valueOf(parameter);
+	}
+
+	private Long _getGroupId(String parameter) {
+		if (StringUtil.equals(
+				_objectDefinition.getScope(),
+				ObjectDefinitionConstants.SCOPE_DEPOT)) {
+
+			return GroupUtil.getDepotGroupId(
+				parameter, _company.getCompanyId(), _depotEntryLocalService,
+				_groupLocalService);
+		}
+		else if (StringUtil.equals(
+					_objectDefinition.getScope(),
+					ObjectDefinitionConstants.SCOPE_SITE)) {
+
+			return GroupUtil.getGroupId(
+				_company.getCompanyId(), parameter, _groupLocalService);
+		}
+
+		throw new InternalServerErrorException("Unexpected scopeKey parameter");
 	}
 
 	private boolean _hasScopeKeyAnnotation(Annotation[] annotations) {

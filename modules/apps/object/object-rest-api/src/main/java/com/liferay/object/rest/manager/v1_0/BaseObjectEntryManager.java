@@ -141,16 +141,27 @@ public abstract class BaseObjectEntryManager {
 					objectScopeProvider.getKey(),
 					ObjectDefinitionConstants.SCOPE_DEPOT)) {
 
-				return GetterUtil.getLong(
-					GroupUtil.getDepotGroupId(
-						scopeKey, objectDefinition.getCompanyId(),
-						depotEntryLocalService, groupLocalService));
+				Long groupId = GroupUtil.getDepotGroupId(
+					scopeKey, objectDefinition.getCompanyId(),
+					depotEntryLocalService, groupLocalService);
+
+				if (groupId == null) {
+					throw new ObjectEntryScopeException(
+						"No asset library found with scope key " + scopeKey);
+				}
+
+				return groupId;
 			}
 
-			return GetterUtil.getLong(
-				GroupUtil.getGroupId(
-					objectDefinition.getCompanyId(), scopeKey,
-					groupLocalService));
+			Long groupId = GroupUtil.getGroupId(
+				objectDefinition.getCompanyId(), scopeKey, groupLocalService);
+
+			if (groupId == null) {
+				throw new ObjectEntryScopeException(
+					"No site found with scope key " + scopeKey);
+			}
+
+			return groupId;
 		}
 
 		if (useCompanyGroup) {

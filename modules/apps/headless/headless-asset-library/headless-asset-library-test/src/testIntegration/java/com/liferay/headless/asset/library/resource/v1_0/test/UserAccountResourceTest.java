@@ -146,7 +146,7 @@ public class UserAccountResourceTest extends BaseUserAccountResourceTestCase {
 
 	@Override
 	protected String
-			testGetAssetLibraryUserAccountsPage_getExternalReferenceCode()
+			testGetAssetLibraryUserAccountsPage_getAssetLibraryExternalReferenceCode()
 		throws Exception {
 
 		return _getGroupExternalReferenceCode();
@@ -209,7 +209,7 @@ public class UserAccountResourceTest extends BaseUserAccountResourceTestCase {
 		throws Exception {
 
 		String externalReferenceCode =
-			testGetAssetLibraryUserAccountsPage_getExternalReferenceCode();
+			testGetAssetLibraryUserAccountsPage_getAssetLibraryExternalReferenceCode();
 
 		UserAccountResource assetLibraryMemberUserAccountResource =
 			_getUserAccountResource(nestedFields);

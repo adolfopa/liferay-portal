@@ -93,7 +93,9 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 	public void deleteAssetLibrary(String externalReferenceCode)
 		throws Exception {
 
-		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
+		if (!FeatureFlagManagerUtil.isEnabled(
+				contextCompany.getCompanyId(), "LPD-17564")) {
+
 			throw new UnsupportedOperationException();
 		}
 
@@ -107,7 +109,9 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 	public void deleteAssetLibraryPin(String externalReferenceCode)
 		throws Exception {
 
-		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
+		if (!FeatureFlagManagerUtil.isEnabled(
+				contextCompany.getCompanyId(), "LPD-17564")) {
+
 			throw new UnsupportedOperationException();
 		}
 
@@ -123,7 +127,9 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 			Pagination pagination)
 		throws Exception {
 
-		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
+		if (!FeatureFlagManagerUtil.isEnabled(
+				contextCompany.getCompanyId(), "LPD-17564")) {
+
 			throw new UnsupportedOperationException();
 		}
 
@@ -173,7 +179,9 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 			String externalReferenceCode, AssetLibrary assetLibrary)
 		throws Exception {
 
-		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
+		if (!FeatureFlagManagerUtil.isEnabled(
+				contextCompany.getCompanyId(), "LPD-17564")) {
+
 			throw new UnsupportedOperationException();
 		}
 
@@ -255,7 +263,9 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 	public AssetLibrary putAssetLibraryPin(String externalReferenceCode)
 		throws Exception {
 
-		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
+		if (!FeatureFlagManagerUtil.isEnabled(
+				contextCompany.getCompanyId(), "LPD-17564")) {
+
 			throw new UnsupportedOperationException();
 		}
 
@@ -274,7 +284,9 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 			Pagination pagination, Sort[] sorts)
 		throws Exception {
 
-		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
+		if (!FeatureFlagManagerUtil.isEnabled(
+				contextCompany.getCompanyId(), "LPD-17564")) {
+
 			throw new UnsupportedOperationException();
 		}
 
@@ -302,7 +314,9 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 	protected AssetLibrary doGetAssetLibrary(String externalReferenceCode)
 		throws Exception {
 
-		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
+		if (!FeatureFlagManagerUtil.isEnabled(
+				contextCompany.getCompanyId(), "LPD-17564")) {
+
 			throw new UnsupportedOperationException();
 		}
 
@@ -315,7 +329,9 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 	protected AssetLibrary doPostAssetLibrary(AssetLibrary assetLibrary)
 		throws Exception {
 
-		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
+		if (!FeatureFlagManagerUtil.isEnabled(
+				contextCompany.getCompanyId(), "LPD-17564")) {
+
 			throw new UnsupportedOperationException();
 		}
 
@@ -338,7 +354,9 @@ public class AssetLibraryResourceImpl extends BaseAssetLibraryResourceImpl {
 			String externalReferenceCode, AssetLibrary assetLibrary)
 		throws Exception {
 
-		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
+		if (!FeatureFlagManagerUtil.isEnabled(
+				contextCompany.getCompanyId(), "LPD-17564")) {
+
 			throw new UnsupportedOperationException();
 		}
 

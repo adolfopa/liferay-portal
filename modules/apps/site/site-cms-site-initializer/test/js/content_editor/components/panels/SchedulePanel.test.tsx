@@ -32,13 +32,13 @@ const dateConfig = datetimeUtils.generateDateConfigurations({
 });
 
 const initialFields = {
-	expirationDate: {
+	ObjectEntry_expirationDate: {
 		error: '',
 		neverExpire: false,
 		serverValue: '',
 		value: '',
 	},
-	reviewDate: {
+	ObjectEntry_reviewDate: {
 		error: '',
 		neverExpire: false,
 		serverValue: '',
@@ -99,7 +99,7 @@ describe('SchedulePanel', () => {
 	it('renders date inputs with initial values', async () => {
 		renderComponent({
 			...initialFields,
-			expirationDate: {
+			ObjectEntry_expirationDate: {
 				error: '',
 				neverExpire: false,
 				serverValue: '2025-07-08T00:00',

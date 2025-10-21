@@ -10,8 +10,8 @@ import {ScheduleFields, UpdateScheduleProps} from '../ContentEditorSidePanel';
 import ScheduleField from '../ScheduleField';
 
 const LABELS = {
-	expirationDate: Liferay.Language.get('expiration-date'),
-	reviewDate: Liferay.Language.get('review-date'),
+	ObjectEntry_expirationDate: Liferay.Language.get('expiration-date'),
+	ObjectEntry_reviewDate: Liferay.Language.get('review-date'),
 };
 
 export default function SchedulePanel({

@@ -74,8 +74,8 @@ type ScheduleFieldData = BaseScheduleData & {
 };
 
 export type ScheduleFields = {
-	expirationDate: ScheduleFieldData;
-	reviewDate: ScheduleFieldData;
+	ObjectEntry_expirationDate: ScheduleFieldData;
+	ObjectEntry_reviewDate: ScheduleFieldData;
 };
 
 export type UpdateCategorizationProps = {
@@ -117,13 +117,13 @@ const items: Item[] = [
 export default function ContentEditorSidePanel(props: Props) {
 	const [formId, setFormId] = useState<string | undefined>();
 	const [scheduleFields, setScheduleFields] = useState<ScheduleFields>({
-		expirationDate: {
+		ObjectEntry_expirationDate: {
 			error: '',
 			neverExpire: Boolean(props.expirationDate),
 			serverValue: props.expirationDate,
 			value: toMomentDate(props.expirationDate),
 		},
-		reviewDate: {
+		ObjectEntry_reviewDate: {
 			error: '',
 			neverExpire: Boolean(props.reviewDate),
 			serverValue: props.reviewDate,

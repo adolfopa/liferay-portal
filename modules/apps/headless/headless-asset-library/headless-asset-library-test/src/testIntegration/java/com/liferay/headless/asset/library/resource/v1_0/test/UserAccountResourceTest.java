@@ -92,6 +92,11 @@ public class UserAccountResourceTest extends BaseUserAccountResourceTestCase {
 	}
 
 	@Override
+	protected String[] getIgnoredEntityFieldNames() {
+		return new String[] {"externalReferenceCode", "name"};
+	}
+
+	@Override
 	protected UserAccount randomUserAccount() throws Exception {
 		User user = UserTestUtil.addUser();
 
@@ -140,8 +145,7 @@ public class UserAccountResourceTest extends BaseUserAccountResourceTestCase {
 		throws Exception {
 
 		return userAccountResource.putAssetLibraryUserAccount(
-			testDepotEntryGroup.getExternalReferenceCode(),
-			userAccount.getExternalReferenceCode());
+			externalReferenceCode, userAccount.getExternalReferenceCode());
 	}
 
 	@Override

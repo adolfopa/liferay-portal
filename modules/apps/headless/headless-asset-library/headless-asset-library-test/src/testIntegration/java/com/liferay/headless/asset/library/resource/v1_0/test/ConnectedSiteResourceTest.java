@@ -99,8 +99,8 @@ public class ConnectedSiteResourceTest
 		throws Exception {
 
 		return connectedSiteResource.putAssetLibraryConnectedSite(
-			testGetAssetLibraryConnectedSitesPage_getAssetLibraryExternalReferenceCode(),
-			connectedSite.getExternalReferenceCode(), new ConnectedSite());
+			externalReferenceCode, connectedSite.getExternalReferenceCode(),
+			connectedSite);
 	}
 
 	@Override

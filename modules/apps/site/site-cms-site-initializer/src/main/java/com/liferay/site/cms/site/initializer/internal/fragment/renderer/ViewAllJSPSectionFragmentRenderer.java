@@ -8,12 +8,14 @@ package com.liferay.site.cms.site.initializer.internal.fragment.renderer;
 import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.document.library.configuration.DLConfiguration;
 import com.liferay.fragment.renderer.FragmentRenderer;
+import com.liferay.frontend.data.set.SystemFDSEntry;
 import com.liferay.object.model.ObjectEntryFolder;
 import com.liferay.object.service.ObjectDefinitionService;
 import com.liferay.object.service.ObjectDefinitionSettingLocalService;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.site.cms.site.initializer.internal.constants.CMSSiteInitializerFDSNames;
 import com.liferay.site.cms.site.initializer.internal.display.context.ViewAllSectionDisplayContext;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -57,9 +59,9 @@ public class ViewAllJSPSectionFragmentRenderer
 		HttpServletRequest httpServletRequest) {
 
 		return new ViewAllSectionDisplayContext(
-			_depotEntryLocalService, _dlConfiguration, groupLocalService,
-			httpServletRequest, language, _objectDefinitionService,
-			_objectDefinitionSettingLocalService,
+			_allSectionSystemFDSEntry, _depotEntryLocalService,
+			_dlConfiguration, groupLocalService, httpServletRequest, language,
+			_objectDefinitionService, _objectDefinitionSettingLocalService,
 			_objectEntryFolderModelResourcePermission, _portal);
 	}
 
@@ -67,6 +69,11 @@ public class ViewAllJSPSectionFragmentRenderer
 	protected String getJSPPath() {
 		return "/view_all.jsp";
 	}
+
+	@Reference(
+		target = "(frontend.data.set.name=" + CMSSiteInitializerFDSNames.ALL_SECTION + ")"
+	)
+	private SystemFDSEntry _allSectionSystemFDSEntry;
 
 	@Reference
 	private DepotEntryLocalService _depotEntryLocalService;

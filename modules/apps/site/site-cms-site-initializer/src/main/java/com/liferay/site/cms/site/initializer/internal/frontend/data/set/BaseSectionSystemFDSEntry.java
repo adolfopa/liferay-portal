@@ -32,7 +32,7 @@ public abstract class BaseSectionSystemFDSEntry {
 			(ThemeDisplay)httpServletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
 
-		ObjectEntryFolder objectEntryFolder = _getObjectEntryFolder(
+		ObjectEntryFolder objectEntryFolder = getObjectEntryFolder(
 			themeDisplay.getCompanyId(),
 			httpServletRequest.getAttribute(InfoDisplayWebKeys.INFO_ITEM));
 
@@ -75,11 +75,7 @@ public abstract class BaseSectionSystemFDSEntry {
 
 	protected abstract String getCMSSectionFilterString();
 
-	protected String getRootObjectEntryFolderExternalReferenceCode() {
-		return null;
-	}
-
-	private ObjectEntryFolder _getObjectEntryFolder(
+	protected ObjectEntryFolder getObjectEntryFolder(
 		long companyId, Object object) {
 
 		if (object instanceof DepotEntry) {
@@ -94,6 +90,10 @@ public abstract class BaseSectionSystemFDSEntry {
 			return (ObjectEntryFolder)object;
 		}
 
+		return null;
+	}
+
+	protected String getRootObjectEntryFolderExternalReferenceCode() {
 		return null;
 	}
 

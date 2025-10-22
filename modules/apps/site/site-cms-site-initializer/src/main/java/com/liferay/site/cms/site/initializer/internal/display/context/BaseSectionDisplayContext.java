@@ -20,7 +20,6 @@ import com.liferay.object.model.ObjectDefinitionSetting;
 import com.liferay.object.model.ObjectEntryFolder;
 import com.liferay.object.service.ObjectDefinitionService;
 import com.liferay.object.service.ObjectDefinitionSettingLocalService;
-import com.liferay.object.service.ObjectEntryFolderLocalServiceUtil;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
@@ -57,6 +56,7 @@ import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.site.cms.site.initializer.internal.frontend.data.set.BaseSectionSystemFDSEntry;
 import com.liferay.site.cms.site.initializer.internal.util.ActionUtil;
 import com.liferay.site.cms.site.initializer.internal.util.PermissionUtil;
 import com.liferay.translation.constants.TranslationPortletKeys;
@@ -75,7 +75,8 @@ import java.util.Map;
 /**
  * @author Marco Galluzzi
  */
-public abstract class BaseSectionDisplayContext {
+public abstract class BaseSectionDisplayContext
+	extends BaseSectionSystemFDSEntry {
 
 	public BaseSectionDisplayContext(
 		DepotEntryLocalService depotEntryLocalService,
@@ -106,7 +107,7 @@ public abstract class BaseSectionDisplayContext {
 		themeDisplay = (ThemeDisplay)httpServletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		objectEntryFolder = _getObjectEntryFolder(
+		objectEntryFolder = getObjectEntryFolder(
 			themeDisplay.getCompanyId(),
 			httpServletRequest.getAttribute(InfoDisplayWebKeys.INFO_ITEM));
 	}
@@ -269,35 +270,8 @@ public abstract class BaseSectionDisplayContext {
 	}
 
 	public String getAPIURL() {
-		StringBundler sb = new StringBundler(9);
-
-		sb.append("/o/search/v1.0/search?emptySearch=true&filter=");
-
-		if (objectEntryFolder != null) {
-			sb.append("folderId eq ");
-			sb.append(objectEntryFolder.getObjectEntryFolderId());
-
-			if (objectEntryFolder.getStatus() ==
-					WorkflowConstants.STATUS_IN_TRASH) {
-
-				sb.append(" and status eq ");
-				sb.append(WorkflowConstants.STATUS_IN_TRASH);
-			}
-			else {
-				sb.append(" and status in (");
-				sb.append(StringUtil.merge(_statuses, ", "));
-				sb.append(")");
-			}
-		}
-		else {
-			sb.append(getCMSSectionFilterString());
-		}
-
-		sb.append("&nestedFields=embedded,file.metadata,");
-		sb.append("file.previewURL,file.thumbnailURL,");
-		sb.append("systemProperties.objectDefinitionBrief");
-
-		return sb.toString();
+		return "/o/search/v1.0/search?" +
+			getAdditionalAPIURLParameters(httpServletRequest);
 	}
 
 	public Map<String, Object> getBreadcrumbProps() throws PortalException {
@@ -525,17 +499,11 @@ public abstract class BaseSectionDisplayContext {
 			")");
 	}
 
-	protected abstract String getCMSSectionFilterString();
-
 	protected String[] getObjectFolderExternalReferenceCodes() {
 		return new String[] {
 			ObjectFolderConstants.EXTERNAL_REFERENCE_CODE_CONTENT_STRUCTURES,
 			ObjectFolderConstants.EXTERNAL_REFERENCE_CODE_FILE_TYPES
 		};
-	}
-
-	protected String getRootObjectEntryFolderExternalReferenceCode() {
-		return null;
 	}
 
 	protected final DepotEntryLocalService depotEntryLocalService;
@@ -752,24 +720,6 @@ public abstract class BaseSectionDisplayContext {
 		}
 
 		return layout.getName(themeDisplay.getLocale(), true);
-	}
-
-	private ObjectEntryFolder _getObjectEntryFolder(
-		long companyId, Object object) {
-
-		if (object instanceof DepotEntry) {
-			DepotEntry depotEntry = (DepotEntry)object;
-
-			return ObjectEntryFolderLocalServiceUtil.
-				fetchObjectEntryFolderByExternalReferenceCode(
-					getRootObjectEntryFolderExternalReferenceCode(),
-					depotEntry.getGroupId(), companyId);
-		}
-		else if (object instanceof ObjectEntryFolder) {
-			return (ObjectEntryFolder)object;
-		}
-
-		return null;
 	}
 
 	private String _getParentObjectEntryFolderExternalReferenceCode() {

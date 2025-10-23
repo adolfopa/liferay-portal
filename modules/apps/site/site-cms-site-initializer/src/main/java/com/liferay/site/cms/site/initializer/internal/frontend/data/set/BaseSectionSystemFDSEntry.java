@@ -98,7 +98,7 @@ public abstract class BaseSectionSystemFDSEntry {
 			{
 				if (_hasAddEntryPermission(httpServletRequest)) {
 					for (DropdownItem dropdownItem :
-							getCreationMenuDropdownItems()) {
+							getCreationMenuDropdownItems(httpServletRequest)) {
 
 						JSONArray depotEntriesJSONArray =
 							_getDepotEntriesJSONArray(
@@ -118,7 +118,9 @@ public abstract class BaseSectionSystemFDSEntry {
 		};
 	}
 
-	public List<DropdownItem> getCreationMenuDropdownItems() {
+	public List<DropdownItem> getCreationMenuDropdownItems(
+		HttpServletRequest httpServletRequest) {
+
 		return Collections.emptyList();
 	}
 

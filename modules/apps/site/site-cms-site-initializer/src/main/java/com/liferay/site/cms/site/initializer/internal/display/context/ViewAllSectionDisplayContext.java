@@ -81,7 +81,9 @@ public class ViewAllSectionDisplayContext extends BaseSectionDisplayContext {
 	}
 
 	@Override
-	public List<DropdownItem> getCreationMenuDropdownItems() {
+	public List<DropdownItem> getCreationMenuDropdownItems(
+		HttpServletRequest httpServletRequest) {
+
 		return ActionUtil.getAllSectionCreationMenuDropdownItems(
 			httpServletRequest);
 	}

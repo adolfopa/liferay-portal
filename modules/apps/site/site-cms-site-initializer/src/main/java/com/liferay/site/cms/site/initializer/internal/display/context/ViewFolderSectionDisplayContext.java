@@ -158,7 +158,9 @@ public class ViewFolderSectionDisplayContext extends BaseSectionDisplayContext {
 	}
 
 	@Override
-	public List<DropdownItem> getCreationMenuDropdownItems() {
+	public List<DropdownItem> getCreationMenuDropdownItems(
+		HttpServletRequest httpServletRequest) {
+
 		if (Objects.equals(
 				getRootObjectEntryFolderExternalReferenceCode(),
 				ObjectEntryFolderConstants.EXTERNAL_REFERENCE_CODE_CONTENTS)) {

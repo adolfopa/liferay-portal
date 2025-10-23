@@ -79,7 +79,9 @@ public abstract class BaseContentsSectionDisplayContext
 	}
 
 	@Override
-	public List<DropdownItem> getCreationMenuDropdownItems() {
+	public List<DropdownItem> getCreationMenuDropdownItems(
+		HttpServletRequest httpServletRequest) {
+
 		return ActionUtil.getContentsSectionCreationMenuDropdownItems(
 			httpServletRequest, null);
 	}

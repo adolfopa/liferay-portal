@@ -77,7 +77,9 @@ public abstract class BaseFilesSectionDisplayContext
 	}
 
 	@Override
-	public List<DropdownItem> getCreationMenuDropdownItems() {
+	public List<DropdownItem> getCreationMenuDropdownItems(
+		HttpServletRequest httpServletRequest) {
+
 		return ActionUtil.getFilesSectionCreationMenuDropdownItems(
 			httpServletRequest, null);
 	}

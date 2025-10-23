@@ -24,7 +24,7 @@ ViewFilesSectionDisplayContext viewFilesSectionDisplayContext = (ViewFilesSectio
 			additionalProps="<%= viewFilesSectionDisplayContext.getAdditionalProps() %>"
 			apiURL="<%= viewFilesSectionDisplayContext.getAPIURL() %>"
 			bulkActionDropdownItems="<%= viewFilesSectionDisplayContext.getBulkActionDropdownItems() %>"
-			creationMenu="<%= viewFilesSectionDisplayContext.getCreationMenu() %>"
+			creationMenu="<%= viewFilesSectionDisplayContext.getCreationMenu(request) %>"
 			emptyState="<%= viewFilesSectionDisplayContext.getEmptyState() %>"
 			fdsActionDropdownItems="<%= viewFilesSectionDisplayContext.getFDSActionDropdownItems() %>"
 			formName="fm"

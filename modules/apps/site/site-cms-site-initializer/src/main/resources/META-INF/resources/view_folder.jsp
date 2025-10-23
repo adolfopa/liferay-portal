@@ -23,7 +23,7 @@ ViewFolderSectionDisplayContext viewFolderSectionDisplayContext = (ViewFolderSec
 		additionalProps="<%= viewFolderSectionDisplayContext.getAdditionalProps() %>"
 		apiURL="<%= viewFolderSectionDisplayContext.getAPIURL() %>"
 		bulkActionDropdownItems="<%= viewFolderSectionDisplayContext.getBulkActionDropdownItems() %>"
-		creationMenu="<%= viewFolderSectionDisplayContext.getCreationMenu() %>"
+		creationMenu="<%= viewFolderSectionDisplayContext.getCreationMenu(request) %>"
 		emptyState="<%= viewFolderSectionDisplayContext.getEmptyState() %>"
 		fdsActionDropdownItems="<%= viewFolderSectionDisplayContext.getFDSActionDropdownItems() %>"
 		formName="fm"

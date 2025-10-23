@@ -23,7 +23,7 @@ ViewSpaceContentsSummarySectionDisplayContext viewSpaceContentsSummarySectionDis
 		<frontend-data-set:headless-display
 			additionalProps="<%= viewSpaceContentsSummarySectionDisplayContext.getAdditionalProps() %>"
 			apiURL="<%= viewSpaceContentsSummarySectionDisplayContext.getAPIURL() %>"
-			creationMenu="<%= viewSpaceContentsSummarySectionDisplayContext.getCreationMenu() %>"
+			creationMenu="<%= viewSpaceContentsSummarySectionDisplayContext.getCreationMenu(request) %>"
 			emptyState="<%= viewSpaceContentsSummarySectionDisplayContext.getEmptyState() %>"
 			fdsActionDropdownItems="<%= viewSpaceContentsSummarySectionDisplayContext.getFDSActionDropdownItems() %>"
 			formName="fm"

@@ -5,31 +5,23 @@
 
 package com.liferay.site.cms.site.initializer.internal.display.context;
 
-import com.liferay.depot.constants.DepotConstants;
-import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.document.library.configuration.DLConfiguration;
 import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
-import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.info.constants.InfoDisplayWebKeys;
-import com.liferay.object.constants.ObjectDefinitionSettingConstants;
 import com.liferay.object.constants.ObjectFolderConstants;
 import com.liferay.object.model.ObjectDefinition;
-import com.liferay.object.model.ObjectDefinitionSetting;
 import com.liferay.object.model.ObjectEntryFolder;
 import com.liferay.object.service.ObjectDefinitionService;
 import com.liferay.object.service.ObjectDefinitionSettingLocalService;
-import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
-import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.kernel.editor.configuration.EditorConfiguration;
 import com.liferay.portal.kernel.editor.configuration.EditorConfigurationFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
-import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -41,7 +33,6 @@ import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
-import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -53,9 +44,7 @@ import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.site.cms.site.initializer.internal.frontend.data.set.BaseSectionSystemFDSEntry;
 import com.liferay.site.cms.site.initializer.internal.util.ActionUtil;
 import com.liferay.site.cms.site.initializer.internal.util.PermissionUtil;
@@ -65,8 +54,6 @@ import jakarta.portlet.ActionRequest;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -88,19 +75,22 @@ public abstract class BaseSectionDisplayContext
 			objectEntryFolderModelResourcePermission,
 		Portal portal) {
 
-		this.depotEntryLocalService = depotEntryLocalService;
+		setDepotEntryLocalService(depotEntryLocalService);
 
 		_dlConfiguration = dlConfiguration;
 
-		this.groupLocalService = groupLocalService;
+		setGroupLocalService(groupLocalService);
+
 		this.httpServletRequest = httpServletRequest;
 		this.language = language;
 
 		_objectDefinitionService = objectDefinitionService;
-		_objectDefinitionSettingLocalService =
-			objectDefinitionSettingLocalService;
-		_objectEntryFolderModelResourcePermission =
-			objectEntryFolderModelResourcePermission;
+
+		setObjectDefinitionSettingLocalService(
+			objectDefinitionSettingLocalService);
+
+		setObjectEntryFolderModelResourcePermission(
+			objectEntryFolderModelResourcePermission);
 
 		this.portal = portal;
 
@@ -114,7 +104,7 @@ public abstract class BaseSectionDisplayContext
 
 	public Map<String, Object> getAdditionalProps() {
 		return HashMapBuilder.<String, Object>put(
-			"assetLibraries", _getDepotEntriesJSONArray()
+			"assetLibraries", getDepotEntriesJSONArray(httpServletRequest)
 		).put(
 			"autocompleteURL",
 			() -> StringBundler.concat(
@@ -294,34 +284,6 @@ public abstract class BaseSectionDisplayContext
 				null));
 	}
 
-	public CreationMenu getCreationMenu() {
-		return new CreationMenu() {
-			{
-				if (_hasAddEntryPermission()) {
-					for (DropdownItem dropdownItem :
-							getCreationMenuDropdownItems()) {
-
-						JSONArray depotEntriesJSONArray =
-							_getDepotEntriesJSONArray(dropdownItem);
-
-						if (depotEntriesJSONArray == null) {
-							continue;
-						}
-
-						dropdownItem.putData(
-							"assetLibraries", depotEntriesJSONArray);
-
-						addPrimaryDropdownItem(dropdownItem);
-					}
-				}
-			}
-		};
-	}
-
-	public List<DropdownItem> getCreationMenuDropdownItems() {
-		return Collections.emptyList();
-	}
-
 	public abstract Map<String, Object> getEmptyState();
 
 	public List<FDSActionDropdownItem> getFDSActionDropdownItems() {
@@ -493,12 +455,6 @@ public abstract class BaseSectionDisplayContext
 			));
 	}
 
-	protected String appendStatus(String filterString) {
-		return StringBundler.concat(
-			filterString, " and status in (", StringUtil.merge(_statuses, ", "),
-			")");
-	}
-
 	protected String[] getObjectFolderExternalReferenceCodes() {
 		return new String[] {
 			ObjectFolderConstants.EXTERNAL_REFERENCE_CODE_CONTENT_STRUCTURES,
@@ -506,99 +462,11 @@ public abstract class BaseSectionDisplayContext
 		};
 	}
 
-	protected final DepotEntryLocalService depotEntryLocalService;
-	protected final GroupLocalService groupLocalService;
 	protected final HttpServletRequest httpServletRequest;
 	protected final Language language;
 	protected final ObjectEntryFolder objectEntryFolder;
 	protected final Portal portal;
 	protected final ThemeDisplay themeDisplay;
-
-	private List<Long> _getAcceptedGroupIds(long objectDefinitionId) {
-		List<Long> acceptedGroupIds = new ArrayList<>();
-
-		ObjectDefinitionSetting objectDefinitionSetting =
-			_objectDefinitionSettingLocalService.fetchObjectDefinitionSetting(
-				objectDefinitionId,
-				ObjectDefinitionSettingConstants.NAME_ACCEPTED_GROUP_IDS);
-
-		for (String groupId :
-				StringUtil.split(objectDefinitionSetting.getValue())) {
-
-			DepotEntry depotEntry = depotEntryLocalService.fetchGroupDepotEntry(
-				GetterUtil.getLong(groupId));
-
-			if (depotEntry != null) {
-				acceptedGroupIds.add(depotEntry.getGroupId());
-			}
-		}
-
-		return acceptedGroupIds;
-	}
-
-	private JSONArray _getDepotEntriesJSONArray() {
-		if (objectEntryFolder != null) {
-			return _getDepotEntriesJSONArray(
-				List.of(objectEntryFolder.getGroupId()));
-		}
-
-		return _getDepotEntriesJSONArray(
-			TransformUtil.transform(
-				depotEntryLocalService.getDepotEntries(
-					themeDisplay.getCompanyId(), DepotConstants.TYPE_SPACE),
-				DepotEntry::getGroupId));
-	}
-
-	private JSONArray _getDepotEntriesJSONArray(DropdownItem dropdownItem) {
-		Map<String, Object> dropdownItemData =
-			(HashMap<String, Object>)dropdownItem.get("data");
-
-		long objectDefinitionId = GetterUtil.getLong(
-			dropdownItemData.get("objectDefinitionId"));
-
-		if (objectDefinitionId != 0) {
-			return _getDepotEntriesJSONArray(objectDefinitionId);
-		}
-
-		return _getDepotEntriesJSONArray();
-	}
-
-	private JSONArray _getDepotEntriesJSONArray(List<Long> groupIds) {
-		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
-
-		for (Long groupId : groupIds) {
-			JSONObject jsonObject = _getJSONObject(groupId);
-
-			if (jsonObject != null) {
-				jsonArray.put(jsonObject);
-			}
-		}
-
-		return jsonArray;
-	}
-
-	private JSONArray _getDepotEntriesJSONArray(long objectDefinitionId) {
-		if (_isAcceptAllGroups(objectDefinitionId)) {
-			return _getDepotEntriesJSONArray();
-		}
-
-		List<Long> acceptedGroupIds = _getAcceptedGroupIds(objectDefinitionId);
-
-		if (acceptedGroupIds.isEmpty()) {
-			return null;
-		}
-
-		if (objectEntryFolder != null) {
-			if (!acceptedGroupIds.contains(objectEntryFolder.getGroupId())) {
-				return null;
-			}
-
-			return _getDepotEntriesJSONArray(
-				List.of(objectEntryFolder.getGroupId()));
-		}
-
-		return _getDepotEntriesJSONArray(acceptedGroupIds);
-	}
 
 	private Map<String, String> _getFileMimeTypeCssClasses() {
 		return HashMapBuilder.put(
@@ -696,22 +564,6 @@ public abstract class BaseSectionDisplayContext
 		return fileMimeTypeValues;
 	}
 
-	private JSONObject _getJSONObject(long groupId) {
-		Group group = groupLocalService.fetchGroup(groupId);
-
-		if (group == null) {
-			return null;
-		}
-
-		return JSONUtil.put(
-			"externalReferenceCode", group.getExternalReferenceCode()
-		).put(
-			"groupId", group.getGroupId()
-		).put(
-			"name", group.getName(themeDisplay.getLocale())
-		);
-	}
-
 	private String _getLayoutName() {
 		Layout layout = themeDisplay.getLayout();
 
@@ -730,65 +582,10 @@ public abstract class BaseSectionDisplayContext
 		return objectEntryFolder.getExternalReferenceCode();
 	}
 
-	private boolean _hasAddEntryPermission() {
-		if (objectEntryFolder == null) {
-			return true;
-		}
-
-		try {
-			return _objectEntryFolderModelResourcePermission.contains(
-				themeDisplay.getPermissionChecker(),
-				objectEntryFolder.getObjectEntryFolderId(),
-				ActionKeys.ADD_ENTRY);
-		}
-		catch (PortalException portalException) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(portalException);
-			}
-		}
-
-		return false;
-	}
-
-	private boolean _isAcceptAllGroups(long objectDefinitionId) {
-		ObjectDefinitionSetting objectDefinitionSetting =
-			_objectDefinitionSettingLocalService.fetchObjectDefinitionSetting(
-				objectDefinitionId,
-				ObjectDefinitionSettingConstants.NAME_ACCEPT_ALL_GROUPS);
-
-		if ((objectDefinitionSetting != null) &&
-			GetterUtil.getBoolean(objectDefinitionSetting.getValue())) {
-
-			return true;
-		}
-
-		objectDefinitionSetting =
-			_objectDefinitionSettingLocalService.fetchObjectDefinitionSetting(
-				objectDefinitionId,
-				ObjectDefinitionSettingConstants.NAME_ACCEPTED_GROUP_IDS);
-
-		if ((objectDefinitionSetting == null) ||
-			Validator.isNull(objectDefinitionSetting.getValue())) {
-
-			return true;
-		}
-
-		return false;
-	}
-
 	private static final Log _log = LogFactoryUtil.getLog(
 		BaseSectionDisplayContext.class);
 
-	private static final List<Integer> _statuses = Arrays.asList(
-		WorkflowConstants.STATUS_APPROVED, WorkflowConstants.STATUS_DRAFT,
-		WorkflowConstants.STATUS_EXPIRED, WorkflowConstants.STATUS_PENDING,
-		WorkflowConstants.STATUS_SCHEDULED);
-
 	private final DLConfiguration _dlConfiguration;
 	private final ObjectDefinitionService _objectDefinitionService;
-	private final ObjectDefinitionSettingLocalService
-		_objectDefinitionSettingLocalService;
-	private final ModelResourcePermission<ObjectEntryFolder>
-		_objectEntryFolderModelResourcePermission;
 
 }

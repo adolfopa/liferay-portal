@@ -24,7 +24,7 @@ ViewAllSectionDisplayContext viewAllSectionDisplayContext = (ViewAllSectionDispl
 			additionalProps="<%= viewAllSectionDisplayContext.getAdditionalProps() %>"
 			apiURL="<%= viewAllSectionDisplayContext.getAPIURL() %>"
 			bulkActionDropdownItems="<%= viewAllSectionDisplayContext.getBulkActionDropdownItems() %>"
-			creationMenu="<%= viewAllSectionDisplayContext.getCreationMenu() %>"
+			creationMenu="<%= viewAllSectionDisplayContext.getCreationMenu(request) %>"
 			emptyState="<%= viewAllSectionDisplayContext.getEmptyState() %>"
 			fdsActionDropdownItems="<%= viewAllSectionDisplayContext.getFDSActionDropdownItems() %>"
 			formName="fm"

@@ -26,7 +26,7 @@ ViewFilesSectionDisplayContext viewFilesSectionDisplayContext = (ViewFilesSectio
 			bulkActionDropdownItems="<%= viewFilesSectionDisplayContext.getBulkActionDropdownItems() %>"
 			creationMenu="<%= viewFilesSectionDisplayContext.getCreationMenu(request) %>"
 			emptyState="<%= viewFilesSectionDisplayContext.getEmptyState() %>"
-			fdsActionDropdownItems="<%= viewFilesSectionDisplayContext.getFDSActionDropdownItems() %>"
+			fdsActionDropdownItems="<%= viewFilesSectionDisplayContext.getFDSActionDropdownItems(request) %>"
 			formName="fm"
 			id="<%= CMSSiteInitializerFDSNames.FILES_SECTION %>"
 			itemsPerPage="<%= 20 %>"

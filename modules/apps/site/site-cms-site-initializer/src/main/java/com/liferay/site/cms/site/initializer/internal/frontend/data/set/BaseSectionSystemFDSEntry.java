@@ -8,6 +8,7 @@ package com.liferay.site.cms.site.initializer.internal.frontend.data.set;
 import com.liferay.depot.constants.DepotConstants;
 import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.service.DepotEntryLocalService;
+import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.info.constants.InfoDisplayWebKeys;
@@ -18,23 +19,36 @@ import com.liferay.object.service.ObjectDefinitionSettingLocalService;
 import com.liferay.object.service.ObjectEntryFolderLocalServiceUtil;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringPool;
 import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.GroupConstants;
+import com.liferay.portal.kernel.portlet.LiferayWindowState;
+import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.site.cms.site.initializer.internal.util.ActionUtil;
+import com.liferay.translation.constants.TranslationPortletKeys;
+
+import jakarta.portlet.ActionRequest;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -124,6 +138,168 @@ public abstract class BaseSectionSystemFDSEntry {
 		return Collections.emptyList();
 	}
 
+	public List<FDSActionDropdownItem> getFDSActionDropdownItems(
+		HttpServletRequest httpServletRequest) {
+
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)httpServletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+		return ListUtil.fromArray(
+			new FDSActionDropdownItem(
+				ActionUtil.getBaseViewFolderURL(themeDisplay) + "{embedded.id}",
+				"view", "actionLinkFolder",
+				LanguageUtil.get(httpServletRequest, "view-folder"), "get",
+				"update", null,
+				HashMapBuilder.<String, Object>put(
+					"entryClassName", ObjectEntryFolder.class.getName()
+				).build()),
+			new FDSActionDropdownItem(
+				StringBundler.concat(
+					themeDisplay.getPathFriendlyURLPublic(),
+					GroupConstants.CMS_FRIENDLY_URL, "/e/edit-folder/",
+					portal.getClassNameId(ObjectEntryFolder.class),
+					"/{embedded.id}?redirect=", themeDisplay.getURLCurrent()),
+				"pencil", "editFolder",
+				LanguageUtil.get(httpServletRequest, "edit"), "get", "update",
+				null,
+				HashMapBuilder.<String, Object>put(
+					"entryClassName", ObjectEntryFolder.class.getName()
+				).build()),
+			new FDSActionDropdownItem(
+				StringBundler.concat(
+					themeDisplay.getPortalURL(), themeDisplay.getPathMain(),
+					GroupConstants.CMS_FRIENDLY_URL,
+					"/edit_content_item?objectEntryId={embedded.id}&",
+					"redirect=", themeDisplay.getURLCurrent()),
+				"pencil", "actionLink",
+				LanguageUtil.get(httpServletRequest, "edit"), "get", "update",
+				null),
+			new FDSActionDropdownItem(
+				null, "share", "share",
+				LanguageUtil.get(httpServletRequest, "share"), "get", "share",
+				"link"),
+			new FDSActionDropdownItem(
+				StringBundler.concat(
+					themeDisplay.getPortalURL(), themeDisplay.getPathMain(),
+					GroupConstants.CMS_FRIENDLY_URL,
+					"/translate_content_item?objectEntryId={embedded.id}&",
+					"redirect=", themeDisplay.getURLCurrent()),
+				"automatic-translate", "translate",
+				LanguageUtil.get(httpServletRequest, "translate"), "get",
+				"update", null),
+			new FDSActionDropdownItem(
+				"{actions.expire.href}", "time", "expire",
+				LanguageUtil.get(httpServletRequest, "expire"), "post",
+				"expire", "headless"),
+			new FDSActionDropdownItem(
+				StringBundler.concat(
+					themeDisplay.getPortalURL(), themeDisplay.getPathMain(),
+					GroupConstants.CMS_FRIENDLY_URL,
+					"/edit_content_item?&p_l_mode=read&p_p_state=",
+					LiferayWindowState.POP_UP, "&redirect=",
+					themeDisplay.getURLCurrent(),
+					"&objectEntryId={embedded.id}"),
+				"view", "view-content",
+				LanguageUtil.get(httpServletRequest, "view"), null, null, null),
+			new FDSActionDropdownItem(
+				StringPool.BLANK, "view", "view-file",
+				LanguageUtil.get(httpServletRequest, "view"), null, null, null),
+			new FDSActionDropdownItem(
+				StringBundler.concat(
+					themeDisplay.getPathFriendlyURLPublic(),
+					GroupConstants.CMS_FRIENDLY_URL,
+					"/version-history?objectEntryId={embedded.id}&backURL=",
+					themeDisplay.getURLCurrent()),
+				"date-time", "version-history",
+				LanguageUtil.get(httpServletRequest, "view-history"), "get",
+				"versions", null),
+			new FDSActionDropdownItem(
+				PortletURLBuilder.create(
+					portal.getControlPanelPortletURL(
+						httpServletRequest, TranslationPortletKeys.TRANSLATION,
+						ActionRequest.RENDER_PHASE)
+				).setMVCRenderCommandName(
+					"/translation/export_translation"
+				).setParameter(
+					"className", "{entryClassName}"
+				).setParameter(
+					"classPK", "{embedded.id}"
+				).setParameter(
+					"groupId", "{embedded.scopeId}"
+				).setWindowState(
+					LiferayWindowState.POP_UP
+				).buildString(),
+				"upload", "export-for-translation",
+				LanguageUtil.get(httpServletRequest, "export-for-translation"),
+				null, null, null),
+			new FDSActionDropdownItem(
+				PortletURLBuilder.create(
+					portal.getControlPanelPortletURL(
+						httpServletRequest, TranslationPortletKeys.TRANSLATION,
+						ActionRequest.RENDER_PHASE)
+				).setMVCRenderCommandName(
+					"/translation/import_translation"
+				).setParameter(
+					"className", "{entryClassName}"
+				).setParameter(
+					"classPK", "{embedded.id}"
+				).setParameter(
+					"groupId", "{embedded.scopeId}"
+				).setWindowState(
+					LiferayWindowState.POP_UP
+				).buildString(),
+				"download", "import-translation",
+				LanguageUtil.get(httpServletRequest, "import-translation"),
+				null, null, null),
+			new FDSActionDropdownItem(
+				PortletURLBuilder.create(
+					portal.getControlPanelPortletURL(
+						httpServletRequest,
+						"com_liferay_portlet_configuration_web_portlet_" +
+							"PortletConfigurationPortlet",
+						ActionRequest.RENDER_PHASE)
+				).setMVCPath(
+					"/edit_permissions.jsp"
+				).setRedirect(
+					themeDisplay.getURLCurrent()
+				).setParameter(
+					"modelResource", "{entryClassName}"
+				).setParameter(
+					"modelResourceDescription", "{embedded.name}"
+				).setParameter(
+					"resourceGroupId", "{embedded.scopeId}"
+				).setParameter(
+					"resourcePrimKey", "{embedded.id}"
+				).setWindowState(
+					LiferayWindowState.POP_UP
+				).buildString(),
+				"password-policies", "permissions",
+				language.get(httpServletRequest, "permissions"), "get",
+				"permissions", "modal-permissions"),
+			new FDSActionDropdownItem(
+				StringPool.BLANK, "password-policies", "default-permissions",
+				LanguageUtil.get(httpServletRequest, "default-permissions"),
+				null, "permissions", null),
+			new FDSActionDropdownItem(
+				StringPool.BLANK, "password-policies",
+				"edit-and-propagate-default-permissions",
+				LanguageUtil.get(
+					httpServletRequest,
+					"edit-and-propagate-default-permissions"),
+				null, "permissions", null),
+			new FDSActionDropdownItem(
+				StringPool.BLANK, "password-policies",
+				"reset-to-default-permissions",
+				LanguageUtil.get(
+					httpServletRequest, "reset-to-default-permissions"),
+				null, "permissions", null),
+			new FDSActionDropdownItem(
+				null, "trash", "delete",
+				language.get(httpServletRequest, "delete"), null, "delete",
+				null));
+	}
+
 	public void setDepotEntryLocalService(
 		DepotEntryLocalService depotEntryLocalService) {
 
@@ -132,6 +308,10 @@ public abstract class BaseSectionSystemFDSEntry {
 
 	public void setGroupLocalService(GroupLocalService groupLocalService) {
 		this.groupLocalService = groupLocalService;
+	}
+
+	public void setLanguage(Language language) {
+		this.language = language;
 	}
 
 	public void setObjectDefinitionSettingLocalService(
@@ -148,6 +328,10 @@ public abstract class BaseSectionSystemFDSEntry {
 
 		_objectEntryFolderModelResourcePermission =
 			objectEntryFolderModelResourcePermission;
+	}
+
+	public void setPortal(Portal portal) {
+		this.portal = portal;
 	}
 
 	protected String appendStatus(String filterString) {
@@ -206,6 +390,8 @@ public abstract class BaseSectionSystemFDSEntry {
 
 	protected DepotEntryLocalService depotEntryLocalService;
 	protected GroupLocalService groupLocalService;
+	protected Language language;
+	protected Portal portal;
 
 	private List<Long> _getAcceptedGroupIds(long objectDefinitionId) {
 		List<Long> acceptedGroupIds = new ArrayList<>();

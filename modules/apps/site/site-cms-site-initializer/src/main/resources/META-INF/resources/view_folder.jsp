@@ -25,7 +25,7 @@ ViewFolderSectionDisplayContext viewFolderSectionDisplayContext = (ViewFolderSec
 		bulkActionDropdownItems="<%= viewFolderSectionDisplayContext.getBulkActionDropdownItems() %>"
 		creationMenu="<%= viewFolderSectionDisplayContext.getCreationMenu(request) %>"
 		emptyState="<%= viewFolderSectionDisplayContext.getEmptyState() %>"
-		fdsActionDropdownItems="<%= viewFolderSectionDisplayContext.getFDSActionDropdownItems() %>"
+		fdsActionDropdownItems="<%= viewFolderSectionDisplayContext.getFDSActionDropdownItems(request) %>"
 		formName="fm"
 		id="<%= viewFolderSectionDisplayContext.getCMSSiteInitializerFDSName() %>"
 		itemsPerPage="<%= 20 %>"

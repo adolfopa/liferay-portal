@@ -32,7 +32,6 @@ import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
-import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -48,9 +47,6 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.site.cms.site.initializer.internal.frontend.data.set.BaseSectionSystemFDSEntry;
 import com.liferay.site.cms.site.initializer.internal.util.ActionUtil;
 import com.liferay.site.cms.site.initializer.internal.util.PermissionUtil;
-import com.liferay.translation.constants.TranslationPortletKeys;
-
-import jakarta.portlet.ActionRequest;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -286,162 +282,6 @@ public abstract class BaseSectionDisplayContext
 
 	public abstract Map<String, Object> getEmptyState();
 
-	public List<FDSActionDropdownItem> getFDSActionDropdownItems() {
-		return ListUtil.fromArray(
-			new FDSActionDropdownItem(
-				ActionUtil.getBaseViewFolderURL(themeDisplay) + "{embedded.id}",
-				"view", "actionLinkFolder",
-				LanguageUtil.get(httpServletRequest, "view-folder"), "get",
-				"update", null,
-				HashMapBuilder.<String, Object>put(
-					"entryClassName", ObjectEntryFolder.class.getName()
-				).build()),
-			new FDSActionDropdownItem(
-				StringBundler.concat(
-					themeDisplay.getPathFriendlyURLPublic(),
-					GroupConstants.CMS_FRIENDLY_URL, "/e/edit-folder/",
-					portal.getClassNameId(ObjectEntryFolder.class),
-					"/{embedded.id}?redirect=", themeDisplay.getURLCurrent()),
-				"pencil", "editFolder",
-				LanguageUtil.get(httpServletRequest, "edit"), "get", "update",
-				null,
-				HashMapBuilder.<String, Object>put(
-					"entryClassName", ObjectEntryFolder.class.getName()
-				).build()),
-			new FDSActionDropdownItem(
-				StringBundler.concat(
-					themeDisplay.getPortalURL(), themeDisplay.getPathMain(),
-					GroupConstants.CMS_FRIENDLY_URL,
-					"/edit_content_item?objectEntryId={embedded.id}&",
-					"redirect=", themeDisplay.getURLCurrent()),
-				"pencil", "actionLink",
-				LanguageUtil.get(httpServletRequest, "edit"), "get", "update",
-				null),
-			new FDSActionDropdownItem(
-				null, "share", "share",
-				LanguageUtil.get(httpServletRequest, "share"), "get", "share",
-				"link"),
-			new FDSActionDropdownItem(
-				StringBundler.concat(
-					themeDisplay.getPortalURL(), themeDisplay.getPathMain(),
-					GroupConstants.CMS_FRIENDLY_URL,
-					"/translate_content_item?objectEntryId={embedded.id}&",
-					"redirect=", themeDisplay.getURLCurrent()),
-				"automatic-translate", "translate",
-				LanguageUtil.get(httpServletRequest, "translate"), "get",
-				"update", null),
-			new FDSActionDropdownItem(
-				"{actions.expire.href}", "time", "expire",
-				LanguageUtil.get(httpServletRequest, "expire"), "post",
-				"expire", "headless"),
-			new FDSActionDropdownItem(
-				StringBundler.concat(
-					themeDisplay.getPortalURL(), themeDisplay.getPathMain(),
-					GroupConstants.CMS_FRIENDLY_URL,
-					"/edit_content_item?&p_l_mode=read&p_p_state=",
-					LiferayWindowState.POP_UP, "&redirect=",
-					themeDisplay.getURLCurrent(),
-					"&objectEntryId={embedded.id}"),
-				"view", "view-content",
-				LanguageUtil.get(httpServletRequest, "view"), null, null, null),
-			new FDSActionDropdownItem(
-				StringPool.BLANK, "view", "view-file",
-				LanguageUtil.get(httpServletRequest, "view"), null, null, null),
-			new FDSActionDropdownItem(
-				StringBundler.concat(
-					themeDisplay.getPathFriendlyURLPublic(),
-					GroupConstants.CMS_FRIENDLY_URL,
-					"/version-history?objectEntryId={embedded.id}&backURL=",
-					themeDisplay.getURLCurrent()),
-				"date-time", "version-history",
-				LanguageUtil.get(httpServletRequest, "view-history"), "get",
-				"versions", null),
-			new FDSActionDropdownItem(
-				PortletURLBuilder.create(
-					portal.getControlPanelPortletURL(
-						httpServletRequest, TranslationPortletKeys.TRANSLATION,
-						ActionRequest.RENDER_PHASE)
-				).setMVCRenderCommandName(
-					"/translation/export_translation"
-				).setParameter(
-					"className", "{entryClassName}"
-				).setParameter(
-					"classPK", "{embedded.id}"
-				).setParameter(
-					"groupId", "{embedded.scopeId}"
-				).setWindowState(
-					LiferayWindowState.POP_UP
-				).buildString(),
-				"upload", "export-for-translation",
-				LanguageUtil.get(httpServletRequest, "export-for-translation"),
-				null, null, null),
-			new FDSActionDropdownItem(
-				PortletURLBuilder.create(
-					portal.getControlPanelPortletURL(
-						httpServletRequest, TranslationPortletKeys.TRANSLATION,
-						ActionRequest.RENDER_PHASE)
-				).setMVCRenderCommandName(
-					"/translation/import_translation"
-				).setParameter(
-					"className", "{entryClassName}"
-				).setParameter(
-					"classPK", "{embedded.id}"
-				).setParameter(
-					"groupId", "{embedded.scopeId}"
-				).setWindowState(
-					LiferayWindowState.POP_UP
-				).buildString(),
-				"download", "import-translation",
-				LanguageUtil.get(httpServletRequest, "import-translation"),
-				null, null, null),
-			new FDSActionDropdownItem(
-				PortletURLBuilder.create(
-					portal.getControlPanelPortletURL(
-						httpServletRequest,
-						"com_liferay_portlet_configuration_web_portlet_" +
-							"PortletConfigurationPortlet",
-						ActionRequest.RENDER_PHASE)
-				).setMVCPath(
-					"/edit_permissions.jsp"
-				).setRedirect(
-					themeDisplay.getURLCurrent()
-				).setParameter(
-					"modelResource", "{entryClassName}"
-				).setParameter(
-					"modelResourceDescription", "{embedded.name}"
-				).setParameter(
-					"resourceGroupId", "{embedded.scopeId}"
-				).setParameter(
-					"resourcePrimKey", "{embedded.id}"
-				).setWindowState(
-					LiferayWindowState.POP_UP
-				).buildString(),
-				"password-policies", "permissions",
-				language.get(httpServletRequest, "permissions"), "get",
-				"permissions", "modal-permissions"),
-			new FDSActionDropdownItem(
-				StringPool.BLANK, "password-policies", "default-permissions",
-				LanguageUtil.get(httpServletRequest, "default-permissions"),
-				null, "permissions", null),
-			new FDSActionDropdownItem(
-				StringPool.BLANK, "password-policies",
-				"edit-and-propagate-default-permissions",
-				LanguageUtil.get(
-					httpServletRequest,
-					"edit-and-propagate-default-permissions"),
-				null, "permissions", null),
-			new FDSActionDropdownItem(
-				StringPool.BLANK, "password-policies",
-				"reset-to-default-permissions",
-				LanguageUtil.get(
-					httpServletRequest, "reset-to-default-permissions"),
-				null, "permissions", null),
-			new FDSActionDropdownItem(
-				null, "trash", "delete",
-				language.get(httpServletRequest, "delete"), null, "delete",
-				null));
-	}
-
 	protected void addBreadcrumbItem(
 		JSONArray jsonArray, boolean active, String friendlyURL, String label) {
 
@@ -463,9 +303,7 @@ public abstract class BaseSectionDisplayContext
 	}
 
 	protected final HttpServletRequest httpServletRequest;
-	protected final Language language;
 	protected final ObjectEntryFolder objectEntryFolder;
-	protected final Portal portal;
 	protected final ThemeDisplay themeDisplay;
 
 	private Map<String, String> _getFileMimeTypeCssClasses() {

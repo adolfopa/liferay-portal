@@ -24,7 +24,7 @@ ViewHomeRecentAssetsSectionDisplayContext viewHomeRecentAssetsSectionDisplayCont
 				additionalProps="<%= viewHomeRecentAssetsSectionDisplayContext.getAdditionalProps() %>"
 				apiURL="<%= viewHomeRecentAssetsSectionDisplayContext.getAPIURL() %>"
 				emptyState="<%= viewHomeRecentAssetsSectionDisplayContext.getEmptyState() %>"
-				fdsActionDropdownItems="<%= viewHomeRecentAssetsSectionDisplayContext.getFDSActionDropdownItems() %>"
+				fdsActionDropdownItems="<%= viewHomeRecentAssetsSectionDisplayContext.getFDSActionDropdownItems(request) %>"
 				formName="fm"
 				id="<%= CMSSiteInitializerFDSNames.HOME_RECENT_ASSETS_SECTION %>"
 				itemsPerPage="<%= 20 %>"

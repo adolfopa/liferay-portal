@@ -25,7 +25,7 @@ ViewSpaceContentsSummarySectionDisplayContext viewSpaceContentsSummarySectionDis
 			apiURL="<%= viewSpaceContentsSummarySectionDisplayContext.getAPIURL() %>"
 			creationMenu="<%= viewSpaceContentsSummarySectionDisplayContext.getCreationMenu(request) %>"
 			emptyState="<%= viewSpaceContentsSummarySectionDisplayContext.getEmptyState() %>"
-			fdsActionDropdownItems="<%= viewSpaceContentsSummarySectionDisplayContext.getFDSActionDropdownItems() %>"
+			fdsActionDropdownItems="<%= viewSpaceContentsSummarySectionDisplayContext.getFDSActionDropdownItems(request) %>"
 			formName="fm"
 			id="<%= CMSSiteInitializerFDSNames.SPACE_CONTENTS_SUMMARY_SECTION %>"
 			propsTransformer="{AssetsFDSPropsTransformer} from site-cms-site-initializer"

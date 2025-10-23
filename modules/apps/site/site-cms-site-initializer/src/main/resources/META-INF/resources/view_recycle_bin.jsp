@@ -24,7 +24,7 @@ ViewRecycleBinSectionDisplayContext viewRecycleBinSectionDisplayContext = (ViewR
 			apiURL="<%= viewRecycleBinSectionDisplayContext.getAPIURL() %>"
 			bulkActionDropdownItems="<%= viewRecycleBinSectionDisplayContext.getBulkActionDropdownItems() %>"
 			emptyState="<%= viewRecycleBinSectionDisplayContext.getEmptyState() %>"
-			fdsActionDropdownItems="<%= viewRecycleBinSectionDisplayContext.getFDSActionDropdownItems() %>"
+			fdsActionDropdownItems="<%= viewRecycleBinSectionDisplayContext.getFDSActionDropdownItems(request) %>"
 			formName="fm"
 			id="<%= CMSSiteInitializerFDSNames.RECYCLE_BIN_SECTION %>"
 			itemsPerPage="<%= 20 %>"

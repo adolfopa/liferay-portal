@@ -63,9 +63,11 @@ public class ViewFilesSectionDisplayContext
 	}
 
 	@Override
-	public List<FDSActionDropdownItem> getFDSActionDropdownItems() {
+	public List<FDSActionDropdownItem> getFDSActionDropdownItems(
+		HttpServletRequest httpServletRequest) {
+
 		List<FDSActionDropdownItem> fdsActionDropdownItems =
-			super.getFDSActionDropdownItems();
+			super.getFDSActionDropdownItems(httpServletRequest);
 
 		fdsActionDropdownItems.add(
 			5,

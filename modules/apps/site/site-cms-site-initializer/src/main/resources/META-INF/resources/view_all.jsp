@@ -26,7 +26,7 @@ ViewAllSectionDisplayContext viewAllSectionDisplayContext = (ViewAllSectionDispl
 			bulkActionDropdownItems="<%= viewAllSectionDisplayContext.getBulkActionDropdownItems() %>"
 			creationMenu="<%= viewAllSectionDisplayContext.getCreationMenu(request) %>"
 			emptyState="<%= viewAllSectionDisplayContext.getEmptyState() %>"
-			fdsActionDropdownItems="<%= viewAllSectionDisplayContext.getFDSActionDropdownItems() %>"
+			fdsActionDropdownItems="<%= viewAllSectionDisplayContext.getFDSActionDropdownItems(request) %>"
 			formName="fm"
 			id="<%= CMSSiteInitializerFDSNames.ALL_SECTION %>"
 			itemsPerPage="<%= 20 %>"

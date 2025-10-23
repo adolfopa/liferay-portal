@@ -157,7 +157,9 @@ public class ViewRecycleBinSectionDisplayContext
 	}
 
 	@Override
-	public List<FDSActionDropdownItem> getFDSActionDropdownItems() {
+	public List<FDSActionDropdownItem> getFDSActionDropdownItems(
+		HttpServletRequest httpServletRequest) {
+
 		return ListUtil.fromArray(
 			new FDSActionDropdownItem(
 				ActionUtil.getBaseViewFolderRecycleBinURL(themeDisplay) +

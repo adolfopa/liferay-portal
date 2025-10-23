@@ -9,6 +9,7 @@ import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.document.library.configuration.DLConfiguration;
 import com.liferay.fragment.renderer.FragmentRenderer;
 import com.liferay.frontend.data.set.SystemFDSEntry;
+import com.liferay.frontend.data.set.action.FDSItemsActions;
 import com.liferay.object.model.ObjectEntryFolder;
 import com.liferay.object.service.ObjectDefinitionService;
 import com.liferay.object.service.ObjectDefinitionSettingLocalService;
@@ -59,9 +60,10 @@ public class ViewAllJSPSectionFragmentRenderer
 		HttpServletRequest httpServletRequest) {
 
 		return new ViewAllSectionDisplayContext(
-			_allSectionSystemFDSEntry, _depotEntryLocalService,
-			_dlConfiguration, groupLocalService, httpServletRequest, language,
-			_objectDefinitionService, _objectDefinitionSettingLocalService,
+			_allSectionFDSItemActions, _allSectionSystemFDSEntry,
+			_depotEntryLocalService, _dlConfiguration, groupLocalService,
+			httpServletRequest, language, _objectDefinitionService,
+			_objectDefinitionSettingLocalService,
 			_objectEntryFolderModelResourcePermission, _portal);
 	}
 
@@ -69,6 +71,11 @@ public class ViewAllJSPSectionFragmentRenderer
 	protected String getJSPPath() {
 		return "/view_all.jsp";
 	}
+
+	@Reference(
+		target = "(frontend.data.set.name=" + CMSSiteInitializerFDSNames.ALL_SECTION + ")"
+	)
+	private FDSItemsActions _allSectionFDSItemActions;
 
 	@Reference(
 		target = "(frontend.data.set.name=" + CMSSiteInitializerFDSNames.ALL_SECTION + ")"

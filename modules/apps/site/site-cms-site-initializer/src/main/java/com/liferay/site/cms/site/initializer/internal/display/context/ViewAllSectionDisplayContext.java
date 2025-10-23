@@ -8,6 +8,7 @@ package com.liferay.site.cms.site.initializer.internal.display.context;
 import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.document.library.configuration.DLConfiguration;
 import com.liferay.frontend.data.set.SystemFDSEntry;
+import com.liferay.frontend.data.set.action.FDSItemsActions;
 import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.object.model.ObjectEntryFolder;
@@ -33,6 +34,7 @@ import java.util.Map;
 public class ViewAllSectionDisplayContext extends BaseSectionDisplayContext {
 
 	public ViewAllSectionDisplayContext(
+		FDSItemsActions allSectionFDSItemActions,
 		SystemFDSEntry allSectionSystemFDSEntry,
 		DepotEntryLocalService depotEntryLocalService,
 		DLConfiguration dlConfiguration, GroupLocalService groupLocalService,
@@ -49,6 +51,7 @@ public class ViewAllSectionDisplayContext extends BaseSectionDisplayContext {
 			objectDefinitionSettingLocalService,
 			objectEntryFolderModelResourcePermission, portal);
 
+		_allSectionFDSItemActions = allSectionFDSItemActions;
 		_allSectionSystemFDSEntry = allSectionSystemFDSEntry;
 		_httpServletRequest = httpServletRequest;
 	}
@@ -106,23 +109,8 @@ public class ViewAllSectionDisplayContext extends BaseSectionDisplayContext {
 	public List<FDSActionDropdownItem> getFDSActionDropdownItems(
 		HttpServletRequest httpServletRequest) {
 
-		List<FDSActionDropdownItem> fdsActionDropdownItems =
-			super.getFDSActionDropdownItems(httpServletRequest);
-
-		fdsActionDropdownItems.add(
-			1,
-			new FDSActionDropdownItem(
-				"{embedded.file.link.href}", "download", "download",
-				LanguageUtil.get(httpServletRequest, "download"), "get", null,
-				"link"));
-		fdsActionDropdownItems.add(
-			2,
-			new FDSActionDropdownItem(
-				StringPool.BLANK, "info-circle-open", "show-details",
-				LanguageUtil.get(httpServletRequest, "show-details"), null,
-				null, "infoPanel"));
-
-		return fdsActionDropdownItems;
+		return _allSectionFDSItemActions.getFDSActionDropdownItems(
+			httpServletRequest);
 	}
 
 	@Override
@@ -132,6 +120,7 @@ public class ViewAllSectionDisplayContext extends BaseSectionDisplayContext {
 				"eq 'files')");
 	}
 
+	private final FDSItemsActions _allSectionFDSItemActions;
 	private final SystemFDSEntry _allSectionSystemFDSEntry;
 	private final HttpServletRequest _httpServletRequest;
 

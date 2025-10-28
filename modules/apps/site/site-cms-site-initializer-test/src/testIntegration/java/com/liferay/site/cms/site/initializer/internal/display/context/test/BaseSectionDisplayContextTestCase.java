@@ -499,7 +499,8 @@ public abstract class BaseSectionDisplayContextTestCase
 		return ReflectionTestUtil.invoke(
 			getSectionDisplayContext(
 				getMockHttpServletRequest(objectEntryFolder)),
-			"getCreationMenu", new Class<?>[0]);
+			"getCreationMenu", new Class<?>[] {HttpServletRequest.class},
+			getMockHttpServletRequest());
 	}
 
 	protected abstract Map<String, String> getExpectedCreationMenuItems()
@@ -510,7 +511,9 @@ public abstract class BaseSectionDisplayContextTestCase
 
 		return ReflectionTestUtil.invoke(
 			getSectionDisplayContext(getMockHttpServletRequest()),
-			"getFDSActionDropdownItems", new Class<?>[0]);
+			"getFDSActionDropdownItems",
+			new Class<?>[] {HttpServletRequest.class},
+			getMockHttpServletRequest());
 	}
 
 	@Override

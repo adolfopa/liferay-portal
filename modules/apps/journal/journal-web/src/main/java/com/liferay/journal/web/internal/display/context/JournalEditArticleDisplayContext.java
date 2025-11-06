@@ -1116,10 +1116,25 @@ public class JournalEditArticleDisplayContext {
 	}
 
 	public Map<String, Object> getSaveButtonsContext() throws PortalException {
+		boolean workflowEnabled = _isWorkflowEnabled();
+
 		return HashMapBuilder.<String, Object>put(
 			"articleId", getArticleId()
 		).put(
 			"defaultLanguageId", getDefaultArticleLanguageId()
+		).put(
+			"disabled",
+			() -> {
+				if ((_article != null) &&
+					(_article.getStatus() !=
+						WorkflowConstants.STATUS_APPROVED) &&
+					workflowEnabled) {
+
+					return true;
+				}
+
+				return false;
+			}
 		).put(
 			"displayDate",
 			() -> {
@@ -1153,7 +1168,7 @@ public class JournalEditArticleDisplayContext {
 		).put(
 			"timeZone", getTimeZoneMap()
 		).put(
-			"workflowEnabled", () -> _isWorkflowEnabled()
+			"workflowEnabled", workflowEnabled
 		).build();
 	}
 

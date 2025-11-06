@@ -19,6 +19,7 @@ const ACTION_SCHEDULE = 'schedule';
 export default function SaveButtons({
 	articleId: initialArticleId,
 	defaultLanguageId: initialDefaultLanguageId,
+	disabled,
 	displayDate,
 	editingDefaultValues,
 	permissionsURL,
@@ -41,7 +42,7 @@ export default function SaveButtons({
 	const [{publishModalAction, publishModalVisible}, setPublishModalState] =
 		useState({publishModalAction: '', publishModalVisible: false});
 
-	const [saveButtonDisabled, setSaveButtonDisabled] = useState(false);
+	const [saveButtonDisabled, setSaveButtonDisabled] = useState(disabled);
 
 	useEffect(() => {
 		const localeChangeHandler = (event) => {

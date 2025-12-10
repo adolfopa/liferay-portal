@@ -5,13 +5,19 @@
 
 package com.liferay.journal.web.internal.messaging;
 
+import com.liferay.data.engine.rest.dto.v2_0.DataDefinition;
+import com.liferay.data.engine.rest.resource.v2_0.DataDefinitionResource;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.journal.web.internal.constants.JournalDestinationNames;
+import com.liferay.journal.web.internal.util.DataDefinitionUtil;
 import com.liferay.portal.kernel.messaging.BaseMessageListener;
 import com.liferay.portal.kernel.messaging.Destination;
 import com.liferay.portal.kernel.messaging.DestinationConfiguration;
 import com.liferay.portal.kernel.messaging.DestinationFactory;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageListener;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.MapUtil;
 
 import org.osgi.framework.BundleContext;
@@ -56,12 +62,42 @@ public class ImportAndOverrideDataDefinitionMessageListener
 
 	@Override
 	protected void doReceive(Message message) throws Exception {
-		throw new UnsupportedOperationException();
+		DataDefinitionResource.Builder dataDefinitionResourcedBuilder =
+			_dataDefinitionResourceFactory.create();
+
+		DataDefinitionResource dataDefinitionResource =
+			dataDefinitionResourcedBuilder.user(
+				_userLocalService.getUser(message.getLong("userId"))
+			).build();
+
+		DataDefinition dataDefinition = DataDefinition.toDTO(
+			message.getString("json"));
+
+		DDMStructure ddmStructure = _ddmStructureLocalService.getDDMStructure(
+			message.getLong("dataDefinitionId"));
+
+		DataDefinitionUtil.updateDataDefinitionFields(
+			dataDefinition, ddmStructure);
+
+		dataDefinition.setExternalReferenceCode(
+			ddmStructure::getExternalReferenceCode);
+
+		dataDefinitionResource.putDataDefinition(
+			message.getLong("dataDefinitionId"), dataDefinition);
 	}
+
+	@Reference
+	private DataDefinitionResource.Factory _dataDefinitionResourceFactory;
+
+	@Reference
+	private DDMStructureLocalService _ddmStructureLocalService;
 
 	@Reference
 	private DestinationFactory _destinationFactory;
 
 	private ServiceRegistration<Destination> _serviceRegistration;
+
+	@Reference
+	private UserLocalService _userLocalService;
 
 }

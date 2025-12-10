@@ -56,6 +56,13 @@ public interface JournalWebConfiguration {
 	)
 	public boolean journalFeedForceAutogenerateId();
 
+	@Meta.AD(
+		deflt = "false",
+		name = "journal-import-and-override-structure-asynchronously",
+		required = false
+	)
+	public boolean journalImportAndOverrideStructureAsynchronously();
+
 	@Meta.AD(deflt = "7", name = "max-add-menu-items", required = false)
 	public int maxAddMenuItems();
 

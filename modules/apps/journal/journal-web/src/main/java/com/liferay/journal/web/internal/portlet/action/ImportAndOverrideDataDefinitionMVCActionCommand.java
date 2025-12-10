@@ -5,14 +5,20 @@
 
 package com.liferay.journal.web.internal.portlet.action;
 
+import com.liferay.data.engine.rest.resource.v2_0.DataDefinitionResource;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.journal.constants.JournalPortletKeys;
+import com.liferay.journal.web.internal.configuration.JournalWebConfiguration;
 import com.liferay.journal.web.internal.constants.JournalDestinationNames;
+import com.liferay.journal.web.internal.util.ImportDataDefinitionHelper;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageBus;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -26,13 +32,18 @@ import com.liferay.portal.kernel.util.WebKeys;
 import jakarta.portlet.ActionRequest;
 import jakarta.portlet.ActionResponse;
 
+import java.util.Map;
+
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Leticia Maciel
  */
 @Component(
+	configurationPid = "com.liferay.journal.web.internal.configuration.JournalWebConfiguration",
 	property = {
 		"jakarta.portlet.name=" + JournalPortletKeys.JOURNAL,
 		"mvc.command.name=/journal/import_and_override_data_definition"
@@ -42,41 +53,41 @@ import org.osgi.service.component.annotations.Reference;
 public class ImportAndOverrideDataDefinitionMVCActionCommand
 	extends BaseMVCActionCommand {
 
+	@Activate
+	@Modified
+	protected void activate(Map<String, Object> properties) {
+		_journalWebConfiguration = ConfigurableUtil.createConfigurable(
+			JournalWebConfiguration.class, properties);
+	}
+
 	@Override
 	protected void doProcessAction(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
 		try {
-			Message message = new Message();
+			ThemeDisplay themeDisplay =
+				(ThemeDisplay)actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
-			message.setValues(
-				HashMapBuilder.<String, Object>put(
-					"dataDefinitionId",
-					ParamUtil.getLong(actionRequest, "dataDefinitionId")
-				).put(
-					"json",
-					() -> {
-						UploadPortletRequest uploadPortletRequest =
-							_portal.getUploadPortletRequest(actionRequest);
+			long userId = themeDisplay.getUserId();
 
-						return FileUtil.read(
-							uploadPortletRequest.getFile("jsonFile"));
-					}
-				).put(
-					"userId",
-					() -> {
-						ThemeDisplay themeDisplay =
-							(ThemeDisplay)actionRequest.getAttribute(
-								WebKeys.THEME_DISPLAY);
+			long dataDefinitionId = ParamUtil.getLong(
+				actionRequest, "dataDefinitionId");
 
-						return themeDisplay.getUserId();
-					}
-				).build());
+			UploadPortletRequest uploadPortletRequest =
+				_portal.getUploadPortletRequest(actionRequest);
 
-			_messageBus.sendMessage(
-				JournalDestinationNames.IMPORT_AND_OVERRIDE_DATA_DEFINITION,
-				message);
+			String json = FileUtil.read(
+				uploadPortletRequest.getFile("jsonFile"));
+
+			if (_journalWebConfiguration.
+					journalImportAndOverrideStructureAsynchronously()) {
+
+				_importAndOverrideAsync(userId, dataDefinitionId, json);
+			}
+			else {
+				_importAndOverrideSync(userId, dataDefinitionId, json);
+			}
 
 			SessionMessages.add(
 				actionRequest, "importDataDefinitionSuccessMessage");
@@ -95,13 +106,56 @@ public class ImportAndOverrideDataDefinitionMVCActionCommand
 		sendRedirect(actionRequest, actionResponse);
 	}
 
+	private void _importAndOverrideAsync(
+		long userId, long dataDefinitionId, String json) {
+
+		Message message = new Message();
+
+		message.setValues(
+			HashMapBuilder.<String, Object>put(
+				"dataDefinitionId", dataDefinitionId
+			).put(
+				"json", json
+			).put(
+				"userId", userId
+			).build());
+
+		_messageBus.sendMessage(
+			JournalDestinationNames.IMPORT_AND_OVERRIDE_DATA_DEFINITION,
+			message);
+	}
+
+	private void _importAndOverrideSync(
+			long userId, long dataDefinitionId, String json)
+		throws Exception {
+
+		ImportDataDefinitionHelper importDataDefinitionHelper =
+			new ImportDataDefinitionHelper(
+				_dataDefinitionResourceFactory, _ddmStructureLocalService,
+				_userLocalService);
+
+		importDataDefinitionHelper.importAndOverride(
+			userId, dataDefinitionId, json);
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		ImportAndOverrideDataDefinitionMVCActionCommand.class);
+
+	@Reference
+	private DataDefinitionResource.Factory _dataDefinitionResourceFactory;
+
+	@Reference
+	private DDMStructureLocalService _ddmStructureLocalService;
+
+	private volatile JournalWebConfiguration _journalWebConfiguration;
 
 	@Reference
 	private MessageBus _messageBus;
 
 	@Reference
 	private Portal _portal;
+
+	@Reference
+	private UserLocalService _userLocalService;
 
 }

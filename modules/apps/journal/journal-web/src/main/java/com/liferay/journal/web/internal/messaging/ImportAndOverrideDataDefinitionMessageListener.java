@@ -5,12 +5,10 @@
 
 package com.liferay.journal.web.internal.messaging;
 
-import com.liferay.data.engine.rest.dto.v2_0.DataDefinition;
 import com.liferay.data.engine.rest.resource.v2_0.DataDefinitionResource;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.journal.web.internal.constants.JournalDestinationNames;
-import com.liferay.journal.web.internal.util.DataDefinitionUtil;
+import com.liferay.journal.web.internal.util.ImportDataDefinitionHelper;
 import com.liferay.portal.kernel.messaging.BaseMessageListener;
 import com.liferay.portal.kernel.messaging.Destination;
 import com.liferay.portal.kernel.messaging.DestinationConfiguration;
@@ -39,6 +37,10 @@ public class ImportAndOverrideDataDefinitionMessageListener
 
 	@Activate
 	protected void activate(BundleContext bundleContext) {
+		_importDataDefinitionHelper = new ImportDataDefinitionHelper(
+			_dataDefinitionResourceFactory, _ddmStructureLocalService,
+			_userLocalService);
+
 		DestinationConfiguration destinationConfiguration =
 			new DestinationConfiguration(
 				DestinationConfiguration.DESTINATION_TYPE_SERIAL,
@@ -55,6 +57,8 @@ public class ImportAndOverrideDataDefinitionMessageListener
 
 	@Deactivate
 	protected void deactivate() {
+		_importDataDefinitionHelper = null;
+
 		if (_serviceRegistration != null) {
 			_serviceRegistration.unregister();
 		}
@@ -62,28 +66,9 @@ public class ImportAndOverrideDataDefinitionMessageListener
 
 	@Override
 	protected void doReceive(Message message) throws Exception {
-		DataDefinitionResource.Builder dataDefinitionResourcedBuilder =
-			_dataDefinitionResourceFactory.create();
-
-		DataDefinitionResource dataDefinitionResource =
-			dataDefinitionResourcedBuilder.user(
-				_userLocalService.getUser(message.getLong("userId"))
-			).build();
-
-		DataDefinition dataDefinition = DataDefinition.toDTO(
+		_importDataDefinitionHelper.importAndOverride(
+			message.getLong("userId"), message.getLong("dataDefinitionId"),
 			message.getString("json"));
-
-		DDMStructure ddmStructure = _ddmStructureLocalService.getDDMStructure(
-			message.getLong("dataDefinitionId"));
-
-		DataDefinitionUtil.updateDataDefinitionFields(
-			dataDefinition, ddmStructure);
-
-		dataDefinition.setExternalReferenceCode(
-			ddmStructure::getExternalReferenceCode);
-
-		dataDefinitionResource.putDataDefinition(
-			message.getLong("dataDefinitionId"), dataDefinition);
 	}
 
 	@Reference
@@ -95,6 +80,7 @@ public class ImportAndOverrideDataDefinitionMessageListener
 	@Reference
 	private DestinationFactory _destinationFactory;
 
+	private ImportDataDefinitionHelper _importDataDefinitionHelper;
 	private ServiceRegistration<Destination> _serviceRegistration;
 
 	@Reference

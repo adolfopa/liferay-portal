@@ -205,6 +205,11 @@
 				"actionId": "UPDATE",
 				"resource": "com.liferay.portal.kernel.model.User",
 				"scope": 1
+			},
+			{
+				"actionId": "VIEW",
+				"resource": "com.liferay.portal.kernel.model.UserGroup",
+				"scope": 1
 			}
 		],
 		"name": "CMS Administrator",

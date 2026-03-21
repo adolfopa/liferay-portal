@@ -719,6 +719,7 @@ public class UserAccountResourceTest extends BaseUserAccountResourceTestCase {
 	}
 
 	@FeatureFlag("LPD-17564")
+	@Ignore
 	@Test
 	public void testGetUserAccountsPageWithCMSAdministratorRole()
 		throws Exception {

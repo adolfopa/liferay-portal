@@ -189,6 +189,7 @@ public class SiteResourceTest extends BaseSiteResourceTestCase {
 		throws Exception {
 	}
 
+	@FeatureFlag("LPD-17564")
 	@Override
 	@Test
 	public void testGetSitesPage() throws Exception {
@@ -197,43 +198,11 @@ public class SiteResourceTest extends BaseSiteResourceTestCase {
 		_testGetSitesPageWithActiveAndInactiveSites();
 		_testGetSitesPageWithActiveOrSiteGroups(false, true);
 		_testGetSitesPageWithActiveOrSiteGroups(true, false);
+		_testGetSitesPageWithCMSAdministratorRole();
 		_testGetSitesPageWithDepotEntry();
 		_testGetSitesPageWithInactiveSites();
 		_testGetSitesPageWithSearch();
 		_testGetSitesPageWithoutAuthentication();
-	}
-
-	@FeatureFlag("LPD-17564")
-	@Test
-	public void testGetSitesPageWithCMSAdministratorRole() throws Exception {
-		Group originalTestGroup = testGroup;
-
-		testGroup = CMSTestUtil.getOrAddGroup(SiteResourceTest.class);
-
-		User cmsAdminUser = CMSTestUtil.addCMSAdminUser(testCompany);
-
-		Site site1 = testGetSitesPage_addSite(randomSite());
-		Site site2 = testGetSitesPage_addSite(randomSite());
-
-		SiteResource cmsAdminSiteResource = SiteResource.builder(
-		).authentication(
-			cmsAdminUser.getEmailAddress(), "test"
-		).endpoint(
-			testCompany.getVirtualHostname(), 8080, "http"
-		).locale(
-			LocaleUtil.getDefault()
-		).build();
-
-		Page<Site> page = cmsAdminSiteResource.getSitesPage(
-			null, null, Pagination.of(1, 10));
-
-		Assert.assertTrue(page.getTotalCount() >= 2);
-
-		assertContains(site1, (List<Site>)page.getItems());
-		assertContains(site2, (List<Site>)page.getItems());
-		assertValid(page);
-
-		testGroup = originalTestGroup;
 	}
 
 	@LazyReferencing
@@ -473,6 +442,37 @@ public class SiteResourceTest extends BaseSiteResourceTestCase {
 		List<Site> existingItems = (List<Site>)sitesPage.getItems();
 
 		Assert.assertEquals(originalItems, existingItems);
+	}
+
+	private void _testGetSitesPageWithCMSAdministratorRole() throws Exception {
+		Group originalTestGroup = testGroup;
+
+		testGroup = CMSTestUtil.getOrAddGroup(SiteResourceTest.class);
+
+		User cmsAdminUser = CMSTestUtil.addCMSAdminUser(testCompany);
+
+		Site site1 = testGetSitesPage_addSite(randomSite());
+		Site site2 = testGetSitesPage_addSite(randomSite());
+
+		SiteResource cmsAdminSiteResource = SiteResource.builder(
+		).authentication(
+			cmsAdminUser.getEmailAddress(), "test"
+		).endpoint(
+			testCompany.getVirtualHostname(), 8080, "http"
+		).locale(
+			LocaleUtil.getDefault()
+		).build();
+
+		Page<Site> page = cmsAdminSiteResource.getSitesPage(
+			null, null, Pagination.of(1, 10));
+
+		Assert.assertTrue(page.getTotalCount() >= 2);
+
+		assertContains(site1, (List<Site>)page.getItems());
+		assertContains(site2, (List<Site>)page.getItems());
+		assertValid(page);
+
+		testGroup = originalTestGroup;
 	}
 
 	private void _testGetSitesPageWithDepotEntry() throws Exception {

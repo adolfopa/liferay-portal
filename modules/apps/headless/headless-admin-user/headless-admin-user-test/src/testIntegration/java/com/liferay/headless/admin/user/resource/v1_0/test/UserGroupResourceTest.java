@@ -112,50 +112,14 @@ public class UserGroupResourceTest extends BaseUserGroupResourceTestCase {
 		_testGetUserGroupWithNestedFields();
 	}
 
+	@FeatureFlag("LPD-17564")
 	@Override
 	@Test
 	public void testGetUserGroupsPage() throws Exception {
 		super.testGetUserGroupsPage();
 
+		_testGetUserGroupsPageWithCMSAdministratorRole();
 		_testGetUserGroupsPageWithFilter();
-	}
-
-	@FeatureFlag("LPD-17564")
-	@Test
-	public void testGetUserGroupsPageWithCMSAdministratorRole()
-		throws Exception {
-
-		Group originalTestGroup = testGroup;
-
-		testGroup = CMSTestUtil.getOrAddGroup(UserGroupResourceTest.class);
-
-		User cmsAdminUser = CMSTestUtil.addCMSAdminUser(testCompany);
-
-		UserGroup userGroup1 = testGetUserUserGroups_addUserGroup(
-			cmsAdminUser.getUserId(), randomUserGroup());
-		UserGroup userGroup2 = testGetUserUserGroups_addUserGroup(
-			cmsAdminUser.getUserId(), randomUserGroup());
-
-		UserGroupResource cmsAdminUserGroupResource = UserGroupResource.builder(
-		).authentication(
-			cmsAdminUser.getEmailAddress(), "test"
-		).endpoint(
-			testCompany.getVirtualHostname(), 8080, "http"
-		).locale(
-			LocaleUtil.getDefault()
-		).build();
-
-		Page<UserGroup> page = cmsAdminUserGroupResource.getUserGroupsPage(
-			null, null, Pagination.of(1, 10), null);
-
-		Assert.assertEquals(2, page.getTotalCount());
-
-		assertEqualsIgnoringOrder(
-			Arrays.asList(userGroup1, userGroup2),
-			(List<UserGroup>)page.getItems());
-		assertValid(page);
-
-		testGroup = originalTestGroup;
 	}
 
 	@Override
@@ -371,6 +335,42 @@ public class UserGroupResourceTest extends BaseUserGroupResourceTestCase {
 
 	private UserGroup _postUserGroup(UserGroup userGroup) throws Exception {
 		return userGroupResource.postUserGroup(userGroup);
+	}
+
+	private void _testGetUserGroupsPageWithCMSAdministratorRole()
+		throws Exception {
+
+		Group originalTestGroup = testGroup;
+
+		testGroup = CMSTestUtil.getOrAddGroup(UserGroupResourceTest.class);
+
+		User cmsAdminUser = CMSTestUtil.addCMSAdminUser(testCompany);
+
+		UserGroup userGroup1 = testGetUserUserGroups_addUserGroup(
+			cmsAdminUser.getUserId(), randomUserGroup());
+		UserGroup userGroup2 = testGetUserUserGroups_addUserGroup(
+			cmsAdminUser.getUserId(), randomUserGroup());
+
+		UserGroupResource cmsAdminUserGroupResource = UserGroupResource.builder(
+		).authentication(
+			cmsAdminUser.getEmailAddress(), "test"
+		).endpoint(
+			testCompany.getVirtualHostname(), 8080, "http"
+		).locale(
+			LocaleUtil.getDefault()
+		).build();
+
+		Page<UserGroup> page = cmsAdminUserGroupResource.getUserGroupsPage(
+			null, null, Pagination.of(1, 10), null);
+
+		Assert.assertEquals(2, page.getTotalCount());
+
+		assertEqualsIgnoringOrder(
+			Arrays.asList(userGroup1, userGroup2),
+			(List<UserGroup>)page.getItems());
+		assertValid(page);
+
+		testGroup = originalTestGroup;
 	}
 
 	private void _testGetUserGroupsPageWithFilter() throws Exception {

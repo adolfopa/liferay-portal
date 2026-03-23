@@ -616,6 +616,7 @@ public class UserAccountResourceTest extends BaseUserAccountResourceTestCase {
 		Assert.assertEquals(0, page.getTotalCount());
 	}
 
+	@FeatureFlag("LPD-17564")
 	@Override
 	@Test
 	public void testGetUserAccountsPage() throws Exception {
@@ -713,48 +714,10 @@ public class UserAccountResourceTest extends BaseUserAccountResourceTestCase {
 			userAccount1, userAccount2, userAccount3, userAccount6);
 
 		_testGetUserAccountsPageWithBirthDateFilter();
+		_testGetUserAccountsPageWithCMSAdministratorRole();
 		_testGetUserAccountsPageWithCustomFields();
 		_testGetUserAccountsPageWithSortCustomField();
 		_testGetUserAccountsPageWithSortFullName();
-	}
-
-	@FeatureFlag("LPD-17564")
-	@Ignore
-	@Test
-	public void testGetUserAccountsPageWithCMSAdministratorRole()
-		throws Exception {
-
-		Group originalTestGroup = testGroup;
-
-		testGroup = CMSTestUtil.getOrAddGroup(UserAccountResourceTest.class);
-
-		User cmsAdminUser = CMSTestUtil.addCMSAdminUser(testCompany);
-
-		UserAccount userAccount1 = testGetUserAccountsPage_addUserAccount(
-			randomUserAccount());
-		UserAccount userAccount2 = testGetUserAccountsPage_addUserAccount(
-			randomUserAccount());
-
-		UserAccountResource cmsAdminUserAccountResource =
-			UserAccountResource.builder(
-			).authentication(
-				cmsAdminUser.getEmailAddress(), "test"
-			).endpoint(
-				testCompany.getVirtualHostname(), 8080, "http"
-			).locale(
-				LocaleUtil.getDefault()
-			).build();
-
-		Page<UserAccount> page =
-			cmsAdminUserAccountResource.getUserAccountsPage(
-				null, null, Pagination.of(1, 10), null);
-
-		Assert.assertTrue(page.getTotalCount() >= 2);
-
-		assertContains(userAccount1, (List<UserAccount>)page.getItems());
-		assertContains(userAccount2, (List<UserAccount>)page.getItems());
-
-		testGroup = originalTestGroup;
 	}
 
 	@Ignore
@@ -2222,6 +2185,42 @@ public class UserAccountResourceTest extends BaseUserAccountResourceTestCase {
 			StringBundler.concat(
 				"(birthDate eq ", dateFormat.format(calendar.getTime()), ")"),
 			userAccount1);
+	}
+
+	private void _testGetUserAccountsPageWithCMSAdministratorRole()
+		throws Exception {
+
+		Group originalTestGroup = testGroup;
+
+		testGroup = CMSTestUtil.getOrAddGroup(UserAccountResourceTest.class);
+
+		User cmsAdminUser = CMSTestUtil.addCMSAdminUser(testCompany);
+
+		UserAccount userAccount1 = testGetUserAccountsPage_addUserAccount(
+			randomUserAccount());
+		UserAccount userAccount2 = testGetUserAccountsPage_addUserAccount(
+			randomUserAccount());
+
+		UserAccountResource cmsAdminUserAccountResource =
+			UserAccountResource.builder(
+			).authentication(
+				cmsAdminUser.getEmailAddress(), "test"
+			).endpoint(
+				testCompany.getVirtualHostname(), 8080, "http"
+			).locale(
+				LocaleUtil.getDefault()
+			).build();
+
+		Page<UserAccount> page =
+			cmsAdminUserAccountResource.getUserAccountsPage(
+				null, null, Pagination.of(1, 10), null);
+
+		Assert.assertTrue(page.getTotalCount() >= 2);
+
+		assertContains(userAccount1, (List<UserAccount>)page.getItems());
+		assertContains(userAccount2, (List<UserAccount>)page.getItems());
+
+		testGroup = originalTestGroup;
 	}
 
 	private void _testGetUserAccountsPageWithCustomFields() throws Exception {

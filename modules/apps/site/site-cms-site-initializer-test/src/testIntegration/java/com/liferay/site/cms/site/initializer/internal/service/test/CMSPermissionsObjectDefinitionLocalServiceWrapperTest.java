@@ -74,17 +74,6 @@ public class CMSPermissionsObjectDefinitionLocalServiceWrapperTest {
 	}
 
 	private void _assertResourcePermission(
-			String actionId, long classPK, String resourceName, Role role)
-		throws Exception {
-
-		Assert.assertTrue(
-			_resourcePermissionLocalService.hasResourcePermission(
-				TestPropsValues.getCompanyId(), resourceName,
-				ResourceConstants.SCOPE_INDIVIDUAL, String.valueOf(classPK),
-				role.getRoleId(), actionId));
-	}
-
-	private void _assertResourcePermission(
 			String actionId, String resourceName, Role role)
 		throws Exception {
 
@@ -184,16 +173,27 @@ public class CMSPermissionsObjectDefinitionLocalServiceWrapperTest {
 			ActionKeys.VIEW, objectDefinition.getClassName(),
 			cmsAdministratorRole);
 
-		_assertResourcePermission(
-			ActionKeys.VIEW, objectDefinition.getObjectDefinitionId(),
-			ObjectDefinition.class.getName(),
-			_roleLocalService.getRole(
-				TestPropsValues.getCompanyId(), RoleConstants.GUEST));
-		_assertResourcePermission(
-			ActionKeys.VIEW, objectDefinition.getObjectDefinitionId(),
-			ObjectDefinition.class.getName(),
-			_roleLocalService.getRole(
-				TestPropsValues.getCompanyId(), RoleConstants.USER));
+		Role guestRole = _roleLocalService.getRole(
+			TestPropsValues.getCompanyId(), RoleConstants.GUEST);
+
+		Assert.assertFalse(
+			_resourcePermissionLocalService.hasResourcePermission(
+				TestPropsValues.getCompanyId(),
+				ObjectDefinition.class.getName(),
+				ResourceConstants.SCOPE_INDIVIDUAL,
+				String.valueOf(objectDefinition.getObjectDefinitionId()),
+				guestRole.getRoleId(), ActionKeys.VIEW));
+
+		Role userRole = _roleLocalService.getRole(
+			TestPropsValues.getCompanyId(), RoleConstants.USER);
+
+		Assert.assertFalse(
+			_resourcePermissionLocalService.hasResourcePermission(
+				TestPropsValues.getCompanyId(),
+				ObjectDefinition.class.getName(),
+				ResourceConstants.SCOPE_INDIVIDUAL,
+				String.valueOf(objectDefinition.getObjectDefinitionId()),
+				userRole.getRoleId(), ActionKeys.VIEW));
 	}
 
 	@Inject

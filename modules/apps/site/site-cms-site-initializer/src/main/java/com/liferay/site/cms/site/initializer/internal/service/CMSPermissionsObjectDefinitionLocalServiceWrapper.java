@@ -14,10 +14,8 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.Role;
-import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
-import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.ServiceWrapper;
 import com.liferay.site.cms.site.initializer.util.RoleUtil;
 
@@ -49,20 +47,6 @@ public class CMSPermissionsObjectDefinitionLocalServiceWrapper
 
 		return _setResourcePermissions(
 			super.publishSystemObjectDefinition(userId, objectDefinitionId));
-	}
-
-	private void _setObjectDefinitionResourcePermissions(
-			ObjectDefinition objectDefinition, String roleName)
-		throws PortalException {
-
-		Role role = _roleLocalService.getRole(
-			objectDefinition.getCompanyId(), roleName);
-
-		_resourcePermissionLocalService.setResourcePermissions(
-			objectDefinition.getCompanyId(), ObjectDefinition.class.getName(),
-			ResourceConstants.SCOPE_INDIVIDUAL,
-			String.valueOf(objectDefinition.getObjectDefinitionId()),
-			role.getRoleId(), new String[] {ActionKeys.VIEW});
 	}
 
 	private ObjectDefinition _setResourcePermissions(
@@ -103,11 +87,6 @@ public class CMSPermissionsObjectDefinitionLocalServiceWrapper
 					ActionKeys.DELETE, ActionKeys.PERMISSIONS,
 					ActionKeys.UPDATE, ActionKeys.VIEW
 				});
-
-			_setObjectDefinitionResourcePermissions(
-				objectDefinition, RoleConstants.GUEST);
-			_setObjectDefinitionResourcePermissions(
-				objectDefinition, RoleConstants.USER);
 		}
 		catch (Exception exception) {
 			_log.error(exception);
@@ -121,8 +100,5 @@ public class CMSPermissionsObjectDefinitionLocalServiceWrapper
 
 	@Reference
 	private ResourcePermissionLocalService _resourcePermissionLocalService;
-
-	@Reference
-	private RoleLocalService _roleLocalService;
 
 }

@@ -20,14 +20,13 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.model.GroupConstants;
-import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.site.cms.site.initializer.internal.frontend.data.set.action.ViewVersionHistoryFDSItemsActions;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -87,41 +86,8 @@ public class ViewVersionHistoryDisplayContext {
 	}
 
 	public List<FDSActionDropdownItem> getFDSActionDropdownItems() {
-		return ListUtil.fromArray(
-			new FDSActionDropdownItem(
-				"{file.link.href}", "download", "download",
-				_language.get(_httpServletRequest, "download"), "get", null,
-				"link"),
-			new FDSActionDropdownItem(
-				StringBundler.concat(
-					_themeDisplay.getPortalURL(), _themeDisplay.getPathMain(),
-					GroupConstants.CMS_FRIENDLY_URL,
-					"/edit_content_item?objectEntryId={id}",
-					"&p_l_mode=read&p_p_state=", LiferayWindowState.POP_UP,
-					"&redirect=", _themeDisplay.getURLCurrent(),
-					"&version={systemProperties.version.number}"),
-				"view", "view-content",
-				LanguageUtil.get(_httpServletRequest, "view"), null, null,
-				null),
-			new FDSActionDropdownItem(
-				StringPool.BLANK, "view", "view-file",
-				_language.get(_httpServletRequest, "view"), null, null, null),
-			new FDSActionDropdownItem(
-				"{actions.restore.href}", "restore", "restore",
-				_language.get(_httpServletRequest, "restore-version"), "put",
-				"restore", null),
-			new FDSActionDropdownItem(
-				"{actions.expire.href}", "time", "expire",
-				_language.get(_httpServletRequest, "expire"), "post", "expire",
-				null),
-			new FDSActionDropdownItem(
-				"{actions.copy.href}", "copy", "copy",
-				_language.get(_httpServletRequest, "make-a-copy"), "post",
-				"copy", null),
-			new FDSActionDropdownItem(
-				"{actions.delete.href}", "trash", "delete",
-				_language.get(_httpServletRequest, "delete"), "delete",
-				"delete", null));
+		return ViewVersionHistoryFDSItemsActions.buildFDSActionDropdownItems(
+			_httpServletRequest, _language);
 	}
 
 	public FDSSortItemList getFDSSortItemList() {

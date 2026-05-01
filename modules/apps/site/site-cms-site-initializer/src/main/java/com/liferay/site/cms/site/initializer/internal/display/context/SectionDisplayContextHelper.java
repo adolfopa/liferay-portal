@@ -50,6 +50,7 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.site.cms.site.initializer.internal.util.ActionUtil;
 import com.liferay.translation.constants.TranslationPortletKeys;
+import com.liferay.trash.TrashHelper;
 
 import jakarta.portlet.ActionRequest;
 
@@ -711,6 +712,93 @@ public class SectionDisplayContextHelper {
 			));
 
 		return fdsActionDropdownItems;
+	}
+
+	public List<DropdownItem> getRecycleBinBulkActionDropdownItems(
+		HttpServletRequest httpServletRequest) {
+
+		return ListUtil.fromArray(
+			FDSActionDropdownItemBuilder.setHref(
+				"#"
+			).setIcon(
+				"trash"
+			).setLabel(
+				LanguageUtil.get(httpServletRequest, "delete")
+			).build(
+				"delete"
+			),
+			FDSActionDropdownItemBuilder.setHref(
+				"#"
+			).setIcon(
+				"restore"
+			).setLabel(
+				LanguageUtil.get(httpServletRequest, "restore")
+			).build(
+				"restore"
+			));
+	}
+
+	public List<FDSActionDropdownItem> getRecycleBinFDSActionDropdownItems(
+		HttpServletRequest httpServletRequest) {
+
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)httpServletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+		return ListUtil.fromArray(
+			new FDSActionDropdownItem(
+				ActionUtil.getBaseViewFolderRecycleBinURL(themeDisplay) +
+					"{embedded.id}",
+				"view", "actionLinkFolder",
+				LanguageUtil.get(httpServletRequest, "view-folder"), "get",
+				"get", null,
+				HashMapBuilder.<String, Object>put(
+					"entryClassName", ObjectEntryFolder.class.getName()
+				).build()),
+			new FDSActionDropdownItem(
+				null, "trash", "delete",
+				LanguageUtil.get(httpServletRequest, "delete"), "delete",
+				"delete", null),
+			new FDSActionDropdownItem(
+				null, "restore", "restore",
+				LanguageUtil.get(httpServletRequest, "restore"), "restore",
+				"restore", null));
+	}
+
+	public String getRecycleBinFilterString(
+		HttpServletRequest httpServletRequest, TrashHelper trashHelper) {
+
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)httpServletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+		String filterString =
+			"cmsRoot eq true and (cmsSection eq 'contents' or cmsSection eq " +
+				"'files')";
+
+		List<Long> groupIds = ListUtil.filter(
+			DepotEntryServiceUtil.getDepotEntryGroupIds(
+				themeDisplay.getCompanyId(), themeDisplay.getUserId(),
+				DepotConstants.TYPE_SPACE),
+			groupId -> {
+				Group group = _groupLocalService.fetchGroup(groupId);
+
+				if ((group != null) && trashHelper.isTrashEnabled(group)) {
+					return true;
+				}
+
+				return false;
+			});
+
+		if (ListUtil.isEmpty(groupIds)) {
+			return filterString + " and status eq " +
+				WorkflowConstants.STATUS_ANY;
+		}
+
+		return StringBundler.concat(
+			filterString, " and groupIds/any(g:g in (",
+			StringUtil.merge(groupIds, StringPool.COMMA), ")) and status eq ",
+			WorkflowConstants.STATUS_IN_TRASH);
 	}
 
 	private void _addEditCategoriesAndTagsBulkActions(

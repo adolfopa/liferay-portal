@@ -5,9 +5,7 @@
 
 package com.liferay.site.cms.site.initializer.internal.display.context;
 
-import com.liferay.depot.constants.DepotConstants;
 import com.liferay.depot.service.DepotEntryLocalService;
-import com.liferay.depot.service.DepotEntryServiceUtil;
 import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.headless.asset.library.resource.v1_0.AssetLibraryResource;
@@ -16,7 +14,6 @@ import com.liferay.object.service.ObjectDefinitionService;
 import com.liferay.object.service.ObjectDefinitionSettingLocalService;
 import com.liferay.object.service.ObjectEntryFolderLocalService;
 import com.liferay.petra.string.CharPool;
-import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -28,7 +25,6 @@ import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
-import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -150,16 +146,8 @@ public class ViewRecycleBinSectionDisplayContext
 
 	@Override
 	public List<DropdownItem> getBulkActionDropdownItems() {
-		List<DropdownItem> bulkActionDropdownItems =
-			super.getBulkActionDropdownItems();
-
-		bulkActionDropdownItems.add(
-			new FDSActionDropdownItem(
-				"#", "restore", "restore",
-				LanguageUtil.get(httpServletRequest, "restore"), null, null,
-				null));
-
-		return bulkActionDropdownItems;
+		return sectionDisplayContextHelper.getRecycleBinBulkActionDropdownItems(
+			httpServletRequest);
 	}
 
 	public Map<String, Object> getEmptyState() {
@@ -175,55 +163,14 @@ public class ViewRecycleBinSectionDisplayContext
 
 	@Override
 	public List<FDSActionDropdownItem> getFDSActionDropdownItems() {
-		return ListUtil.fromArray(
-			new FDSActionDropdownItem(
-				ActionUtil.getBaseViewFolderRecycleBinURL(themeDisplay) +
-					"{embedded.id}",
-				"view", "actionLinkFolder",
-				LanguageUtil.get(httpServletRequest, "view-folder"), "get",
-				"get", null,
-				HashMapBuilder.<String, Object>put(
-					"entryClassName", ObjectEntryFolder.class.getName()
-				).build()),
-			new FDSActionDropdownItem(
-				null, "trash", "delete",
-				language.get(httpServletRequest, "delete"), "delete", "delete",
-				null),
-			new FDSActionDropdownItem(
-				null, "restore", "restore",
-				language.get(httpServletRequest, "restore"), "restore",
-				"restore", null));
+		return sectionDisplayContextHelper.getRecycleBinFDSActionDropdownItems(
+			httpServletRequest);
 	}
 
 	@Override
 	protected String getCMSSectionFilterString() {
-		String filterString =
-			"cmsRoot eq true and (cmsSection eq 'contents' or cmsSection eq " +
-				"'files')";
-
-		List<Long> groupIds = ListUtil.filter(
-			DepotEntryServiceUtil.getDepotEntryGroupIds(
-				themeDisplay.getCompanyId(), themeDisplay.getUserId(),
-				DepotConstants.TYPE_SPACE),
-			groupId -> {
-				Group group = groupLocalService.fetchGroup(groupId);
-
-				if ((group != null) && _trashHelper.isTrashEnabled(group)) {
-					return true;
-				}
-
-				return false;
-			});
-
-		if (ListUtil.isEmpty(groupIds)) {
-			return filterString + " and status eq " +
-				WorkflowConstants.STATUS_ANY;
-		}
-
-		return StringBundler.concat(
-			filterString, " and groupIds/any(g:g in (",
-			StringUtil.merge(groupIds, ","), ")) and status eq ",
-			WorkflowConstants.STATUS_IN_TRASH);
+		return sectionDisplayContextHelper.getRecycleBinFilterString(
+			httpServletRequest, _trashHelper);
 	}
 
 	private final AssetLibraryResource.Factory _assetLibraryResourceFactory;

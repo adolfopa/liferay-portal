@@ -6,30 +6,20 @@
 package com.liferay.site.cms.site.initializer.internal.display.context;
 
 import com.liferay.asset.categories.admin.web.constants.AssetCategoriesAdminPortletKeys;
-import com.liferay.asset.kernel.model.AssetVocabulary;
 import com.liferay.asset.tags.constants.AssetTagsAdminPortletKeys;
 import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
-import com.liferay.frontend.data.set.model.FDSActionDropdownItemBuilder;
-import com.liferay.frontend.data.set.model.FDSActionDropdownItemList;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
-import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenuBuilder;
-import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.GroupConstants;
-import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
-import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.site.cms.site.initializer.internal.frontend.data.set.action.ViewVocabulariesFDSCreationMenu;
+import com.liferay.site.cms.site.initializer.internal.frontend.data.set.action.ViewVocabulariesFDSItemsActions;
 import com.liferay.site.cms.site.initializer.internal.util.ExportImportUtil;
-import com.liferay.taglib.security.PermissionsURLTag;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -54,18 +44,8 @@ public class ViewVocabulariesDisplayContext {
 	}
 
 	public CreationMenu getCreationMenu() {
-		return CreationMenuBuilder.addDropdownItem(
-			dropdownItem -> {
-				dropdownItem.setHref(
-					PortalUtil.getLayoutFullURL(
-						LayoutLocalServiceUtil.getLayoutByFriendlyURL(
-							_themeDisplay.getScopeGroupId(), false,
-							"/categorization/new-vocabulary"),
-						_themeDisplay));
-				dropdownItem.setLabel(
-					LanguageUtil.get(_httpServletRequest, "new-vocabulary"));
-			}
-		).build();
+		return ViewVocabulariesFDSCreationMenu.buildCreationMenu(
+			_httpServletRequest);
 	}
 
 	public Map<String, Object> getEmptyState() {
@@ -82,70 +62,9 @@ public class ViewVocabulariesDisplayContext {
 		).build();
 	}
 
-	public List<FDSActionDropdownItem> getFDSActionDropdownItems()
-		throws PortalException {
-
-		String fullLayoutURL = PortalUtil.getLayoutFullURL(
-			LayoutLocalServiceUtil.getLayoutByFriendlyURL(
-				_themeDisplay.getScopeGroupId(), false,
-				"/categorization/edit-vocabulary"),
-			_themeDisplay);
-
-		return FDSActionDropdownItemList.of(
-			FDSActionDropdownItemBuilder.setFDSActionDropdownItems(
-				FDSActionDropdownItemList.of(
-					new FDSActionDropdownItem(
-						fullLayoutURL + "?vocabularyId={id}", "pencil", "edit",
-						LanguageUtil.get(_httpServletRequest, "edit"), "get",
-						"update", null),
-					new FDSActionDropdownItem(
-						HttpComponentsUtil.addParameter(
-							PortalUtil.getLayoutFullURL(
-								LayoutLocalServiceUtil.getLayoutByFriendlyURL(
-									_themeDisplay.getScopeGroupId(), false,
-									"/categorization/new-category"),
-								_themeDisplay),
-							"vocabularyId", "{id}"),
-						null, "add-category",
-						LanguageUtil.get(_httpServletRequest, "add-category"),
-						"get", "update", null),
-					new FDSActionDropdownItem(
-						HttpComponentsUtil.addParameter(
-							PortalUtil.getLayoutFullURL(
-								LayoutLocalServiceUtil.getLayoutByFriendlyURL(
-									_themeDisplay.getScopeGroupId(), false,
-									"/categorization/view-categories"),
-								_themeDisplay),
-							"vocabularyId", "{id}"),
-						null, "view-categories",
-						LanguageUtil.get(
-							_httpServletRequest, "view-categories"),
-						"get", null, null))
-			).setSeparator(
-				true
-			).setType(
-				"group"
-			).build(
-				"view-edit"
-			),
-			FDSActionDropdownItemBuilder.setFDSActionDropdownItems(
-				FDSActionDropdownItemList.of(
-					new FDSActionDropdownItem(
-						_getEditPermissionsURL(), "password-policies",
-						"permissions",
-						LanguageUtil.get(_httpServletRequest, "permissions"),
-						"get", null, "modal-permissions"),
-					new FDSActionDropdownItem(
-						null, "trash", "delete",
-						LanguageUtil.get(_httpServletRequest, "delete"), null,
-						"delete", null))
-			).setSeparator(
-				true
-			).setType(
-				"group"
-			).build(
-				"delete-permissions"
-			));
+	public List<FDSActionDropdownItem> getFDSActionDropdownItems() {
+		return ViewVocabulariesFDSItemsActions.buildFDSActionDropdownItems(
+			_httpServletRequest);
 	}
 
 	public Map<String, Object> getReactData() throws Exception {
@@ -178,25 +97,6 @@ public class ViewVocabulariesDisplayContext {
 		).build();
 	}
 
-	private String _getEditPermissionsURL() {
-		String url = StringPool.BLANK;
-
-		try {
-			url = PermissionsURLTag.doTag(
-				_themeDisplay.getURLCurrent(), AssetVocabulary.class.getName(),
-				"{name}", GroupConstants.DEFAULT_LIVE_GROUP_ID, "{id}",
-				LiferayWindowState.POP_UP.toString(), null,
-				_httpServletRequest);
-		}
-		catch (Exception exception) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(exception);
-			}
-		}
-
-		return url;
-	}
-
 	private JSONArray _putAll(JSONObject... jsonObjects) {
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
@@ -208,9 +108,6 @@ public class ViewVocabulariesDisplayContext {
 
 		return jsonArray;
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		ViewVocabulariesDisplayContext.class);
 
 	private final HttpServletRequest _httpServletRequest;
 	private final ThemeDisplay _themeDisplay;

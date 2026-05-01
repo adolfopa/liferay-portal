@@ -6,11 +6,13 @@
 package com.liferay.site.cms.site.initializer.internal.fragment.renderer;
 
 import com.liferay.fragment.renderer.FragmentRenderer;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.site.cms.site.initializer.internal.display.context.ViewStructuresDisplayContext;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Sam Ziemer
@@ -33,12 +35,16 @@ public class ViewStructuresJSPSectionFragmentRenderer
 	protected ViewStructuresDisplayContext getDisplayContext(
 		HttpServletRequest httpServletRequest) {
 
-		return new ViewStructuresDisplayContext(httpServletRequest);
+		return new ViewStructuresDisplayContext(
+			httpServletRequest, language, _portal);
 	}
 
 	@Override
 	protected String getJSPPath() {
 		return "/view_structures.jsp";
 	}
+
+	@Reference
+	private Portal _portal;
 
 }

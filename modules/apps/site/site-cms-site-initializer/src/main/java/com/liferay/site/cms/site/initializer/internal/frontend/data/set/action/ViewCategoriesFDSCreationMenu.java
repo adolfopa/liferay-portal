@@ -9,20 +9,21 @@ import com.liferay.frontend.data.set.action.FDSCreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenuBuilder;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
+import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.site.cms.site.initializer.internal.constants.CMSSiteInitializerFDSNames;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Adolfo Pérez
@@ -34,7 +35,8 @@ import org.osgi.service.component.annotations.Component;
 public class ViewCategoriesFDSCreationMenu implements FDSCreationMenu {
 
 	public static CreationMenu buildCreationMenu(
-		HttpServletRequest httpServletRequest) {
+		HttpServletRequest httpServletRequest, Language language,
+		LayoutLocalService layoutLocalService, Portal portal) {
 
 		ThemeDisplay themeDisplay =
 			(ThemeDisplay)httpServletRequest.getAttribute(
@@ -50,18 +52,15 @@ public class ViewCategoriesFDSCreationMenu implements FDSCreationMenu {
 					try {
 						item.setHref(
 							HttpComponentsUtil.addParameter(
-								PortalUtil.getLayoutFullURL(
-									LayoutLocalServiceUtil.
-										getLayoutByFriendlyURL(
-											themeDisplay.getScopeGroupId(),
-											false,
-											"/categorization/new-category"),
+								portal.getLayoutFullURL(
+									layoutLocalService.getLayoutByFriendlyURL(
+										themeDisplay.getScopeGroupId(), false,
+										"/categorization/new-category"),
 									themeDisplay),
 								"vocabularyId", vocabularyId));
 
 						item.setLabel(
-							LanguageUtil.get(
-								httpServletRequest, "new-category"));
+							language.get(httpServletRequest, "new-category"));
 					}
 					catch (PortalException portalException) {
 						if (_log.isDebugEnabled()) {
@@ -77,8 +76,8 @@ public class ViewCategoriesFDSCreationMenu implements FDSCreationMenu {
 				try {
 					item.setHref(
 						HttpComponentsUtil.addParameters(
-							PortalUtil.getLayoutFullURL(
-								LayoutLocalServiceUtil.getLayoutByFriendlyURL(
+							portal.getLayoutFullURL(
+								layoutLocalService.getLayoutByFriendlyURL(
 									themeDisplay.getScopeGroupId(), false,
 									"/categorization/new-category"),
 								themeDisplay),
@@ -86,8 +85,7 @@ public class ViewCategoriesFDSCreationMenu implements FDSCreationMenu {
 							vocabularyId));
 
 					item.setLabel(
-						LanguageUtil.get(
-							httpServletRequest, "new-subcategory"));
+						language.get(httpServletRequest, "new-subcategory"));
 				}
 				catch (PortalException portalException) {
 					if (_log.isDebugEnabled()) {
@@ -100,10 +98,20 @@ public class ViewCategoriesFDSCreationMenu implements FDSCreationMenu {
 
 	@Override
 	public CreationMenu getCreationMenu(HttpServletRequest httpServletRequest) {
-		return buildCreationMenu(httpServletRequest);
+		return buildCreationMenu(
+			httpServletRequest, _language, _layoutLocalService, _portal);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		ViewCategoriesFDSCreationMenu.class);
+
+	@Reference
+	private Language _language;
+
+	@Reference
+	private LayoutLocalService _layoutLocalService;
+
+	@Reference
+	private Portal _portal;
 
 }

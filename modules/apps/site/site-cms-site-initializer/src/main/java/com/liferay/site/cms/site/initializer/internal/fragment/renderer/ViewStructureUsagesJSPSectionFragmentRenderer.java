@@ -10,6 +10,7 @@ import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.site.cms.site.initializer.internal.display.context.ViewStructureUsagesDisplayContext;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,7 +43,7 @@ public class ViewStructureUsagesJSPSectionFragmentRenderer
 				objectDefinitionId);
 
 		return new ViewStructureUsagesDisplayContext(
-			httpServletRequest, language, objectDefinition);
+			httpServletRequest, language, objectDefinition, _portal);
 	}
 
 	@Override
@@ -52,5 +53,8 @@ public class ViewStructureUsagesJSPSectionFragmentRenderer
 
 	@Reference
 	private ObjectDefinitionLocalService _objectDefinitionLocalService;
+
+	@Reference
+	private Portal _portal;
 
 }

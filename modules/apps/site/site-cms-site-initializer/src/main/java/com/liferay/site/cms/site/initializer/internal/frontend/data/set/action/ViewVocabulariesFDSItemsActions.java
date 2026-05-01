@@ -12,15 +12,15 @@ import com.liferay.frontend.data.set.model.FDSActionDropdownItemBuilder;
 import com.liferay.frontend.data.set.model.FDSActionDropdownItemList;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
-import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
+import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
-import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.site.cms.site.initializer.internal.constants.CMSSiteInitializerFDSNames;
 import com.liferay.taglib.security.PermissionsURLTag;
@@ -30,6 +30,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Adolfo Pérez
@@ -41,15 +42,16 @@ import org.osgi.service.component.annotations.Component;
 public class ViewVocabulariesFDSItemsActions implements FDSItemsActions {
 
 	public static List<FDSActionDropdownItem> buildFDSActionDropdownItems(
-		HttpServletRequest httpServletRequest) {
+		HttpServletRequest httpServletRequest, Language language,
+		LayoutLocalService layoutLocalService, Portal portal) {
 
 		ThemeDisplay themeDisplay =
 			(ThemeDisplay)httpServletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
 
 		try {
-			String fullLayoutURL = PortalUtil.getLayoutFullURL(
-				LayoutLocalServiceUtil.getLayoutByFriendlyURL(
+			String fullLayoutURL = portal.getLayoutFullURL(
+				layoutLocalService.getLayoutByFriendlyURL(
 					themeDisplay.getScopeGroupId(), false,
 					"/categorization/edit-vocabulary"),
 				themeDisplay);
@@ -59,36 +61,29 @@ public class ViewVocabulariesFDSItemsActions implements FDSItemsActions {
 					FDSActionDropdownItemList.of(
 						new FDSActionDropdownItem(
 							fullLayoutURL + "?vocabularyId={id}", "pencil",
-							"edit",
-							LanguageUtil.get(httpServletRequest, "edit"), "get",
-							"update", null),
-						new FDSActionDropdownItem(
-							HttpComponentsUtil.addParameter(
-								PortalUtil.getLayoutFullURL(
-									LayoutLocalServiceUtil.
-										getLayoutByFriendlyURL(
-											themeDisplay.getScopeGroupId(),
-											false,
-											"/categorization/new-category"),
-									themeDisplay),
-								"vocabularyId", "{id}"),
-							null, "add-category",
-							LanguageUtil.get(
-								httpServletRequest, "add-category"),
+							"edit", language.get(httpServletRequest, "edit"),
 							"get", "update", null),
 						new FDSActionDropdownItem(
 							HttpComponentsUtil.addParameter(
-								PortalUtil.getLayoutFullURL(
-									LayoutLocalServiceUtil.
-										getLayoutByFriendlyURL(
-											themeDisplay.getScopeGroupId(),
-											false,
-											"/categorization/view-categories"),
+								portal.getLayoutFullURL(
+									layoutLocalService.getLayoutByFriendlyURL(
+										themeDisplay.getScopeGroupId(), false,
+										"/categorization/new-category"),
+									themeDisplay),
+								"vocabularyId", "{id}"),
+							null, "add-category",
+							language.get(httpServletRequest, "add-category"),
+							"get", "update", null),
+						new FDSActionDropdownItem(
+							HttpComponentsUtil.addParameter(
+								portal.getLayoutFullURL(
+									layoutLocalService.getLayoutByFriendlyURL(
+										themeDisplay.getScopeGroupId(), false,
+										"/categorization/view-categories"),
 									themeDisplay),
 								"vocabularyId", "{id}"),
 							null, "view-categories",
-							LanguageUtil.get(
-								httpServletRequest, "view-categories"),
+							language.get(httpServletRequest, "view-categories"),
 							"get", null, null))
 				).setSeparator(
 					true
@@ -103,12 +98,12 @@ public class ViewVocabulariesFDSItemsActions implements FDSItemsActions {
 							_getEditPermissionsURL(
 								httpServletRequest, themeDisplay),
 							"password-policies", "permissions",
-							LanguageUtil.get(httpServletRequest, "permissions"),
+							language.get(httpServletRequest, "permissions"),
 							"get", null, "modal-permissions"),
 						new FDSActionDropdownItem(
 							null, "trash", "delete",
-							LanguageUtil.get(httpServletRequest, "delete"),
-							null, "delete", null))
+							language.get(httpServletRequest, "delete"), null,
+							"delete", null))
 				).setSeparator(
 					true
 				).setType(
@@ -130,7 +125,8 @@ public class ViewVocabulariesFDSItemsActions implements FDSItemsActions {
 	public List<FDSActionDropdownItem> getFDSActionDropdownItems(
 		HttpServletRequest httpServletRequest) {
 
-		return buildFDSActionDropdownItems(httpServletRequest);
+		return buildFDSActionDropdownItems(
+			httpServletRequest, _language, _layoutLocalService, _portal);
 	}
 
 	private static String _getEditPermissionsURL(
@@ -153,5 +149,14 @@ public class ViewVocabulariesFDSItemsActions implements FDSItemsActions {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		ViewVocabulariesFDSItemsActions.class);
+
+	@Reference
+	private Language _language;
+
+	@Reference
+	private LayoutLocalService _layoutLocalService;
+
+	@Reference
+	private Portal _portal;
 
 }

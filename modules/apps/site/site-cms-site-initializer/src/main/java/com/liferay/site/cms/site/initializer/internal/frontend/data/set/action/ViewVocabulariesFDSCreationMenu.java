@@ -9,18 +9,19 @@ import com.liferay.frontend.data.set.action.FDSCreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenuBuilder;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
+import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.site.cms.site.initializer.internal.constants.CMSSiteInitializerFDSNames;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Adolfo Pérez
@@ -32,7 +33,8 @@ import org.osgi.service.component.annotations.Component;
 public class ViewVocabulariesFDSCreationMenu implements FDSCreationMenu {
 
 	public static CreationMenu buildCreationMenu(
-		HttpServletRequest httpServletRequest) {
+		HttpServletRequest httpServletRequest, Language language,
+		LayoutLocalService layoutLocalService, Portal portal) {
 
 		ThemeDisplay themeDisplay =
 			(ThemeDisplay)httpServletRequest.getAttribute(
@@ -42,13 +44,13 @@ public class ViewVocabulariesFDSCreationMenu implements FDSCreationMenu {
 			dropdownItem -> {
 				try {
 					dropdownItem.setHref(
-						PortalUtil.getLayoutFullURL(
-							LayoutLocalServiceUtil.getLayoutByFriendlyURL(
+						portal.getLayoutFullURL(
+							layoutLocalService.getLayoutByFriendlyURL(
 								themeDisplay.getScopeGroupId(), false,
 								"/categorization/new-vocabulary"),
 							themeDisplay));
 					dropdownItem.setLabel(
-						LanguageUtil.get(httpServletRequest, "new-vocabulary"));
+						language.get(httpServletRequest, "new-vocabulary"));
 				}
 				catch (PortalException portalException) {
 					if (_log.isDebugEnabled()) {
@@ -61,10 +63,20 @@ public class ViewVocabulariesFDSCreationMenu implements FDSCreationMenu {
 
 	@Override
 	public CreationMenu getCreationMenu(HttpServletRequest httpServletRequest) {
-		return buildCreationMenu(httpServletRequest);
+		return buildCreationMenu(
+			httpServletRequest, _language, _layoutLocalService, _portal);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		ViewVocabulariesFDSCreationMenu.class);
+
+	@Reference
+	private Language _language;
+
+	@Reference
+	private LayoutLocalService _layoutLocalService;
+
+	@Reference
+	private Portal _portal;
 
 }

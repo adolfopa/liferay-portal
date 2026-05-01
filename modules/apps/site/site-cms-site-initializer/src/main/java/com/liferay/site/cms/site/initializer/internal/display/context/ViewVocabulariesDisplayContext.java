@@ -12,11 +12,12 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
+import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
-import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.site.cms.site.initializer.internal.frontend.data.set.action.ViewVocabulariesFDSCreationMenu;
 import com.liferay.site.cms.site.initializer.internal.frontend.data.set.action.ViewVocabulariesFDSItemsActions;
 import com.liferay.site.cms.site.initializer.internal.util.ExportImportUtil;
@@ -32,9 +33,14 @@ import java.util.Map;
 public class ViewVocabulariesDisplayContext {
 
 	public ViewVocabulariesDisplayContext(
-		HttpServletRequest httpServletRequest, ThemeDisplay themeDisplay) {
+		HttpServletRequest httpServletRequest, Language language,
+		LayoutLocalService layoutLocalService, Portal portal,
+		ThemeDisplay themeDisplay) {
 
 		_httpServletRequest = httpServletRequest;
+		_language = language;
+		_layoutLocalService = layoutLocalService;
+		_portal = portal;
 		_themeDisplay = themeDisplay;
 	}
 
@@ -45,7 +51,7 @@ public class ViewVocabulariesDisplayContext {
 
 	public CreationMenu getCreationMenu() {
 		return ViewVocabulariesFDSCreationMenu.buildCreationMenu(
-			_httpServletRequest);
+			_httpServletRequest, _language, _layoutLocalService, _portal);
 	}
 
 	public Map<String, Object> getEmptyState() {
@@ -64,7 +70,7 @@ public class ViewVocabulariesDisplayContext {
 
 	public List<FDSActionDropdownItem> getFDSActionDropdownItems() {
 		return ViewVocabulariesFDSItemsActions.buildFDSActionDropdownItems(
-			_httpServletRequest);
+			_httpServletRequest, _language, _layoutLocalService, _portal);
 	}
 
 	public Map<String, Object> getReactData() throws Exception {
@@ -82,15 +88,15 @@ public class ViewVocabulariesDisplayContext {
 			"activeTab", "vocabularies"
 		).put(
 			"tagsURL",
-			PortalUtil.getLayoutFullURL(
-				LayoutLocalServiceUtil.getLayoutByFriendlyURL(
+			_portal.getLayoutFullURL(
+				_layoutLocalService.getLayoutByFriendlyURL(
 					_themeDisplay.getScopeGroupId(), false,
 					"/categorization/view-tags"),
 				_themeDisplay)
 		).put(
 			"vocabulariesURL",
-			PortalUtil.getLayoutFullURL(
-				LayoutLocalServiceUtil.getLayoutByFriendlyURL(
+			_portal.getLayoutFullURL(
+				_layoutLocalService.getLayoutByFriendlyURL(
 					_themeDisplay.getScopeGroupId(), false,
 					"/categorization/view-vocabularies"),
 				_themeDisplay)
@@ -110,6 +116,9 @@ public class ViewVocabulariesDisplayContext {
 	}
 
 	private final HttpServletRequest _httpServletRequest;
+	private final Language _language;
+	private final LayoutLocalService _layoutLocalService;
+	private final Portal _portal;
 	private final ThemeDisplay _themeDisplay;
 
 }

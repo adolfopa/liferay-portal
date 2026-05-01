@@ -90,7 +90,7 @@ public class ViewCategoriesDisplayContext {
 
 	public CreationMenu getCreationMenu() {
 		return ViewCategoriesFDSCreationMenu.buildCreationMenu(
-			_httpServletRequest);
+			_httpServletRequest, _language, _layoutLocalService, _portal);
 	}
 
 	public Map<String, Object> getEmptyState() {
@@ -107,7 +107,7 @@ public class ViewCategoriesDisplayContext {
 
 	public List<FDSActionDropdownItem> getFDSActionDropdownItems() {
 		return ViewCategoriesFDSItemsActions.buildFDSActionDropdownItems(
-			_httpServletRequest);
+			_httpServletRequest, _language, _layoutLocalService, _portal);
 	}
 
 	public long getVocabularyId() {

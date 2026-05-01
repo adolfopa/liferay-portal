@@ -13,20 +13,16 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.model.GroupConstants;
-import com.liferay.portal.kernel.portlet.LiferayWindowState;
-import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
-import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-
-import jakarta.portlet.ActionRequest;
+import com.liferay.site.cms.site.initializer.internal.frontend.data.set.action.ViewStructureUsagesFDSItemsActions;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -41,11 +37,12 @@ public class ViewStructureUsagesDisplayContext {
 
 	public ViewStructureUsagesDisplayContext(
 		HttpServletRequest httpServletRequest, Language language,
-		ObjectDefinition objectDefinition) {
+		ObjectDefinition objectDefinition, Portal portal) {
 
 		_httpServletRequest = httpServletRequest;
 		_language = language;
 		_objectDefinition = objectDefinition;
+		_portal = portal;
 
 		_themeDisplay = (ThemeDisplay)httpServletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
@@ -97,47 +94,8 @@ public class ViewStructureUsagesDisplayContext {
 	}
 
 	public List<FDSActionDropdownItem> getFDSActionDropdownItems() {
-		return ListUtil.fromArray(
-			new FDSActionDropdownItem(
-				StringBundler.concat(
-					_themeDisplay.getPortalURL(), _themeDisplay.getPathMain(),
-					GroupConstants.CMS_FRIENDLY_URL,
-					"/edit_content_item?objectEntryId={embedded.id}&",
-					"redirect=", _themeDisplay.getURLCurrent()),
-				"pencil", "edit", LanguageUtil.get(_httpServletRequest, "edit"),
-				"get", "update", null),
-			new FDSActionDropdownItem(
-				PortletURLBuilder.create(
-					PortalUtil.getControlPanelPortletURL(
-						_httpServletRequest,
-						"com_liferay_portlet_configuration_web_portlet_" +
-							"PortletConfigurationPortlet",
-						ActionRequest.RENDER_PHASE)
-				).setMVCPath(
-					"/edit_permissions.jsp"
-				).setRedirect(
-					_themeDisplay.getURLCurrent()
-				).setParameter(
-					"modelResource", "{entryClassName}"
-				).setParameter(
-					"modelResourceDescription", "{embedded.name}"
-				).setParameter(
-					"resourceGroupId", "{embedded.scopeId}"
-				).setParameter(
-					"resourcePrimKey", "{embedded.id}"
-				).setWindowState(
-					LiferayWindowState.POP_UP
-				).buildString(),
-				"password-policies", "permissions",
-				_language.get(_httpServletRequest, "permissions"), "get", null,
-				"modal-permissions"),
-			new FDSActionDropdownItem(
-				_language.get(
-					_httpServletRequest,
-					"are-you-sure-you-want-to-delete-this-entry"),
-				null, "trash", "delete",
-				_language.get(_httpServletRequest, "delete"), "delete",
-				"delete", "headless"));
+		return ViewStructureUsagesFDSItemsActions.buildFDSActionDropdownItems(
+			_httpServletRequest, _language, _portal);
 	}
 
 	private static final String _STATUSES = StringUtil.merge(
@@ -150,6 +108,7 @@ public class ViewStructureUsagesDisplayContext {
 	private final HttpServletRequest _httpServletRequest;
 	private final Language _language;
 	private final ObjectDefinition _objectDefinition;
+	private final Portal _portal;
 	private final ThemeDisplay _themeDisplay;
 
 }

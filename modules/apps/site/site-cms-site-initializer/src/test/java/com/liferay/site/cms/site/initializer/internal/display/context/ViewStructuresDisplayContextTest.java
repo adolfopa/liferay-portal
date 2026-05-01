@@ -38,6 +38,7 @@ public class ViewStructuresDisplayContextTest {
 	}
 
 	private final ViewStructuresDisplayContext _viewStructuresDisplayContext =
-		new ViewStructuresDisplayContext(new MockHttpServletRequest());
+		new ViewStructuresDisplayContext(
+			new MockHttpServletRequest(), null, null);
 
 }

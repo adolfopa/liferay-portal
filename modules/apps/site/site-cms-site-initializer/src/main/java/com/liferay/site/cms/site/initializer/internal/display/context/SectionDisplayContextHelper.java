@@ -714,6 +714,23 @@ public class SectionDisplayContextHelper {
 		return fdsActionDropdownItems;
 	}
 
+	public List<FDSActionDropdownItem>
+		getHomeRecentAssetsFDSActionDropdownItems(
+			HttpServletRequest httpServletRequest) {
+
+		List<FDSActionDropdownItem> fdsActionDropdownItems =
+			getFDSActionDropdownItems(httpServletRequest);
+
+		fdsActionDropdownItems.add(
+			1,
+			new FDSActionDropdownItem(
+				"{embedded.file.link.href}", "download", "download",
+				LanguageUtil.get(httpServletRequest, "download"), "get", null,
+				"link"));
+
+		return fdsActionDropdownItems;
+	}
+
 	public List<DropdownItem> getRecycleBinBulkActionDropdownItems(
 		HttpServletRequest httpServletRequest) {
 

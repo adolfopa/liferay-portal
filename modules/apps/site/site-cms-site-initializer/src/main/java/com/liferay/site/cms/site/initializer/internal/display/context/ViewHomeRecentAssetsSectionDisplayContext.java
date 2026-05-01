@@ -73,17 +73,8 @@ public class ViewHomeRecentAssetsSectionDisplayContext
 
 	@Override
 	public List<FDSActionDropdownItem> getFDSActionDropdownItems() {
-		List<FDSActionDropdownItem> fdsActionDropdownItems =
-			super.getFDSActionDropdownItems();
-
-		fdsActionDropdownItems.add(
-			1,
-			new FDSActionDropdownItem(
-				"{embedded.file.link.href}", "download", "download",
-				LanguageUtil.get(httpServletRequest, "download"), "get", null,
-				"link"));
-
-		return fdsActionDropdownItems;
+		return sectionDisplayContextHelper.
+			getHomeRecentAssetsFDSActionDropdownItems(httpServletRequest);
 	}
 
 	@Override

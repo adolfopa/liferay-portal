@@ -25,10 +25,9 @@ import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
-import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.site.cms.site.initializer.internal.util.ActionUtil;
+import com.liferay.site.cms.site.initializer.internal.frontend.data.set.action.ViewSharedWithMeSectionFDSItemsActions;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -172,82 +171,9 @@ public class ViewSharedWithMeSectionDisplayContext {
 		).build();
 	}
 
-	public List<FDSActionDropdownItem> getFDSActionDropdownItems()
-		throws PortalException {
-
-		return ListUtil.fromArray(
-			new FDSActionDropdownItem(
-				StringBundler.concat(
-					_themeDisplay.getPortalURL(), _themeDisplay.getPathMain(),
-					GroupConstants.CMS_FRIENDLY_URL,
-					"/edit_content_item?objectEntryId={classPK}",
-					"&p_l_mode=read&p_p_state=", LiferayWindowState.POP_UP,
-					"&redirect=", _themeDisplay.getURLCurrent()),
-				"view", "actionLink",
-				LanguageUtil.get(_httpServletRequest, "view"), "get", null,
-				"modal"),
-			new FDSActionDropdownItem(
-				null, "share", "share",
-				LanguageUtil.get(_httpServletRequest, "share"), "get", null,
-				"link"),
-			new FDSActionDropdownItem(
-				StringPool.BLANK, "view", "view-file",
-				LanguageUtil.get(_httpServletRequest, "view"), null, null,
-				null),
-			new FDSActionDropdownItem(
-				StringBundler.concat(
-					_themeDisplay.getPortalURL(), _themeDisplay.getPathMain(),
-					GroupConstants.CMS_FRIENDLY_URL,
-					"/edit_content_item?p_l_mode=read&p_p_state=",
-					LiferayWindowState.POP_UP, "&redirect=",
-					_themeDisplay.getURLCurrent(), "&objectEntryId={classPK}"),
-				"view", "view-content",
-				LanguageUtil.get(_httpServletRequest, "view"), "get", null,
-				null),
-			new FDSActionDropdownItem(
-				StringBundler.concat(
-					_themeDisplay.getPortalURL(), _themeDisplay.getPathMain(),
-					GroupConstants.CMS_FRIENDLY_URL,
-					"/edit_content_item?objectEntryId={classPK}&redirect=",
-					_themeDisplay.getURLCurrent()),
-				"pencil", "actionLinkEdit",
-				LanguageUtil.get(_httpServletRequest, "edit"), "get", null,
-				null),
-			new FDSActionDropdownItem(
-				"{file.link.href}", "download", "download",
-				LanguageUtil.get(_httpServletRequest, "download"), "get", null,
-				"link"),
-			new FDSActionDropdownItem(
-				ActionUtil.getBaseViewFolderURL(_themeDisplay) + "{classPK}",
-				"view", "actionLinkFolder",
-				LanguageUtil.get(_httpServletRequest, "view-folder"), "get",
-				null, null,
-				HashMapBuilder.<String, Object>put(
-					"className", ObjectEntryFolder.class.getName()
-				).build()),
-			new FDSActionDropdownItem(
-				StringBundler.concat(
-					_themeDisplay.getPathFriendlyURLPublic(),
-					GroupConstants.CMS_FRIENDLY_URL, "/e/edit-folder/",
-					_portal.getClassNameId(ObjectEntryFolder.class),
-					"/{classPK}?redirect=", _themeDisplay.getURLCurrent()),
-				"pencil", "edit-folder",
-				LanguageUtil.get(_httpServletRequest, "edit"), "get", null,
-				null,
-				HashMapBuilder.<String, Object>put(
-					"className", ObjectEntryFolder.class.getName()
-				).build()),
-			new FDSActionDropdownItem(
-				StringBundler.concat(
-					"/o", GroupConstants.CMS_FRIENDLY_URL, "/download-folder/",
-					_portal.getClassNameId(ObjectEntryFolder.class),
-					"/{classPK}"),
-				"download", "download-folder",
-				LanguageUtil.get(_httpServletRequest, "download"), "get", null,
-				"link",
-				HashMapBuilder.<String, Object>put(
-					"className", ObjectEntryFolder.class.getName()
-				).build()));
+	public List<FDSActionDropdownItem> getFDSActionDropdownItems() {
+		return ViewSharedWithMeSectionFDSItemsActions.
+			buildFDSActionDropdownItems(_httpServletRequest, _portal);
 	}
 
 	private void _addBreadcrumbItem(

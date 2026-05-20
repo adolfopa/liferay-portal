@@ -488,22 +488,35 @@ public class FriendlyURLEntryLocalServiceImpl
 
 	@Override
 	public Map<String, String> getUniqueUrlTitleMap(
-		long groupId, long classNameId, long classPK,
+		long groupId, long classNameId, long parentClassPK, long classPK,
 		Map<Locale, String> titleMap) {
 
 		Map<String, String> urlTitleMap = new HashMap<>();
 
 		for (Map.Entry<Locale, String> entry : titleMap.entrySet()) {
 			if (Validator.isNotNull(entry.getValue())) {
+				String languageId = LocaleUtil.toLanguageId(entry.getKey());
+
 				urlTitleMap.put(
-					LocaleUtil.toLanguageId(entry.getKey()),
+					languageId,
 					friendlyURLEntryLocalService.getUniqueUrlTitle(
-						groupId, classNameId, classPK, entry.getValue(),
-						_language.getLanguageId(entry.getKey())));
+						groupId, classNameId, parentClassPK, classPK,
+						entry.getValue(), languageId));
 			}
 		}
 
 		return urlTitleMap;
+	}
+
+	@Override
+	public Map<String, String> getUniqueUrlTitleMap(
+		long groupId, long classNameId, long classPK,
+		Map<Locale, String> titleMap) {
+
+		return getUniqueUrlTitleMap(
+			groupId, classNameId,
+			FriendlyURLEntryConstants.FRIENDLY_URL_ENTRY_PARENT_CLASS_PK_DEFAULT,
+			classPK, titleMap);
 	}
 
 	@Override

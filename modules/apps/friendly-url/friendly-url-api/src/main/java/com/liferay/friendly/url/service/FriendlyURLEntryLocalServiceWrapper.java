@@ -605,6 +605,15 @@ public class FriendlyURLEntryLocalServiceWrapper
 
 	@Override
 	public java.util.Map<String, String> getUniqueUrlTitleMap(
+		long groupId, long classNameId, long parentClassPK, long classPK,
+		java.util.Map<java.util.Locale, String> titleMap) {
+
+		return _friendlyURLEntryLocalService.getUniqueUrlTitleMap(
+			groupId, classNameId, parentClassPK, classPK, titleMap);
+	}
+
+	@Override
+	public java.util.Map<String, String> getUniqueUrlTitleMap(
 		long groupId, long classNameId, long classPK,
 		java.util.Map<java.util.Locale, String> titleMap) {
 
@@ -820,4 +829,4 @@ public class FriendlyURLEntryLocalServiceWrapper
 	private FriendlyURLEntryLocalService _friendlyURLEntryLocalService;
 
 }
-// LIFERAY-SERVICE-BUILDER-HASH:191870783
+// LIFERAY-SERVICE-BUILDER-HASH:1950127164

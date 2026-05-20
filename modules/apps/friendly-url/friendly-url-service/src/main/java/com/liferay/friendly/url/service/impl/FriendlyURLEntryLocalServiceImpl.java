@@ -515,7 +515,8 @@ public class FriendlyURLEntryLocalServiceImpl
 
 		return getUniqueUrlTitleMap(
 			groupId, classNameId,
-			FriendlyURLEntryConstants.FRIENDLY_URL_ENTRY_PARENT_CLASS_PK_DEFAULT,
+			FriendlyURLEntryConstants.
+				FRIENDLY_URL_ENTRY_PARENT_CLASS_PK_DEFAULT,
 			classPK, titleMap);
 	}
 

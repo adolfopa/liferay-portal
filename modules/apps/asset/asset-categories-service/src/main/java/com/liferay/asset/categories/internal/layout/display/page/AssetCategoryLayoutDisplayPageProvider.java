@@ -19,8 +19,10 @@ import com.liferay.layout.display.page.BaseLayoutDisplayPageProvider;
 import com.liferay.layout.display.page.LayoutDisplayPageObjectProvider;
 import com.liferay.layout.display.page.LayoutDisplayPageProvider;
 import com.liferay.petra.string.CharPool;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.portlet.constants.FriendlyURLResolverConstants;
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -216,7 +218,10 @@ public class AssetCategoryLayoutDisplayPageProvider
 	}
 
 	private AssetCategory _fetchAssetCategory(long groupId, String urlTitle) {
-		if (!Validator.isNumber(urlTitle)) {
+		if (FeatureFlagManagerUtil.isEnabled(
+				CompanyThreadLocal.getCompanyId(), "LPD-70396") &&
+			!Validator.isNumber(urlTitle)) {
+
 			return _fetchAssetCategory(groupId, _getLocale(), urlTitle);
 		}
 

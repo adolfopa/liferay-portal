@@ -91,6 +91,42 @@ public class ObjectEntriesPanelAppTest {
 			portlet.getControlPanelEntryCategory());
 	}
 
+	@Test
+	public void testPanelAppIsNotRegisteredWhenObjectDefinitionIsNotPortlet()
+		throws Exception {
+
+		ObjectDefinition objectDefinition =
+			_objectDefinitionLocalService.addCustomObjectDefinition(
+				null, TestPropsValues.getUserId(), 0, null, true, false, true,
+				true, true, false, false, false, false, null,
+				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
+				ObjectDefinitionTestUtil.getRandomName(), null,
+				"site_administration.content",
+				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
+				false, ObjectDefinitionConstants.SCOPE_SITE,
+				ObjectDefinitionConstants.STORAGE_TYPE_DEFAULT,
+				Collections.emptyList(),
+				Collections.singletonList(
+					ObjectFieldUtil.createObjectField(
+						ObjectFieldConstants.BUSINESS_TYPE_TEXT,
+						ObjectFieldConstants.DB_TYPE_STRING,
+						RandomTestUtil.randomString(), StringUtil.randomId())),
+				Collections.emptyList(), new ServiceContext());
+
+		objectDefinition =
+			_objectDefinitionLocalService.publishCustomObjectDefinition(
+				TestPropsValues.getUserId(),
+				objectDefinition.getObjectDefinitionId());
+
+		List<PanelApp> panelApps = _panelAppRegistry.getPanelApps(
+			objectDefinition.getPanelCategoryKey());
+
+		for (PanelApp panelApp : panelApps) {
+			Assert.assertNotEquals(
+				objectDefinition.getPortletId(), panelApp.getPortletId());
+		}
+	}
+
 	@Inject
 	private ObjectDefinitionLocalService _objectDefinitionLocalService;
 

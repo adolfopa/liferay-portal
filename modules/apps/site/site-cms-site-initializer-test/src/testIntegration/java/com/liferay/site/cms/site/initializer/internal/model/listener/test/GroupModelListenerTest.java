@@ -9,12 +9,16 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.depot.constants.DepotConstants;
 import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.service.DepotEntryLocalService;
+import com.liferay.object.constants.ObjectDefinitionConstants;
+import com.liferay.object.rest.filter.factory.FilterFactory;
+import com.liferay.petra.sql.dsl.expression.Predicate;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
@@ -26,6 +30,7 @@ import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.site.cms.site.initializer.test.util.CMSTestUtil;
+import com.liferay.site.cms.site.initializer.util.CMSDefaultPermissionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,6 +84,40 @@ public class GroupModelListenerTest {
 				depotGroup.getTypeSettingsProperty("trashEnabled")));
 	}
 
+	@Test
+	public void testUpdateExternalReferenceCode() throws Exception {
+		DepotEntry depotEntry = _addDepotEntry();
+
+		Group depotGroup = depotEntry.getGroup();
+
+		String originalExternalReferenceCode =
+			depotGroup.getExternalReferenceCode();
+
+		Assert.assertNotNull(
+			CMSDefaultPermissionUtil.fetchObjectEntry(
+				depotGroup.getCompanyId(), depotGroup.getCreatorUserId(),
+				originalExternalReferenceCode, DepotEntry.class.getName(),
+				_filterFactory));
+
+		String externalReferenceCode = RandomTestUtil.randomString();
+
+		depotGroup.setExternalReferenceCode(externalReferenceCode);
+
+		depotGroup = _groupLocalService.updateGroup(depotGroup);
+
+		Assert.assertNull(
+			CMSDefaultPermissionUtil.fetchObjectEntry(
+				depotGroup.getCompanyId(), depotGroup.getCreatorUserId(),
+				originalExternalReferenceCode, DepotEntry.class.getName(),
+				_filterFactory));
+
+		Assert.assertNotNull(
+			CMSDefaultPermissionUtil.fetchObjectEntry(
+				depotGroup.getCompanyId(), depotGroup.getCreatorUserId(),
+				externalReferenceCode, DepotEntry.class.getName(),
+				_filterFactory));
+	}
+
 	private DepotEntry _addDepotEntry() throws Exception {
 		DepotEntry depotEntry = _depotEntryLocalService.addDepotEntry(
 			HashMapBuilder.put(
@@ -121,6 +160,11 @@ public class GroupModelListenerTest {
 
 	@Inject
 	private DepotEntryLocalService _depotEntryLocalService;
+
+	@Inject(
+		filter = "filter.factory.key=" + ObjectDefinitionConstants.STORAGE_TYPE_DEFAULT
+	)
+	private FilterFactory<Predicate> _filterFactory;
 
 	@Inject
 	private GroupLocalService _groupLocalService;

@@ -104,6 +104,15 @@ public class TaxonomyVocabularyResourceTest
 		}
 	}
 
+	@FeatureFlag("LPD-86291")
+	@Override
+	@Test
+	public void testDeleteTaxonomyVocabulary() throws Exception {
+		super.testDeleteTaxonomyVocabulary();
+
+		_testDeleteSystemTaxonomyVocabulary();
+	}
+
 	@Override
 	@Test
 	public void testGetAssetLibraryTaxonomyVocabulariesPage() throws Exception {
@@ -265,6 +274,15 @@ public class TaxonomyVocabularyResourceTest
 		_testGetTaxonomyVocabularyWithoutPermissionsAction();
 	}
 
+	@FeatureFlag("LPD-86291")
+	@Override
+	@Test
+	public void testPatchTaxonomyVocabulary() throws Exception {
+		super.testPatchTaxonomyVocabulary();
+
+		_testPatchSystemTaxonomyVocabularyRename();
+	}
+
 	@Test
 	public void testPostSiteTaxonomyVocabulary() throws Exception {
 		super.testPostSiteTaxonomyVocabulary();
@@ -398,6 +416,30 @@ public class TaxonomyVocabularyResourceTest
 				name = depotEntryGroup.getName(LocaleUtil.getDefault());
 			}
 		};
+	}
+
+	private void _testDeleteSystemTaxonomyVocabulary() throws Exception {
+		TaxonomyVocabulary taxonomyVocabulary = randomTaxonomyVocabulary();
+
+		taxonomyVocabulary.setSystem(true);
+
+		taxonomyVocabulary =
+			taxonomyVocabularyResource.postSiteTaxonomyVocabulary(
+				testGroup.getGroupId(), taxonomyVocabulary);
+
+		Assert.assertTrue(taxonomyVocabulary.getSystem());
+
+		try {
+			taxonomyVocabularyResource.deleteTaxonomyVocabulary(
+				taxonomyVocabulary.getId());
+
+			Assert.fail();
+		}
+		catch (Problem.ProblemException problemException) {
+			Problem problem = problemException.getProblem();
+
+			Assert.assertEquals("FORBIDDEN", problem.getStatus());
+		}
 	}
 
 	private void _testGetSiteTaxonomyVocabulariesPage() throws Exception {
@@ -601,6 +643,30 @@ public class TaxonomyVocabularyResourceTest
 				postTaxonomyVocabulary.getId());
 
 		Assert.assertNull(getTaxonomyVocabulary.getPermissions());
+	}
+
+	private void _testPatchSystemTaxonomyVocabularyRename() throws Exception {
+		TaxonomyVocabulary taxonomyVocabulary = randomTaxonomyVocabulary();
+
+		taxonomyVocabulary.setSystem(true);
+
+		TaxonomyVocabulary postedTaxonomyVocabulary =
+			taxonomyVocabularyResource.postSiteTaxonomyVocabulary(
+				testGroup.getGroupId(), taxonomyVocabulary);
+
+		postedTaxonomyVocabulary.setName(RandomTestUtil.randomString());
+
+		try {
+			taxonomyVocabularyResource.patchTaxonomyVocabulary(
+				postedTaxonomyVocabulary.getId(), postedTaxonomyVocabulary);
+
+			Assert.fail();
+		}
+		catch (Problem.ProblemException problemException) {
+			Problem problem = problemException.getProblem();
+
+			Assert.assertEquals("FORBIDDEN", problem.getStatus());
+		}
 	}
 
 	private void _testPostSiteTaxonomyVocabulary() throws Exception {

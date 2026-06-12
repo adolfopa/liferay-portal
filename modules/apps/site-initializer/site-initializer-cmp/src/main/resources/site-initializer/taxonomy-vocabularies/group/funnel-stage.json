@@ -1,0 +1,10 @@
+{
+	"externalReferenceCode": "L_FUNNEL_STAGE",
+	"multiValued": true,
+	"name": "Funnel Stage",
+	"name_i18n": {
+		"en_US": "Funnel Stage"
+	},
+	"system": true,
+	"viewableBy": "Anyone"
+}

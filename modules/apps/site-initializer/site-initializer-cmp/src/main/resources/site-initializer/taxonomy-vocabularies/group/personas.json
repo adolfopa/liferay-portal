@@ -1,0 +1,10 @@
+{
+	"externalReferenceCode": "L_PERSONAS",
+	"multiValued": true,
+	"name": "Personas",
+	"name_i18n": {
+		"en_US": "Personas"
+	},
+	"system": true,
+	"viewableBy": "Anyone"
+}

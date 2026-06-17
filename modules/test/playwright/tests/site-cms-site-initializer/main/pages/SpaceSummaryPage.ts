@@ -69,7 +69,7 @@ export class SpaceSummaryPage {
 		await this.page.goto(PORTLET_URLS.cms);
 		await this.page.getByRole('menuitem', {name: spaceName}).click();
 		await this.page
-			.getByRole('heading', {exact: true, name: spaceName})
+			.getByRole('heading', {exact: true, level: 1, name: spaceName})
 			.waitFor();
 	}
 

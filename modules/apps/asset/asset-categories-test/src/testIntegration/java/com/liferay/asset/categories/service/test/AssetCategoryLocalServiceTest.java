@@ -16,6 +16,7 @@ import com.liferay.asset.kernel.exception.DuplicateCategoryException;
 import com.liferay.asset.kernel.exception.DuplicateCategoryExternalReferenceCodeException;
 import com.liferay.asset.kernel.exception.NoSuchCategoryException;
 import com.liferay.asset.kernel.exception.NoSuchVocabularyException;
+import com.liferay.asset.kernel.exception.SystemCategoryException;
 import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.asset.kernel.model.AssetCategoryConstants;
 import com.liferay.asset.kernel.model.AssetVocabulary;
@@ -41,10 +42,12 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ListTypeLocalService;
 import com.liferay.portal.kernel.service.OrganizationLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
+import com.liferay.portal.kernel.test.AssertUtils;
 import com.liferay.portal.kernel.test.context.ContextUserReplace;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
@@ -61,6 +64,7 @@ import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.test.rule.FeatureFlag;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
@@ -516,6 +520,7 @@ public class AssetCategoryLocalServiceTest {
 			assetCategory, assetCategoryTitle);
 	}
 
+	@FeatureFlag("LPD-86291")
 	@Test
 	public void testDeleteCategory() throws Exception {
 		Map<Locale, String> titleMap = HashMapBuilder.put(
@@ -572,6 +577,10 @@ public class AssetCategoryLocalServiceTest {
 		finally {
 			serviceRegistration.unregister();
 		}
+
+		_testDeleteCategorySystem();
+		_testDeleteCategorySystemWhenDeletingCategories();
+		_testDeleteCategorySystemWhenDeletingGroup();
 	}
 
 	@Test
@@ -875,6 +884,31 @@ public class AssetCategoryLocalServiceTest {
 		}
 	}
 
+	@FeatureFlag("LPD-86291")
+	@Test
+	public void testMoveAssetCategory() throws Exception {
+		AssetCategory assetCategory = _addSystemCategory();
+
+		AssetVocabulary assetVocabulary =
+			_assetVocabularyLocalService.addVocabulary(
+				TestPropsValues.getUserId(), _group.getGroupId(),
+				RandomTestUtil.randomString(),
+				ServiceContextTestUtil.getServiceContext(
+					_group.getGroupId(), TestPropsValues.getUserId()));
+
+		AssertUtils.assertFailure(
+			SystemCategoryException.MustNotModify.class,
+			StringBundler.concat(
+				"Category ", assetCategory.getCategoryId(),
+				" cannot be modified"),
+			() -> _assetCategoryLocalService.moveCategory(
+				assetCategory.getCategoryId(),
+				AssetCategoryConstants.DEFAULT_PARENT_CATEGORY_ID,
+				assetVocabulary.getVocabularyId(),
+				ServiceContextTestUtil.getServiceContext(
+					_group.getGroupId(), TestPropsValues.getUserId())));
+	}
+
 	@Test
 	public void testSearch() throws Exception {
 		ServiceContext serviceContext =
@@ -1097,6 +1131,15 @@ public class AssetCategoryLocalServiceTest {
 		Assert.assertTrue(assetCategories.contains(assetCategory2));
 	}
 
+	@FeatureFlag("LPD-86291")
+	@Test
+	public void testUpdateAssetCategory() throws Exception {
+		_testUpdateAssetCategorySystemDescription();
+		_testUpdateAssetCategorySystemExternalReferenceCode();
+		_testUpdateAssetCategorySystemRename();
+		_testUpdateAssetCategorySystemWithNullDescription();
+	}
+
 	@Test
 	public void testUpdateAssetCategoryWithLazyReferencingEnabled()
 		throws Exception {
@@ -1269,6 +1312,28 @@ public class AssetCategoryLocalServiceTest {
 			JournalFolderConstants.DEFAULT_PARENT_FOLDER_ID, serviceContext);
 	}
 
+	private AssetCategory _addSystemCategory() throws Exception {
+		return _addSystemCategory(
+			_group.getGroupId(), _assetVocabulary.getVocabularyId());
+	}
+
+	private AssetCategory _addSystemCategory(long groupId, long vocabularyId)
+		throws Exception {
+
+		return _assetCategoryLocalService.addCategory(
+			null, TestPropsValues.getUserId(), groupId,
+			AssetCategoryConstants.DEFAULT_PARENT_CATEGORY_ID,
+			HashMapBuilder.put(
+				LocaleUtil.getSiteDefault(), RandomTestUtil.randomString()
+			).build(),
+			HashMapBuilder.put(
+				LocaleUtil.getSiteDefault(), StringPool.BLANK
+			).build(),
+			vocabularyId, true, null,
+			ServiceContextTestUtil.getServiceContext(
+				groupId, TestPropsValues.getUserId()));
+	}
+
 	private void _testAssetCategoryLongTitlesAreTrimmed(
 		AssetCategory assetCategory, String title) {
 
@@ -1279,6 +1344,128 @@ public class AssetCategoryLocalServiceTest {
 		for (Map.Entry<Locale, String> entry : titleMap.entrySet()) {
 			Assert.assertEquals(title, entry.getValue());
 		}
+	}
+
+	private void _testDeleteCategorySystem() throws Exception {
+		AssetCategory assetCategory = _addSystemCategory();
+
+		AssertUtils.assertFailure(
+			SystemCategoryException.MustNotDelete.class,
+			StringBundler.concat(
+				"Category ", assetCategory.getCategoryId(),
+				" cannot be deleted"),
+			() -> _assetCategoryLocalService.deleteCategory(
+				assetCategory.getCategoryId()));
+	}
+
+	private void _testDeleteCategorySystemWhenDeletingCategories()
+		throws Exception {
+
+		AssetCategory assetCategory = _addSystemCategory();
+
+		AssertUtils.assertFailure(
+			SystemCategoryException.MustNotDelete.class,
+			StringBundler.concat(
+				"Category ", assetCategory.getCategoryId(),
+				" cannot be deleted"),
+			() -> _assetCategoryLocalService.deleteCategories(
+				new long[] {assetCategory.getCategoryId()}));
+	}
+
+	private void _testDeleteCategorySystemWhenDeletingGroup() throws Exception {
+		Group group = GroupTestUtil.addGroup();
+
+		AssetVocabulary assetVocabulary =
+			_assetVocabularyLocalService.addVocabulary(
+				TestPropsValues.getUserId(), group.getGroupId(),
+				RandomTestUtil.randomString(),
+				ServiceContextTestUtil.getServiceContext(
+					group.getGroupId(), TestPropsValues.getUserId()));
+
+		AssetCategory assetCategory = _addSystemCategory(
+			group.getGroupId(), assetVocabulary.getVocabularyId());
+
+		_groupLocalService.deleteGroup(group);
+
+		Assert.assertNull(
+			_assetCategoryLocalService.fetchCategory(
+				assetCategory.getCategoryId()));
+	}
+
+	private void _testUpdateAssetCategorySystemDescription() throws Exception {
+		AssetCategory assetCategory = _addSystemCategory();
+
+		AssertUtils.assertFailure(
+			SystemCategoryException.MustNotModify.class,
+			StringBundler.concat(
+				"Category ", assetCategory.getCategoryId(),
+				" cannot be modified"),
+			() -> _assetCategoryLocalService.updateCategory(
+				assetCategory.getExternalReferenceCode(),
+				TestPropsValues.getUserId(), assetCategory.getCategoryId(),
+				assetCategory.getParentCategoryId(),
+				assetCategory.getTitleMap(),
+				HashMapBuilder.put(
+					LocaleUtil.getSiteDefault(), RandomTestUtil.randomString()
+				).build(),
+				assetCategory.getVocabularyId(), null,
+				ServiceContextTestUtil.getServiceContext(
+					_group.getGroupId(), TestPropsValues.getUserId())));
+	}
+
+	private void _testUpdateAssetCategorySystemExternalReferenceCode()
+		throws Exception {
+
+		AssetCategory assetCategory = _addSystemCategory();
+
+		AssertUtils.assertFailure(
+			SystemCategoryException.MustNotRename.class,
+			StringBundler.concat(
+				"Category ", assetCategory.getCategoryId(),
+				" cannot be renamed"),
+			() -> _assetCategoryLocalService.updateCategory(
+				RandomTestUtil.randomString(), TestPropsValues.getUserId(),
+				assetCategory.getCategoryId(),
+				assetCategory.getParentCategoryId(),
+				assetCategory.getTitleMap(), assetCategory.getDescriptionMap(),
+				assetCategory.getVocabularyId(), null,
+				ServiceContextTestUtil.getServiceContext(
+					_group.getGroupId(), TestPropsValues.getUserId())));
+	}
+
+	private void _testUpdateAssetCategorySystemRename() throws Exception {
+		AssetCategory assetCategory = _addSystemCategory();
+
+		AssertUtils.assertFailure(
+			SystemCategoryException.MustNotRename.class,
+			StringBundler.concat(
+				"Category ", assetCategory.getCategoryId(),
+				" cannot be renamed"),
+			() -> _assetCategoryLocalService.updateCategory(
+				assetCategory.getExternalReferenceCode(),
+				TestPropsValues.getUserId(), assetCategory.getCategoryId(),
+				assetCategory.getParentCategoryId(),
+				HashMapBuilder.put(
+					LocaleUtil.getSiteDefault(), RandomTestUtil.randomString()
+				).build(),
+				assetCategory.getDescriptionMap(),
+				assetCategory.getVocabularyId(), null,
+				ServiceContextTestUtil.getServiceContext(
+					_group.getGroupId(), TestPropsValues.getUserId())));
+	}
+
+	private void _testUpdateAssetCategorySystemWithNullDescription()
+		throws Exception {
+
+		AssetCategory assetCategory = _addSystemCategory();
+
+		_assetCategoryLocalService.updateCategory(
+			assetCategory.getExternalReferenceCode(),
+			TestPropsValues.getUserId(), assetCategory.getCategoryId(),
+			assetCategory.getParentCategoryId(), assetCategory.getTitleMap(),
+			null, assetCategory.getVocabularyId(), null,
+			ServiceContextTestUtil.getServiceContext(
+				_group.getGroupId(), TestPropsValues.getUserId()));
 	}
 
 	@Inject
@@ -1299,6 +1486,9 @@ public class AssetCategoryLocalServiceTest {
 
 	@DeleteAfterTestRun
 	private Group _group;
+
+	@Inject
+	private GroupLocalService _groupLocalService;
 
 	@Inject
 	private ListTypeLocalService _listTypeLocalService;

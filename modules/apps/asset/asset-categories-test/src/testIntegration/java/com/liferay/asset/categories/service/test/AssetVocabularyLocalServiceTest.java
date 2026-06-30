@@ -93,6 +93,7 @@ public class AssetVocabularyLocalServiceTest {
 		_testUpdateVocabularySystemMultiValued();
 		_testUpdateVocabularySystemRename();
 		_testUpdateVocabularySystemVisibilityType();
+		_testUpdateVocabularySystemWithNullDescription();
 		_testUpdateVocabularyWithInvalidVisibilityType();
 		_testUpdateVocabularyWithLazyReferencingEnabled();
 	}
@@ -298,6 +299,17 @@ public class AssetVocabularyLocalServiceTest {
 				vocabulary.getVocabularyId(), vocabulary.getTitleMap(),
 				vocabulary.getDescriptionMap(), vocabulary.getSettings(),
 				AssetVocabularyConstants.VISIBILITY_TYPE_INTERNAL));
+	}
+
+	private void _testUpdateVocabularySystemWithNullDescription()
+		throws Exception {
+
+		AssetVocabulary vocabulary = _addSystemVocabulary();
+
+		_assetVocabularyLocalService.updateVocabulary(
+			vocabulary.getExternalReferenceCode(), vocabulary.getVocabularyId(),
+			vocabulary.getTitleMap(), null, vocabulary.getSettings(),
+			vocabulary.getVisibilityType());
 	}
 
 	private void _testUpdateVocabularyWithInvalidVisibilityType()

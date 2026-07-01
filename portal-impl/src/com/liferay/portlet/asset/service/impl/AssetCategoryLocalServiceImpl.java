@@ -58,6 +58,7 @@ import com.liferay.portal.kernel.util.GroupThreadLocal;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -936,13 +937,23 @@ public class AssetCategoryLocalServiceImpl
 				category.getCategoryId());
 		}
 
-		if (!Objects.equals(descriptionMap, category.getDescriptionMap()) ||
+		if (!_equalsMap(descriptionMap, category.getDescriptionMap()) ||
 			(parentCategoryId != category.getParentCategoryId()) ||
 			(vocabularyId != category.getVocabularyId())) {
 
 			throw new SystemCategoryException.MustNotModify(
 				category.getCategoryId());
 		}
+	}
+
+	private boolean _equalsMap(
+		Map<Locale, String> map1, Map<Locale, String> map2) {
+
+		if (MapUtil.isEmpty(map1) && MapUtil.isEmpty(map2)) {
+			return true;
+		}
+
+		return Objects.equals(map1, map2);
 	}
 
 	private Map<Locale, String> _getTrimmedTitleMap(

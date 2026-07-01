@@ -57,6 +57,21 @@ public class AssetCategoryServiceWrapper
 			String externalReferenceCode, long groupId, long parentCategoryId,
 			java.util.Map<java.util.Locale, String> titleMap,
 			java.util.Map<java.util.Locale, String> descriptionMap,
+			long vocabularyId, boolean system, String[] categoryProperties,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _assetCategoryService.addCategory(
+			externalReferenceCode, groupId, parentCategoryId, titleMap,
+			descriptionMap, vocabularyId, system, categoryProperties,
+			serviceContext);
+	}
+
+	@Override
+	public AssetCategory addCategory(
+			String externalReferenceCode, long groupId, long parentCategoryId,
+			java.util.Map<java.util.Locale, String> titleMap,
+			java.util.Map<java.util.Locale, String> descriptionMap,
 			long vocabularyId, String[] categoryProperties,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -487,4 +502,4 @@ public class AssetCategoryServiceWrapper
 	private AssetCategoryService _assetCategoryService;
 
 }
-// LIFERAY-SERVICE-BUILDER-HASH:1230983580
+// LIFERAY-SERVICE-BUILDER-HASH:-964844437

@@ -65,6 +65,13 @@ public interface AssetCategoryService extends BaseService {
 	public AssetCategory addCategory(
 			String externalReferenceCode, long groupId, long parentCategoryId,
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
+			long vocabularyId, boolean system, String[] categoryProperties,
+			ServiceContext serviceContext)
+		throws PortalException;
+
+	public AssetCategory addCategory(
+			String externalReferenceCode, long groupId, long parentCategoryId,
+			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
 			long vocabularyId, String[] categoryProperties,
 			ServiceContext serviceContext)
 		throws PortalException;
@@ -294,4 +301,4 @@ public interface AssetCategoryService extends BaseService {
 		throws PortalException;
 
 }
-// LIFERAY-SERVICE-BUILDER-HASH:-629663018
+// LIFERAY-SERVICE-BUILDER-HASH:292264840

@@ -335,52 +335,46 @@ public class AssetCategoryServiceTest {
 	}
 
 	private void _testAddCategorySystem() throws Exception {
-		User user = UserTestUtil.addGroupUser(
-			_group, RoleConstants.SITE_ADMINISTRATOR);
-
 		PermissionChecker originalPermissionChecker =
 			PermissionThreadLocal.getPermissionChecker();
 
+		User user = UserTestUtil.addGroupUser(
+			_group, RoleConstants.SITE_ADMINISTRATOR);
+
+		PermissionThreadLocal.setPermissionChecker(
+			_permissionCheckerFactory.create(user));
+
+		Assert.assertNotNull(
+			_assetCategoryService.addCategory(
+				RandomTestUtil.randomString(), _group.getGroupId(),
+				AssetCategoryConstants.DEFAULT_PARENT_CATEGORY_ID,
+				Collections.singletonMap(
+					LocaleUtil.US, RandomTestUtil.randomString()),
+				Collections.singletonMap(
+					LocaleUtil.US, RandomTestUtil.randomString()),
+				_assetVocabulary.getVocabularyId(), false, null,
+				ServiceContextTestUtil.getServiceContext(_group.getGroupId())));
+
 		try {
-			PermissionThreadLocal.setPermissionChecker(
-				_permissionCheckerFactory.create(user));
+			_assetCategoryService.addCategory(
+				RandomTestUtil.randomString(), _group.getGroupId(),
+				AssetCategoryConstants.DEFAULT_PARENT_CATEGORY_ID,
+				Collections.singletonMap(
+					LocaleUtil.US, RandomTestUtil.randomString()),
+				Collections.singletonMap(
+					LocaleUtil.US, RandomTestUtil.randomString()),
+				_assetVocabulary.getVocabularyId(), true, null,
+				ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
 
-			Assert.assertNotNull(
-				_assetCategoryService.addCategory(
-					RandomTestUtil.randomString(), _group.getGroupId(),
-					AssetCategoryConstants.DEFAULT_PARENT_CATEGORY_ID,
-					Collections.singletonMap(
-						LocaleUtil.US, RandomTestUtil.randomString()),
-					Collections.singletonMap(
-						LocaleUtil.US, RandomTestUtil.randomString()),
-					_assetVocabulary.getVocabularyId(), false, null,
-					ServiceContextTestUtil.getServiceContext(
-						_group.getGroupId())));
-
-			try {
-				_assetCategoryService.addCategory(
-					RandomTestUtil.randomString(), _group.getGroupId(),
-					AssetCategoryConstants.DEFAULT_PARENT_CATEGORY_ID,
-					Collections.singletonMap(
-						LocaleUtil.US, RandomTestUtil.randomString()),
-					Collections.singletonMap(
-						LocaleUtil.US, RandomTestUtil.randomString()),
-					_assetVocabulary.getVocabularyId(), true, null,
-					ServiceContextTestUtil.getServiceContext(
-						_group.getGroupId()));
-
-				Assert.fail();
-			}
-			catch (PrincipalException.MustBeCompanyAdmin principalException) {
-				Assert.assertNotNull(principalException);
-			}
+			Assert.fail();
 		}
-		finally {
-			PermissionThreadLocal.setPermissionChecker(
-				originalPermissionChecker);
-
-			_userLocalService.deleteUser(user);
+		catch (PrincipalException.MustBeCompanyAdmin principalException) {
+			Assert.assertNotNull(principalException);
 		}
+
+		PermissionThreadLocal.setPermissionChecker(originalPermissionChecker);
+
+		_userLocalService.deleteUser(user);
 	}
 
 	@Inject

@@ -684,7 +684,7 @@ public class AssetVocabularyLocalServiceImpl
 		}
 	}
 
-	private boolean _equalsMap(
+	private boolean _equals(
 		Map<Locale, String> map1, Map<Locale, String> map2) {
 
 		if (MapUtil.isEmpty(map1) && MapUtil.isEmpty(map2)) {
@@ -829,7 +829,7 @@ public class AssetVocabularyLocalServiceImpl
 				vocabulary.getVocabularyId());
 		}
 
-		if (!_equalsMap(descriptionMap, vocabulary.getDescriptionMap()) ||
+		if (!_equals(descriptionMap, vocabulary.getDescriptionMap()) ||
 			(visibilityType != vocabulary.getVisibilityType()) ||
 			!_isValidSystemVocabularySettings(
 				vocabulary.getSettings(), settings)) {

@@ -12,6 +12,7 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 import com.liferay.portal.configuration.persistence.listener.ConfigurationModelListener;
 import com.liferay.portal.configuration.persistence.listener.ConfigurationModelListenerException;
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 
@@ -33,6 +34,10 @@ public class DLFileEntryConfigurationModelListener
 	@Override
 	public void onBeforeSave(String pid, Dictionary<String, Object> properties)
 		throws ConfigurationModelListenerException {
+
+		if (CompanyThreadLocal.isUpgradingPortalInstance()) {
+			return;
+		}
 
 		ExtendedObjectClassDefinition.Scope scope = null;
 		long scopePK = 0;

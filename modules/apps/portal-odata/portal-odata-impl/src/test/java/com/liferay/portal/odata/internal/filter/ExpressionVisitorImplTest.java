@@ -105,23 +105,42 @@ public class ExpressionVisitorImplTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testVisitBinaryExpressionOperationWithEqualOperation() {
-		Map<String, EntityField> entityFieldsMap =
+
+		// Case insensitive
+
+		Map<String, EntityField> entityFieldsMap1 =
 			_entityModel.getEntityFieldsMap();
 
-		EntityField entityField = entityFieldsMap.get("title");
+		EntityField entityField1 = entityFieldsMap1.get("title");
 
-		String value = "title1";
-
-		QueryFilter queryFilter =
+		QueryFilter queryFilter1 =
 			(QueryFilter)_expressionVisitorImpl.visitBinaryExpressionOperation(
-				BinaryExpression.Operation.EQ, entityField, value);
+				BinaryExpression.Operation.EQ, entityField1, "Title1");
 
-		TermQuery termQuery = (TermQuery)queryFilter.getQuery();
+		TermQuery termQuery1 = (TermQuery)queryFilter1.getQuery();
 
-		QueryTerm queryTerm = termQuery.getQueryTerm();
+		QueryTerm queryTerm1 = termQuery1.getQueryTerm();
 
-		Assert.assertEquals(entityField.getName(), queryTerm.getField());
-		Assert.assertEquals(value, queryTerm.getValue());
+		Assert.assertEquals(entityField1.getName(), queryTerm1.getField());
+		Assert.assertEquals("title1", queryTerm1.getValue());
+
+		// Case sensitive
+
+		Map<String, EntityField> entityFieldsMap2 =
+			_entityModel.getEntityFieldsMap();
+
+		EntityField entityField2 = entityFieldsMap2.get("titleCaseSensitive");
+
+		QueryFilter queryFilter2 =
+			(QueryFilter)_expressionVisitorImpl.visitBinaryExpressionOperation(
+				BinaryExpression.Operation.EQ, entityField2, "Title1");
+
+		TermQuery termQuery2 = (TermQuery)queryFilter2.getQuery();
+
+		QueryTerm queryTerm2 = termQuery2.getQueryTerm();
+
+		Assert.assertEquals(entityField2.getName(), queryTerm2.getField());
+		Assert.assertEquals("Title1", queryTerm2.getValue());
 	}
 
 	@Test
@@ -743,7 +762,7 @@ public class ExpressionVisitorImplTest {
 				"'L''Oreal'", LiteralExpression.Type.STRING);
 
 		Assert.assertEquals(
-			"l'oreal",
+			"L'Oreal",
 			_expressionVisitorImpl.visitLiteralExpression(literalExpression));
 	}
 
@@ -754,7 +773,7 @@ public class ExpressionVisitorImplTest {
 				"'L''Oreal and L''Oreal'", LiteralExpression.Type.STRING);
 
 		Assert.assertEquals(
-			"l'oreal and l'oreal",
+			"L'Oreal and L'Oreal",
 			_expressionVisitorImpl.visitLiteralExpression(literalExpression));
 	}
 
@@ -765,7 +784,7 @@ public class ExpressionVisitorImplTest {
 				"'L'Oreal'", LiteralExpression.Type.STRING);
 
 		Assert.assertEquals(
-			"l'oreal",
+			"L'Oreal",
 			_expressionVisitorImpl.visitLiteralExpression(literalExpression));
 	}
 
@@ -776,7 +795,7 @@ public class ExpressionVisitorImplTest {
 				"'LOreal'", LiteralExpression.Type.STRING);
 
 		Assert.assertEquals(
-			"loreal",
+			"LOreal",
 			_expressionVisitorImpl.visitLiteralExpression(literalExpression));
 	}
 
@@ -825,6 +844,11 @@ public class ExpressionVisitorImplTest {
 					new StringEntityField("keywords", locale -> "keywords.raw"))
 			).put(
 				"title", new StringEntityField("title", locale -> "title")
+			).put(
+				"titleCaseSensitive",
+				new StringEntityField(
+					"titleCaseSensitive", locale -> "titleCaseSensitive",
+					locale -> "titleCaseSensitive", String::valueOf)
 			).put(
 				"values",
 				new ComplexEntityField(

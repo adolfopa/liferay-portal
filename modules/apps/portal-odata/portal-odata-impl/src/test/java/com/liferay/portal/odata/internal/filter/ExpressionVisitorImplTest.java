@@ -233,6 +233,52 @@ public class ExpressionVisitorImplTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
+	public void testVisitBinaryExpressionOperationWithEqualOperationForCollectionField() {
+
+		// Case insensitive
+
+		Map<String, EntityField> entityFieldsMap1 =
+			_entityModel.getEntityFieldsMap();
+
+		EntityField entityField1 = entityFieldsMap1.get("keywords");
+
+		QueryFilter queryFilter1 =
+			(QueryFilter)_expressionVisitorImpl.visitBinaryExpressionOperation(
+				BinaryExpression.Operation.EQ, entityField1, "Keyword1");
+
+		TermQuery termQuery1 = (TermQuery)queryFilter1.getQuery();
+
+		QueryTerm queryTerm1 = termQuery1.getQueryTerm();
+
+		Assert.assertEquals(
+			entityField1.getFilterableName(LocaleUtil.getDefault()),
+			queryTerm1.getField());
+		Assert.assertEquals("keyword1", queryTerm1.getValue());
+
+		// Case sensitive
+
+		Map<String, EntityField> entityFieldsMap2 =
+			_entityModel.getEntityFieldsMap();
+
+		EntityField entityField2 = entityFieldsMap2.get(
+			"keywordsCaseSensitive");
+
+		QueryFilter queryFilter2 =
+			(QueryFilter)_expressionVisitorImpl.visitBinaryExpressionOperation(
+				BinaryExpression.Operation.EQ, entityField2, "Keyword1");
+
+		TermQuery termQuery2 = (TermQuery)queryFilter2.getQuery();
+
+		QueryTerm queryTerm2 = termQuery2.getQueryTerm();
+
+		Assert.assertEquals(
+			entityField2.getFilterableName(LocaleUtil.getDefault()),
+			queryTerm2.getField());
+		Assert.assertEquals("Keyword1", queryTerm2.getValue());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
 	public void testVisitBinaryExpressionOperationWithGreaterEqualOperation() {
 		Map<String, EntityField> entityFieldsMap =
 			_entityModel.getEntityFieldsMap();
@@ -842,6 +888,13 @@ public class ExpressionVisitorImplTest {
 				"keywords",
 				new CollectionEntityField(
 					new StringEntityField("keywords", locale -> "keywords.raw"))
+			).put(
+				"keywordsCaseSensitive",
+				new CollectionEntityField(
+					new StringEntityField(
+						"keywordsCaseSensitive",
+						locale -> "keywordsCaseSensitive",
+						locale -> "keywordsCaseSensitive", String::valueOf))
 			).put(
 				"title", new StringEntityField("title", locale -> "title")
 			).put(

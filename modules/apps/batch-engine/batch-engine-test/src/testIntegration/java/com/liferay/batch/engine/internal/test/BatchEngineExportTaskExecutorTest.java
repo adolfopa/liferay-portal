@@ -25,6 +25,7 @@ import com.liferay.object.service.ObjectFieldLocalServiceUtil;
 import com.liferay.object.test.util.ObjectDefinitionTestUtil;
 import com.liferay.petra.io.unsync.UnsyncBufferedReader;
 import com.liferay.petra.string.CharPool;
+import com.liferay.portal.kernel.backgroundtask.BackgroundTaskStatusMessageSender;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -65,6 +66,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -517,6 +519,22 @@ public class BatchEngineExportTaskExecutorTest
 		}
 	}
 
+	@Test
+	@TestInfo("LPD-75919")
+	public void testExportProgressMessagesAreNotSentWhenDisabled()
+		throws Throwable {
+
+		Assert.assertEquals(0, _countBatchProgressMessages(false));
+	}
+
+	@Test
+	@TestInfo("LPD-75919")
+	public void testExportProgressMessagesAreSentWhenEnabled()
+		throws Throwable {
+
+		Assert.assertTrue(_countBatchProgressMessages(true) > 0);
+	}
+
 	public abstract class BlogPostingMixin {
 
 		@JsonProperty(access = JsonProperty.Access.READ_WRITE)
@@ -693,6 +711,80 @@ public class BatchEngineExportTaskExecutorTest
 		Assert.assertEquals(
 			initialCount + ROWS_COUNT,
 			batchEngineExportTask.getTotalItemsCount());
+	}
+
+	private int _countBatchProgressMessages(boolean sendProgressMessages)
+		throws Throwable {
+
+		addBlogsEntries();
+
+		_parameters.put("siteId", TestPropsValues.getGroupId());
+
+		_batchEngineExportTask =
+			_batchEngineExportTaskLocalService.createBatchEngineExportTask(
+				RandomTestUtil.randomLong(), null, user.getCompanyId(),
+				user.getUserId(), null, BlogPosting.class.getName(), "JSON",
+				BatchEngineTaskExecuteStatus.INITIAL.name(), null, _parameters,
+				null);
+
+		AtomicInteger batchProgressMessageCount = new AtomicInteger();
+
+		BackgroundTaskStatusMessageSender backgroundTaskStatusMessageSender =
+			ReflectionTestUtil.getFieldValue(
+				_batchEngineExportTaskExecutor,
+				"_backgroundTaskStatusMessageSender");
+
+		ReflectionTestUtil.setFieldValue(
+			_batchEngineExportTaskExecutor,
+			"_backgroundTaskStatusMessageSender",
+			(BackgroundTaskStatusMessageSender)message -> {
+				if (Objects.equals(
+						message.getString("messageType"), "batchProgress")) {
+
+					batchProgressMessageCount.incrementAndGet();
+				}
+
+				backgroundTaskStatusMessageSender.
+					sendBackgroundTaskStatusMessage(message);
+			});
+
+		try {
+			TransactionInvokerUtil.invoke(
+				TransactionConfig.Factory.create(
+					Propagation.REQUIRED, new Class<?>[] {Exception.class}),
+				() -> {
+					_batchEngineExportTaskExecutor.execute(
+						_batchEngineExportTask,
+						new BatchEngineExportTaskExecutor.Settings() {
+
+							@Override
+							public boolean isCompressContent() {
+								return false;
+							}
+
+							@Override
+							public boolean isPersist() {
+								return false;
+							}
+
+							@Override
+							public boolean isSendBatchProgressMessage() {
+								return sendProgressMessages;
+							}
+
+						});
+
+					return null;
+				});
+		}
+		finally {
+			ReflectionTestUtil.setFieldValue(
+				_batchEngineExportTaskExecutor,
+				"_backgroundTaskStatusMessageSender",
+				backgroundTaskStatusMessageSender);
+		}
+
+		return batchProgressMessageCount.get();
 	}
 
 	private void _exportBlogPostings(

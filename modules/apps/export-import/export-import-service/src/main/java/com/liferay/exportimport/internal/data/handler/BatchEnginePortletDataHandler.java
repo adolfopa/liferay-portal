@@ -512,8 +512,8 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 
 					BatchEngineExportTaskExecutor.Result result =
 						_executeExportTask(
-							Integer.MAX_VALUE, portletDataContext,
-							registration);
+							Integer.MAX_VALUE, portletDataContext, registration,
+							true);
 
 					if (result == null) {
 						continue;
@@ -679,7 +679,8 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 					_getActiveRegistrations(portletDataContext)) {
 
 				BatchEngineExportTaskExecutor.Result result =
-					_executeExportTask(1, portletDataContext, registration);
+					_executeExportTask(
+						1, portletDataContext, registration, false);
 
 				if (result == null) {
 					continue;
@@ -821,7 +822,7 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 
 	private BatchEngineExportTaskExecutor.Result _executeExportTask(
 		int maxItems, PortletDataContext portletDataContext,
-		Registration registration) {
+		Registration registration, boolean sendBatchProgressMessage) {
 
 		return _batchEngineExportTaskExecutor.execute(
 			_batchEngineExportTaskLocalService.createBatchEngineExportTask(
@@ -850,6 +851,11 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 				@Override
 				public boolean isPersist() {
 					return false;
+				}
+
+				@Override
+				public boolean isSendBatchProgressMessage() {
+					return sendBatchProgressMessage;
 				}
 
 			});

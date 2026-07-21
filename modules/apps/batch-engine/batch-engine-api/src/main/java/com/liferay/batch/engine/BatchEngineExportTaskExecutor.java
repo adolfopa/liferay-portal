@@ -37,6 +37,10 @@ public interface BatchEngineExportTaskExecutor {
 
 		public boolean isPersist();
 
+		public default boolean isSendBatchProgressMessage() {
+			return true;
+		}
+
 	}
 
 }

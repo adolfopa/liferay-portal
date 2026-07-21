@@ -354,7 +354,9 @@ public class BatchEngineExportTaskExecutorImpl
 				int itemsSinceLastReport =
 					currentItemsProcessedCount - lastReportedItemsCount;
 
-				if (itemsSinceLastReport >= exportBatchSize) {
+				if (settings.isSendBatchProgressMessage() &&
+					(itemsSinceLastReport >= exportBatchSize)) {
+
 					BatchEngineTaskExecutorUtil.sendBatchProgressMessage(
 						_backgroundTaskStatusMessageSender,
 						currentItemsProcessedCount);
@@ -407,8 +409,9 @@ public class BatchEngineExportTaskExecutorImpl
 				items = page.getItems();
 			}
 
-			if (batchEngineExportTask.getProcessedItemsCount() >
-					lastReportedItemsCount) {
+			if (settings.isSendBatchProgressMessage() &&
+				(batchEngineExportTask.getProcessedItemsCount() >
+					lastReportedItemsCount)) {
 
 				BatchEngineTaskExecutorUtil.sendBatchProgressMessage(
 					_backgroundTaskStatusMessageSender,

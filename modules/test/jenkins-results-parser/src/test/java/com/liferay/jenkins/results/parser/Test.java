@@ -13,6 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 
+import java.net.HttpURLConnection;
 import java.net.URI;
 
 import java.nio.file.Files;
@@ -70,9 +71,9 @@ public class Test {
 
 		Shell.setInstance(new Shell());
 
-		TestClassFactory.clear();
+		StreamUrlReader.setInstance(new StreamUrlReader());
 
-		UrlReader.setInstance(new UrlReader());
+		TestClassFactory.clear();
 	}
 
 	@Rule
@@ -185,18 +186,59 @@ public class Test {
 		return shell;
 	}
 
-	protected UrlReader mockUrlReader() {
-		UrlReader urlReader = Mockito.mock(
-			UrlReader.class,
-			invocation -> {
-				String url = invocation.getArgument(7);
+	/**
+	 * Builds a connection whose body and response code the caller controls, so
+	 * a stub sits below the retry loop rather than replacing it. Each
+	 * invocation must produce a new connection, because the retry loop consumes
+	 * the input stream once per attempt.
+	 */
+	protected HttpURLConnection mockURLConnection(
+			int responseCode, String standardOut)
+		throws IOException {
 
-				throw new AssertionError("No output set for URL: " + url);
-			});
+		HttpURLConnection httpURLConnection = Mockito.mock(
+			HttpURLConnection.class);
 
-		UrlReader.setInstance(urlReader);
+		Mockito.doReturn(
+			new ByteArrayInputStream(standardOut.getBytes())
+		).when(
+			httpURLConnection
+		).getInputStream();
 
-		return urlReader;
+		Mockito.doReturn(
+			responseCode
+		).when(
+			httpURLConnection
+		).getResponseCode();
+
+		return httpURLConnection;
+	}
+
+	protected StreamUrlReader mockUrlReader() {
+		StreamUrlReader streamUrlReader = Mockito.spy(new StreamUrlReader());
+
+		try {
+			Mockito.doAnswer(
+				invocation -> {
+					String url = invocation.getArgument(6);
+
+					throw new AssertionError("No output set for URL: " + url);
+				}
+			).when(
+				streamUrlReader
+			).openURLConnection(
+				Mockito.any(), Mockito.anyBoolean(), Mockito.any(),
+				Mockito.any(), Mockito.anyBoolean(), Mockito.anyInt(),
+				Mockito.any()
+			);
+		}
+		catch (IOException ioException) {
+			throw new RuntimeException(ioException);
+		}
+
+		StreamUrlReader.setInstance(streamUrlReader);
+
+		return streamUrlReader;
 	}
 
 	protected String read(File file) throws IOException {
@@ -235,64 +277,17 @@ public class Test {
 		);
 	}
 
-	protected void setUrlReaderException(
-			IOException ioException, String url, UrlReader urlReader)
-		throws Exception {
-
-		Mockito.doThrow(
-			ioException
-		).when(
-			urlReader
-		).doRead(
-			Mockito.anyBoolean(), Mockito.any(), Mockito.any(),
-			Mockito.anyInt(), Mockito.any(), Mockito.anyInt(), Mockito.anyInt(),
-			Mockito.argThat(
-				readURL -> (readURL != null) && readURL.contains(url))
-		);
-	}
-
 	protected void setUrlReaderOutput(
-			long delayMillis, String standardOut, String url,
-			UrlReader urlReader)
+			String standardOut, String url, StreamUrlReader streamUrlReader)
 		throws Exception {
 
 		Mockito.doAnswer(
-			invocation -> {
-				JenkinsResultsParserUtil.sleep(delayMillis);
-
-				return new ByteArrayInputStream(standardOut.getBytes());
-			}
+			invocation -> mockURLConnection(200, standardOut)
 		).when(
-			urlReader
-		).doRead(
-			Mockito.anyBoolean(), Mockito.any(), Mockito.any(),
-			Mockito.anyInt(), Mockito.any(), Mockito.anyInt(), Mockito.anyInt(),
-			Mockito.argThat(
-				readURL -> (readURL != null) && readURL.contains(url))
-		);
-	}
-
-	protected void setUrlReaderOutput(
-			String standardOut, String url, UrlReader urlReader)
-		throws Exception {
-
-		setUrlReaderOutput(0, standardOut, url, urlReader);
-	}
-
-	protected void setUrlReaderOutputAfterException(
-			IOException ioException, String standardOut, String url,
-			UrlReader urlReader)
-		throws Exception {
-
-		Mockito.doThrow(
-			ioException
-		).doAnswer(
-			invocation -> new ByteArrayInputStream(standardOut.getBytes())
-		).when(
-			urlReader
-		).doRead(
-			Mockito.anyBoolean(), Mockito.any(), Mockito.any(),
-			Mockito.anyInt(), Mockito.any(), Mockito.anyInt(), Mockito.anyInt(),
+			streamUrlReader
+		).openURLConnection(
+			Mockito.any(), Mockito.anyBoolean(), Mockito.any(), Mockito.any(),
+			Mockito.anyBoolean(), Mockito.anyInt(),
 			Mockito.argThat(
 				readURL -> (readURL != null) && readURL.contains(url))
 		);
@@ -325,29 +320,6 @@ public class Test {
 			"file:" +
 				JenkinsResultsParserUtil.getCanonicalPath(dependenciesDir),
 			"${dependencies.url}/" + path);
-	}
-
-	protected void verifyUrlReaderRead(
-			boolean checkCache, int maxRetries, int readCount,
-			int timeoutMillis, UrlReader urlReader)
-		throws Exception {
-
-		Mockito.verify(
-			urlReader, Mockito.times(readCount)
-		).doRead(
-			Mockito.eq(checkCache), Mockito.any(), Mockito.any(),
-			Mockito.eq(maxRetries), Mockito.any(), Mockito.anyInt(),
-			Mockito.eq(timeoutMillis), Mockito.anyString()
-		);
-	}
-
-	protected void verifyUrlReaderRead(
-			boolean checkCache, int maxRetries, int timeoutMillis,
-			UrlReader urlReader)
-		throws Exception {
-
-		verifyUrlReaderRead(
-			checkCache, maxRetries, 1, timeoutMillis, urlReader);
 	}
 
 	protected List<File> dependenciesDirs = getDependenciesDirs(

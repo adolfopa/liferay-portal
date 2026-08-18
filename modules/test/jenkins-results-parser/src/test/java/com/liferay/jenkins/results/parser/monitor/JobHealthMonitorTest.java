@@ -9,6 +9,7 @@ import com.liferay.jenkins.results.parser.JenkinsMasterTestUtil;
 import com.liferay.jenkins.results.parser.JenkinsResultsParserUtil;
 import com.liferay.jenkins.results.parser.RandomTestUtil;
 import com.liferay.jenkins.results.parser.ReflectionTestUtil;
+import com.liferay.jenkins.results.parser.StreamUrlReader;
 import com.liferay.jenkins.results.parser.UrlReader;
 
 import java.io.IOException;
@@ -717,7 +718,7 @@ public class JobHealthMonitorTest
 
 	@Test
 	public void testExecuteUnreadableResponse() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		StreamUrlReader urlReader = mockUrlReader();
 
 		setUrlReaderOutput(
 			RandomTestUtil.randomString(), _MASTER_API_URL, urlReader);
@@ -888,7 +889,7 @@ public class JobHealthMonitorTest
 	private void _setJobJSONObject(String configXML, JSONObject jobJSONObject)
 		throws Exception {
 
-		UrlReader urlReader = mockUrlReader();
+		StreamUrlReader urlReader = mockUrlReader();
 
 		setUrlReaderOutput(configXML, _JOB_CONFIG_URL, urlReader);
 

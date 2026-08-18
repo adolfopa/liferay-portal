@@ -511,7 +511,7 @@ public class JenkinsResultsParserUtilTest
 
 		JenkinsResultsParserUtil.setBuildProperties(buildProperties);
 
-		UrlReader urlReader = mockUrlReader();
+		StreamUrlReader urlReader = mockUrlReader();
 
 		Mockito.doReturn(
 			"https://test-1-1.liferay.com/queue/item/12345"

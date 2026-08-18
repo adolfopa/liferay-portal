@@ -23,7 +23,7 @@ public class PullRequestTest extends com.liferay.jenkins.results.parser.Test {
 	public void testGetCIMergeSHA() throws Exception {
 		PullRequest pullRequest = _newPullRequest();
 
-		MockUrlReaders urlReaders = mockUrlReader();
+		MockUrlReaders urlReaders = mockUrlReaders();
 
 		setUrlReaderOutput(
 			JenkinsResultsParserUtil.combine(
@@ -40,7 +40,7 @@ public class PullRequestTest extends com.liferay.jenkins.results.parser.Test {
 	public void testGetFileNames() throws Exception {
 		PullRequest pullRequest = _newPullRequest();
 
-		MockUrlReaders urlReaders = mockUrlReader();
+		MockUrlReaders urlReaders = mockUrlReaders();
 
 		setUrlReaderOutput(
 			JenkinsResultsParserUtil.combine(

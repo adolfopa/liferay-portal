@@ -343,7 +343,7 @@ public class JobHealthMonitorTest
 
 	@Test
 	public void testExecuteJobMissingFromMaster() throws Exception {
-		MockUrlReaders urlReaders = mockUrlReader();
+		MockUrlReaders urlReaders = mockUrlReaders();
 
 		JSONObject jobsJSONObject = new JSONObject(
 		).put(
@@ -717,7 +717,7 @@ public class JobHealthMonitorTest
 
 	@Test
 	public void testExecuteUnreadableResponse() throws Exception {
-		MockUrlReaders urlReaders = mockUrlReader();
+		MockUrlReaders urlReaders = mockUrlReaders();
 
 		setUrlReaderOutput(
 			RandomTestUtil.randomString(), _MASTER_API_URL, urlReaders);
@@ -889,7 +889,7 @@ public class JobHealthMonitorTest
 	private void _setJobJSONObject(String configXML, JSONObject jobJSONObject)
 		throws Exception {
 
-		MockUrlReaders urlReaders = mockUrlReader();
+		MockUrlReaders urlReaders = mockUrlReaders();
 
 		setUrlReaderOutput(configXML, _JOB_CONFIG_URL, urlReaders);
 

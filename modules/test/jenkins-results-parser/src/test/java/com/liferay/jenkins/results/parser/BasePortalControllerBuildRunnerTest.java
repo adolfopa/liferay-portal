@@ -35,7 +35,7 @@ public class BasePortalControllerBuildRunnerTest
 				"upstream-controller(master_content-management)/339/";
 		String invocationJobName = "test-portal-testsuite-upstream(master)";
 
-		MockUrlReaders mockUrlReaders = mockUrlReaders();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setUrlReaderOutput(
 			new JSONObject(
@@ -74,7 +74,7 @@ public class BasePortalControllerBuildRunnerTest
 					)
 				)
 			).toString(),
-			"queue/api/json", mockUrlReaders);
+			"queue/api/json", mockURLReaders);
 
 		BasePortalControllerBuildRunner<?> basePortalControllerBuildRunner =
 			Mockito.mock(BasePortalControllerBuildRunner.class);
@@ -101,7 +101,7 @@ public class BasePortalControllerBuildRunnerTest
 		Assert.assertFalse(
 			basePortalControllerBuildRunner.expirePreviousBuild());
 
-		verifyUrlReaderAttemptCount(1, mockUrlReaders, "queue/api/json");
+		verifyURLReaderAttemptCount(1, mockURLReaders, "queue/api/json");
 	}
 
 	@Test

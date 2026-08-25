@@ -30,13 +30,13 @@ import org.mockito.Mockito;
 /**
  * @author Kenji Heigel
  */
-public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
+public class URLReaderTest extends com.liferay.jenkins.results.parser.Test {
 
 	@Test
 	public void testToInputStream() throws Exception {
-		MockUrlReaders mockUrlReaders = mockUrlReaders();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput(_STANDARD_OUT, _URL, mockUrlReaders);
+		setUrlReaderOutput(_STANDARD_OUT, _URL, mockURLReaders);
 
 		try (InputStream inputStream = JenkinsResultsParserUtil.toInputStream(
 				_URL, false)) {
@@ -49,14 +49,14 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 
 	@Test
 	public void testToJSONArray() throws Exception {
-		MockUrlReaders mockUrlReaders = mockUrlReaders();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		JSONArray jsonArray = new JSONArray();
 
 		jsonArray.put("first");
 		jsonArray.put("second");
 
-		setUrlReaderOutput(String.valueOf(jsonArray), _URL, mockUrlReaders);
+		setUrlReaderOutput(String.valueOf(jsonArray), _URL, mockURLReaders);
 
 		JSONArray readJSONArray = JenkinsResultsParserUtil.toJSONArray(
 			_URL, false, _MAX_RETRIES, null, 0, 0);
@@ -64,14 +64,14 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 		Assert.assertEquals(2, readJSONArray.length());
 		Assert.assertEquals("first", readJSONArray.getString(0));
 
-		verifyUrlReaderAttemptCount(1, mockUrlReaders, _URL);
+		verifyURLReaderAttemptCount(1, mockURLReaders, _URL);
 	}
 
 	@Test
 	public void testToJSONArrayWhenResponseIsMalformed() throws Exception {
-		MockUrlReaders mockUrlReaders = mockUrlReaders();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput("not json at all", _URL, mockUrlReaders);
+		setUrlReaderOutput("not json at all", _URL, mockURLReaders);
 
 		try {
 			JenkinsResultsParserUtil.toJSONArray(
@@ -85,33 +85,33 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 				ioException.getMessage());
 		}
 
-		verifyUrlReaderAttemptCount(_MAX_RETRIES + 1, mockUrlReaders, _URL);
+		verifyURLReaderAttemptCount(_MAX_RETRIES + 1, mockURLReaders, _URL);
 	}
 
 	@Test
 	public void testToJSONObject() throws Exception {
-		MockUrlReaders mockUrlReaders = mockUrlReaders();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		JSONObject jsonObject = new JSONObject();
 
 		jsonObject.put("id", 7800);
 
-		setUrlReaderOutput(String.valueOf(jsonObject), _URL, mockUrlReaders);
+		setUrlReaderOutput(String.valueOf(jsonObject), _URL, mockURLReaders);
 
 		JSONObject readJSONObject = JenkinsResultsParserUtil.toJSONObject(
 			_URL, false, _MAX_RETRIES, 0, 0);
 
 		Assert.assertEquals(7800, readJSONObject.getInt("id"));
 
-		verifyUrlReaderAttemptCount(1, mockUrlReaders, _URL);
+		verifyURLReaderAttemptCount(1, mockURLReaders, _URL);
 	}
 
 	@Test
 	public void testToJSONObjectWhenResponseCodeIs404() throws Exception {
-		MockUrlReaders mockUrlReaders = mockUrlReaders();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setUrlReaderException(
-			new FileNotFoundException(_URL), _URL, mockUrlReaders);
+			new FileNotFoundException(_URL), _URL, mockURLReaders);
 
 		try {
 			JenkinsResultsParserUtil.toJSONObject(
@@ -123,14 +123,14 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 			Assert.assertEquals(_URL, fileNotFoundException.getMessage());
 		}
 
-		verifyUrlReaderAttemptCount(1, mockUrlReaders, _URL);
+		verifyURLReaderAttemptCount(1, mockURLReaders, _URL);
 	}
 
 	@Test
 	public void testToJSONObjectWhenResponseIsMalformed() throws Exception {
-		MockUrlReaders mockUrlReaders = mockUrlReaders();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput("not json at all", _URL, mockUrlReaders);
+		setUrlReaderOutput("not json at all", _URL, mockURLReaders);
 
 		try {
 			JenkinsResultsParserUtil.toJSONObject(
@@ -148,7 +148,7 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 			Assert.assertTrue(throwable instanceof JSONException);
 		}
 
-		verifyUrlReaderAttemptCount(_MAX_RETRIES + 1, mockUrlReaders, _URL);
+		verifyURLReaderAttemptCount(_MAX_RETRIES + 1, mockURLReaders, _URL);
 	}
 
 	@Test
@@ -157,7 +157,7 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 
 		JenkinsMasterTestUtil.getJenkinsCohortProperties("test-9", 1);
 
-		MockUrlReaders mockUrlReaders = mockUrlReaders();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		JSONObject jsonObject = new JSONObject();
 
@@ -165,7 +165,7 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 
 		String url = "file:/tmp/" + RandomTestUtil.randomString() + ".json";
 
-		setUrlReaderOutput(String.valueOf(jsonObject), url, mockUrlReaders);
+		setUrlReaderOutput(String.valueOf(jsonObject), url, mockURLReaders);
 
 		JSONObject readJSONObject = JenkinsResultsParserUtil.toJSONObject(
 			url,
@@ -175,14 +175,14 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 
 		Assert.assertEquals(7800, readJSONObject.getInt("id"));
 
-		verifyUrlReaderAttemptCount(0, mockUrlReaders, "/o/oauth2/token");
+		verifyURLReaderAttemptCount(0, mockURLReaders, "/o/oauth2/token");
 	}
 
 	@Test
 	public void testToString() throws Exception {
-		MockUrlReaders mockUrlReaders = mockUrlReaders();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput(_STANDARD_OUT, _URL, mockUrlReaders);
+		setUrlReaderOutput(_STANDARD_OUT, _URL, mockURLReaders);
 
 		Assert.assertEquals(
 			_STANDARD_OUT, JenkinsResultsParserUtil.toString(_URL, false));
@@ -190,10 +190,10 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 
 	@Test
 	public void testToStringWhenConnectionTimesOut() throws Exception {
-		MockUrlReaders mockUrlReaders = mockUrlReaders();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setUrlReaderException(
-			new SocketTimeoutException("Read timed out"), _URL, mockUrlReaders);
+			new SocketTimeoutException("Read timed out"), _URL, mockURLReaders);
 
 		try {
 			JenkinsResultsParserUtil.toString(_URL, false, _MAX_RETRIES, 0, 0);
@@ -203,14 +203,14 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 		catch (SocketTimeoutException socketTimeoutException) {
 		}
 
-		verifyUrlReaderAttemptCount(_MAX_RETRIES + 1, mockUrlReaders, _URL);
+		verifyURLReaderAttemptCount(_MAX_RETRIES + 1, mockURLReaders, _URL);
 	}
 
 	@Test
 	public void testToStringWhenResponseBodyIsEmpty() throws Exception {
-		MockUrlReaders mockUrlReaders = mockUrlReaders();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput("", _URL, mockUrlReaders);
+		setUrlReaderOutput("", _URL, mockURLReaders);
 
 		try {
 			JenkinsResultsParserUtil.toString(
@@ -225,23 +225,23 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 				message, message.startsWith("Unable to read a response body"));
 		}
 
-		verifyUrlReaderAttemptCount(_MAX_RETRIES + 1, mockUrlReaders, _URL);
+		verifyURLReaderAttemptCount(_MAX_RETRIES + 1, mockURLReaders, _URL);
 	}
 
 	@Test
 	public void testToStringWhenResponseBodyIsEmptyAndNotExpected()
 		throws Exception {
 
-		MockUrlReaders mockUrlReaders = mockUrlReaders();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput("", _URL, mockUrlReaders);
+		setUrlReaderOutput("", _URL, mockURLReaders);
 
 		Assert.assertEquals(
 			"",
 			JenkinsResultsParserUtil.toString(
 				_URL, false, _MAX_RETRIES, 0, 0, false));
 
-		verifyUrlReaderAttemptCount(1, mockUrlReaders, _URL);
+		verifyURLReaderAttemptCount(1, mockURLReaders, _URL);
 	}
 
 	@Test
@@ -255,11 +255,11 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 
 		JenkinsResultsParserUtil.setBuildProperties(buildProperties);
 
-		MockUrlReaders mockUrlReaders = mockUrlReaders();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		String url = "https://api.github.com/" + RandomTestUtil.randomString();
 
-		setUrlReaderResponseCode(403, url, mockUrlReaders);
+		setURLReaderResponseCode(403, url, mockURLReaders);
 
 		try {
 			JenkinsResultsParserUtil.toString(url, false, 0, 0, 0);
@@ -272,7 +272,7 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 					gitHubSecondaryRateLimitRuntimeException) {
 		}
 
-		verifyUrlReaderAttemptCount(1, mockUrlReaders, url);
+		verifyURLReaderAttemptCount(1, mockURLReaders, url);
 	}
 
 	@Test
@@ -286,11 +286,11 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 
 		JenkinsResultsParserUtil.setBuildProperties(buildProperties);
 
-		MockUrlReaders mockUrlReaders = mockUrlReaders();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		String url = "https://api.github.com/" + RandomTestUtil.randomString();
 
-		setUrlReaderResponseCode(403, url, mockUrlReaders);
+		setURLReaderResponseCode(403, url, mockURLReaders);
 
 		try {
 			JenkinsResultsParserUtil.toString(url, false, 3, 5, 0);
@@ -303,16 +303,16 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 					gitHubSecondaryRateLimitRuntimeException) {
 		}
 
-		verifyUrlReaderSleepDurations(
-			Arrays.asList(5000L, 25000L, 60000L), mockUrlReaders);
+		verifyURLReaderSleepDurations(
+			Arrays.asList(5000L, 25000L, 60000L), mockURLReaders);
 	}
 
 	@Test
 	public void testToStringWhenResponseCodeIs404() throws Exception {
-		MockUrlReaders mockUrlReaders = mockUrlReaders();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setUrlReaderException(
-			new FileNotFoundException(_URL), _URL, mockUrlReaders);
+			new FileNotFoundException(_URL), _URL, mockURLReaders);
 
 		try {
 			JenkinsResultsParserUtil.toString(_URL, false, _MAX_RETRIES, 0, 0);
@@ -322,14 +322,14 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 		catch (FileNotFoundException fileNotFoundException) {
 		}
 
-		verifyUrlReaderAttemptCount(1, mockUrlReaders, _URL);
+		verifyURLReaderAttemptCount(1, mockURLReaders, _URL);
 	}
 
 	@Test
 	public void testToStringWhenResponseCodeIs422() throws Exception {
-		MockUrlReaders mockUrlReaders = mockUrlReaders();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderResponseCode(422, _URL, mockUrlReaders);
+		setURLReaderResponseCode(422, _URL, mockURLReaders);
 
 		try {
 			JenkinsResultsParserUtil.toString(_URL, false, _MAX_RETRIES, 0, 0);
@@ -342,7 +342,7 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 			Assert.assertTrue(throwable instanceof IOException);
 		}
 
-		verifyUrlReaderAttemptCount(1, mockUrlReaders, _URL);
+		verifyURLReaderAttemptCount(1, mockURLReaders, _URL);
 	}
 
 	@Test
@@ -355,9 +355,9 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 
 	@Test
 	public void testToStringWhenResponseCodeIsTerminal() throws Exception {
-		MockUrlReaders mockUrlReaders = mockUrlReaders();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderResponseCode(400, _URL, mockUrlReaders);
+		setURLReaderResponseCode(400, _URL, mockURLReaders);
 
 		try {
 			JenkinsResultsParserUtil.toString(_URL, false, _MAX_RETRIES, 0, 0);
@@ -367,16 +367,16 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 		catch (IOException ioException) {
 		}
 
-		verifyUrlReaderAttemptCount(1, mockUrlReaders, _URL);
+		verifyURLReaderAttemptCount(1, mockURLReaders, _URL);
 	}
 
 	@Test
 	public void testToStringWhenResponseNeverArrives() throws Exception {
-		MockUrlReaders mockUrlReaders = mockUrlReaders();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		List<HttpURLConnection> httpURLConnections = new ArrayList<>();
 
-		for (UrlReader<?> urlReader : mockUrlReaders.getUrlReaders()) {
+		for (URLReader<?> urlReader : mockURLReaders.getURLReaders()) {
 			Mockito.doAnswer(
 				invocation -> {
 					HttpURLConnection httpURLConnection = Mockito.mock(
@@ -410,7 +410,7 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 		catch (SocketTimeoutException socketTimeoutException) {
 		}
 
-		verifyUrlReaderAttemptCount(_MAX_RETRIES + 1, mockUrlReaders, _URL);
+		verifyURLReaderAttemptCount(_MAX_RETRIES + 1, mockURLReaders, _URL);
 
 		for (HttpURLConnection httpURLConnection : httpURLConnections) {
 			Mockito.verify(
@@ -422,9 +422,9 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 	private void _testToStringWhenResponseCodeIsRetryable(int responseCode)
 		throws Exception {
 
-		MockUrlReaders mockUrlReaders = mockUrlReaders();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderResponseCode(responseCode, _URL, mockUrlReaders);
+		setURLReaderResponseCode(responseCode, _URL, mockURLReaders);
 
 		try {
 			JenkinsResultsParserUtil.toString(_URL, false, _MAX_RETRIES, 0, 0);
@@ -434,7 +434,7 @@ public class UrlReaderTest extends com.liferay.jenkins.results.parser.Test {
 		catch (IOException ioException) {
 		}
 
-		verifyUrlReaderAttemptCount(_MAX_RETRIES + 1, mockUrlReaders, _URL);
+		verifyURLReaderAttemptCount(_MAX_RETRIES + 1, mockURLReaders, _URL);
 	}
 
 	private static final int _MAX_RETRIES = 2;

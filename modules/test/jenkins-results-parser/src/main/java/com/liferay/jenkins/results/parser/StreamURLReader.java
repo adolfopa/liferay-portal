@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * @author Kenji Heigel
  */
-public class StreamUrlReader extends UrlReader<InputStream> {
+public class StreamURLReader extends URLReader<InputStream> {
 
 	public static String getResponseHeader(
 			String headerName, HTTPAuthorization httpAuthorization,
@@ -42,7 +42,7 @@ public class StreamUrlReader extends UrlReader<InputStream> {
 			Map<String, String> requestHeaders, int timeout, String url)
 		throws IOException {
 
-		return _streamUrlReader.doGetResponseHeader(
+		return _streamURLReader.doGetResponseHeader(
 			headerName, httpAuthorization, httpRequestMethod, postContent,
 			requestHeaders, timeout, url);
 	}
@@ -53,13 +53,13 @@ public class StreamUrlReader extends UrlReader<InputStream> {
 			String postContent, int retryPeriod, int timeout, String url)
 		throws IOException {
 
-		return _streamUrlReader.doRead(
+		return _streamURLReader.doRead(
 			checkCache, httpAuthorization, httpRequestMethod, maxRetries,
 			postContent, retryPeriod, timeout, url);
 	}
 
-	public static void setInstance(StreamUrlReader streamUrlReader) {
-		_streamUrlReader = streamUrlReader;
+	public static void setInstance(StreamURLReader streamURLReader) {
+		_streamURLReader = streamURLReader;
 	}
 
 	protected String doGetResponseHeader(
@@ -138,7 +138,7 @@ public class StreamUrlReader extends UrlReader<InputStream> {
 		return urlConnection.getInputStream();
 	}
 
-	private static volatile StreamUrlReader _streamUrlReader =
-		new StreamUrlReader();
+	private static volatile StreamURLReader _streamURLReader =
+		new StreamURLReader();
 
 }

@@ -3768,7 +3768,7 @@ public class JenkinsResultsParserUtil {
 				"Content-Type", "application/x-www-form-urlencoded");
 
 			return getJenkinsBuildQueueId(
-				StreamUrlReader.getResponseHeader(
+				StreamURLReader.getResponseHeader(
 					"Location", getJenkinsHTTPAuthorization(),
 					HttpRequestMethod.POST, sb.toString(), requestHeaders,
 					timeout,
@@ -5078,7 +5078,7 @@ public class JenkinsResultsParserUtil {
 			int retryPeriod, int timeout, HTTPAuthorization httpAuthorization)
 		throws IOException {
 
-		return StreamUrlReader.read(
+		return StreamURLReader.read(
 			checkCache, httpAuthorization, httpRequestMethod, maxRetries,
 			postContent, retryPeriod, timeout, url);
 	}
@@ -5112,7 +5112,7 @@ public class JenkinsResultsParserUtil {
 			int retryPeriod, int timeout, HTTPAuthorization httpAuthorization)
 		throws IOException {
 
-		return JSONArrayUrlReader.read(
+		return JSONArrayURLReader.read(
 			checkCache, httpAuthorization, maxRetries, postContent, retryPeriod,
 			timeout, url);
 	}
@@ -5192,7 +5192,7 @@ public class JenkinsResultsParserUtil {
 			int retryPeriod, int timeout, HTTPAuthorization httpAuthorization)
 		throws IOException {
 
-		return JSONObjectUrlReader.read(
+		return JSONObjectURLReader.read(
 			checkCache, httpAuthorization, httpRequestMethod, maxRetries,
 			postContent, retryPeriod, timeout, url);
 	}
@@ -5394,7 +5394,7 @@ public class JenkinsResultsParserUtil {
 		long start = System.currentTimeMillis();
 
 		try {
-			return TextUrlReader.read(
+			return TextURLReader.read(
 				checkCache, expectResponse, httpAuthorization,
 				httpRequestMethod, maxRetries, postContent, retryPeriod,
 				timeout, url);

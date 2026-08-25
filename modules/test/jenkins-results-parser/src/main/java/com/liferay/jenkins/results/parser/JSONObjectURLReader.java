@@ -16,7 +16,7 @@ import org.json.JSONObject;
 /**
  * @author Kenji Heigel
  */
-public class JSONObjectUrlReader extends BaseBodyUrlReader<JSONObject> {
+public class JSONObjectURLReader extends BaseBodyURLReader<JSONObject> {
 
 	public static JSONObject read(
 			boolean checkCache, HTTPAuthorization httpAuthorization,
@@ -24,13 +24,13 @@ public class JSONObjectUrlReader extends BaseBodyUrlReader<JSONObject> {
 			String postContent, int retryPeriod, int timeout, String url)
 		throws IOException {
 
-		return _jsonObjectUrlReader.doRead(
+		return _jsonObjectURLReader.doRead(
 			checkCache, true, httpAuthorization, httpRequestMethod, maxRetries,
 			postContent, retryPeriod, timeout, url);
 	}
 
-	public static void setInstance(JSONObjectUrlReader jsonObjectUrlReader) {
-		_jsonObjectUrlReader = jsonObjectUrlReader;
+	public static void setInstance(JSONObjectURLReader jsonObjectURLReader) {
+		_jsonObjectURLReader = jsonObjectURLReader;
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class JSONObjectUrlReader extends BaseBodyUrlReader<JSONObject> {
 		}
 	}
 
-	private static volatile JSONObjectUrlReader _jsonObjectUrlReader =
-		new JSONObjectUrlReader();
+	private static volatile JSONObjectURLReader _jsonObjectURLReader =
+		new JSONObjectURLReader();
 
 }

@@ -14,15 +14,15 @@ import java.util.List;
 public class MockURLReaders {
 
 	public MockURLReaders(
-		JSONArrayURLReader jsonArrayURLReader,
-		JSONObjectURLReader jsonObjectURLReader,
-		StreamURLReader streamURLReader, TextURLReader textURLReader) {
+		JSONArrayBodyURLReader jsonArrayBodyURLReader,
+		JSONObjectBodyURLReader jsonObjectBodyURLReader,
+		StreamURLReader streamURLReader, TextBodyURLReader textBodyURLReader) {
 
 		_streamURLReader = streamURLReader;
 
 		_urlReaders = Arrays.asList(
-			jsonArrayURLReader, jsonObjectURLReader, streamURLReader,
-			textURLReader);
+			jsonArrayBodyURLReader, jsonObjectBodyURLReader, streamURLReader,
+			textBodyURLReader);
 	}
 
 	public StreamURLReader getStreamURLReader() {

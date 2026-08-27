@@ -73,9 +73,9 @@ public class Test {
 
 		JobPropertyFactory.clear();
 
-		JSONArrayURLReader.setInstance(new JSONArrayURLReader());
+		JSONArrayBodyURLReader.setInstance(new JSONArrayBodyURLReader());
 
-		JSONObjectURLReader.setInstance(new JSONObjectURLReader());
+		JSONObjectBodyURLReader.setInstance(new JSONObjectBodyURLReader());
 
 		Shell.setInstance(new Shell());
 
@@ -83,7 +83,7 @@ public class Test {
 
 		TestClassFactory.clear();
 
-		TextURLReader.setInstance(new TextURLReader());
+		TextBodyURLReader.setInstance(new TextBodyURLReader());
 	}
 
 	@Rule
@@ -219,21 +219,22 @@ public class Test {
 	}
 
 	protected MockURLReaders mockURLReaders() {
-		JSONArrayURLReader jsonArrayURLReader = Mockito.spy(
-			new JSONArrayURLReader());
-		JSONObjectURLReader jsonObjectURLReader = Mockito.spy(
-			new JSONObjectURLReader());
+		JSONArrayBodyURLReader jsonArrayBodyURLReader = Mockito.spy(
+			new JSONArrayBodyURLReader());
+		JSONObjectBodyURLReader jsonObjectBodyURLReader = Mockito.spy(
+			new JSONObjectBodyURLReader());
 		StreamURLReader streamURLReader = Mockito.spy(new StreamURLReader());
-		TextURLReader textURLReader = Mockito.spy(new TextURLReader());
+		TextBodyURLReader textBodyURLReader = Mockito.spy(
+			new TextBodyURLReader());
 
-		JSONArrayURLReader.setInstance(jsonArrayURLReader);
-		JSONObjectURLReader.setInstance(jsonObjectURLReader);
+		JSONArrayBodyURLReader.setInstance(jsonArrayBodyURLReader);
+		JSONObjectBodyURLReader.setInstance(jsonObjectBodyURLReader);
 		StreamURLReader.setInstance(streamURLReader);
-		TextURLReader.setInstance(textURLReader);
+		TextBodyURLReader.setInstance(textBodyURLReader);
 
 		MockURLReaders mockURLReaders = new MockURLReaders(
-			jsonArrayURLReader, jsonObjectURLReader, streamURLReader,
-			textURLReader);
+			jsonArrayBodyURLReader, jsonObjectBodyURLReader, streamURLReader,
+			textBodyURLReader);
 
 		for (URLReader<?> urlReader : mockURLReaders.getURLReaders()) {
 			try {

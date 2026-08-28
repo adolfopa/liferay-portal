@@ -41,7 +41,7 @@ import javax.net.ssl.SSLContext;
 /**
  * @author Kenji Heigel
  */
-public abstract class URLReader<T> {
+public abstract class BaseURLReader<T> {
 
 	protected T doRead(
 			boolean checkCache, boolean expectResponse,

@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * @author Kenji Heigel
  */
-public class StreamURLReader extends URLReader<InputStream> {
+public class StreamURLReader extends BaseURLReader<InputStream> {
 
 	public static String getResponseHeader(
 			String headerName, HTTPAuthorization httpAuthorization,

@@ -17,7 +17,7 @@ import java.net.URLConnection;
 /**
  * @author Kenji Heigel
  */
-public abstract class BaseBodyURLReader<T> extends URLReader<T> {
+public abstract class BaseBodyURLReader<T> extends BaseURLReader<T> {
 
 	@Override
 	protected T handleCachedFile(File cachedFile) throws IOException {

@@ -13,30 +13,13 @@ import java.io.IOException;
 /**
  * @author Kenji Heigel
  */
-public class TextBodyURLReader extends BaseBodyURLReader<String> {
+public interface URLReader<T> {
 
-	public static String read(
+	public T read(
 			boolean checkCache, boolean expectResponse,
 			HTTPAuthorization httpAuthorization,
 			HttpRequestMethod httpRequestMethod, int maxRetries,
 			String postContent, int retryPeriod, int timeout, String url)
-		throws IOException {
-
-		return _textBodyURLReader.doRead(
-			checkCache, expectResponse, httpAuthorization, httpRequestMethod,
-			maxRetries, postContent, retryPeriod, timeout, url);
-	}
-
-	public static void setInstance(TextBodyURLReader textBodyURLReader) {
-		_textBodyURLReader = textBodyURLReader;
-	}
-
-	@Override
-	protected String parse(String content) {
-		return content;
-	}
-
-	private static volatile TextBodyURLReader _textBodyURLReader =
-		new TextBodyURLReader();
+		throws IOException;
 
 }

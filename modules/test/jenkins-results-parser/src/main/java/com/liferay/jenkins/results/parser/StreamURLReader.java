@@ -53,8 +53,8 @@ public class StreamURLReader extends BaseURLReader<InputStream> {
 			String postContent, int retryPeriod, int timeout, String url)
 		throws IOException {
 
-		return _streamURLReader.doRead(
-			checkCache, httpAuthorization, httpRequestMethod, maxRetries,
+		return _streamURLReader.read(
+			checkCache, true, httpAuthorization, httpRequestMethod, maxRetries,
 			postContent, retryPeriod, timeout, url);
 	}
 

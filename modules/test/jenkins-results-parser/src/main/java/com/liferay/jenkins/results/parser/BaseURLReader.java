@@ -41,9 +41,10 @@ import javax.net.ssl.SSLContext;
 /**
  * @author Kenji Heigel
  */
-public abstract class BaseURLReader<T> {
+public abstract class BaseURLReader<T> implements URLReader<T> {
 
-	protected T doRead(
+	@Override
+	public T read(
 			boolean checkCache, boolean expectResponse,
 			HTTPAuthorization httpAuthorization,
 			HttpRequestMethod httpRequestMethod, int maxRetries,
@@ -244,7 +245,7 @@ public abstract class BaseURLReader<T> {
 				if ((ioException1 instanceof UnknownHostException) &&
 					url.matches("http://test-\\d+-\\d+/.*")) {
 
-					return doRead(
+					return read(
 						checkCache, expectResponse, httpAuthorization,
 						httpRequestMethod, maxRetries, postContent, retryPeriod,
 						timeout, JenkinsResultsParserUtil.getRemoteURL(url));
@@ -384,17 +385,6 @@ public abstract class BaseURLReader<T> {
 				sleep(retryPeriodMillis);
 			}
 		}
-	}
-
-	protected T doRead(
-			boolean checkCache, HTTPAuthorization httpAuthorization,
-			HttpRequestMethod httpRequestMethod, int maxRetries,
-			String postContent, int retryPeriod, int timeout, String url)
-		throws IOException {
-
-		return doRead(
-			checkCache, true, httpAuthorization, httpRequestMethod, maxRetries,
-			postContent, retryPeriod, timeout, url);
 	}
 
 	protected abstract T handleCachedFile(File cachedFile) throws IOException;

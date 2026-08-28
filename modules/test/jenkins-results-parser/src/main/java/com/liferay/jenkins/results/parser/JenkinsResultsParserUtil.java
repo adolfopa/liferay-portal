@@ -5112,7 +5112,7 @@ public class JenkinsResultsParserUtil {
 			int retryPeriod, int timeout, HTTPAuthorization httpAuthorization)
 		throws IOException {
 
-		return JSONArrayBodyURLReader.read(
+		return BodyURLReader.readJSONArray(
 			checkCache, httpAuthorization, maxRetries, postContent, retryPeriod,
 			timeout, url);
 	}
@@ -5192,7 +5192,7 @@ public class JenkinsResultsParserUtil {
 			int retryPeriod, int timeout, HTTPAuthorization httpAuthorization)
 		throws IOException {
 
-		return JSONObjectBodyURLReader.read(
+		return BodyURLReader.readJSONObject(
 			checkCache, httpAuthorization, httpRequestMethod, maxRetries,
 			postContent, retryPeriod, timeout, url);
 	}
@@ -5394,7 +5394,7 @@ public class JenkinsResultsParserUtil {
 		long start = System.currentTimeMillis();
 
 		try {
-			return TextBodyURLReader.read(
+			return BodyURLReader.readText(
 				checkCache, expectResponse, httpAuthorization,
 				httpRequestMethod, maxRetries, postContent, retryPeriod,
 				timeout, url);

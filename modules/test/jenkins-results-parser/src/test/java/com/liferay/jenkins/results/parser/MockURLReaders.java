@@ -8,21 +8,24 @@ package com.liferay.jenkins.results.parser;
 import java.util.Arrays;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 /**
  * @author Calum Ragan
  */
 public class MockURLReaders {
 
 	public MockURLReaders(
-		JSONArrayBodyURLReader jsonArrayBodyURLReader,
-		JSONObjectBodyURLReader jsonObjectBodyURLReader,
-		StreamURLReader streamURLReader, TextBodyURLReader textBodyURLReader) {
+		BodyURLReader<JSONArray> jsonArrayURLReader,
+		BodyURLReader<JSONObject> jsonObjectURLReader,
+		StreamURLReader streamURLReader, BodyURLReader<String> textURLReader) {
 
 		_streamURLReader = streamURLReader;
 
 		_urlReaders = Arrays.asList(
-			jsonArrayBodyURLReader, jsonObjectBodyURLReader, streamURLReader,
-			textBodyURLReader);
+			jsonArrayURLReader, jsonObjectURLReader, streamURLReader,
+			textURLReader);
 	}
 
 	public StreamURLReader getStreamURLReader() {

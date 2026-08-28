@@ -30,6 +30,9 @@ import java.util.Properties;
 
 import org.hamcrest.CoreMatchers;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -54,6 +57,14 @@ public class Test {
 
 	@After
 	public void tearDown() {
+		BodyURLReader.setJSONArrayInstance(
+			BodyURLReader.newJSONArrayURLReader());
+
+		BodyURLReader.setJSONObjectInstance(
+			BodyURLReader.newJSONObjectURLReader());
+
+		BodyURLReader.setTextInstance(BodyURLReader.newTextURLReader());
+
 		BuildDatabaseUtil.clearBuildDatabases();
 
 		Environment.setInstance(new Environment());
@@ -73,17 +84,11 @@ public class Test {
 
 		JobPropertyFactory.clear();
 
-		JSONArrayBodyURLReader.setInstance(new JSONArrayBodyURLReader());
-
-		JSONObjectBodyURLReader.setInstance(new JSONObjectBodyURLReader());
-
 		Shell.setInstance(new Shell());
 
 		StreamURLReader.setInstance(new StreamURLReader());
 
 		TestClassFactory.clear();
-
-		TextBodyURLReader.setInstance(new TextBodyURLReader());
 	}
 
 	@Rule
@@ -219,22 +224,22 @@ public class Test {
 	}
 
 	protected MockURLReaders mockURLReaders() {
-		JSONArrayBodyURLReader jsonArrayBodyURLReader = Mockito.spy(
-			new JSONArrayBodyURLReader());
-		JSONObjectBodyURLReader jsonObjectBodyURLReader = Mockito.spy(
-			new JSONObjectBodyURLReader());
+		BodyURLReader<JSONArray> jsonArrayURLReader = Mockito.spy(
+			BodyURLReader.newJSONArrayURLReader());
+		BodyURLReader<JSONObject> jsonObjectURLReader = Mockito.spy(
+			BodyURLReader.newJSONObjectURLReader());
 		StreamURLReader streamURLReader = Mockito.spy(new StreamURLReader());
-		TextBodyURLReader textBodyURLReader = Mockito.spy(
-			new TextBodyURLReader());
+		BodyURLReader<String> textURLReader = Mockito.spy(
+			BodyURLReader.newTextURLReader());
 
-		JSONArrayBodyURLReader.setInstance(jsonArrayBodyURLReader);
-		JSONObjectBodyURLReader.setInstance(jsonObjectBodyURLReader);
+		BodyURLReader.setJSONArrayInstance(jsonArrayURLReader);
+		BodyURLReader.setJSONObjectInstance(jsonObjectURLReader);
+		BodyURLReader.setTextInstance(textURLReader);
 		StreamURLReader.setInstance(streamURLReader);
-		TextBodyURLReader.setInstance(textBodyURLReader);
 
 		MockURLReaders mockURLReaders = new MockURLReaders(
-			jsonArrayBodyURLReader, jsonObjectBodyURLReader, streamURLReader,
-			textBodyURLReader);
+			jsonArrayURLReader, jsonObjectURLReader, streamURLReader,
+			textURLReader);
 
 		for (BaseURLReader<?> urlReader : mockURLReaders.getURLReaders()) {
 			try {
@@ -437,7 +442,7 @@ public class Test {
 			for (Invocation invocation : mockingDetails.getInvocations()) {
 				Method method = invocation.getMethod();
 
-				if (!method.equals(_doReadMethod)) {
+				if (!method.equals(_readMethod)) {
 					continue;
 				}
 
@@ -491,25 +496,25 @@ public class Test {
 	protected List<File> dependenciesDirs = getDependenciesDirs(
 		getSimpleClassNames());
 
-	private static Method _getDoReadMethod() {
-		try {
-			return BaseURLReader.class.getDeclaredMethod(
-				"doRead", boolean.class, boolean.class,
-				JenkinsResultsParserUtil.HTTPAuthorization.class,
-				JenkinsResultsParserUtil.HttpRequestMethod.class, int.class,
-				String.class, int.class, int.class, String.class);
-		}
-		catch (NoSuchMethodException noSuchMethodException) {
-			throw new ExceptionInInitializerError(noSuchMethodException);
-		}
-	}
-
 	private static Method _getOpenURLConnectionMethod() {
 		try {
 			return BaseURLReader.class.getDeclaredMethod(
 				"openURLConnection", String.class, boolean.class,
 				JenkinsResultsParserUtil.HttpRequestMethod.class, String.class,
 				boolean.class, int.class, String.class);
+		}
+		catch (NoSuchMethodException noSuchMethodException) {
+			throw new ExceptionInInitializerError(noSuchMethodException);
+		}
+	}
+
+	private static Method _getReadMethod() {
+		try {
+			return BaseURLReader.class.getDeclaredMethod(
+				"read", boolean.class, boolean.class,
+				JenkinsResultsParserUtil.HTTPAuthorization.class,
+				JenkinsResultsParserUtil.HttpRequestMethod.class, int.class,
+				String.class, int.class, int.class, String.class);
 		}
 		catch (NoSuchMethodException noSuchMethodException) {
 			throw new ExceptionInInitializerError(noSuchMethodException);
@@ -547,9 +552,9 @@ public class Test {
 		return httpURLConnection;
 	}
 
-	private static final Method _doReadMethod = _getDoReadMethod();
 	private static final Method _openURLConnectionMethod =
 		_getOpenURLConnectionMethod();
+	private static final Method _readMethod = _getReadMethod();
 	private static final Method _sleepMethod = _getSleepMethod();
 
 	private List<String> _simpleClassNames;

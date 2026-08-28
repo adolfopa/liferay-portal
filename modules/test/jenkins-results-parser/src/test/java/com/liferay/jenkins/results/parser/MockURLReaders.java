@@ -29,11 +29,11 @@ public class MockURLReaders {
 		return _streamURLReader;
 	}
 
-	public List<URLReader<?>> getURLReaders() {
+	public List<BaseURLReader<?>> getURLReaders() {
 		return _urlReaders;
 	}
 
 	private final StreamURLReader _streamURLReader;
-	private final List<URLReader<?>> _urlReaders;
+	private final List<BaseURLReader<?>> _urlReaders;
 
 }

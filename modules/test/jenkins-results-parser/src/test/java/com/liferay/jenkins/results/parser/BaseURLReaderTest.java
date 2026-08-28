@@ -30,7 +30,7 @@ import org.mockito.Mockito;
 /**
  * @author Kenji Heigel
  */
-public class URLReaderTest extends com.liferay.jenkins.results.parser.Test {
+public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 
 	@Test
 	public void testToInputStream() throws Exception {
@@ -376,7 +376,7 @@ public class URLReaderTest extends com.liferay.jenkins.results.parser.Test {
 
 		List<HttpURLConnection> httpURLConnections = new ArrayList<>();
 
-		for (URLReader<?> urlReader : mockURLReaders.getURLReaders()) {
+		for (BaseURLReader<?> urlReader : mockURLReaders.getURLReaders()) {
 			Mockito.doAnswer(
 				invocation -> {
 					HttpURLConnection httpURLConnection = Mockito.mock(

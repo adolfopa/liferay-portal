@@ -5,8 +5,8 @@
 
 package com.liferay.jenkins.results.parser.monitor;
 
+import com.liferay.jenkins.results.parser.MockURLReaders;
 import com.liferay.jenkins.results.parser.RandomTestUtil;
-import com.liferay.jenkins.results.parser.UrlReader;
 
 import java.io.IOException;
 
@@ -55,10 +55,10 @@ public class MasterResourceReaderTest
 	public void testGetJobJSONObjects() throws Exception {
 		String jobName = RandomTestUtil.randomString();
 
-		UrlReader urlReader = mockUrlReader();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setUrlReaderOutput(
-			_newJobsContent(jobName), "/api/json?tree=jobs", urlReader);
+			_newJobsContent(jobName), "/api/json?tree=jobs", mockURLReaders);
 
 		MasterResourceReader masterResourceReader =
 			MasterResourceReader.getInstance(
@@ -80,11 +80,11 @@ public class MasterResourceReaderTest
 
 	@Test
 	public void testGetJobJSONObjectsIsUnmodifiable() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setUrlReaderOutput(
 			_newJobsContent(RandomTestUtil.randomString()),
-			"/api/json?tree=jobs", urlReader);
+			"/api/json?tree=jobs", mockURLReaders);
 
 		MasterResourceReader masterResourceReader =
 			MasterResourceReader.getInstance(
@@ -104,11 +104,11 @@ public class MasterResourceReaderTest
 
 	@Test
 	public void testGetJobJSONObjectsWithReadFailure() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setUrlReaderException(
 			new IOException(RandomTestUtil.randomString()),
-			"/api/json?tree=jobs", urlReader);
+			"/api/json?tree=jobs", mockURLReaders);
 
 		MasterResourceReader masterResourceReader =
 			MasterResourceReader.getInstance(
@@ -125,7 +125,7 @@ public class MasterResourceReaderTest
 		String jobName = RandomTestUtil.randomString();
 
 		setUrlReaderOutput(
-			_newJobsContent(jobName), "/api/json?tree=jobs", urlReader);
+			_newJobsContent(jobName), "/api/json?tree=jobs", mockURLReaders);
 
 		Map<String, JSONObject> jobJSONObjects =
 			masterResourceReader.getJobJSONObjects(_MILLIS_TIMEOUT);
@@ -151,7 +151,7 @@ public class MasterResourceReaderTest
 
 	@Test
 	public void testGetMemoryInfoWithoutPrometheusScrape() throws Exception {
-		mockUrlReader();
+		mockURLReaders();
 
 		String memoryInfo = MonitorTestUtil.newMemoryInfo(23791372L, 32249488L);
 
@@ -182,13 +182,13 @@ public class MasterResourceReaderTest
 
 	@Test
 	public void testGetPrometheusScrape() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setUrlReaderOutput(
 			MonitorTestUtil.newSample(
 				"label", RandomTestUtil.randomString(),
 				MonitorTestUtil.newMetricName(), "1.0"),
-			"/prometheus", urlReader);
+			"/prometheus", mockURLReaders);
 
 		String masterName = MonitorTestUtil.newJenkinsMasterName();
 
@@ -202,9 +202,9 @@ public class MasterResourceReaderTest
 
 	@Test
 	public void testGetPrometheusScrapeWithEmptyContent() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput("", "/prometheus", urlReader);
+		setUrlReaderOutput("", "/prometheus", mockURLReaders);
 
 		String masterName = MonitorTestUtil.newJenkinsMasterName();
 
@@ -219,7 +219,7 @@ public class MasterResourceReaderTest
 
 		setUrlReaderOutput(
 			MonitorTestUtil.newSample("label", labelValue, name, "1.0"),
-			"/prometheus", urlReader);
+			"/prometheus", mockURLReaders);
 
 		testSame(
 			prometheusScrape,
@@ -238,11 +238,11 @@ public class MasterResourceReaderTest
 
 	@Test
 	public void testGetPrometheusScrapeWithReadFailure() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setUrlReaderException(
 			new IOException(RandomTestUtil.randomString()), "/prometheus",
-			urlReader);
+			mockURLReaders);
 
 		String masterName = MonitorTestUtil.newJenkinsMasterName();
 
@@ -262,7 +262,7 @@ public class MasterResourceReaderTest
 
 		setUrlReaderOutput(
 			MonitorTestUtil.newSample("label", labelValue, name, "1.0"),
-			"/prometheus", urlReader);
+			"/prometheus", mockURLReaders);
 
 		PrometheusScrape prometheusScrape =
 			masterResourceReader.getPrometheusScrape(_MILLIS_TIMEOUT);
@@ -276,11 +276,11 @@ public class MasterResourceReaderTest
 
 		String labelValue = RandomTestUtil.randomString();
 		String name = MonitorTestUtil.newMetricName();
-		UrlReader urlReader = mockUrlReader();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setUrlReaderOutput(
 			MonitorTestUtil.newSample("label", labelValue, name, "1.0"),
-			"/prometheus", urlReader);
+			"/prometheus", mockURLReaders);
 
 		String masterName = MonitorTestUtil.newJenkinsMasterName();
 

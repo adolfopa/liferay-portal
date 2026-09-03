@@ -10,7 +10,15 @@ import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.test.util.JournalTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
+import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.test.log.LogCapture;
+import com.liferay.portal.test.log.LogEntry;
+import com.liferay.portal.test.log.LoggerTestUtil;
 
+import java.util.List;
+
+import org.junit.Assert;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
@@ -20,6 +28,31 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class JournalArticleOpenNLPDocumentAssetAutoTaggerTest
 	extends BaseOpenNLPDocumentAssetAutoTaggerTestCase {
+
+	@Test
+	public void testAutoTagsAnAssetReusingNameFinders() throws Exception {
+		testWithOpenNLPDocumentAssetAutoTagProviderEnabled(
+			getClassName(),
+			() -> {
+				getAssetEntry(getTaggableText());
+
+				try (LogCapture logCapture =
+						LoggerTestUtil.configureLog4JLogger(
+							"opennlp.tools.util.XmlUtil",
+							LoggerTestUtil.WARN)) {
+
+					AssetEntry assetEntry = getAssetEntry(getTaggableText());
+
+					Assert.assertTrue(
+						ArrayUtil.isNotEmpty(assetEntry.getTagNames()));
+
+					List<LogEntry> logEntries = logCapture.getLogEntries();
+
+					Assert.assertEquals(
+						logEntries.toString(), 0, logEntries.size());
+				}
+			});
+	}
 
 	@Override
 	protected AssetEntry getAssetEntry(String text) throws Exception {

@@ -341,7 +341,7 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 			"https://" + RandomTestUtil.randomString() + "/job/" +
 				RandomTestUtil.randomString() + "/1/";
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			new JSONObject(
 			).put(
 				"cancelled", true
@@ -374,7 +374,7 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 
 		String queueItemAPIURL = "http://test-9-1/queue/item/7800/api/json";
 
-		setUrlReaderException(
+		setURLReaderException(
 			new FileNotFoundException(queueItemAPIURL), queueItemAPIURL,
 			mockURLReaders);
 
@@ -641,19 +641,19 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 
 		String masterURL = "http://" + masterName;
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			new JSONObject(
 			).put(
 				"items", new JSONArray()
 			).toString(),
 			masterURL + "/queue/api/json", mockURLReaders);
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			new JSONObject(
 			).put(
 				"mode", "NORMAL"
 			).toString(),
 			masterURL + "/api/json?tree=mode", mockURLReaders);
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			computerAPIJSON, masterURL + "/computer/api/json", mockURLReaders);
 	}
 

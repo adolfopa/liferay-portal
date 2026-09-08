@@ -37,7 +37,7 @@ public class BasePortalControllerBuildRunnerTest
 
 		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			new JSONObject(
 			).put(
 				"items",

@@ -128,7 +128,7 @@ public class JenkinsStopBuildUtilTest
 	public void testAbortBuildResultAbsent() throws Exception {
 		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			String.valueOf(new JSONObject()), "tree=result", mockURLReaders);
 
 		try {
@@ -155,7 +155,7 @@ public class JenkinsStopBuildUtilTest
 
 			MockURLReaders mockURLReaders = mockURLReaders();
 
-			setUrlReaderOutput(
+			setURLReaderOutput(
 				String.valueOf(
 					new JSONObject(
 					).put(

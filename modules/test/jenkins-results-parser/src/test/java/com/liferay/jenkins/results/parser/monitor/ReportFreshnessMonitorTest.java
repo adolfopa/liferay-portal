@@ -39,7 +39,7 @@ public class ReportFreshnessMonitorTest
 	public void testExecuteAtOverdueBoundary() throws Exception {
 		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			_newReportData(
 				JenkinsResultsParserUtil.getCurrentTimeMillis() - (5400 * 1000),
 				"dataGeneratedDate"),
@@ -91,7 +91,7 @@ public class ReportFreshnessMonitorTest
 		long generatedTimestamp =
 			JenkinsResultsParserUtil.getCurrentTimeMillis() + (3600 * 1000);
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			_newReportData(generatedTimestamp, "dataGeneratedDate"), _URL,
 			mockURLReaders);
 
@@ -118,7 +118,7 @@ public class ReportFreshnessMonitorTest
 
 		long oldestTimestamp = currentTimeMillis - (7200 * 1000);
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			JenkinsResultsParserUtil.combine(
 				_newReportData(currentTimeMillis, "dataGeneratedDate"), "\n",
 				_newReportData(oldestTimestamp, "dataGeneratedDate"), "\n",
@@ -149,7 +149,7 @@ public class ReportFreshnessMonitorTest
 	public void testExecuteMissingFailureMessage() throws Exception {
 		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderException(new IOException(), _URL, mockURLReaders);
+		setURLReaderException(new IOException(), _URL, mockURLReaders);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
 
@@ -168,7 +168,7 @@ public class ReportFreshnessMonitorTest
 	public void testExecuteMissingGeneratedDate() throws Exception {
 		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput(RandomTestUtil.randomString(), _URL, mockURLReaders);
+		setURLReaderOutput(RandomTestUtil.randomString(), _URL, mockURLReaders);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
 
@@ -191,7 +191,7 @@ public class ReportFreshnessMonitorTest
 		long generatedTimestamp =
 			JenkinsResultsParserUtil.getCurrentTimeMillis() - (600 * 1000);
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			JenkinsResultsParserUtil.combine(
 				"var allDurations = {\"id\":\"a\",\"modification_date\":",
 				String.valueOf(generatedTimestamp), ",\"title\":\"b\"};"),
@@ -215,7 +215,7 @@ public class ReportFreshnessMonitorTest
 		long generatedTimestamp =
 			JenkinsResultsParserUtil.getCurrentTimeMillis() - (600 * 1000);
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			_newReportData(generatedTimestamp, "dataGeneratedDate"), _URL,
 			mockURLReaders);
 
@@ -234,14 +234,14 @@ public class ReportFreshnessMonitorTest
 
 		Assert.assertNotNull(metrics.get("output.age.seconds"));
 
-		verifyUrlReaderRead(false, 0, 27000, mockURLReaders);
+		verifyURLReaderRead(false, 0, 27000, mockURLReaders);
 	}
 
 	@Test
 	public void testExecuteOverdueGraceBelowFloor() throws Exception {
 		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			_newReportData(
 				JenkinsResultsParserUtil.getCurrentTimeMillis() - (3700 * 1000),
 				"dataGeneratedDate"),
@@ -261,7 +261,7 @@ public class ReportFreshnessMonitorTest
 	public void testExecuteStale() throws Exception {
 		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			_newReportData(
 				JenkinsResultsParserUtil.getCurrentTimeMillis() - (7200 * 1000),
 				"dataGeneratedDate"),
@@ -286,7 +286,7 @@ public class ReportFreshnessMonitorTest
 	public void testExecuteStaleWithOverdueGrace() throws Exception {
 		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			_newReportData(
 				JenkinsResultsParserUtil.getCurrentTimeMillis() -
 					(10800 * 1000),
@@ -406,7 +406,7 @@ public class ReportFreshnessMonitorTest
 		long generatedTimestamp =
 			JenkinsResultsParserUtil.getCurrentTimeMillis() - (600 * 1000);
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			_newReportData(generatedTimestamp, variableName), _URL,
 			mockURLReaders);
 

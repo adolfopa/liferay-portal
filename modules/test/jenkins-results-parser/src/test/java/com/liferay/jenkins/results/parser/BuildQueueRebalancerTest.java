@@ -71,12 +71,12 @@ public class BuildQueueRebalancerTest
 					RandomTestUtil.randomLong(), RandomTestUtil.randomLong())
 			));
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			String.valueOf(queueJSONObject),
 			_BLACKLISTED_JENKINS_MASTER_NAME + ".liferay.com/queue/api/json",
 			mockURLReaders);
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			String.valueOf(
 				new JSONObject(
 				).put(
@@ -84,7 +84,7 @@ public class BuildQueueRebalancerTest
 				)),
 			_AVAILABLE_JENKINS_MASTER_NAME + ".liferay.com/api/json?tree=mode",
 			mockURLReaders);
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			String.valueOf(
 				new JSONObject(
 				).put(
@@ -155,12 +155,12 @@ public class BuildQueueRebalancerTest
 
 		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderException(
+		setURLReaderException(
 			new IOException("Connection refused"),
 			_BLACKLISTED_JENKINS_MASTER_NAME + ".liferay.com/queue/api/json",
 			mockURLReaders);
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			String.valueOf(
 				new JSONObject(
 				).put(
@@ -168,7 +168,7 @@ public class BuildQueueRebalancerTest
 				)),
 			_AVAILABLE_JENKINS_MASTER_NAME + ".liferay.com/api/json?tree=mode",
 			mockURLReaders);
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			String.valueOf(
 				new JSONObject(
 				).put(

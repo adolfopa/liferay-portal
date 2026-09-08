@@ -290,7 +290,7 @@ public class JobHealthMonitorTest
 	public void testExecuteCronUnreadableSchedule() throws Exception {
 		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderException(
+		setURLReaderException(
 			new IOException(), _JOB_CONFIG_URL, mockURLReaders);
 
 		_setJobsJSONObject(
@@ -358,7 +358,7 @@ public class JobHealthMonitorTest
 			)
 		);
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			jobsJSONObject.toString(), _MASTER_API_URL, mockURLReaders);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
@@ -720,7 +720,7 @@ public class JobHealthMonitorTest
 	public void testExecuteUnreadableResponse() throws Exception {
 		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			RandomTestUtil.randomString(), _MASTER_API_URL, mockURLReaders);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
@@ -892,7 +892,7 @@ public class JobHealthMonitorTest
 
 		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput(configXML, _JOB_CONFIG_URL, mockURLReaders);
+		setURLReaderOutput(configXML, _JOB_CONFIG_URL, mockURLReaders);
 
 		_setJobsJSONObject(jobJSONObject, mockURLReaders);
 	}
@@ -910,7 +910,7 @@ public class JobHealthMonitorTest
 			)
 		);
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			jobsJSONObject.toString(), _MASTER_API_URL, mockURLReaders);
 	}
 

@@ -25,7 +25,7 @@ public class PullRequestTest extends com.liferay.jenkins.results.parser.Test {
 
 		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			JenkinsResultsParserUtil.combine(
 				"[{\"filename\": \"test/ci-merge\", ",
 				"\"patch\": \"+abcdef0123456789abcdef0123456789abcdef01\"}]"),
@@ -42,7 +42,7 @@ public class PullRequestTest extends com.liferay.jenkins.results.parser.Test {
 
 		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			JenkinsResultsParserUtil.combine(
 				"[{\"filename\": \"modules/apps/foo/Foo.java\"}, ",
 				"{\"filename\": \"portal-impl/Bar.java\"}]"),

@@ -38,9 +38,9 @@ public class StaleBuildReaperTest
 
 		_mockURLReaders = mockURLReaders();
 
-		_setUpJenkinsMasterUrlReaderOutputs(
+		_setUpJenkinsMasterURLReaderOutputs(
 			_getStaleBuildsComputerAPIJSONObject(), "test-9-1");
-		_setUpJenkinsMasterUrlReaderOutputs(
+		_setUpJenkinsMasterURLReaderOutputs(
 			_getJenkinsSlaveOfflineComputerAPIJSONObject(), "test-9-2");
 
 		_jenkinsCohort = JenkinsCohort.getInstance("test-9");
@@ -264,7 +264,7 @@ public class StaleBuildReaperTest
 		}
 	}
 
-	private void _setUpJenkinsMasterUrlReaderOutputs(
+	private void _setUpJenkinsMasterURLReaderOutputs(
 			JSONObject computerAPIJSONObject, String masterName)
 		throws Exception {
 
@@ -274,7 +274,7 @@ public class StaleBuildReaperTest
 
 		queueJSONObject.put("items", new JSONArray());
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			queueJSONObject.toString(), masterURL + "/queue/api/json",
 			_mockURLReaders);
 
@@ -282,11 +282,11 @@ public class StaleBuildReaperTest
 
 		modeJSONObject.put("mode", "NORMAL");
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			modeJSONObject.toString(), masterURL + "/api/json?tree=mode",
 			_mockURLReaders);
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			computerAPIJSONObject.toString(), masterURL + "/computer/api/json",
 			_mockURLReaders);
 	}

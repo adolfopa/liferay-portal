@@ -309,7 +309,7 @@ public class Test {
 		);
 	}
 
-	protected void setUrlReaderException(
+	protected void setURLReaderException(
 			IOException ioException, String url, MockURLReaders mockURLReaders)
 		throws Exception {
 
@@ -327,7 +327,7 @@ public class Test {
 		}
 	}
 
-	protected void setUrlReaderOutput(
+	protected void setURLReaderOutput(
 			long delayMillis, String standardOut, String url,
 			MockURLReaders mockURLReaders)
 		throws Exception {
@@ -350,11 +350,11 @@ public class Test {
 		}
 	}
 
-	protected void setUrlReaderOutput(
+	protected void setURLReaderOutput(
 			String standardOut, String url, MockURLReaders mockURLReaders)
 		throws Exception {
 
-		setUrlReaderOutput(0, standardOut, url, mockURLReaders);
+		setURLReaderOutput(0, standardOut, url, mockURLReaders);
 	}
 
 	protected void setURLReaderResponseCode(
@@ -430,7 +430,7 @@ public class Test {
 		testEquals(expectedCount, count);
 	}
 
-	protected void verifyUrlReaderRead(
+	protected void verifyURLReaderRead(
 		boolean checkCache, int maxRetries, int timeoutMillis,
 		MockURLReaders mockURLReaders) {
 

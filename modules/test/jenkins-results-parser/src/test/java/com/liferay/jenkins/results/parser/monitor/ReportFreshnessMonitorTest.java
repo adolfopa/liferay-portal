@@ -6,8 +6,8 @@
 package com.liferay.jenkins.results.parser.monitor;
 
 import com.liferay.jenkins.results.parser.JenkinsResultsParserUtil;
+import com.liferay.jenkins.results.parser.MockURLReaders;
 import com.liferay.jenkins.results.parser.RandomTestUtil;
-import com.liferay.jenkins.results.parser.UrlReader;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,13 +37,13 @@ public class ReportFreshnessMonitorTest
 
 	@Test
 	public void testExecuteAtOverdueBoundary() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setUrlReaderOutput(
 			_newReportData(
 				JenkinsResultsParserUtil.getCurrentTimeMillis() - (5400 * 1000),
 				"dataGeneratedDate"),
-			_URL, urlReader);
+			_URL, mockURLReaders);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
 
@@ -86,14 +86,14 @@ public class ReportFreshnessMonitorTest
 
 	@Test
 	public void testExecuteGeneratedDateFuture() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		long generatedTimestamp =
 			JenkinsResultsParserUtil.getCurrentTimeMillis() + (3600 * 1000);
 
 		setUrlReaderOutput(
 			_newReportData(generatedTimestamp, "dataGeneratedDate"), _URL,
-			urlReader);
+			mockURLReaders);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
 
@@ -111,7 +111,7 @@ public class ReportFreshnessMonitorTest
 
 	@Test
 	public void testExecuteGeneratedDateOldestRules() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		long currentTimeMillis =
 			JenkinsResultsParserUtil.getCurrentTimeMillis();
@@ -124,7 +124,7 @@ public class ReportFreshnessMonitorTest
 				_newReportData(oldestTimestamp, "dataGeneratedDate"), "\n",
 				_newReportData(
 					currentTimeMillis - (60 * 1000), "dataGeneratedDate")),
-			_URL, urlReader);
+			_URL, mockURLReaders);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
 
@@ -147,9 +147,9 @@ public class ReportFreshnessMonitorTest
 
 	@Test
 	public void testExecuteMissingFailureMessage() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderException(new IOException(), _URL, urlReader);
+		setUrlReaderException(new IOException(), _URL, mockURLReaders);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
 
@@ -166,9 +166,9 @@ public class ReportFreshnessMonitorTest
 
 	@Test
 	public void testExecuteMissingGeneratedDate() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput(RandomTestUtil.randomString(), _URL, urlReader);
+		setUrlReaderOutput(RandomTestUtil.randomString(), _URL, mockURLReaders);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
 
@@ -186,7 +186,7 @@ public class ReportFreshnessMonitorTest
 
 	@Test
 	public void testExecuteModificationDate() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		long generatedTimestamp =
 			JenkinsResultsParserUtil.getCurrentTimeMillis() - (600 * 1000);
@@ -195,7 +195,7 @@ public class ReportFreshnessMonitorTest
 			JenkinsResultsParserUtil.combine(
 				"var allDurations = {\"id\":\"a\",\"modification_date\":",
 				String.valueOf(generatedTimestamp), ",\"title\":\"b\"};"),
-			_URL, urlReader);
+			_URL, mockURLReaders);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
 
@@ -210,14 +210,14 @@ public class ReportFreshnessMonitorTest
 
 	@Test
 	public void testExecuteOK() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		long generatedTimestamp =
 			JenkinsResultsParserUtil.getCurrentTimeMillis() - (600 * 1000);
 
 		setUrlReaderOutput(
 			_newReportData(generatedTimestamp, "dataGeneratedDate"), _URL,
-			urlReader);
+			mockURLReaders);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
 
@@ -234,18 +234,18 @@ public class ReportFreshnessMonitorTest
 
 		Assert.assertNotNull(metrics.get("output.age.seconds"));
 
-		verifyUrlReaderRead(false, 0, 27000, urlReader);
+		verifyUrlReaderRead(false, 0, 27000, mockURLReaders);
 	}
 
 	@Test
 	public void testExecuteOverdueGraceBelowFloor() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setUrlReaderOutput(
 			_newReportData(
 				JenkinsResultsParserUtil.getCurrentTimeMillis() - (3700 * 1000),
 				"dataGeneratedDate"),
-			_URL, urlReader);
+			_URL, mockURLReaders);
 
 		Properties monitorProperties = _newMonitorProperties();
 
@@ -259,13 +259,13 @@ public class ReportFreshnessMonitorTest
 
 	@Test
 	public void testExecuteStale() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setUrlReaderOutput(
 			_newReportData(
 				JenkinsResultsParserUtil.getCurrentTimeMillis() - (7200 * 1000),
 				"dataGeneratedDate"),
-			_URL, urlReader);
+			_URL, mockURLReaders);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
 
@@ -284,14 +284,14 @@ public class ReportFreshnessMonitorTest
 
 	@Test
 	public void testExecuteStaleWithOverdueGrace() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setUrlReaderOutput(
 			_newReportData(
 				JenkinsResultsParserUtil.getCurrentTimeMillis() -
 					(10800 * 1000),
 				"dataGeneratedDate"),
-			_URL, urlReader);
+			_URL, mockURLReaders);
 
 		Properties monitorProperties = _newMonitorProperties();
 
@@ -401,13 +401,14 @@ public class ReportFreshnessMonitorTest
 	private void _testExecuteGeneratedDateVariant(String variableName)
 		throws Exception {
 
-		UrlReader urlReader = mockUrlReader();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		long generatedTimestamp =
 			JenkinsResultsParserUtil.getCurrentTimeMillis() - (600 * 1000);
 
 		setUrlReaderOutput(
-			_newReportData(generatedTimestamp, variableName), _URL, urlReader);
+			_newReportData(generatedTimestamp, variableName), _URL,
+			mockURLReaders);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
 

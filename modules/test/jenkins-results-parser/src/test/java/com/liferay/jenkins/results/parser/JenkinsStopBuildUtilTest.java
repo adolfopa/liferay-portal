@@ -304,10 +304,6 @@ public class JenkinsStopBuildUtilTest
 		AtomicInteger readsCount = new AtomicInteger();
 
 		for (BaseURLReader<?> urlReader : mockURLReaders.getURLReaders()) {
-
-			// Record the URL the caller asked for, before the reader resolves
-			// it to a local or remote host.
-
 			Mockito.doAnswer(
 				invocation -> {
 					_readURLs.add(invocation.getArgument(8));

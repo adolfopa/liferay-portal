@@ -727,8 +727,8 @@ public class JobHealthMonitorTest
 
 		testEquals(MonitorResult.Status.CRITICAL, monitorResult.getStatus());
 		testEquals(
-			"Unable to read http://test-9-1: " +
-				"Unable to create a JSON object from the response body",
+			"Unable to read http://test-9-1: Unable to create a JSON object " +
+				"from the response body",
 			monitorResult.getMessage());
 	}
 

@@ -10,7 +10,6 @@ import com.liferay.jenkins.results.parser.JenkinsResultsParserUtil.HttpRequestMe
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -84,19 +83,10 @@ public class BodyURLReader<T> extends BaseURLReader<T> {
 		_textURLReader = urlReader;
 	}
 
-	public interface Parser<T> {
-
-		public T parse(String content) throws IOException;
-
-	}
-
 	@Override
 	protected T handleCachedFile(File cachedFile) throws IOException {
-		try (BufferedReader bufferedReader = new BufferedReader(
-				new FileReader(cachedFile))) {
-
-			return _parseBody(_readBody(bufferedReader), cachedFile.toString());
-		}
+		return _parseBody(
+			JenkinsResultsParserUtil.read(cachedFile), cachedFile.toString());
 	}
 
 	@Override
@@ -121,16 +111,18 @@ public class BodyURLReader<T> extends BaseURLReader<T> {
 					urlConnection.getURL());
 		}
 
+		T result = _parseBody(content, String.valueOf(urlConnection.getURL()));
+
 		if (cacheFileKey != null) {
 			JenkinsResultsParserUtil.saveToCacheFile(cacheFileKey, content);
 		}
 
-		return _parseBody(content, String.valueOf(urlConnection.getURL()));
+		return result;
 	}
 
 	private static JSONArray _toJSONArray(String content) throws IOException {
 		try {
-			return new JSONArray(content);
+			return JenkinsResultsParserUtil.createJSONArray(content);
 		}
 		catch (JSONException jsonException) {
 			throw new IOException(
@@ -141,7 +133,7 @@ public class BodyURLReader<T> extends BaseURLReader<T> {
 
 	private static JSONObject _toJSONObject(String content) throws IOException {
 		try {
-			return new JSONObject(content);
+			return JenkinsResultsParserUtil.createJSONObject(content);
 		}
 		catch (JSONException jsonException) {
 			throw new IOException(
@@ -156,9 +148,16 @@ public class BodyURLReader<T> extends BaseURLReader<T> {
 	}
 
 	private boolean _isTruncated(String content) {
-		String trimmedContent = content.trim();
+		int index = content.length();
 
-		return trimmedContent.endsWith("was truncated due to its size.");
+		while ((index > 0) &&
+			   Character.isWhitespace(content.charAt(index - 1))) {
+
+			index--;
+		}
+
+		return content.startsWith(
+			_SUFFIX_TRUNCATED, index - _SUFFIX_TRUNCATED.length());
 	}
 
 	private T _parseBody(String content, String source) throws IOException {
@@ -184,6 +183,9 @@ public class BodyURLReader<T> extends BaseURLReader<T> {
 		return sb.toString();
 	}
 
+	private static final String _SUFFIX_TRUNCATED =
+		"was truncated due to its size.";
+
 	private static volatile URLReader<JSONArray> _jsonArrayURLReader =
 		newJSONArrayURLReader();
 	private static volatile URLReader<JSONObject> _jsonObjectURLReader =
@@ -193,5 +195,11 @@ public class BodyURLReader<T> extends BaseURLReader<T> {
 
 	private final Parser<T> _parser;
 	private final boolean _truncationFatal;
+
+	private interface Parser<T> {
+
+		public T parse(String content) throws IOException;
+
+	}
 
 }

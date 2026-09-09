@@ -25,15 +25,15 @@ import org.json.JSONObject;
  */
 public class BodyURLReader<T> extends BaseURLReader<T> {
 
-	public static BodyURLReader<JSONArray> newJSONArrayURLReader() {
+	public static BodyURLReader<JSONArray> newJSONArrayBodyURLReader() {
 		return new BodyURLReader<>(BodyURLReader::_toJSONArray, true);
 	}
 
-	public static BodyURLReader<JSONObject> newJSONObjectURLReader() {
+	public static BodyURLReader<JSONObject> newJSONObjectBodyURLReader() {
 		return new BodyURLReader<>(BodyURLReader::_toJSONObject, true);
 	}
 
-	public static BodyURLReader<String> newTextURLReader() {
+	public static BodyURLReader<String> newTextBodyURLReader() {
 		return new BodyURLReader<>(content -> content, false);
 	}
 
@@ -187,11 +187,11 @@ public class BodyURLReader<T> extends BaseURLReader<T> {
 		"was truncated due to its size.";
 
 	private static volatile URLReader<JSONArray> _jsonArrayURLReader =
-		newJSONArrayURLReader();
+		newJSONArrayBodyURLReader();
 	private static volatile URLReader<JSONObject> _jsonObjectURLReader =
-		newJSONObjectURLReader();
+		newJSONObjectBodyURLReader();
 	private static volatile URLReader<String> _textURLReader =
-		newTextURLReader();
+		newTextBodyURLReader();
 
 	private final Parser<T> _parser;
 	private final boolean _truncationFatal;

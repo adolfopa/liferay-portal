@@ -17,15 +17,16 @@ import org.json.JSONObject;
 public class MockURLReaders {
 
 	public MockURLReaders(
-		BodyURLReader<JSONArray> jsonArrayURLReader,
-		BodyURLReader<JSONObject> jsonObjectURLReader,
-		StreamURLReader streamURLReader, BodyURLReader<String> textURLReader) {
+		BodyURLReader<JSONArray> jsonArrayBodyURLReader,
+		BodyURLReader<JSONObject> jsonObjectBodyURLReader,
+		StreamURLReader streamURLReader,
+		BodyURLReader<String> textBodyURLReader) {
 
 		_streamURLReader = streamURLReader;
 
 		_urlReaders = Arrays.asList(
-			jsonArrayURLReader, jsonObjectURLReader, streamURLReader,
-			textURLReader);
+			jsonArrayBodyURLReader, jsonObjectBodyURLReader, streamURLReader,
+			textBodyURLReader);
 	}
 
 	public StreamURLReader getStreamURLReader() {

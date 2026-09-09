@@ -58,12 +58,12 @@ public class Test {
 	@After
 	public void tearDown() {
 		BodyURLReader.setJSONArrayInstance(
-			BodyURLReader.newJSONArrayURLReader());
+			BodyURLReader.newJSONArrayBodyURLReader());
 
 		BodyURLReader.setJSONObjectInstance(
-			BodyURLReader.newJSONObjectURLReader());
+			BodyURLReader.newJSONObjectBodyURLReader());
 
-		BodyURLReader.setTextInstance(BodyURLReader.newTextURLReader());
+		BodyURLReader.setTextInstance(BodyURLReader.newTextBodyURLReader());
 
 		BuildDatabaseUtil.clearBuildDatabases();
 
@@ -224,22 +224,22 @@ public class Test {
 	}
 
 	protected MockURLReaders mockURLReaders() {
-		BodyURLReader<JSONArray> jsonArrayURLReader = Mockito.spy(
-			BodyURLReader.newJSONArrayURLReader());
-		BodyURLReader<JSONObject> jsonObjectURLReader = Mockito.spy(
-			BodyURLReader.newJSONObjectURLReader());
+		BodyURLReader<JSONArray> jsonArrayBodyURLReader = Mockito.spy(
+			BodyURLReader.newJSONArrayBodyURLReader());
+		BodyURLReader<JSONObject> jsonObjectBodyURLReader = Mockito.spy(
+			BodyURLReader.newJSONObjectBodyURLReader());
 		StreamURLReader streamURLReader = Mockito.spy(new StreamURLReader());
-		BodyURLReader<String> textURLReader = Mockito.spy(
-			BodyURLReader.newTextURLReader());
+		BodyURLReader<String> textBodyURLReader = Mockito.spy(
+			BodyURLReader.newTextBodyURLReader());
 
-		BodyURLReader.setJSONArrayInstance(jsonArrayURLReader);
-		BodyURLReader.setJSONObjectInstance(jsonObjectURLReader);
-		BodyURLReader.setTextInstance(textURLReader);
+		BodyURLReader.setJSONArrayInstance(jsonArrayBodyURLReader);
+		BodyURLReader.setJSONObjectInstance(jsonObjectBodyURLReader);
+		BodyURLReader.setTextInstance(textBodyURLReader);
 		StreamURLReader.setInstance(streamURLReader);
 
 		MockURLReaders mockURLReaders = new MockURLReaders(
-			jsonArrayURLReader, jsonObjectURLReader, streamURLReader,
-			textURLReader);
+			jsonArrayBodyURLReader, jsonObjectBodyURLReader, streamURLReader,
+			textBodyURLReader);
 
 		for (BaseURLReader<?> urlReader : mockURLReaders.getURLReaders()) {
 			try {

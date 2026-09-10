@@ -43,7 +43,7 @@ public class ClientCredentialsHTTPAuthorizationTest
 		Assert.assertNotEquals(
 			authorization, clientCredentialsHTTPAuthorization.toString());
 
-		_verifyTokenRequestCount(2, mockURLReaders);
+		_verifyTokenRequestsCount(2, mockURLReaders);
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class ClientCredentialsHTTPAuthorizationTest
 		Assert.assertEquals(
 			newAuthorization, clientCredentialsHTTPAuthorization.toString());
 
-		_verifyTokenRequestCount(2, mockURLReaders);
+		_verifyTokenRequestsCount(2, mockURLReaders);
 	}
 
 	@Test
@@ -81,7 +81,7 @@ public class ClientCredentialsHTTPAuthorizationTest
 		Assert.assertEquals(
 			authorization, clientCredentialsHTTPAuthorization.toString());
 
-		_verifyTokenRequestCount(1, mockURLReaders);
+		_verifyTokenRequestsCount(1, mockURLReaders);
 	}
 
 	@Test
@@ -101,7 +101,7 @@ public class ClientCredentialsHTTPAuthorizationTest
 		Assert.assertNotEquals(
 			authorization, clientCredentialsHTTPAuthorization.toString());
 
-		_verifyTokenRequestCount(2, mockURLReaders);
+		_verifyTokenRequestsCount(2, mockURLReaders);
 	}
 
 	private MockURLReaders _mockTokenRequestURLReader() throws Exception {
@@ -143,10 +143,10 @@ public class ClientCredentialsHTTPAuthorizationTest
 					".liferay.com/o/oauth2/token"));
 	}
 
-	private void _verifyTokenRequestCount(
+	private void _verifyTokenRequestsCount(
 		int expectedCount, MockURLReaders mockURLReaders) {
 
-		verifyURLReaderAttemptCount(
+		verifyURLReaderAttemptsCount(
 			expectedCount, mockURLReaders, "/o/oauth2/token");
 	}
 

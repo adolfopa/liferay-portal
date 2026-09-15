@@ -49,8 +49,10 @@ import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.InlineSQLHelper;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactory;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermissionRegistryUtil;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermissionUtil;
@@ -301,7 +303,9 @@ public class ObjectEntryServiceImpl extends ObjectEntryServiceBaseImpl {
 				groupId, objectRelationshipId, primaryKey, related, reverse,
 				search, start, end);
 
-		if (!ObjectEntryThreadLocal.isSkipObjectEntryResourcePermission()) {
+		if (!ObjectEntryThreadLocal.isSkipObjectEntryResourcePermission() &&
+			!_isInlineSQLHelperEnabled(groupId, objectRelationshipId)) {
+
 			for (ObjectEntry objectEntry : objectEntries) {
 				objectEntryService.checkModelResourcePermission(
 					objectEntry.getObjectDefinitionId(),
@@ -863,6 +867,26 @@ public class ObjectEntryServiceImpl extends ObjectEntryServiceBaseImpl {
 			).toInstant());
 	}
 
+	private boolean _isInlineSQLHelperEnabled(
+			long groupId, long objectRelationshipId)
+		throws PortalException {
+
+		if (PermissionThreadLocal.getPermissionChecker() == null) {
+			return false;
+		}
+
+		ObjectRelationship objectRelationship =
+			_objectRelationshipLocalService.getObjectRelationship(
+				objectRelationshipId);
+
+		ObjectDefinition objectDefinition =
+			_objectDefinitionPersistence.findByPrimaryKey(
+				objectRelationship.getObjectDefinitionId2());
+
+		return _inlineSQLHelper.isEnabled(
+			objectDefinition.getCompanyId(), groupId);
+	}
+
 	private void _sendUserNotificationEvents(
 			long userId, String portletId, ObjectDefinition objectDefinition)
 		throws PortalException {
@@ -1010,6 +1034,9 @@ public class ObjectEntryServiceImpl extends ObjectEntryServiceBaseImpl {
 
 	@Reference
 	private ConfigurationProvider _configurationProvider;
+
+	@Reference
+	private InlineSQLHelper _inlineSQLHelper;
 
 	@Reference
 	private JSONFactory _jsonFactory;

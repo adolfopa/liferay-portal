@@ -1209,6 +1209,54 @@ public class JavaSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
+	public void testTestClassStaticInitializer() throws Exception {
+		test(
+			SourceProcessorTestParameters.create(
+				"TestClassStaticInitializer.testjava"
+			).addExpectedMessage(
+				StringBundler.concat(
+					"Do not use class \"PortalUtil\" in a static initializer ",
+					"of an Arquillian test, since it needs the portal but ",
+					"static initializers also run in the client JVM. ",
+					"Initialize it in a @Before or @BeforeClass method or ",
+					"where it is used"),
+				82
+			).addExpectedMessage(
+				StringBundler.concat(
+					"Do not use \"DLTestUtil.randomTextFileBytes\" in a ",
+					"static initializer of an Arquillian test, since it needs ",
+					"the portal but static initializers also run in the ",
+					"client JVM. Initialize it in a @Before or @BeforeClass ",
+					"method or where it is used"),
+				91
+			).addExpectedMessage(
+				StringBundler.concat(
+					"Use \"RandomTestUtil.randomInt\" instead of ",
+					"\"RandomTestUtil.nextInt\" in a static initializer of an ",
+					"Arquillian test, since \"RandomTestUtil.nextInt\" needs ",
+					"the portal but static initializers also run in the ",
+					"client JVM"),
+				97
+			).addExpectedMessage(
+				StringBundler.concat(
+					"Do not use \"RandomTestUtil.randomString\" with ",
+					"\"TikaRandomizerBumper\" in a static initializer of an ",
+					"Arquillian test, since it needs the portal but static ",
+					"initializers also run in the client JVM. Initialize it ",
+					"in a @Before or @BeforeClass method or where it is used"),
+				99
+			).addExpectedMessage(
+				StringBundler.concat(
+					"Do not use class \"TestPropsValues\" in a static ",
+					"initializer of an Arquillian test, since it needs the ",
+					"portal but static initializers also run in the client ",
+					"JVM. Initialize it in a @Before or @BeforeClass method ",
+					"or where it is used"),
+				109
+			));
+	}
+
+	@Test
 	public void testTextBlock() throws Exception {
 		test(
 			SourceProcessorTestParameters.create(

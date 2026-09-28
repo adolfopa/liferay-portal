@@ -5,27 +5,38 @@
 
 package com.liferay.batch.engine.service.impl;
 
+import com.liferay.batch.engine.BatchEngineTaskExecuteStatus;
 import com.liferay.batch.engine.BatchEngineTaskItemDelegate;
 import com.liferay.batch.engine.BatchEngineTaskItemDelegateRegistry;
+import com.liferay.batch.engine.ItemClassRegistry;
 import com.liferay.batch.engine.exception.BatchEngineImportTaskParametersException;
+import com.liferay.batch.engine.internal.sanitizer.BatchEngineTaskContentSanitizer;
+import com.liferay.batch.engine.internal.util.PasswordFieldUtil;
 import com.liferay.batch.engine.model.BatchEngineImportTask;
 import com.liferay.batch.engine.service.base.BatchEngineImportTaskLocalServiceBaseImpl;
 import com.liferay.batch.engine.service.persistence.BatchEngineImportTaskErrorPersistence;
 import com.liferay.petra.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.aop.AopService;
+import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.change.tracking.CTAware;
 import com.liferay.portal.kernel.dao.jdbc.OutputBlob;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.io.Serializable;
 
+import java.sql.Blob;
+
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -161,7 +172,54 @@ public class BatchEngineImportTaskLocalServiceImpl
 	public BatchEngineImportTask updateBatchEngineImportTask(
 		BatchEngineImportTask batchEngineImportTask) {
 
+		if (StringUtil.equals(
+				batchEngineImportTask.getExecuteStatus(),
+				BatchEngineTaskExecuteStatus.COMPLETED.toString()) ||
+			StringUtil.equals(
+				batchEngineImportTask.getExecuteStatus(),
+				BatchEngineTaskExecuteStatus.FAILED.toString())) {
+
+			try {
+				_sanitizeBatchEngineImportTask(batchEngineImportTask);
+			}
+			catch (Exception exception) {
+				_log.error(
+					"Unable to remove password fields from batch engine " +
+						"import task " +
+							batchEngineImportTask.getBatchEngineImportTaskId(),
+					exception);
+			}
+		}
+
 		return super.updateBatchEngineImportTask(batchEngineImportTask);
+	}
+
+	private void _sanitizeBatchEngineImportTask(
+			BatchEngineImportTask batchEngineImportTask)
+		throws Exception {
+
+		Set<String> passwordFieldNames =
+			PasswordFieldUtil.getPasswordFieldNames(
+				_itemClassRegistry.getItemClass(
+					batchEngineImportTask.getClassName()));
+
+		if (passwordFieldNames.isEmpty()) {
+			return;
+		}
+
+		BatchEngineTaskContentSanitizer batchEngineTaskContentSanitizer =
+			new BatchEngineTaskContentSanitizer(
+				batchEngineImportTask, _configurationProvider,
+				passwordFieldNames);
+
+		Blob blob = batchEngineImportTask.getContent();
+
+		byte[] content = batchEngineTaskContentSanitizer.sanitize(
+			blob.getBinaryStream());
+
+		batchEngineImportTask.setContent(
+			new OutputBlob(
+				new UnsyncByteArrayInputStream(content), content.length));
 	}
 
 	private void _validateDelimiter(String delimiter)
@@ -213,6 +271,9 @@ public class BatchEngineImportTaskLocalServiceImpl
 	private static final String _INVALID_ENCLOSING_CHARACTERS =
 		StringPool.APOSTROPHE + StringPool.QUOTE;
 
+	private static final Log _log = LogFactoryUtil.getLog(
+		BatchEngineImportTaskLocalServiceImpl.class);
+
 	@Reference
 	private BatchEngineImportTaskErrorPersistence
 		_batchEngineImportTaskErrorPersistence;
@@ -220,5 +281,11 @@ public class BatchEngineImportTaskLocalServiceImpl
 	@Reference
 	private BatchEngineTaskItemDelegateRegistry
 		_batchEngineTaskItemDelegateRegistry;
+
+	@Reference
+	private ConfigurationProvider _configurationProvider;
+
+	@Reference
+	private ItemClassRegistry _itemClassRegistry;
 
 }

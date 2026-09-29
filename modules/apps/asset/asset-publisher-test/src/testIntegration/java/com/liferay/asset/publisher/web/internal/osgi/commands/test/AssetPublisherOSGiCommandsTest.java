@@ -91,8 +91,12 @@ public class AssetPublisherOSGiCommandsTest {
 		assetEntries.add(_addAssetEntry());
 		assetEntries.add(_addAssetEntry());
 
+		String classNameIds =
+			PortalUtil.getClassNameId(Layout.class) + StringPool.COMMA +
+				RandomTestUtil.randomLong();
+
 		PortletPreferences portletPreferences =
-			_setDynamicSelectionStylePreference();
+			_setDynamicSelectionStylePreference(classNameIds);
 
 		Assert.assertEquals(
 			"dynamic", portletPreferences.getValue("selectionStyle", null));
@@ -150,8 +154,7 @@ public class AssetPublisherOSGiCommandsTest {
 		Assert.assertEquals(
 			"true", unicodeProperties.getProperty("anyAssetType", null));
 		Assert.assertEquals(
-			_CLASS_NAME_IDS,
-			unicodeProperties.getProperty("classNameIds", null));
+			classNameIds, unicodeProperties.getProperty("classNameIds", null));
 
 		assetEntryQuery = _assetPublisherHelper.getAssetEntryQuery(
 			portletPreferences, _group.getGroupId(), _layout, null, null);
@@ -268,13 +271,14 @@ public class AssetPublisherOSGiCommandsTest {
 		method.invoke(_assetPublisherOSGiCommands, null);
 	}
 
-	private PortletPreferences _setDynamicSelectionStylePreference()
+	private PortletPreferences _setDynamicSelectionStylePreference(
+			String classNameIds)
 		throws Exception {
 
 		PortletPreferences portletPreferences =
 			LayoutTestUtil.getPortletPreferences(_layout, _portletId);
 
-		portletPreferences.setValue("classNameIds", _CLASS_NAME_IDS);
+		portletPreferences.setValue("classNameIds", classNameIds);
 		portletPreferences.setValue(
 			"scopeIds",
 			AssetPublisherHelper.SCOPE_ID_GROUP_PREFIX + _group.getGroupId());
@@ -313,10 +317,6 @@ public class AssetPublisherOSGiCommandsTest {
 
 		return portletPreferences;
 	}
-
-	private static final String _CLASS_NAME_IDS =
-		PortalUtil.getClassNameId(Layout.class) + StringPool.COMMA +
-			RandomTestUtil.nextLong();
 
 	@Inject
 	private AssetEntryLocalService _assetEntryLocalService;

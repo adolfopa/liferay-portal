@@ -107,14 +107,16 @@ public class TestClassStaticInitializerCheck extends BaseCheck {
 
 				String randomizerBumperName = identDetailAST.getText();
 
-				if (ArrayUtil.contains(
+				if (!ArrayUtil.contains(
 						_FORBIDDEN_RANDOMIZER_BUMPER_NAMES,
 						randomizerBumperName)) {
 
-					log(
-						methodCallDetailAST, _MSG_INCORRECT_RANDOMIZER_BUMPER,
-						methodCallName, randomizerBumperName);
+					continue;
 				}
+
+				log(
+					methodCallDetailAST, _MSG_INCORRECT_RANDOMIZER_BUMPER,
+					methodCallName, randomizerBumperName);
 			}
 		}
 	}
@@ -124,11 +126,8 @@ public class TestClassStaticInitializerCheck extends BaseCheck {
 			return true;
 		}
 
-		for (Pattern forbiddenMethodCallNamePattern :
-				_FORBIDDEN_METHOD_CALL_NAME_PATTERNS) {
-
-			Matcher matcher = forbiddenMethodCallNamePattern.matcher(
-				methodCallName);
+		for (Pattern pattern : _FORBIDDEN_METHOD_CALL_NAME_PATTERNS) {
+			Matcher matcher = pattern.matcher(methodCallName);
 
 			if (matcher.matches()) {
 				return true;

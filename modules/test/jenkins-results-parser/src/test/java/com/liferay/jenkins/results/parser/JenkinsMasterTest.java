@@ -354,10 +354,11 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 			).put(
 				"id", 7800
 			).toString(),
-			JenkinsResultsParserUtil.combine(
-				"http://test-9-1/queue/item/7800/api/json?tree=",
-				"actions[parameters[name,value]],cancelled,executable[url],",
-				"id,inQueueSince,task[name,url],url,why"),
+			JenkinsResultsParserUtil.fixURL(
+				JenkinsResultsParserUtil.combine(
+					"http://test-9-1/queue/item/7800/api/json?tree=",
+					"actions[parameters[name,value]],cancelled,",
+					"executable[url],id,inQueueSince,task[name,url],url,why")),
 			mockURLReaders);
 
 		JenkinsMaster.QueueItem queueItem = _jenkinsMaster.getQueueItem(7800);

@@ -93,11 +93,11 @@ public class PullRequestTest extends com.liferay.jenkins.results.parser.Test {
 
 		PullRequest pullRequest = _newPullRequest();
 
-		UrlReader urlReader = mockUrlReader();
+		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			"[{\"context\": \"liferay/ci:test:sf\", \"state\": \"success\"}]",
-			"/statuses", urlReader);
+			"/statuses", mockURLReaders);
 
 		Properties buildProperties = new Properties();
 

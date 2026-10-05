@@ -226,16 +226,22 @@ public class Test {
 	protected MockURLReaders mockURLReaders() {
 		BodyURLReader<JSONArray> jsonArrayBodyURLReader = Mockito.spy(
 			BodyURLReader.newJSONArrayBodyURLReader());
+
+		BodyURLReader.setJSONArrayInstance(jsonArrayBodyURLReader);
+
 		BodyURLReader<JSONObject> jsonObjectBodyURLReader = Mockito.spy(
 			BodyURLReader.newJSONObjectBodyURLReader());
+
+		BodyURLReader.setJSONObjectInstance(jsonObjectBodyURLReader);
+
 		StreamURLReader streamURLReader = Mockito.spy(new StreamURLReader());
+
+		StreamURLReader.setInstance(streamURLReader);
+
 		BodyURLReader<String> textBodyURLReader = Mockito.spy(
 			BodyURLReader.newTextBodyURLReader());
 
-		BodyURLReader.setJSONArrayInstance(jsonArrayBodyURLReader);
-		BodyURLReader.setJSONObjectInstance(jsonObjectBodyURLReader);
 		BodyURLReader.setTextInstance(textBodyURLReader);
-		StreamURLReader.setInstance(streamURLReader);
 
 		MockURLReaders mockURLReaders = new MockURLReaders(
 			jsonArrayBodyURLReader, jsonObjectBodyURLReader, streamURLReader,

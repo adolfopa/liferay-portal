@@ -372,9 +372,9 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 
 	@Test
 	public void testToStringWhenResponseNeverArrives() throws Exception {
-		MockURLReaders mockURLReaders = mockURLReaders();
-
 		List<HttpURLConnection> httpURLConnections = new ArrayList<>();
+
+		MockURLReaders mockURLReaders = mockURLReaders();
 
 		for (BaseURLReader<?> urlReader : mockURLReaders.getURLReaders()) {
 			Mockito.doAnswer(

@@ -129,7 +129,7 @@ public class JenkinsStopBuildUtilTest
 		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setURLReaderOutput(
-			String.valueOf(new JSONObject()), "tree=result", mockURLReaders);
+			mockURLReaders, String.valueOf(new JSONObject()), "tree=result");
 
 		try {
 			_abortBuild();
@@ -156,12 +156,13 @@ public class JenkinsStopBuildUtilTest
 			MockURLReaders mockURLReaders = mockURLReaders();
 
 			setURLReaderOutput(
+				mockURLReaders,
 				String.valueOf(
 					new JSONObject(
 					).put(
 						"result", result
 					)),
-				"tree=result", mockURLReaders);
+				"tree=result");
 
 			Assert.assertEquals(
 				result, JenkinsStopBuildUtil.AbortResult.ALREADY_FINISHED,
@@ -332,7 +333,7 @@ public class JenkinsStopBuildUtilTest
 						jsonObject.put("result", "ABORTED");
 					}
 
-					return mockURLConnection(200, String.valueOf(jsonObject));
+					return mockURLConnection(String.valueOf(jsonObject), 200);
 				}
 			).when(
 				urlReader

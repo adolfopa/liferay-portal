@@ -42,8 +42,8 @@ public class HTTPEndpointMonitorTest
 		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setURLReaderOutput(
-			_MILLIS_LATENCY, RandomTestUtil.randomString(), _URL,
-			mockURLReaders);
+			_MILLIS_LATENCY, mockURLReaders, RandomTestUtil.randomString(),
+			_URL);
 
 		Properties monitorProperties = _newMonitorProperties();
 
@@ -75,7 +75,7 @@ public class HTTPEndpointMonitorTest
 	public void testExecuteMissingFailureMessage() throws Exception {
 		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setURLReaderException(new IOException(), _URL, mockURLReaders);
+		setURLReaderException(new IOException(), mockURLReaders, _URL);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
 
@@ -95,7 +95,7 @@ public class HTTPEndpointMonitorTest
 		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setURLReaderException(
-			new FileNotFoundException(_URL), _URL, mockURLReaders);
+			new FileNotFoundException(_URL), mockURLReaders, _URL);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
 
@@ -114,7 +114,7 @@ public class HTTPEndpointMonitorTest
 	public void testExecuteOK() throws Exception {
 		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setURLReaderOutput(RandomTestUtil.randomString(), _URL, mockURLReaders);
+		setURLReaderOutput(mockURLReaders, RandomTestUtil.randomString(), _URL);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
 
@@ -127,7 +127,7 @@ public class HTTPEndpointMonitorTest
 
 		Assert.assertNotNull(metrics.get("latency.millis"));
 
-		verifyURLReaderRead(false, 0, 27000, mockURLReaders);
+		verifyURLReaderRead(false, 0, mockURLReaders, 27000);
 	}
 
 	@Test
@@ -137,7 +137,7 @@ public class HTTPEndpointMonitorTest
 		setURLReaderException(
 			new IOException(
 				"Server returned HTTP response code: 503 for URL: " + _URL),
-			_URL, mockURLReaders);
+			mockURLReaders, _URL);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
 
@@ -157,7 +157,7 @@ public class HTTPEndpointMonitorTest
 		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setURLReaderException(
-			new SocketTimeoutException("Read timed out"), _URL, mockURLReaders);
+			new SocketTimeoutException("Read timed out"), mockURLReaders, _URL);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
 
@@ -234,8 +234,8 @@ public class HTTPEndpointMonitorTest
 		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setURLReaderOutput(
-			_MILLIS_LATENCY, RandomTestUtil.randomString(), _URL,
-			mockURLReaders);
+			_MILLIS_LATENCY, mockURLReaders, RandomTestUtil.randomString(),
+			_URL);
 
 		Properties monitorProperties = _newMonitorProperties();
 

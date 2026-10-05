@@ -537,7 +537,7 @@ public class ResourceThresholdMonitorTest
 
 		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setURLReaderOutput(scrape, "/prometheus", mockURLReaders);
+		setURLReaderOutput(mockURLReaders, scrape, "/prometheus");
 
 		String masterName = MonitorTestUtil.newJenkinsMasterName();
 
@@ -597,7 +597,7 @@ public class ResourceThresholdMonitorTest
 
 		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setURLReaderException(ioException, "/prometheus", mockURLReaders);
+		setURLReaderException(ioException, mockURLReaders, "/prometheus");
 
 		String masterName = MonitorTestUtil.newJenkinsMasterName();
 

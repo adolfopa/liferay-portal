@@ -947,11 +947,11 @@ public class BaseTopLevelBuildReportTest
 			controllerJobJSONObject.put("builds", buildsJSONArray);
 		}
 
-		setURLReaderOutput("{}", "previous-job/", mockURLReaders);
+		setURLReaderOutput(mockURLReaders, "{}", "previous-job/");
 
 		setURLReaderOutput(
-			String.valueOf(controllerJobJSONObject), "/job/controller-job",
-			mockURLReaders);
+			mockURLReaders, String.valueOf(controllerJobJSONObject),
+			"/job/controller-job");
 
 		BaseTopLevelBuildReport baseTopLevelBuildReport =
 			_newBaseTopLevelBuildReport();

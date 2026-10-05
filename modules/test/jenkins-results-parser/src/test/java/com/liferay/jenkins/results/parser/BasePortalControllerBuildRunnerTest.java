@@ -38,6 +38,7 @@ public class BasePortalControllerBuildRunnerTest
 		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setURLReaderOutput(
+			mockURLReaders,
 			new JSONObject(
 			).put(
 				"items",
@@ -74,7 +75,7 @@ public class BasePortalControllerBuildRunnerTest
 					)
 				)
 			).toString(),
-			"queue/api/json", mockURLReaders);
+			"queue/api/json");
 
 		BasePortalControllerBuildRunner<?> basePortalControllerBuildRunner =
 			Mockito.mock(BasePortalControllerBuildRunner.class);

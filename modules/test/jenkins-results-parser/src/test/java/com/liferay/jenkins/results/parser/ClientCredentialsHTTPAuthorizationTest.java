@@ -110,7 +110,6 @@ public class ClientCredentialsHTTPAuthorizationTest
 		for (BaseURLReader<?> urlReader : mockURLReaders.getURLReaders()) {
 			Mockito.doAnswer(
 				invocation -> mockURLConnection(
-					200,
 					String.valueOf(
 						new JSONObject(
 						).put(
@@ -119,7 +118,8 @@ public class ClientCredentialsHTTPAuthorizationTest
 							"expires_in", 600
 						).put(
 							"token_type", "Bearer"
-						)))
+						)),
+					200)
 			).when(
 				urlReader
 			).openURLConnection(

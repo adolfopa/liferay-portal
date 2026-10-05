@@ -83,8 +83,8 @@ public class UpstreamJobHealthMonitorTest
 			null, _newBuildJSONObject(0, _newInvocationDescription(sha)));
 
 		setURLReaderException(
-			new IOException("Unable to read"), _HEAD_COMMIT_API_URL,
-			mockURLReaders);
+			new IOException("Unable to read"), mockURLReaders,
+			_HEAD_COMMIT_API_URL);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
 
@@ -294,12 +294,12 @@ public class UpstreamJobHealthMonitorTest
 		);
 
 		setURLReaderOutput(
-			jobJSONObject.toString(), _JOB_API_URL, mockURLReaders);
+			mockURLReaders, jobJSONObject.toString(), _JOB_API_URL);
 
 		if (headCommitJSONObject != null) {
 			setURLReaderOutput(
-				headCommitJSONObject.toString(), _HEAD_COMMIT_API_URL,
-				mockURLReaders);
+				mockURLReaders, headCommitJSONObject.toString(),
+				_HEAD_COMMIT_API_URL);
 		}
 
 		return mockURLReaders;

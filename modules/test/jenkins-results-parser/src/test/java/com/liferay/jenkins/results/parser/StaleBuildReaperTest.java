@@ -275,20 +275,20 @@ public class StaleBuildReaperTest
 		queueJSONObject.put("items", new JSONArray());
 
 		setURLReaderOutput(
-			queueJSONObject.toString(), masterURL + "/queue/api/json",
-			_mockURLReaders);
+			_mockURLReaders, queueJSONObject.toString(),
+			masterURL + "/queue/api/json");
 
 		JSONObject modeJSONObject = new JSONObject();
 
 		modeJSONObject.put("mode", "NORMAL");
 
 		setURLReaderOutput(
-			modeJSONObject.toString(), masterURL + "/api/json?tree=mode",
-			_mockURLReaders);
+			_mockURLReaders, modeJSONObject.toString(),
+			masterURL + "/api/json?tree=mode");
 
 		setURLReaderOutput(
-			computerAPIJSONObject.toString(), masterURL + "/computer/api/json",
-			_mockURLReaders);
+			_mockURLReaders, computerAPIJSONObject.toString(),
+			masterURL + "/computer/api/json");
 	}
 
 	private static final String _BUILD_URL_FLYWEIGHT_STUCK =

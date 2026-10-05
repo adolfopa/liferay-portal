@@ -72,26 +72,25 @@ public class BuildQueueRebalancerTest
 			));
 
 		setURLReaderOutput(
-			String.valueOf(queueJSONObject),
-			_BLACKLISTED_JENKINS_MASTER_NAME + ".liferay.com/queue/api/json",
-			mockURLReaders);
+			mockURLReaders, String.valueOf(queueJSONObject),
+			_BLACKLISTED_JENKINS_MASTER_NAME + ".liferay.com/queue/api/json");
 
 		setURLReaderOutput(
+			mockURLReaders,
 			String.valueOf(
 				new JSONObject(
 				).put(
 					"mode", "NORMAL"
 				)),
-			_AVAILABLE_JENKINS_MASTER_NAME + ".liferay.com/api/json?tree=mode",
-			mockURLReaders);
+			_AVAILABLE_JENKINS_MASTER_NAME + ".liferay.com/api/json?tree=mode");
 		setURLReaderOutput(
+			mockURLReaders,
 			String.valueOf(
 				new JSONObject(
 				).put(
 					"items", new JSONArray()
 				)),
-			_AVAILABLE_JENKINS_MASTER_NAME + ".liferay.com/queue/api/json",
-			mockURLReaders);
+			_AVAILABLE_JENKINS_MASTER_NAME + ".liferay.com/queue/api/json");
 
 		_setJenkinsMasterAWSFleetClouds(_AVAILABLE_JENKINS_MASTER_NAME);
 		_setJenkinsMasterAWSFleetClouds(_BLACKLISTED_JENKINS_MASTER_NAME);
@@ -156,26 +155,25 @@ public class BuildQueueRebalancerTest
 		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setURLReaderException(
-			new IOException("Connection refused"),
-			_BLACKLISTED_JENKINS_MASTER_NAME + ".liferay.com/queue/api/json",
-			mockURLReaders);
+			new IOException("Connection refused"), mockURLReaders,
+			_BLACKLISTED_JENKINS_MASTER_NAME + ".liferay.com/queue/api/json");
 
 		setURLReaderOutput(
+			mockURLReaders,
 			String.valueOf(
 				new JSONObject(
 				).put(
 					"mode", "NORMAL"
 				)),
-			_AVAILABLE_JENKINS_MASTER_NAME + ".liferay.com/api/json?tree=mode",
-			mockURLReaders);
+			_AVAILABLE_JENKINS_MASTER_NAME + ".liferay.com/api/json?tree=mode");
 		setURLReaderOutput(
+			mockURLReaders,
 			String.valueOf(
 				new JSONObject(
 				).put(
 					"items", new JSONArray()
 				)),
-			_AVAILABLE_JENKINS_MASTER_NAME + ".liferay.com/queue/api/json",
-			mockURLReaders);
+			_AVAILABLE_JENKINS_MASTER_NAME + ".liferay.com/queue/api/json");
 
 		_setJenkinsMasterAWSFleetClouds(_AVAILABLE_JENKINS_MASTER_NAME);
 		_setJenkinsMasterAWSFleetClouds(_BLACKLISTED_JENKINS_MASTER_NAME);

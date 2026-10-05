@@ -202,7 +202,7 @@ public class Test {
 	}
 
 	protected HttpURLConnection mockURLConnection(
-			int responseCode, String content)
+			String content, int responseCode)
 		throws IOException {
 
 		HttpURLConnection httpURLConnection = Mockito.mock(
@@ -310,7 +310,7 @@ public class Test {
 	}
 
 	protected void setURLReaderException(
-			IOException ioException, String url, MockURLReaders mockURLReaders)
+			IOException ioException, MockURLReaders mockURLReaders, String url)
 		throws Exception {
 
 		for (BaseURLReader<?> urlReader : mockURLReaders.getURLReaders()) {
@@ -328,8 +328,8 @@ public class Test {
 	}
 
 	protected void setURLReaderOutput(
-			long delayMillis, String standardOut, String url,
-			MockURLReaders mockURLReaders)
+			long delayMillis, MockURLReaders mockURLReaders, String standardOut,
+			String url)
 		throws Exception {
 
 		for (BaseURLReader<?> urlReader : mockURLReaders.getURLReaders()) {
@@ -337,7 +337,7 @@ public class Test {
 				invocation -> {
 					JenkinsResultsParserUtil.sleep(delayMillis);
 
-					return mockURLConnection(200, standardOut);
+					return mockURLConnection(standardOut, 200);
 				}
 			).when(
 				urlReader
@@ -351,14 +351,14 @@ public class Test {
 	}
 
 	protected void setURLReaderOutput(
-			String standardOut, String url, MockURLReaders mockURLReaders)
+			MockURLReaders mockURLReaders, String standardOut, String url)
 		throws Exception {
 
-		setURLReaderOutput(0, standardOut, url, mockURLReaders);
+		setURLReaderOutput(0, mockURLReaders, standardOut, url);
 	}
 
 	protected void setURLReaderResponseCode(
-			int responseCode, String url, MockURLReaders mockURLReaders)
+			MockURLReaders mockURLReaders, int responseCode, String url)
 		throws Exception {
 
 		for (BaseURLReader<?> urlReader : mockURLReaders.getURLReaders()) {
@@ -431,8 +431,8 @@ public class Test {
 	}
 
 	protected void verifyURLReaderRead(
-		boolean checkCache, int maxRetries, int timeoutMillis,
-		MockURLReaders mockURLReaders) {
+		boolean checkCache, int maxRetries, MockURLReaders mockURLReaders,
+		int timeoutMillis) {
 
 		int count = 0;
 

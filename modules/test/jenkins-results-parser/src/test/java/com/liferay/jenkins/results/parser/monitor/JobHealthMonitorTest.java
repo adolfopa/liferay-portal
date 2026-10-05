@@ -291,7 +291,7 @@ public class JobHealthMonitorTest
 		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setURLReaderException(
-			new IOException(), _JOB_CONFIG_URL, mockURLReaders);
+			new IOException(), mockURLReaders, _JOB_CONFIG_URL);
 
 		_setJobsJSONObject(
 			_newJobJSONObject(
@@ -359,7 +359,7 @@ public class JobHealthMonitorTest
 		);
 
 		setURLReaderOutput(
-			jobsJSONObject.toString(), _MASTER_API_URL, mockURLReaders);
+			mockURLReaders, jobsJSONObject.toString(), _MASTER_API_URL);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
 
@@ -721,7 +721,7 @@ public class JobHealthMonitorTest
 		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setURLReaderOutput(
-			RandomTestUtil.randomString(), _MASTER_API_URL, mockURLReaders);
+			mockURLReaders, RandomTestUtil.randomString(), _MASTER_API_URL);
 
 		MonitorResult monitorResult = _execute(_newMonitorProperties());
 
@@ -892,7 +892,7 @@ public class JobHealthMonitorTest
 
 		MockURLReaders mockURLReaders = mockURLReaders();
 
-		setURLReaderOutput(configXML, _JOB_CONFIG_URL, mockURLReaders);
+		setURLReaderOutput(mockURLReaders, configXML, _JOB_CONFIG_URL);
 
 		_setJobsJSONObject(jobJSONObject, mockURLReaders);
 	}
@@ -911,7 +911,7 @@ public class JobHealthMonitorTest
 		);
 
 		setURLReaderOutput(
-			jobsJSONObject.toString(), _MASTER_API_URL, mockURLReaders);
+			mockURLReaders, jobsJSONObject.toString(), _MASTER_API_URL);
 	}
 
 	private void _testJobHealthMonitorExpectedIllegalArgumentException(

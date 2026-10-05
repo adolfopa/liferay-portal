@@ -26,10 +26,11 @@ public class PullRequestTest extends com.liferay.jenkins.results.parser.Test {
 		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setURLReaderOutput(
+			mockURLReaders,
 			JenkinsResultsParserUtil.combine(
 				"[{\"filename\": \"test/ci-merge\", ",
 				"\"patch\": \"+abcdef0123456789abcdef0123456789abcdef01\"}]"),
-			"/files", mockURLReaders);
+			"/files");
 
 		Assert.assertEquals(
 			"abcdef0123456789abcdef0123456789abcdef01",
@@ -43,10 +44,11 @@ public class PullRequestTest extends com.liferay.jenkins.results.parser.Test {
 		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setURLReaderOutput(
+			mockURLReaders,
 			JenkinsResultsParserUtil.combine(
 				"[{\"filename\": \"modules/apps/foo/Foo.java\"}, ",
 				"{\"filename\": \"portal-impl/Bar.java\"}]"),
-			"/files", mockURLReaders);
+			"/files");
 
 		Assert.assertEquals(
 			Arrays.asList("modules/apps/foo/Foo.java", "portal-impl/Bar.java"),
@@ -96,8 +98,9 @@ public class PullRequestTest extends com.liferay.jenkins.results.parser.Test {
 		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setURLReaderOutput(
+			mockURLReaders,
 			"[{\"context\": \"liferay/ci:test:sf\", \"state\": \"success\"}]",
-			"/statuses", mockURLReaders);
+			"/statuses");
 
 		Properties buildProperties = new Properties();
 

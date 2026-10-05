@@ -61,8 +61,8 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 		JSONArray readJSONArray = JenkinsResultsParserUtil.toJSONArray(
 			_URL, false, _MAX_RETRIES, null, 0, 0);
 
-		Assert.assertEquals(2, readJSONArray.length());
 		Assert.assertEquals("first", readJSONArray.getString(0));
+		Assert.assertEquals(2, readJSONArray.length());
 
 		verifyURLReaderAttemptsCount(1, mockURLReaders, _URL);
 	}

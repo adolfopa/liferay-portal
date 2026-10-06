@@ -5,7 +5,6 @@
 
 package com.liferay.jenkins.results.parser.monitor;
 
-import com.liferay.jenkins.results.parser.MockURLReaders;
 import com.liferay.jenkins.results.parser.RandomTestUtil;
 
 import java.io.IOException;
@@ -55,10 +54,9 @@ public class MasterResourceReaderTest
 	public void testGetJobJSONObjects() throws Exception {
 		String jobName = RandomTestUtil.randomString();
 
-		MockURLReaders mockURLReaders = mockURLReaders();
+		mockURLReaders();
 
-		setURLReaderOutput(
-			mockURLReaders, _newJobsContent(jobName), "/api/json?tree=jobs");
+		setURLReaderOutput(_newJobsContent(jobName), "/api/json?tree=jobs");
 
 		MasterResourceReader masterResourceReader =
 			MasterResourceReader.getInstance(
@@ -80,10 +78,10 @@ public class MasterResourceReaderTest
 
 	@Test
 	public void testGetJobJSONObjectsIsUnmodifiable() throws Exception {
-		MockURLReaders mockURLReaders = mockURLReaders();
+		mockURLReaders();
 
 		setURLReaderOutput(
-			mockURLReaders, _newJobsContent(RandomTestUtil.randomString()),
+			_newJobsContent(RandomTestUtil.randomString()),
 			"/api/json?tree=jobs");
 
 		MasterResourceReader masterResourceReader =
@@ -104,10 +102,10 @@ public class MasterResourceReaderTest
 
 	@Test
 	public void testGetJobJSONObjectsWithReadFailure() throws Exception {
-		MockURLReaders mockURLReaders = mockURLReaders();
+		mockURLReaders();
 
 		setURLReaderException(
-			new IOException(RandomTestUtil.randomString()), mockURLReaders,
+			new IOException(RandomTestUtil.randomString()),
 			"/api/json?tree=jobs");
 
 		MasterResourceReader masterResourceReader =
@@ -124,8 +122,7 @@ public class MasterResourceReaderTest
 
 		String jobName = RandomTestUtil.randomString();
 
-		setURLReaderOutput(
-			mockURLReaders, _newJobsContent(jobName), "/api/json?tree=jobs");
+		setURLReaderOutput(_newJobsContent(jobName), "/api/json?tree=jobs");
 
 		Map<String, JSONObject> jobJSONObjects =
 			masterResourceReader.getJobJSONObjects(_MILLIS_TIMEOUT);
@@ -182,10 +179,9 @@ public class MasterResourceReaderTest
 
 	@Test
 	public void testGetPrometheusScrape() throws Exception {
-		MockURLReaders mockURLReaders = mockURLReaders();
+		mockURLReaders();
 
 		setURLReaderOutput(
-			mockURLReaders,
 			MonitorTestUtil.newSample(
 				"label", RandomTestUtil.randomString(),
 				MonitorTestUtil.newMetricName(), "1.0"),
@@ -203,9 +199,9 @@ public class MasterResourceReaderTest
 
 	@Test
 	public void testGetPrometheusScrapeWithEmptyContent() throws Exception {
-		MockURLReaders mockURLReaders = mockURLReaders();
+		mockURLReaders();
 
-		setURLReaderOutput(mockURLReaders, "", "/prometheus");
+		setURLReaderOutput("", "/prometheus");
 
 		String masterName = MonitorTestUtil.newJenkinsMasterName();
 
@@ -219,7 +215,6 @@ public class MasterResourceReaderTest
 		String name = MonitorTestUtil.newMetricName();
 
 		setURLReaderOutput(
-			mockURLReaders,
 			MonitorTestUtil.newSample("label", labelValue, name, "1.0"),
 			"/prometheus");
 
@@ -240,11 +235,10 @@ public class MasterResourceReaderTest
 
 	@Test
 	public void testGetPrometheusScrapeWithReadFailure() throws Exception {
-		MockURLReaders mockURLReaders = mockURLReaders();
+		mockURLReaders();
 
 		setURLReaderException(
-			new IOException(RandomTestUtil.randomString()), mockURLReaders,
-			"/prometheus");
+			new IOException(RandomTestUtil.randomString()), "/prometheus");
 
 		String masterName = MonitorTestUtil.newJenkinsMasterName();
 
@@ -263,7 +257,6 @@ public class MasterResourceReaderTest
 		String name = MonitorTestUtil.newMetricName();
 
 		setURLReaderOutput(
-			mockURLReaders,
 			MonitorTestUtil.newSample("label", labelValue, name, "1.0"),
 			"/prometheus");
 
@@ -276,13 +269,12 @@ public class MasterResourceReaderTest
 	@Test
 	public void testGetPrometheusScrapeWithoutMemoryInfo() throws Exception {
 		mockShell();
+		mockURLReaders();
 
 		String labelValue = RandomTestUtil.randomString();
 		String name = MonitorTestUtil.newMetricName();
-		MockURLReaders mockURLReaders = mockURLReaders();
 
 		setURLReaderOutput(
-			mockURLReaders,
 			MonitorTestUtil.newSample("label", labelValue, name, "1.0"),
 			"/prometheus");
 

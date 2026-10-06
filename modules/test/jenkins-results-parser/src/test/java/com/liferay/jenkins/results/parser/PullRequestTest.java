@@ -23,10 +23,9 @@ public class PullRequestTest extends com.liferay.jenkins.results.parser.Test {
 	public void testGetCIMergeSHA() throws Exception {
 		PullRequest pullRequest = _newPullRequest();
 
-		MockURLReaders mockURLReaders = mockURLReaders();
+		mockURLReaders();
 
 		setURLReaderOutput(
-			mockURLReaders,
 			JenkinsResultsParserUtil.combine(
 				"[{\"filename\": \"test/ci-merge\", ",
 				"\"patch\": \"+abcdef0123456789abcdef0123456789abcdef01\"}]"),
@@ -41,10 +40,9 @@ public class PullRequestTest extends com.liferay.jenkins.results.parser.Test {
 	public void testGetFileNames() throws Exception {
 		PullRequest pullRequest = _newPullRequest();
 
-		MockURLReaders mockURLReaders = mockURLReaders();
+		mockURLReaders();
 
 		setURLReaderOutput(
-			mockURLReaders,
 			JenkinsResultsParserUtil.combine(
 				"[{\"filename\": \"modules/apps/foo/Foo.java\"}, ",
 				"{\"filename\": \"portal-impl/Bar.java\"}]"),
@@ -95,10 +93,9 @@ public class PullRequestTest extends com.liferay.jenkins.results.parser.Test {
 
 		PullRequest pullRequest = _newPullRequest();
 
-		MockURLReaders mockURLReaders = mockURLReaders();
+		mockURLReaders();
 
 		setURLReaderOutput(
-			mockURLReaders,
 			"[{\"context\": \"liferay/ci:test:sf\", \"state\": \"success\"}]",
 			"/statuses");
 

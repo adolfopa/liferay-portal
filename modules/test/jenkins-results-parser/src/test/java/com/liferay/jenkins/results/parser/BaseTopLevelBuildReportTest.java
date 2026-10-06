@@ -939,7 +939,7 @@ public class BaseTopLevelBuildReportTest
 
 		JenkinsResultsParserUtil.setBuildProperties(buildProperties);
 
-		MockURLReaders mockURLReaders = mockURLReaders();
+		mockURLReaders();
 
 		JSONObject controllerJobJSONObject = new JSONObject();
 
@@ -947,11 +947,10 @@ public class BaseTopLevelBuildReportTest
 			controllerJobJSONObject.put("builds", buildsJSONArray);
 		}
 
-		setURLReaderOutput(mockURLReaders, "{}", "previous-job/");
+		setURLReaderOutput("{}", "previous-job/");
 
 		setURLReaderOutput(
-			mockURLReaders, String.valueOf(controllerJobJSONObject),
-			"/job/controller-job");
+			String.valueOf(controllerJobJSONObject), "/job/controller-job");
 
 		BaseTopLevelBuildReport baseTopLevelBuildReport =
 			_newBaseTopLevelBuildReport();

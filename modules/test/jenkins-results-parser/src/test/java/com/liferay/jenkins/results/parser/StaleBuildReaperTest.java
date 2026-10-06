@@ -36,7 +36,7 @@ public class StaleBuildReaperTest
 
 		JenkinsMasterTestUtil.getJenkinsCohortProperties("test-9", 2);
 
-		_mockURLReaders = mockURLReaders();
+		mockURLReaders();
 
 		_setUpJenkinsMasterURLReaderOutputs(
 			_getStaleBuildsComputerAPIJSONObject(), "test-9-1");
@@ -275,20 +275,17 @@ public class StaleBuildReaperTest
 		queueJSONObject.put("items", new JSONArray());
 
 		setURLReaderOutput(
-			_mockURLReaders, queueJSONObject.toString(),
-			masterURL + "/queue/api/json");
+			queueJSONObject.toString(), masterURL + "/queue/api/json");
 
 		JSONObject modeJSONObject = new JSONObject();
 
 		modeJSONObject.put("mode", "NORMAL");
 
 		setURLReaderOutput(
-			_mockURLReaders, modeJSONObject.toString(),
-			masterURL + "/api/json?tree=mode");
+			modeJSONObject.toString(), masterURL + "/api/json?tree=mode");
 
 		setURLReaderOutput(
-			_mockURLReaders, computerAPIJSONObject.toString(),
-			masterURL + "/computer/api/json");
+			computerAPIJSONObject.toString(), masterURL + "/computer/api/json");
 	}
 
 	private static final String _BUILD_URL_FLYWEIGHT_STUCK =
@@ -317,6 +314,5 @@ public class StaleBuildReaperTest
 	private static final long _MINUTE = 60 * 1000L;
 
 	private JenkinsCohort _jenkinsCohort;
-	private MockURLReaders _mockURLReaders;
 
 }

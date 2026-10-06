@@ -38,14 +38,13 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 
 		Environment.setInstance(Mockito.mock(Environment.class));
 
-		MockURLReaders mockURLReaders = mockURLReaders();
+		mockURLReaders();
 
 		_setUpMaster(
 			read(new File(dependenciesDirs.get(0), "computer-api.json")),
-			"test-9-1", mockURLReaders);
+			"test-9-1");
 		_setUpMaster(
-			_getRunningBuildsComputerAPIJSONObject().toString(), "test-9-2",
-			mockURLReaders);
+			_getRunningBuildsComputerAPIJSONObject().toString(), "test-9-2");
 
 		_jenkinsMaster = JenkinsMasterTestUtil.getJenkinsMaster(
 			"test-9-1", "http://test-9-1");
@@ -334,14 +333,13 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 
 	@Test
 	public void testGetQueueItem() throws Exception {
-		MockURLReaders mockURLReaders = mockURLReaders();
+		mockURLReaders();
 
 		String executableURL =
 			"https://" + RandomTestUtil.randomString() + "/job/" +
 				RandomTestUtil.randomString() + "/1/";
 
 		setURLReaderOutput(
-			mockURLReaders,
 			new JSONObject(
 			).put(
 				"cancelled", true
@@ -370,13 +368,12 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 
 	@Test
 	public void testGetQueueItemNotFound() throws Exception {
-		MockURLReaders mockURLReaders = mockURLReaders();
+		mockURLReaders();
 
 		String queueItemAPIURL = "http://test-9-1/queue/item/7800/api/json";
 
 		setURLReaderException(
-			new FileNotFoundException(queueItemAPIURL), mockURLReaders,
-			queueItemAPIURL);
+			new FileNotFoundException(queueItemAPIURL), queueItemAPIURL);
 
 		ByteArrayOutputStream byteArrayOutputStream =
 			new ByteArrayOutputStream();
@@ -634,29 +631,24 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 			_jenkinsMaster, "_queueUpdateTime", null);
 	}
 
-	private void _setUpMaster(
-			String computerAPIJSON, String masterName,
-			MockURLReaders mockURLReaders)
+	private void _setUpMaster(String computerAPIJSON, String masterName)
 		throws Exception {
 
 		String masterURL = "http://" + masterName;
 
 		setURLReaderOutput(
-			mockURLReaders,
 			new JSONObject(
 			).put(
 				"items", new JSONArray()
 			).toString(),
 			masterURL + "/queue/api/json");
 		setURLReaderOutput(
-			mockURLReaders,
 			new JSONObject(
 			).put(
 				"mode", "NORMAL"
 			).toString(),
 			masterURL + "/api/json?tree=mode");
-		setURLReaderOutput(
-			mockURLReaders, computerAPIJSON, masterURL + "/computer/api/json");
+		setURLReaderOutput(computerAPIJSON, masterURL + "/computer/api/json");
 	}
 
 	private void _testFetchQueueItem(

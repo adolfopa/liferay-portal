@@ -56,7 +56,7 @@ public class BuildQueueRebalancerTest
 
 		JenkinsResultsParserUtil.setBuildProperties(buildProperties);
 
-		MockURLReaders mockURLReaders = mockURLReaders();
+		mockURLReaders();
 
 		JSONObject queueJSONObject = new JSONObject();
 
@@ -72,11 +72,10 @@ public class BuildQueueRebalancerTest
 			));
 
 		setURLReaderOutput(
-			mockURLReaders, String.valueOf(queueJSONObject),
+			String.valueOf(queueJSONObject),
 			_BLACKLISTED_JENKINS_MASTER_NAME + ".liferay.com/queue/api/json");
 
 		setURLReaderOutput(
-			mockURLReaders,
 			String.valueOf(
 				new JSONObject(
 				).put(
@@ -84,7 +83,6 @@ public class BuildQueueRebalancerTest
 				)),
 			_AVAILABLE_JENKINS_MASTER_NAME + ".liferay.com/api/json?tree=mode");
 		setURLReaderOutput(
-			mockURLReaders,
 			String.valueOf(
 				new JSONObject(
 				).put(
@@ -152,14 +150,13 @@ public class BuildQueueRebalancerTest
 
 		JenkinsResultsParserUtil.setBuildProperties(buildProperties);
 
-		MockURLReaders mockURLReaders = mockURLReaders();
+		mockURLReaders();
 
 		setURLReaderException(
-			new IOException("Connection refused"), mockURLReaders,
+			new IOException("Connection refused"),
 			_BLACKLISTED_JENKINS_MASTER_NAME + ".liferay.com/queue/api/json");
 
 		setURLReaderOutput(
-			mockURLReaders,
 			String.valueOf(
 				new JSONObject(
 				).put(
@@ -167,7 +164,6 @@ public class BuildQueueRebalancerTest
 				)),
 			_AVAILABLE_JENKINS_MASTER_NAME + ".liferay.com/api/json?tree=mode");
 		setURLReaderOutput(
-			mockURLReaders,
 			String.valueOf(
 				new JSONObject(
 				).put(

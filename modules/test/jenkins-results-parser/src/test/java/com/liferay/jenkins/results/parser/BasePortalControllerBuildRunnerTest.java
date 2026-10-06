@@ -35,10 +35,9 @@ public class BasePortalControllerBuildRunnerTest
 				"upstream-controller(master_content-management)/339/";
 		String invocationJobName = "test-portal-testsuite-upstream(master)";
 
-		MockURLReaders mockURLReaders = mockURLReaders();
+		mockURLReaders();
 
 		setURLReaderOutput(
-			mockURLReaders,
 			new JSONObject(
 			).put(
 				"items",
@@ -102,7 +101,7 @@ public class BasePortalControllerBuildRunnerTest
 		Assert.assertFalse(
 			basePortalControllerBuildRunner.expirePreviousBuild());
 
-		verifyURLReaderAttemptsCount(1, mockURLReaders, "queue/api/json");
+		verifyURLReaderAttemptsCount(1, "queue/api/json");
 	}
 
 	@Test

@@ -126,10 +126,9 @@ public class JenkinsStopBuildUtilTest
 
 	@Test
 	public void testAbortBuildResultAbsent() throws Exception {
-		MockURLReaders mockURLReaders = mockURLReaders();
+		mockURLReaders();
 
-		setURLReaderOutput(
-			mockURLReaders, String.valueOf(new JSONObject()), "tree=result");
+		setURLReaderOutput(String.valueOf(new JSONObject()), "tree=result");
 
 		try {
 			_abortBuild();
@@ -153,10 +152,9 @@ public class JenkinsStopBuildUtilTest
 					"ABORTED", "FAILURE", "NOT_BUILT", "SUCCESS", "UNSTABLE"
 				}) {
 
-			MockURLReaders mockURLReaders = mockURLReaders();
+			mockURLReaders();
 
 			setURLReaderOutput(
-				mockURLReaders,
 				String.valueOf(
 					new JSONObject(
 					).put(
@@ -300,11 +298,11 @@ public class JenkinsStopBuildUtilTest
 	private void _setUpResultOutputs(int buildingResultsCount)
 		throws Exception {
 
-		MockURLReaders mockURLReaders = mockURLReaders();
+		mockURLReaders();
 
 		AtomicInteger readsCount = new AtomicInteger();
 
-		for (BaseURLReader<?> urlReader : mockURLReaders.getURLReaders()) {
+		for (BaseURLReader<?> urlReader : getURLReaders()) {
 			Mockito.doAnswer(
 				invocation -> {
 					_readURLs.add(invocation.getArgument(8));

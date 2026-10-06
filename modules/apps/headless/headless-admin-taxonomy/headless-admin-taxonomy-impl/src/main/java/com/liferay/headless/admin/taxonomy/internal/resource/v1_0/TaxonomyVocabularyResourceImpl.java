@@ -21,6 +21,7 @@ import com.liferay.asset.kernel.service.AssetVocabularyService;
 import com.liferay.depot.constants.DepotConstants;
 import com.liferay.depot.util.SiteConnectedGroupGroupProviderUtil;
 import com.liferay.exportimport.constants.ExportImportConstants;
+import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
 import com.liferay.exportimport.vulcan.batch.engine.ExportImportVulcanBatchEngineTaskItemDelegate;
 import com.liferay.headless.admin.taxonomy.dto.v1_0.AssetLibrary;
 import com.liferay.headless.admin.taxonomy.dto.v1_0.AssetType;
@@ -60,6 +61,7 @@ import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.UniqueUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.odata.entity.EntityModel;
 import com.liferay.portal.vulcan.aggregation.Aggregation;
@@ -498,10 +500,13 @@ public class TaxonomyVocabularyResourceImpl
 			TaxonomyVocabulary taxonomyVocabulary)
 		throws Exception {
 
-		Map<Locale, String> titleMap = LocalizedMapUtil.getLocalizedMap(
-			contextAcceptLanguage.getPreferredLocale(),
-			_getLocalizedMapDefaultValue(taxonomyVocabulary.getName()),
-			taxonomyVocabulary.getName_i18n());
+		Map<Locale, String> titleMap = _getTitleMap(
+			siteId,
+			LocalizedMapUtil.getLocalizedMap(
+				contextAcceptLanguage.getPreferredLocale(),
+				_getLocalizedMapDefaultValue(taxonomyVocabulary.getName()),
+				taxonomyVocabulary.getName_i18n()),
+			0);
 		Map<Locale, String> descriptionMap = LocalizedMapUtil.getLocalizedMap(
 			contextAcceptLanguage.getPreferredLocale(),
 			_getLocalizedMapDefaultValue(taxonomyVocabulary.getDescription()),
@@ -1034,6 +1039,36 @@ public class TaxonomyVocabularyResourceImpl
 						document.get(Field.ASSET_VOCABULARY_ID)))));
 	}
 
+	private Map<Locale, String> _getTitleMap(
+			long groupId, Map<Locale, String> titleMap, long vocabularyId)
+		throws Exception {
+
+		if (!ExportImportThreadLocal.isImportInProcess()) {
+			return titleMap;
+		}
+
+		Locale locale = LocaleUtil.getSiteDefault();
+
+		String title = titleMap.get(locale);
+
+		if (Validator.isNull(title) ||
+			_isUniqueTitle(groupId, title, vocabularyId)) {
+
+			return titleMap;
+		}
+
+		return HashMapBuilder.putAll(
+			titleMap
+		).put(
+			locale,
+			UniqueUtil.getUniqueValue(
+				"duplicate",
+				uniqueTitle -> _isUniqueTitle(
+					groupId, uniqueTitle, vocabularyId),
+				title)
+		).build();
+	}
+
 	private int _getVisibilityType(
 		TaxonomyVocabulary.VisibilityType visibilityType) {
 
@@ -1046,6 +1081,22 @@ public class TaxonomyVocabularyResourceImpl
 		}
 
 		return AssetVocabularyConstants.VISIBILITY_TYPE_PUBLIC;
+	}
+
+	private boolean _isUniqueTitle(
+		long groupId, String title, long vocabularyId) {
+
+		AssetVocabulary assetVocabulary =
+			_assetVocabularyLocalService.fetchGroupVocabulary(
+				groupId, StringUtil.toLowerCase(title.trim()));
+
+		if ((assetVocabulary == null) ||
+			(assetVocabulary.getVocabularyId() == vocabularyId)) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private TaxonomyVocabulary _toTaxonomyVocabulary(
@@ -1151,10 +1202,14 @@ public class TaxonomyVocabularyResourceImpl
 			TaxonomyVocabulary taxonomyVocabulary)
 		throws Exception {
 
-		Map<Locale, String> titleMap = LocalizedMapUtil.getLocalizedMap(
-			contextAcceptLanguage.getPreferredLocale(),
-			_getLocalizedMapDefaultValue(taxonomyVocabulary.getName()),
-			taxonomyVocabulary.getName_i18n(), assetVocabulary.getTitleMap());
+		Map<Locale, String> titleMap = _getTitleMap(
+			assetVocabulary.getGroupId(),
+			LocalizedMapUtil.getLocalizedMap(
+				contextAcceptLanguage.getPreferredLocale(),
+				_getLocalizedMapDefaultValue(taxonomyVocabulary.getName()),
+				taxonomyVocabulary.getName_i18n(),
+				assetVocabulary.getTitleMap()),
+			assetVocabulary.getVocabularyId());
 		Map<Locale, String> descriptionMap = LocalizedMapUtil.getLocalizedMap(
 			contextAcceptLanguage.getPreferredLocale(),
 			_getLocalizedMapDefaultValue(taxonomyVocabulary.getDescription()),

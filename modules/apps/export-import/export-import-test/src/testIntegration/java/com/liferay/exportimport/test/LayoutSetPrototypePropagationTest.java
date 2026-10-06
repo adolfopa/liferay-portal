@@ -9,6 +9,7 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.asset.kernel.model.AssetVocabulary;
 import com.liferay.asset.kernel.service.AssetCategoryLocalServiceUtil;
+import com.liferay.asset.kernel.service.AssetVocabularyLocalServiceUtil;
 import com.liferay.asset.test.util.AssetTestUtil;
 import com.liferay.change.tracking.configuration.CTSettingsConfiguration;
 import com.liferay.change.tracking.model.CTCollection;
@@ -57,6 +58,7 @@ import com.liferay.portal.kernel.exception.LayoutParentLayoutIdException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.BaseMessageListener;
@@ -135,6 +137,7 @@ import java.util.Date;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -725,6 +728,47 @@ public class LayoutSetPrototypePropagationTest
 			_layoutLocalService.getLayoutsCount(group2.getGroupId(), false));
 
 		GroupLocalServiceUtil.deleteGroup(group2);
+	}
+
+	@Test
+	@TestInfo("LPP-65915")
+	public void testLayoutSetPrototypePropagationWithExistingDefaultVocabulary()
+		throws Exception {
+
+		AssetVocabulary layoutSetPrototypeAssetVocabulary =
+			AssetVocabularyLocalServiceUtil.addDefaultVocabulary(
+				_layoutSetPrototypeGroup.getGroupId());
+
+		AssetCategory layoutSetPrototypeAssetCategory =
+			AssetTestUtil.addCategory(
+				_layoutSetPrototypeGroup.getGroupId(),
+				layoutSetPrototypeAssetVocabulary.getVocabularyId());
+
+		AssetVocabulary assetVocabulary =
+			AssetVocabularyLocalServiceUtil.addDefaultVocabulary(
+				group.getGroupId());
+
+		_testLayoutSetPrototypePropagationWithExistingVocabulary(
+			assetVocabulary, layoutSetPrototypeAssetCategory,
+			layoutSetPrototypeAssetVocabulary);
+	}
+
+	@Test
+	@TestInfo("LPP-65915")
+	public void testLayoutSetPrototypePropagationWithExistingVocabulary()
+		throws Exception {
+
+		String name = RandomTestUtil.randomString();
+
+		AssetVocabulary layoutSetPrototypeAssetVocabulary =
+			AssetTestUtil.addVocabulary(
+				_layoutSetPrototypeGroup.getGroupId(), name);
+
+		AssetVocabulary assetVocabulary = AssetTestUtil.addVocabulary(
+			group.getGroupId(), name);
+
+		_testLayoutSetPrototypePropagationWithExistingVocabulary(
+			assetVocabulary, null, layoutSetPrototypeAssetVocabulary);
 	}
 
 	@Test
@@ -1845,6 +1889,69 @@ public class LayoutSetPrototypePropagationTest
 		}
 
 		GroupLocalServiceUtil.deleteGroup(testGroup);
+	}
+
+	private void _testLayoutSetPrototypePropagationWithExistingVocabulary(
+			AssetVocabulary assetVocabulary,
+			AssetCategory layoutSetPrototypeAssetCategory,
+			AssetVocabulary layoutSetPrototypeAssetVocabulary)
+		throws Exception {
+
+		int vocabulariesCount =
+			AssetVocabularyLocalServiceUtil.getGroupVocabulariesCount(
+				new long[] {group.getGroupId()});
+
+		long timestamp = System.currentTimeMillis();
+
+		propagateChanges(false, group);
+
+		_assertNotification(
+			"successful", timestamp, TestPropsValues.getUserId());
+
+		Assert.assertEquals(
+			vocabulariesCount + 1,
+			AssetVocabularyLocalServiceUtil.getGroupVocabulariesCount(
+				new long[] {group.getGroupId()}));
+
+		Locale locale = LocaleUtil.getSiteDefault();
+
+		AssetVocabulary existingAssetVocabulary =
+			AssetVocabularyLocalServiceUtil.getAssetVocabulary(
+				assetVocabulary.getVocabularyId());
+
+		Assert.assertEquals(
+			assetVocabulary.getExternalReferenceCode(),
+			existingAssetVocabulary.getExternalReferenceCode());
+		Assert.assertEquals(
+			assetVocabulary.getTitle(locale),
+			existingAssetVocabulary.getTitle(locale));
+
+		AssetVocabulary importedAssetVocabulary =
+			AssetVocabularyLocalServiceUtil.
+				getAssetVocabularyByExternalReferenceCode(
+					layoutSetPrototypeAssetVocabulary.
+						getExternalReferenceCode(),
+					group.getGroupId());
+
+		Assert.assertEquals(
+			StringUtil.appendParentheticalSuffix(
+				layoutSetPrototypeAssetVocabulary.getTitle(locale),
+				LanguageUtil.get(locale, "duplicate")),
+			importedAssetVocabulary.getTitle(locale));
+
+		if (layoutSetPrototypeAssetCategory == null) {
+			return;
+		}
+
+		AssetCategory assetCategory =
+			AssetCategoryLocalServiceUtil.
+				getAssetCategoryByExternalReferenceCode(
+					layoutSetPrototypeAssetCategory.getExternalReferenceCode(),
+					group.getGroupId());
+
+		Assert.assertEquals(
+			importedAssetVocabulary.getVocabularyId(),
+			assetCategory.getVocabularyId());
 	}
 
 	private void _testLayoutSetPrototypePropagationWithExportImportInProcess(

@@ -77,7 +77,7 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 			JenkinsResultsParserUtil.toJSONArray(
 				_URL, false, _MAX_RETRIES, null, 0, 0);
 
-			Assert.fail("Expected an IOException to reach the caller");
+			Assert.fail();
 		}
 		catch (IOException ioException) {
 			Assert.assertEquals(
@@ -116,7 +116,7 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 			JenkinsResultsParserUtil.toJSONObject(
 				_URL, false, _MAX_RETRIES, 0, 0);
 
-			Assert.fail("Expected an IOException to reach the caller");
+			Assert.fail();
 		}
 		catch (FileNotFoundException fileNotFoundException) {
 			Assert.assertEquals(_URL, fileNotFoundException.getMessage());
@@ -135,7 +135,7 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 			JenkinsResultsParserUtil.toJSONObject(
 				_URL, false, _MAX_RETRIES, 0, 0);
 
-			Assert.fail("Expected an IOException to reach the caller");
+			Assert.fail();
 		}
 		catch (IOException ioException) {
 			Assert.assertEquals(
@@ -197,7 +197,7 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 		try {
 			JenkinsResultsParserUtil.toString(_URL, false, _MAX_RETRIES, 0, 0);
 
-			Assert.fail("Expected an IOException to reach the caller");
+			Assert.fail();
 		}
 		catch (SocketTimeoutException socketTimeoutException) {
 		}
@@ -215,7 +215,7 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 			JenkinsResultsParserUtil.toString(
 				_URL, false, _MAX_RETRIES, 0, 0, true);
 
-			Assert.fail("Expected an IOException to reach the caller");
+			Assert.fail();
 		}
 		catch (IOException ioException) {
 			String message = ioException.getMessage();
@@ -263,9 +263,7 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 		try {
 			JenkinsResultsParserUtil.toString(url, false, 0, 0, 0);
 
-			Assert.fail(
-				"Expected a GitHubSecondaryRateLimitRuntimeException to " +
-					"reach the caller");
+			Assert.fail();
 		}
 		catch (GitHubSecondaryRateLimitRuntimeException
 					gitHubSecondaryRateLimitRuntimeException) {
@@ -294,9 +292,7 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 		try {
 			JenkinsResultsParserUtil.toString(url, false, 3, 5, 0);
 
-			Assert.fail(
-				"Expected a GitHubSecondaryRateLimitRuntimeException to " +
-					"reach the caller");
+			Assert.fail();
 		}
 		catch (GitHubSecondaryRateLimitRuntimeException
 					gitHubSecondaryRateLimitRuntimeException) {
@@ -314,7 +310,7 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 		try {
 			JenkinsResultsParserUtil.toString(_URL, false, _MAX_RETRIES, 0, 0);
 
-			Assert.fail("Expected an IOException to reach the caller");
+			Assert.fail();
 		}
 		catch (FileNotFoundException fileNotFoundException) {
 		}
@@ -331,7 +327,7 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 		try {
 			JenkinsResultsParserUtil.toString(_URL, false, _MAX_RETRIES, 0, 0);
 
-			Assert.fail("Expected a RuntimeException to reach the caller");
+			Assert.fail();
 		}
 		catch (RuntimeException runtimeException) {
 			Throwable throwable = runtimeException.getCause();
@@ -359,7 +355,7 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 		try {
 			JenkinsResultsParserUtil.toString(_URL, false, _MAX_RETRIES, 0, 0);
 
-			Assert.fail("Expected an IOException to reach the caller");
+			Assert.fail();
 		}
 		catch (IOException ioException) {
 		}
@@ -402,7 +398,7 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 		try {
 			JenkinsResultsParserUtil.toString(_URL, false, _MAX_RETRIES, 0, 0);
 
-			Assert.fail("Expected an IOException to reach the caller");
+			Assert.fail();
 		}
 		catch (SocketTimeoutException socketTimeoutException) {
 		}
@@ -426,7 +422,7 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 		try {
 			JenkinsResultsParserUtil.toString(_URL, false, _MAX_RETRIES, 0, 0);
 
-			Assert.fail("Expected an IOException to reach the caller");
+			Assert.fail();
 		}
 		catch (IOException ioException) {
 		}

@@ -15,6 +15,7 @@ import java.net.URL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -65,25 +66,19 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 		Assert.assertEquals(2, readJSONArray.length());
 
 		verifyURLReaderAttemptsCount(1, _URL);
-	}
 
-	@Test
-	public void testToJSONArrayWhenResponseIsMalformed() throws Exception {
 		mockURLReaders();
 
 		setURLReaderOutput("not json at all", _URL);
 
-		try {
-			JenkinsResultsParserUtil.toJSONArray(
-				_URL, false, _MAX_RETRIES, null, 0, 0);
+		IOException ioException = Assert.assertThrows(
+			IOException.class,
+			() -> JenkinsResultsParserUtil.toJSONArray(
+				_URL, false, _MAX_RETRIES, null, 0, 0));
 
-			Assert.fail();
-		}
-		catch (IOException ioException) {
-			Assert.assertEquals(
-				"Unable to create a JSON array from the response body",
-				ioException.getMessage());
-		}
+		Assert.assertEquals(
+			"Unable to create a JSON array from the response body",
+			ioException.getMessage());
 
 		verifyURLReaderAttemptsCount(_MAX_RETRIES + 1, _URL);
 	}
@@ -104,69 +99,48 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 		Assert.assertEquals(7800, readJSONObject.getInt("id"));
 
 		verifyURLReaderAttemptsCount(1, _URL);
-	}
 
-	@Test
-	public void testToJSONObjectWhenResponseCodeIs404() throws Exception {
-		mockURLReaders();
-
-		setURLReaderException(new FileNotFoundException(_URL), _URL);
-
-		try {
-			JenkinsResultsParserUtil.toJSONObject(
-				_URL, false, _MAX_RETRIES, 0, 0);
-
-			Assert.fail();
-		}
-		catch (FileNotFoundException fileNotFoundException) {
-			Assert.assertEquals(_URL, fileNotFoundException.getMessage());
-		}
-
-		verifyURLReaderAttemptsCount(1, _URL);
-	}
-
-	@Test
-	public void testToJSONObjectWhenResponseIsMalformed() throws Exception {
 		mockURLReaders();
 
 		setURLReaderOutput("not json at all", _URL);
 
-		try {
-			JenkinsResultsParserUtil.toJSONObject(
-				_URL, false, _MAX_RETRIES, 0, 0);
+		IOException ioException = Assert.assertThrows(
+			IOException.class,
+			() -> JenkinsResultsParserUtil.toJSONObject(
+				_URL, false, _MAX_RETRIES, 0, 0));
 
-			Assert.fail();
-		}
-		catch (IOException ioException) {
-			Assert.assertEquals(
-				"Unable to create a JSON object from the response body",
-				ioException.getMessage());
+		Assert.assertEquals(
+			"Unable to create a JSON object from the response body",
+			ioException.getMessage());
 
-			Throwable throwable = ioException.getCause();
+		Throwable throwable = ioException.getCause();
 
-			Assert.assertTrue(throwable instanceof JSONException);
-		}
+		Assert.assertTrue(throwable instanceof JSONException);
 
 		verifyURLReaderAttemptsCount(_MAX_RETRIES + 1, _URL);
-	}
 
-	@Test
-	public void testToJSONObjectWhenURLIsFileAndAuthorizationIsClientCredentials()
-		throws Exception {
+		mockURLReaders();
+
+		setURLReaderException(new FileNotFoundException(_URL), _URL);
+
+		FileNotFoundException fileNotFoundException = Assert.assertThrows(
+			FileNotFoundException.class,
+			() -> JenkinsResultsParserUtil.toJSONObject(
+				_URL, false, _MAX_RETRIES, 0, 0));
+
+		Assert.assertEquals(_URL, fileNotFoundException.getMessage());
+
+		verifyURLReaderAttemptsCount(1, _URL);
 
 		JenkinsMasterTestUtil.getJenkinsCohortProperties("test-9", 1);
 
 		mockURLReaders();
 
-		JSONObject jsonObject = new JSONObject();
-
-		jsonObject.put("id", 7800);
-
 		String url = "file:/tmp/" + RandomTestUtil.randomString() + ".json";
 
 		setURLReaderOutput(String.valueOf(jsonObject), url);
 
-		JSONObject readJSONObject = JenkinsResultsParserUtil.toJSONObject(
+		readJSONObject = JenkinsResultsParserUtil.toJSONObject(
 			url,
 			new JenkinsResultsParserUtil.ClientCredentialsHTTPAuthorization(
 				RandomTestUtil.randomString(), RandomTestUtil.randomString(),
@@ -179,192 +153,65 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 
 	@Test
 	public void testToString() throws Exception {
+		_testToString("");
+		_testToString(_STANDARD_OUT);
+
 		mockURLReaders();
 
-		setURLReaderOutput(_STANDARD_OUT, _URL);
+		setURLReaderOutput("", _URL);
 
-		Assert.assertEquals(
-			_STANDARD_OUT, JenkinsResultsParserUtil.toString(_URL, false));
+		IOException ioException = Assert.assertThrows(
+			IOException.class,
+			() -> JenkinsResultsParserUtil.toString(
+				_URL, false, _MAX_RETRIES, 0, 0, true));
+
+		String message = ioException.getMessage();
+
+		Assert.assertTrue(
+			message, message.startsWith("Unable to read a response body"));
+
+		verifyURLReaderAttemptsCount(_MAX_RETRIES + 1, _URL);
 	}
 
 	@Test
-	public void testToStringWhenConnectionTimesOut() throws Exception {
+	public void testToStringFailure() throws Exception {
+		_testToStringFailure(1, IOException.class, 400);
+		_testToStringFailure(_MAX_RETRIES + 1, IOException.class, 403);
+		_testToStringFailure(_MAX_RETRIES + 1, IOException.class, 408);
+
+		RuntimeException runtimeException = _testToStringFailure(
+			1, RuntimeException.class, 422);
+
+		Throwable throwable = runtimeException.getCause();
+
+		Assert.assertTrue(throwable instanceof IOException);
+
+		_testToStringFailure(_MAX_RETRIES + 1, IOException.class, 429);
+		_testToStringFailure(_MAX_RETRIES + 1, IOException.class, 500);
+
+		mockURLReaders();
+
+		setURLReaderException(new FileNotFoundException(_URL), _URL);
+
+		Assert.assertThrows(
+			FileNotFoundException.class,
+			() -> JenkinsResultsParserUtil.toString(
+				_URL, false, _MAX_RETRIES, 0, 0));
+
+		verifyURLReaderAttemptsCount(1, _URL);
+
 		mockURLReaders();
 
 		setURLReaderException(
 			new SocketTimeoutException("Read timed out"), _URL);
 
-		try {
-			JenkinsResultsParserUtil.toString(_URL, false, _MAX_RETRIES, 0, 0);
-
-			Assert.fail();
-		}
-		catch (SocketTimeoutException socketTimeoutException) {
-		}
+		Assert.assertThrows(
+			SocketTimeoutException.class,
+			() -> JenkinsResultsParserUtil.toString(
+				_URL, false, _MAX_RETRIES, 0, 0));
 
 		verifyURLReaderAttemptsCount(_MAX_RETRIES + 1, _URL);
-	}
 
-	@Test
-	public void testToStringWhenResponseBodyIsEmpty() throws Exception {
-		mockURLReaders();
-
-		setURLReaderOutput("", _URL);
-
-		try {
-			JenkinsResultsParserUtil.toString(
-				_URL, false, _MAX_RETRIES, 0, 0, true);
-
-			Assert.fail();
-		}
-		catch (IOException ioException) {
-			String message = ioException.getMessage();
-
-			Assert.assertTrue(
-				message, message.startsWith("Unable to read a response body"));
-		}
-
-		verifyURLReaderAttemptsCount(_MAX_RETRIES + 1, _URL);
-	}
-
-	@Test
-	public void testToStringWhenResponseBodyIsEmptyAndNotExpected()
-		throws Exception {
-
-		mockURLReaders();
-
-		setURLReaderOutput("", _URL);
-
-		Assert.assertEquals(
-			"",
-			JenkinsResultsParserUtil.toString(
-				_URL, false, _MAX_RETRIES, 0, 0, false));
-
-		verifyURLReaderAttemptsCount(1, _URL);
-	}
-
-	@Test
-	public void testToStringWhenResponseCodeIs403AndURLIsGitHubAPI()
-		throws Exception {
-
-		Properties buildProperties = new Properties();
-
-		buildProperties.setProperty(
-			"github.access.token", RandomTestUtil.randomString());
-
-		JenkinsResultsParserUtil.setBuildProperties(buildProperties);
-
-		mockURLReaders();
-
-		String url = "https://api.github.com/" + RandomTestUtil.randomString();
-
-		setURLReaderResponseCode(403, url);
-
-		try {
-			JenkinsResultsParserUtil.toString(url, false, 0, 0, 0);
-
-			Assert.fail();
-		}
-		catch (GitHubSecondaryRateLimitRuntimeException
-					gitHubSecondaryRateLimitRuntimeException) {
-		}
-
-		verifyURLReaderAttemptsCount(1, url);
-	}
-
-	@Test
-	public void testToStringWhenResponseCodeIs403AndURLIsGitHubAPIWithRetries()
-		throws Exception {
-
-		Properties buildProperties = new Properties();
-
-		buildProperties.setProperty(
-			"github.access.token", RandomTestUtil.randomString());
-
-		JenkinsResultsParserUtil.setBuildProperties(buildProperties);
-
-		mockURLReaders();
-
-		String url = "https://api.github.com/" + RandomTestUtil.randomString();
-
-		setURLReaderResponseCode(403, url);
-
-		try {
-			JenkinsResultsParserUtil.toString(url, false, 3, 5, 0);
-
-			Assert.fail();
-		}
-		catch (GitHubSecondaryRateLimitRuntimeException
-					gitHubSecondaryRateLimitRuntimeException) {
-		}
-
-		verifyURLReaderSleepDurations(Arrays.asList(5000L, 25000L, 60000L));
-	}
-
-	@Test
-	public void testToStringWhenResponseCodeIs404() throws Exception {
-		mockURLReaders();
-
-		setURLReaderException(new FileNotFoundException(_URL), _URL);
-
-		try {
-			JenkinsResultsParserUtil.toString(_URL, false, _MAX_RETRIES, 0, 0);
-
-			Assert.fail();
-		}
-		catch (FileNotFoundException fileNotFoundException) {
-		}
-
-		verifyURLReaderAttemptsCount(1, _URL);
-	}
-
-	@Test
-	public void testToStringWhenResponseCodeIs422() throws Exception {
-		mockURLReaders();
-
-		setURLReaderResponseCode(422, _URL);
-
-		try {
-			JenkinsResultsParserUtil.toString(_URL, false, _MAX_RETRIES, 0, 0);
-
-			Assert.fail();
-		}
-		catch (RuntimeException runtimeException) {
-			Throwable throwable = runtimeException.getCause();
-
-			Assert.assertTrue(throwable instanceof IOException);
-		}
-
-		verifyURLReaderAttemptsCount(1, _URL);
-	}
-
-	@Test
-	public void testToStringWhenResponseCodeIsRetryable() throws Exception {
-		_testToStringWhenResponseCodeIsRetryable(403);
-		_testToStringWhenResponseCodeIsRetryable(408);
-		_testToStringWhenResponseCodeIsRetryable(429);
-		_testToStringWhenResponseCodeIsRetryable(500);
-	}
-
-	@Test
-	public void testToStringWhenResponseCodeIsTerminal() throws Exception {
-		mockURLReaders();
-
-		setURLReaderResponseCode(400, _URL);
-
-		try {
-			JenkinsResultsParserUtil.toString(_URL, false, _MAX_RETRIES, 0, 0);
-
-			Assert.fail();
-		}
-		catch (IOException ioException) {
-		}
-
-		verifyURLReaderAttemptsCount(1, _URL);
-	}
-
-	@Test
-	public void testToStringWhenResponseNeverArrives() throws Exception {
 		List<HttpURLConnection> httpURLConnections = new ArrayList<>();
 
 		mockURLReaders();
@@ -395,13 +242,10 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 			);
 		}
 
-		try {
-			JenkinsResultsParserUtil.toString(_URL, false, _MAX_RETRIES, 0, 0);
-
-			Assert.fail();
-		}
-		catch (SocketTimeoutException socketTimeoutException) {
-		}
+		Assert.assertThrows(
+			SocketTimeoutException.class,
+			() -> JenkinsResultsParserUtil.toString(
+				_URL, false, _MAX_RETRIES, 0, 0));
 
 		verifyURLReaderAttemptsCount(_MAX_RETRIES + 1, _URL);
 
@@ -412,22 +256,69 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 		}
 	}
 
-	private void _testToStringWhenResponseCodeIsRetryable(int responseCode)
+	@Test
+	public void testToStringRetries() throws Exception {
+		Properties buildProperties = new Properties();
+
+		buildProperties.setProperty(
+			"github.access.token", RandomTestUtil.randomString());
+
+		JenkinsResultsParserUtil.setBuildProperties(buildProperties);
+
+		_testToStringRetries(Arrays.asList(5000L, 25000L, 60000L), 3, 5);
+		_testToStringRetries(Collections.emptyList(), 0, 0);
+	}
+
+	private void _testToString(String standardOut) throws Exception {
+		mockURLReaders();
+
+		setURLReaderOutput(standardOut, _URL);
+
+		Assert.assertEquals(
+			standardOut,
+			JenkinsResultsParserUtil.toString(
+				_URL, false, _MAX_RETRIES, 0, 0, false));
+
+		verifyURLReaderAttemptsCount(1, _URL);
+	}
+
+	private <T extends Throwable> T _testToStringFailure(
+			int expectedAttemptsCount, Class<T> expectedThrowableClass,
+			int responseCode)
 		throws Exception {
 
 		mockURLReaders();
 
 		setURLReaderResponseCode(responseCode, _URL);
 
-		try {
-			JenkinsResultsParserUtil.toString(_URL, false, _MAX_RETRIES, 0, 0);
+		T throwable = Assert.assertThrows(
+			expectedThrowableClass,
+			() -> JenkinsResultsParserUtil.toString(
+				_URL, false, _MAX_RETRIES, 0, 0));
 
-			Assert.fail();
-		}
-		catch (IOException ioException) {
-		}
+		verifyURLReaderAttemptsCount(expectedAttemptsCount, _URL);
 
-		verifyURLReaderAttemptsCount(_MAX_RETRIES + 1, _URL);
+		return throwable;
+	}
+
+	private void _testToStringRetries(
+			List<Long> expectedSleepDurations, int maxRetries, int retryPeriod)
+		throws Exception {
+
+		mockURLReaders();
+
+		String url = "https://api.github.com/" + RandomTestUtil.randomString();
+
+		setURLReaderResponseCode(403, url);
+
+		Assert.assertThrows(
+			GitHubSecondaryRateLimitRuntimeException.class,
+			() -> JenkinsResultsParserUtil.toString(
+				url, false, maxRetries, retryPeriod, 0));
+
+		verifyURLReaderAttemptsCount(maxRetries + 1, url);
+
+		verifyURLReaderSleepDurations(expectedSleepDurations);
 	}
 
 	private static final int _MAX_RETRIES = 2;

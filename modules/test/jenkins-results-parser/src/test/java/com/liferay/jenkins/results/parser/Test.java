@@ -279,6 +279,25 @@ public class Test {
 		setUrlReaderOutput(0, standardOut, url, urlReader);
 	}
 
+	protected void setUrlReaderOutputAfterException(
+			IOException ioException, String standardOut, String url,
+			UrlReader urlReader)
+		throws Exception {
+
+		Mockito.doThrow(
+			ioException
+		).doAnswer(
+			invocation -> new ByteArrayInputStream(standardOut.getBytes())
+		).when(
+			urlReader
+		).doRead(
+			Mockito.anyBoolean(), Mockito.any(), Mockito.any(),
+			Mockito.anyInt(), Mockito.any(), Mockito.anyInt(), Mockito.anyInt(),
+			Mockito.argThat(
+				readURL -> (readURL != null) && readURL.contains(url))
+		);
+	}
+
 	protected void testEquals(Object expected, Object actual) {
 		errorCollector.checkThat(actual, CoreMatchers.equalTo(expected));
 	}
@@ -309,17 +328,26 @@ public class Test {
 	}
 
 	protected void verifyUrlReaderRead(
-			boolean checkCache, int maxRetries, int timeoutMillis,
-			UrlReader urlReader)
+			boolean checkCache, int maxRetries, int readCount,
+			int timeoutMillis, UrlReader urlReader)
 		throws Exception {
 
 		Mockito.verify(
-			urlReader
+			urlReader, Mockito.times(readCount)
 		).doRead(
 			Mockito.eq(checkCache), Mockito.any(), Mockito.any(),
 			Mockito.eq(maxRetries), Mockito.any(), Mockito.anyInt(),
 			Mockito.eq(timeoutMillis), Mockito.anyString()
 		);
+	}
+
+	protected void verifyUrlReaderRead(
+			boolean checkCache, int maxRetries, int timeoutMillis,
+			UrlReader urlReader)
+		throws Exception {
+
+		verifyUrlReaderRead(
+			checkCache, maxRetries, 1, timeoutMillis, urlReader);
 	}
 
 	protected List<File> dependenciesDirs = getDependenciesDirs(

@@ -568,6 +568,10 @@ public abstract class BaseTopLevelBuild
 		_testrayCaseResultURL =
 			topLevelStandaloneBuildTestrayCaseResult.getTestrayCaseResultURL();
 
+		if (_testrayCaseResultURL != null) {
+			_testrayCaseResult = topLevelStandaloneBuildTestrayCaseResult;
+		}
+
 		return _testrayCaseResultURL;
 	}
 
@@ -1413,8 +1417,8 @@ public abstract class BaseTopLevelBuild
 
 		return Dom4JUtil.getNewElement(
 			"body", null, headingElement, subheadingElement,
-			getJenkinsReportCommitElement(), getJenkinsReportSummaryElement(),
-			getJenkinsReportTimelineElement(),
+			getJenkinsReportTestrayElement(), getJenkinsReportCommitElement(),
+			getJenkinsReportSummaryElement(), getJenkinsReportTimelineElement(),
 			getJenkinsReportTopLevelTableElement(),
 			getJenkinsReportDownstreamElement());
 	}
@@ -1699,6 +1703,51 @@ public abstract class BaseTopLevelBuild
 			resultElement);
 
 		return tableColumnHeaderElement;
+	}
+
+	protected Element getJenkinsReportTestrayElement() {
+		TestrayBuild testrayBuild = null;
+
+		if (_testrayContext != null) {
+			Map<File, TestrayBuild> testrayBuildsMap =
+				_testrayContext.getTestrayBuildsMap();
+
+			testrayBuild = testrayBuildsMap.get(null);
+		}
+
+		if ((testrayBuild == null) && (_testrayCaseResult == null)) {
+			return null;
+		}
+
+		Element testrayElement = Dom4JUtil.getNewElement("div");
+
+		if (testrayBuild != null) {
+			TestrayRoutine testrayRoutine = testrayBuild.getTestrayRoutine();
+
+			if (testrayRoutine != null) {
+				Dom4JUtil.getNewElement(
+					"p", testrayElement, "Testray Routine: ",
+					Dom4JUtil.getNewAnchorElement(
+						String.valueOf(testrayRoutine.getURL()),
+						testrayRoutine.getName()));
+			}
+
+			Dom4JUtil.getNewElement(
+				"p", testrayElement, "Testray Build: ",
+				Dom4JUtil.getNewAnchorElement(
+					String.valueOf(testrayBuild.getURL()),
+					testrayBuild.getName()));
+		}
+
+		if (_testrayCaseResult != null) {
+			Dom4JUtil.getNewElement(
+				"p", testrayElement, "Testray Case Result: ",
+				Dom4JUtil.getNewAnchorElement(
+					String.valueOf(_testrayCaseResultURL),
+					_testrayCaseResult.getName()));
+		}
+
+		return testrayElement;
 	}
 
 	protected Element getJenkinsReportTimelineElement() {
@@ -2607,6 +2656,7 @@ public abstract class BaseTopLevelBuild
 	private int _metricsHostPort;
 	private final boolean _sendBuildMetrics;
 	private final List<URL> _testrayAttachmentURLs = new ArrayList<>();
+	private TestrayCaseResult _testrayCaseResult;
 	private URL _testrayCaseResultURL;
 	private TestrayContext _testrayContext;
 	private TopLevelBuildReport _topLevelBuildReport;

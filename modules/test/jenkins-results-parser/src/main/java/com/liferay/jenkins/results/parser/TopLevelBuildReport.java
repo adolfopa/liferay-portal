@@ -59,6 +59,8 @@ public interface TopLevelBuildReport extends BuildReport {
 
 	public String getTestrayBuildDateString();
 
+	public URL getTestrayCaseResultURL();
+
 	public TestrayProductVersion getTestrayProductVersion();
 
 	public TestrayProject getTestrayProject();

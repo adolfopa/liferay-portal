@@ -26,8 +26,12 @@ import com.liferay.jenkins.results.parser.failure.message.generator.RebaseFailur
 import com.liferay.jenkins.results.parser.failure.message.generator.RelevantRuleValidationFailureMessageGenerator;
 import com.liferay.jenkins.results.parser.persistent.resource.PersistentResourceFactory;
 import com.liferay.jenkins.results.parser.testray.TestrayBuild;
+import com.liferay.jenkins.results.parser.testray.TestrayCaseResult;
 import com.liferay.jenkins.results.parser.testray.TestrayContext;
 import com.liferay.jenkins.results.parser.testray.TestrayFactory;
+import com.liferay.jenkins.results.parser.testray.TestrayRoutine;
+import com.liferay.jenkins.results.parser.testray.TestrayServer;
+import com.liferay.jenkins.results.parser.testray.TopLevelStandaloneBuildTestrayCaseResult;
 
 import java.io.File;
 import java.io.IOException;
@@ -251,6 +255,11 @@ public abstract class BaseTopLevelBuild
 			);
 		}
 
+		if (_testrayCaseResultURL != null) {
+			buildReportJSONObject.put(
+				"testrayCaseResultURL", String.valueOf(_testrayCaseResultURL));
+		}
+
 		if (_testrayContext != null) {
 			Map<File, TestrayBuild> testrayBuildsMap =
 				_testrayContext.getTestrayBuildsMap();
@@ -260,6 +269,23 @@ public abstract class BaseTopLevelBuild
 			if (testrayBuild != null) {
 				buildReportJSONObject.put(
 					"testrayBuildURL", String.valueOf(testrayBuild.getURL()));
+
+				TestrayRoutine testrayRoutine =
+					testrayBuild.getTestrayRoutine();
+
+				if (testrayRoutine != null) {
+					buildReportJSONObject.put(
+						"testrayRoutineURL",
+						String.valueOf(testrayRoutine.getURL()));
+				}
+
+				TestrayServer testrayServer = testrayBuild.getTestrayServer();
+
+				if (testrayServer != null) {
+					buildReportJSONObject.put(
+						"testrayServerURL",
+						String.valueOf(testrayServer.getURL()));
+				}
 			}
 		}
 
@@ -515,6 +541,34 @@ public abstract class BaseTopLevelBuild
 	@Override
 	public synchronized List<URL> getTestrayAttachmentURLs() {
 		return _testrayAttachmentURLs;
+	}
+
+	@Override
+	public synchronized URL getTestrayCaseResultURL() {
+		if (_testrayCaseResultURL != null) {
+			return _testrayCaseResultURL;
+		}
+
+		TestrayCaseResult.Status status = null;
+
+		if (getResult() == null) {
+			status = TestrayCaseResult.Status.INCOMPLETE;
+		}
+
+		TestrayContext testrayContext = getTestrayContext();
+
+		TopLevelStandaloneBuildTestrayCaseResult
+			topLevelStandaloneBuildTestrayCaseResult =
+				TestrayFactory.newTopLevelStandaloneBuildTestrayCaseResult(
+					status, testrayContext.getTestrayBuild(),
+					getTopLevelBuildReport());
+
+		topLevelStandaloneBuildTestrayCaseResult.initTestrayRun(getJob());
+
+		_testrayCaseResultURL =
+			topLevelStandaloneBuildTestrayCaseResult.getTestrayCaseResultURL();
+
+		return _testrayCaseResultURL;
 	}
 
 	@Override
@@ -2553,6 +2607,7 @@ public abstract class BaseTopLevelBuild
 	private int _metricsHostPort;
 	private final boolean _sendBuildMetrics;
 	private final List<URL> _testrayAttachmentURLs = new ArrayList<>();
+	private URL _testrayCaseResultURL;
 	private TestrayContext _testrayContext;
 	private TopLevelBuildReport _topLevelBuildReport;
 

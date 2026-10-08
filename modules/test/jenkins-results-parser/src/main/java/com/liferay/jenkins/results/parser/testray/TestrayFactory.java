@@ -818,6 +818,23 @@ public class TestrayFactory {
 		return _topLevelBuildTestrayCaseResults.get(testrayBuildId);
 	}
 
+	public static TopLevelStandaloneBuildTestrayCaseResult
+		newTopLevelStandaloneBuildTestrayCaseResult(
+			TestrayCaseResult.Status status, TestrayBuild testrayBuild,
+			TopLevelBuildReport topLevelBuildReport) {
+
+		if (testrayBuild == null) {
+			throw new RuntimeException("Please set a Testray build");
+		}
+
+		if (topLevelBuildReport == null) {
+			throw new RuntimeException("Please set a top level build report");
+		}
+
+		return new TopLevelStandaloneBuildTestrayCaseResult(
+			status, testrayBuild, topLevelBuildReport);
+	}
+
 	private static final Map<String, RunTestrayFactor> _runTestrayFactors =
 		new ConcurrentHashMap<>();
 	private static final Map<Build, TestrayAttachmentRecorder>

@@ -482,6 +482,29 @@ public abstract class BaseTopLevelBuildReport
 	}
 
 	@Override
+	public URL getTestrayCaseResultURL() {
+		JSONObject buildReportJSONObject = getBuildReportJSONObject();
+
+		if (buildReportJSONObject == null) {
+			return null;
+		}
+
+		String testrayCaseResultURL = buildReportJSONObject.optString(
+			"testrayCaseResultURL");
+
+		if (JenkinsResultsParserUtil.isNullOrEmpty(testrayCaseResultURL)) {
+			return null;
+		}
+
+		try {
+			return new URL(testrayCaseResultURL);
+		}
+		catch (MalformedURLException malformedURLException) {
+			throw new RuntimeException(malformedURLException);
+		}
+	}
+
+	@Override
 	public TestrayProductVersion getTestrayProductVersion() {
 		TestrayBuild testrayBuild = getTestrayBuild();
 

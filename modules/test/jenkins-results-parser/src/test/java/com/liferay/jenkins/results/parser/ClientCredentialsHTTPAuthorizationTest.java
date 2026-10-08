@@ -107,7 +107,7 @@ public class ClientCredentialsHTTPAuthorizationTest
 	private void _mockTokenRequestURLReader() throws Exception {
 		mockURLReaders();
 
-		for (BaseURLReader<?> urlReader : getURLReaders()) {
+		for (BaseURLReader<?> baseURLReader : getBaseURLReaders()) {
 			Mockito.doAnswer(
 				invocation -> mockURLConnection(
 					String.valueOf(
@@ -121,7 +121,7 @@ public class ClientCredentialsHTTPAuthorizationTest
 						)),
 					200)
 			).when(
-				urlReader
+				baseURLReader
 			).openURLConnection(
 				Mockito.any(), Mockito.anyBoolean(), Mockito.any(),
 				Mockito.any(), Mockito.anyBoolean(), Mockito.anyInt(),

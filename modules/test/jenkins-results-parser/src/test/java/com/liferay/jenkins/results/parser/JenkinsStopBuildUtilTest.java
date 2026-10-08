@@ -302,7 +302,7 @@ public class JenkinsStopBuildUtilTest
 
 		AtomicInteger readsCount = new AtomicInteger();
 
-		for (BaseURLReader<?> urlReader : getURLReaders()) {
+		for (BaseURLReader<?> baseURLReader : getBaseURLReaders()) {
 			Mockito.doAnswer(
 				invocation -> {
 					_readURLs.add(invocation.getArgument(8));
@@ -310,7 +310,7 @@ public class JenkinsStopBuildUtilTest
 					return invocation.callRealMethod();
 				}
 			).when(
-				urlReader
+				baseURLReader
 			).read(
 				Mockito.anyBoolean(), Mockito.anyBoolean(), Mockito.any(),
 				Mockito.any(), Mockito.anyInt(), Mockito.any(),
@@ -334,7 +334,7 @@ public class JenkinsStopBuildUtilTest
 					return mockURLConnection(String.valueOf(jsonObject), 200);
 				}
 			).when(
-				urlReader
+				baseURLReader
 			).openURLConnection(
 				Mockito.any(), Mockito.anyBoolean(), Mockito.any(),
 				Mockito.any(), Mockito.anyBoolean(), Mockito.anyInt(),

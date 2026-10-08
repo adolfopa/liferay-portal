@@ -369,7 +369,7 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 
 		mockURLReaders();
 
-		for (BaseURLReader<?> urlReader : getURLReaders()) {
+		for (BaseURLReader<?> baseURLReader : getBaseURLReaders()) {
 			Mockito.doAnswer(
 				invocation -> {
 					HttpURLConnection httpURLConnection = Mockito.mock(
@@ -386,7 +386,7 @@ public class BaseURLReaderTest extends com.liferay.jenkins.results.parser.Test {
 					return httpURLConnection;
 				}
 			).when(
-				urlReader
+				baseURLReader
 			).openURLConnection(
 				Mockito.any(), Mockito.anyBoolean(), Mockito.any(),
 				Mockito.any(), Mockito.anyBoolean(), Mockito.anyInt(),

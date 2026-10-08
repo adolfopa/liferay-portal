@@ -107,6 +107,10 @@ public class Test {
 		return dirs;
 	}
 
+	protected List<BaseURLReader<?>> getBaseURLReaders() {
+		return _baseURLReaders;
+	}
+
 	protected String getMismatchMessage(
 		String expectedValue, String actualValue, String valueName) {
 
@@ -138,10 +142,6 @@ public class Test {
 
 	protected StreamURLReader getStreamURLReader() {
 		return _streamURLReader;
-	}
-
-	protected List<BaseURLReader<?>> getURLReaders() {
-		return _urlReaders;
 	}
 
 	protected VerificationMode getVerificationMode(boolean invoked) {
@@ -251,11 +251,11 @@ public class Test {
 
 		BodyURLReader.setTextInstance(textBodyURLReader);
 
-		_urlReaders = Arrays.asList(
+		_baseURLReaders = Arrays.asList(
 			jsonArrayBodyURLReader, jsonObjectBodyURLReader, _streamURLReader,
 			textBodyURLReader);
 
-		for (BaseURLReader<?> urlReader : _urlReaders) {
+		for (BaseURLReader<?> baseURLReader : _baseURLReaders) {
 			try {
 				Mockito.doAnswer(
 					invocation -> {
@@ -265,7 +265,7 @@ public class Test {
 							"No output set for URL: " + url);
 					}
 				).when(
-					urlReader
+					baseURLReader
 				).openURLConnection(
 					Mockito.any(), Mockito.anyBoolean(), Mockito.any(),
 					Mockito.any(), Mockito.anyBoolean(), Mockito.anyInt(),
@@ -278,7 +278,7 @@ public class Test {
 
 			Mockito.doNothing(
 			).when(
-				urlReader
+				baseURLReader
 			).sleep(
 				Mockito.anyLong()
 			);
@@ -324,11 +324,11 @@ public class Test {
 	protected void setURLReaderException(IOException ioException, String url)
 		throws Exception {
 
-		for (BaseURLReader<?> urlReader : _urlReaders) {
+		for (BaseURLReader<?> baseURLReader : _baseURLReaders) {
 			Mockito.doThrow(
 				ioException
 			).when(
-				urlReader
+				baseURLReader
 			).openURLConnection(
 				Mockito.any(), Mockito.anyBoolean(), Mockito.any(),
 				Mockito.any(), Mockito.anyBoolean(), Mockito.anyInt(),
@@ -342,7 +342,7 @@ public class Test {
 			long delayMillis, String standardOut, String url)
 		throws Exception {
 
-		for (BaseURLReader<?> urlReader : _urlReaders) {
+		for (BaseURLReader<?> baseURLReader : _baseURLReaders) {
 			Mockito.doAnswer(
 				invocation -> {
 					JenkinsResultsParserUtil.sleep(delayMillis);
@@ -350,7 +350,7 @@ public class Test {
 					return mockURLConnection(standardOut, 200);
 				}
 			).when(
-				urlReader
+				baseURLReader
 			).openURLConnection(
 				Mockito.any(), Mockito.anyBoolean(), Mockito.any(),
 				Mockito.any(), Mockito.anyBoolean(), Mockito.anyInt(),
@@ -369,11 +369,11 @@ public class Test {
 	protected void setURLReaderResponseCode(int responseCode, String url)
 		throws Exception {
 
-		for (BaseURLReader<?> urlReader : _urlReaders) {
+		for (BaseURLReader<?> baseURLReader : _baseURLReaders) {
 			Mockito.doAnswer(
 				invocation -> _mockURLConnection(responseCode)
 			).when(
-				urlReader
+				baseURLReader
 			).openURLConnection(
 				Mockito.any(), Mockito.anyBoolean(), Mockito.any(),
 				Mockito.any(), Mockito.anyBoolean(), Mockito.anyInt(),
@@ -415,8 +415,9 @@ public class Test {
 	protected void verifyURLReaderAttemptsCount(int expectedCount, String url) {
 		int count = 0;
 
-		for (BaseURLReader<?> urlReader : _urlReaders) {
-			MockingDetails mockingDetails = Mockito.mockingDetails(urlReader);
+		for (BaseURLReader<?> baseURLReader : _baseURLReaders) {
+			MockingDetails mockingDetails = Mockito.mockingDetails(
+				baseURLReader);
 
 			for (Invocation invocation : mockingDetails.getInvocations()) {
 				Method method = invocation.getMethod();
@@ -441,8 +442,9 @@ public class Test {
 
 		int count = 0;
 
-		for (BaseURLReader<?> urlReader : _urlReaders) {
-			MockingDetails mockingDetails = Mockito.mockingDetails(urlReader);
+		for (BaseURLReader<?> baseURLReader : _baseURLReaders) {
+			MockingDetails mockingDetails = Mockito.mockingDetails(
+				baseURLReader);
 
 			for (Invocation invocation : mockingDetails.getInvocations()) {
 				Method method = invocation.getMethod();
@@ -479,8 +481,9 @@ public class Test {
 	protected void verifyURLReaderSleepDurations(List<Long> expectedDurations) {
 		List<Long> durations = new ArrayList<>();
 
-		for (BaseURLReader<?> urlReader : _urlReaders) {
-			MockingDetails mockingDetails = Mockito.mockingDetails(urlReader);
+		for (BaseURLReader<?> baseURLReader : _baseURLReaders) {
+			MockingDetails mockingDetails = Mockito.mockingDetails(
+				baseURLReader);
 
 			for (Invocation invocation : mockingDetails.getInvocations()) {
 				Method method = invocation.getMethod();
@@ -560,8 +563,8 @@ public class Test {
 	private static final Method _readMethod = _getReadMethod();
 	private static final Method _sleepMethod = _getSleepMethod();
 
+	private List<BaseURLReader<?>> _baseURLReaders;
 	private List<String> _simpleClassNames;
 	private StreamURLReader _streamURLReader;
-	private List<BaseURLReader<?>> _urlReaders;
 
 }

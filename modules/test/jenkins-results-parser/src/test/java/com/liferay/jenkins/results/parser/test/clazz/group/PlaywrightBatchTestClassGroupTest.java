@@ -113,10 +113,10 @@ public class PlaywrightBatchTestClassGroupTest
 		try {
 			_testIsDatabaseTypeSupported(
 				"playwright-js-tomcat101-mysql84",
-				"database.types=mysq,postgresql", false, null);
+				"database.types=MySQL,postgresql", false, null);
 			_testIsDatabaseTypeSupported(
 				"playwright-js-tomcat101-postgresql163",
-				"database.types=mysq,postgresql", true, null);
+				"database.types=MySQL,postgresql", true, null);
 		}
 		finally {
 			System.setErr(printStream);
@@ -127,7 +127,7 @@ public class PlaywrightBatchTestClassGroupTest
 		Assert.assertTrue(
 			byteArrayOutputStreamString,
 			byteArrayOutputStreamString.contains(
-				"Ignoring unknown database type \"mysq\" in Playwright " +
+				"Ignoring unknown database type \"MySQL\" in Playwright " +
 					"project \""));
 	}
 

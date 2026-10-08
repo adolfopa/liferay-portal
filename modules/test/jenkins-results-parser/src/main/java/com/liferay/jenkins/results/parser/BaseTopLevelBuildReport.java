@@ -464,13 +464,20 @@ public abstract class BaseTopLevelBuildReport
 			return null;
 		}
 
+		URL url = null;
+
 		try {
-			_testrayBuild = TestrayFactory.newTestrayBuild(
-				new URL(testrayBuildURL));
+			url = new URL(testrayBuildURL);
 		}
 		catch (MalformedURLException malformedURLException) {
-			throw new RuntimeException(malformedURLException);
+			return null;
 		}
+
+		if (TestrayBuild.getId(url) <= 0) {
+			return null;
+		}
+
+		_testrayBuild = TestrayFactory.newTestrayBuild(url);
 
 		return _testrayBuild;
 	}
@@ -500,7 +507,7 @@ public abstract class BaseTopLevelBuildReport
 			return new URL(testrayCaseResultURL);
 		}
 		catch (MalformedURLException malformedURLException) {
-			throw new RuntimeException(malformedURLException);
+			return null;
 		}
 	}
 

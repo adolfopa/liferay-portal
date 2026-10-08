@@ -19,6 +19,7 @@ import com.liferay.jenkins.results.parser.PortalWorkspaceGitRepository;
 import com.liferay.jenkins.results.parser.PullRequest;
 import com.liferay.jenkins.results.parser.QAWebsitesGitRepositoryJob;
 import com.liferay.jenkins.results.parser.QAWebsitesWorkspaceGitRepository;
+import com.liferay.jenkins.results.parser.TestSuiteJob;
 import com.liferay.jenkins.results.parser.Workspace;
 import com.liferay.jenkins.results.parser.WorkspaceGitRepository;
 import com.liferay.jenkins.results.parser.job.property.JobProperty;
@@ -55,24 +56,26 @@ public abstract class BaseTestrayContext implements TestrayContext {
 	public JobProperty getJobProperty(
 		String basePropertyName, File testBaseDir) {
 
-		for (Job job : getJobs()) {
-			if (job instanceof QAWebsitesGitRepositoryJob) {
-				JobProperty jobProperty = JobPropertyFactory.newJobProperty(
-					basePropertyName, job, testBaseDir,
-					JobProperty.Type.QA_WEBSITES_TEST_DIR);
+		Job job = _getJob();
 
-				if (!JenkinsResultsParserUtil.isNullOrEmpty(
-						jobProperty.getValue())) {
-
-					return jobProperty;
-				}
-			}
-
-			return JobPropertyFactory.newJobProperty(basePropertyName, job);
+		if (job == null) {
+			throw new RuntimeException(
+				"Unable to get job property " + basePropertyName);
 		}
 
-		throw new RuntimeException(
-			"Unable to get job property " + basePropertyName);
+		if (job instanceof QAWebsitesGitRepositoryJob) {
+			JobProperty jobProperty = JobPropertyFactory.newJobProperty(
+				basePropertyName, job, testBaseDir,
+				JobProperty.Type.QA_WEBSITES_TEST_DIR);
+
+			if (!JenkinsResultsParserUtil.isNullOrEmpty(
+					jobProperty.getValue())) {
+
+				return jobProperty;
+			}
+		}
+
+		return JobPropertyFactory.newJobProperty(basePropertyName, job);
 	}
 
 	@Override
@@ -871,6 +874,10 @@ public abstract class BaseTestrayContext implements TestrayContext {
 
 	@Override
 	public String replace(String string) {
+		if (string == null) {
+			return null;
+		}
+
 		string = _replace(string);
 
 		if (!JenkinsResultsParserUtil.isNullOrEmpty(string) &&
@@ -884,6 +891,10 @@ public abstract class BaseTestrayContext implements TestrayContext {
 
 	@Override
 	public String replaceSlack(String string, TestrayBuild testrayBuild) {
+		if (string == null) {
+			return null;
+		}
+
 		string = _replace(string);
 
 		string = _replaceSlackTestrayInformation(string, testrayBuild);
@@ -963,6 +974,32 @@ public abstract class BaseTestrayContext implements TestrayContext {
 			"https://", jenkinsMaster.getName(), ".liferay.com/",
 			"userContent/jobs/", getJobName(), "/builds/",
 			String.valueOf(getBuildNumber()), "/jenkins-report.html");
+	}
+
+	private Job _getJob() {
+		List<Job> jobs = getJobs();
+
+		if (jobs.isEmpty()) {
+			return null;
+		}
+
+		String testSuiteName = getTestSuiteName();
+
+		for (Job job : jobs) {
+			if (!(job instanceof TestSuiteJob)) {
+				continue;
+			}
+
+			TestSuiteJob testSuiteJob = (TestSuiteJob)job;
+
+			if (Objects.equals(
+					testSuiteJob.getTestSuiteName(), testSuiteName)) {
+
+				return job;
+			}
+		}
+
+		return jobs.get(0);
 	}
 
 	private String _getMajorPortalVersion() {

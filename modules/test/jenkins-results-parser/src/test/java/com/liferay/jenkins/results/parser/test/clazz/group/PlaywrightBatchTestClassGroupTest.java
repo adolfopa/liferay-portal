@@ -16,9 +16,7 @@ import com.liferay.jenkins.results.parser.test.clazz.PlaywrightTestClassMethod;
 import com.liferay.jenkins.results.parser.test.clazz.TestClass;
 import com.liferay.jenkins.results.parser.test.clazz.TestClassMethod;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.PrintStream;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,6 +69,9 @@ public class PlaywrightBatchTestClassGroupTest
 			"playwright-js-tomcat101-db2111", null, false,
 			"database.types=mysql,postgresql");
 		_testIsDatabaseTypeSupported(
+			"playwright-js-tomcat101-mysql84",
+			"database.types=MySQL,postgresql", false, null);
+		_testIsDatabaseTypeSupported(
 			"playwright-js-tomcat101-mysql84", "database.types=mysql", true,
 			null);
 		_testIsDatabaseTypeSupported(
@@ -82,6 +83,9 @@ public class PlaywrightBatchTestClassGroupTest
 		_testIsDatabaseTypeSupported(
 			"playwright-js-tomcat101-oracle193",
 			"database.types=db2,mysql,oracle", true, null);
+		_testIsDatabaseTypeSupported(
+			"playwright-js-tomcat101-postgresql163",
+			"database.types=MySQL,postgresql", true, null);
 		_testIsDatabaseTypeSupported(
 			"playwright-js-tomcat101-postgresql163", "database.types=db2",
 			false, "database.types=mysql,postgresql");
@@ -97,38 +101,6 @@ public class PlaywrightBatchTestClassGroupTest
 		_testIsDatabaseTypeSupported(
 			"playwright-js-tomcat101-postgresql163_stable",
 			"database.types=mysql", false, null);
-	}
-
-	@Test
-	public void testIsDatabaseTypeSupportedUnknownDatabaseType()
-		throws Exception {
-
-		PrintStream printStream = System.err;
-
-		ByteArrayOutputStream byteArrayOutputStream =
-			new ByteArrayOutputStream();
-
-		System.setErr(new PrintStream(byteArrayOutputStream, true));
-
-		try {
-			_testIsDatabaseTypeSupported(
-				"playwright-js-tomcat101-mysql84",
-				"database.types=MySQL,postgresql", false, null);
-			_testIsDatabaseTypeSupported(
-				"playwright-js-tomcat101-postgresql163",
-				"database.types=MySQL,postgresql", true, null);
-		}
-		finally {
-			System.setErr(printStream);
-		}
-
-		String byteArrayOutputStreamString = byteArrayOutputStream.toString();
-
-		Assert.assertTrue(
-			byteArrayOutputStreamString,
-			byteArrayOutputStreamString.contains(
-				"Ignoring unknown database type \"MySQL\" in Playwright " +
-					"project \""));
 	}
 
 	@Test

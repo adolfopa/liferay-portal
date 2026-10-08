@@ -127,7 +127,8 @@ public class PlaywrightBatchTestClassGroupTest
 		Assert.assertTrue(
 			byteArrayOutputStreamString,
 			byteArrayOutputStreamString.contains(
-				"Ignoring unknown database type mysq in Playwright project "));
+				"Ignoring unknown database type \"mysq\" in Playwright " +
+					"project \""));
 	}
 
 	@Test

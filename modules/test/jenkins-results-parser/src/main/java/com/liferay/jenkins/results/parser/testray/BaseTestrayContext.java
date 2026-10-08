@@ -149,6 +149,11 @@ public abstract class BaseTestrayContext implements TestrayContext {
 	}
 
 	@Override
+	public TestrayBuild getTestrayBuild() {
+		return getTestrayBuild(null);
+	}
+
+	@Override
 	public synchronized TestrayBuild getTestrayBuild(File testBaseDir) {
 		TestrayBuild testrayBuild = _testrayBuilds.get(testBaseDir);
 
@@ -383,6 +388,11 @@ public abstract class BaseTestrayContext implements TestrayContext {
 	}
 
 	@Override
+	public TestrayProductVersion getTestrayProductVersion() {
+		return getTestrayProductVersion(null);
+	}
+
+	@Override
 	public synchronized TestrayProductVersion getTestrayProductVersion(
 		File testBaseDir) {
 
@@ -511,6 +521,11 @@ public abstract class BaseTestrayContext implements TestrayContext {
 		}
 
 		return null;
+	}
+
+	@Override
+	public TestrayProject getTestrayProject() {
+		return getTestrayProject(null);
 	}
 
 	@Override
@@ -660,6 +675,11 @@ public abstract class BaseTestrayContext implements TestrayContext {
 	}
 
 	@Override
+	public TestrayRoutine getTestrayRoutine() {
+		return getTestrayRoutine(null);
+	}
+
+	@Override
 	public synchronized TestrayRoutine getTestrayRoutine(File testBaseDir) {
 		TestrayRoutine testrayRoutine = _testrayRoutines.get(testBaseDir);
 
@@ -780,6 +800,11 @@ public abstract class BaseTestrayContext implements TestrayContext {
 		}
 
 		throw new RuntimeException("Please set TESTRAY_ROUTINE_NAME");
+	}
+
+	@Override
+	public TestrayServer getTestrayServer() {
+		return getTestrayServer(null);
 	}
 
 	@Override

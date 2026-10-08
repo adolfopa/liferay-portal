@@ -40,6 +40,8 @@ public interface TestrayContext {
 
 	public PullRequest getPullRequest();
 
+	public TestrayBuild getTestrayBuild();
+
 	public TestrayBuild getTestrayBuild(File testBaseDir);
 
 	public Date getTestrayBuildDate();
@@ -52,11 +54,19 @@ public interface TestrayContext {
 
 	public Map<File, TestrayBuild> getTestrayBuildsMap();
 
+	public TestrayProductVersion getTestrayProductVersion();
+
 	public TestrayProductVersion getTestrayProductVersion(File testBaseDir);
+
+	public TestrayProject getTestrayProject();
 
 	public TestrayProject getTestrayProject(File testBaseDir);
 
+	public TestrayRoutine getTestrayRoutine();
+
 	public TestrayRoutine getTestrayRoutine(File testBaseDir);
+
+	public TestrayServer getTestrayServer();
 
 	public TestrayServer getTestrayServer(File testBaseDir);
 

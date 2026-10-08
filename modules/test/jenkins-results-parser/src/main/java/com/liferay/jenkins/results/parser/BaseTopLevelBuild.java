@@ -26,6 +26,8 @@ import com.liferay.jenkins.results.parser.failure.message.generator.RebaseFailur
 import com.liferay.jenkins.results.parser.failure.message.generator.RelevantRuleValidationFailureMessageGenerator;
 import com.liferay.jenkins.results.parser.persistent.resource.PersistentResourceFactory;
 import com.liferay.jenkins.results.parser.testray.TestrayBuild;
+import com.liferay.jenkins.results.parser.testray.TestrayContext;
+import com.liferay.jenkins.results.parser.testray.TestrayFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -247,6 +249,18 @@ public abstract class BaseTopLevelBuild
 			).put(
 				"totalDuration", getTotalDuration()
 			);
+		}
+
+		if (_testrayContext != null) {
+			Map<File, TestrayBuild> testrayBuildsMap =
+				_testrayContext.getTestrayBuildsMap();
+
+			TestrayBuild testrayBuild = testrayBuildsMap.get(null);
+
+			if (testrayBuild != null) {
+				buildReportJSONObject.put(
+					"testrayBuildURL", String.valueOf(testrayBuild.getURL()));
+			}
 		}
 
 		return buildReportJSONObject;
@@ -501,6 +515,18 @@ public abstract class BaseTopLevelBuild
 	@Override
 	public synchronized List<URL> getTestrayAttachmentURLs() {
 		return _testrayAttachmentURLs;
+	}
+
+	@Override
+	public synchronized TestrayContext getTestrayContext() {
+		if (_testrayContext != null) {
+			return _testrayContext;
+		}
+
+		_testrayContext = TestrayFactory.newTestrayContext(
+			getBuildDatabase(), this);
+
+		return _testrayContext;
 	}
 
 	public TimelineData getTimelineData() {
@@ -2527,6 +2553,7 @@ public abstract class BaseTopLevelBuild
 	private int _metricsHostPort;
 	private final boolean _sendBuildMetrics;
 	private final List<URL> _testrayAttachmentURLs = new ArrayList<>();
+	private TestrayContext _testrayContext;
 	private TopLevelBuildReport _topLevelBuildReport;
 
 }

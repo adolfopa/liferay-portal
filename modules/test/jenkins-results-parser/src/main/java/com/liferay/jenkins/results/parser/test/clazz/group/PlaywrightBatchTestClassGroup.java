@@ -346,49 +346,6 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 		return new ArrayList<>(playwrightJobProperties);
 	}
 
-	protected boolean isDatabaseTypeSupported(String projectName) {
-		String databaseTypes = _getDatabaseTypes(projectName);
-
-		if (JenkinsResultsParserUtil.isNullOrEmpty(databaseTypes)) {
-			return true;
-		}
-
-		String batchDatabaseType = null;
-
-		Matcher matcher = _batchNameDatabaseTypePattern.matcher(getBatchName());
-
-		if (matcher.find()) {
-			batchDatabaseType = matcher.group("databaseType");
-		}
-
-		boolean databaseTypeSupported = false;
-
-		databaseTypes = databaseTypes.trim();
-
-		for (String databaseType : databaseTypes.split("\\s*,\\s*")) {
-			Matcher databaseTypeMatcher = _databaseTypePattern.matcher(
-				databaseType);
-
-			if (!databaseTypeMatcher.matches()) {
-				System.err.println(
-					JenkinsResultsParserUtil.combine(
-						"[", getBatchName(),
-						"] Ignoring unknown database type ", databaseType,
-						" in Playwright project ", projectName,
-						". Valid database types are ",
-						_DATABASE_TYPE_REGEX.replace("|", ", "), "."));
-
-				continue;
-			}
-
-			if (databaseType.equalsIgnoreCase(batchDatabaseType)) {
-				databaseTypeSupported = true;
-			}
-		}
-
-		return databaseTypeSupported;
-	}
-
 	protected void removeProjectNames(String jobPropertyValue) {
 		String[] excludesProjectNames = jobPropertyValue.split("\\s*,\\s*");
 
@@ -416,7 +373,7 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 		}
 
 		for (String projectName : _projectNames) {
-			if (!isDatabaseTypeSupported(projectName)) {
+			if (!_isDatabaseTypeSupported(projectName)) {
 				System.out.println(
 					JenkinsResultsParserUtil.combine(
 						"[", getBatchName(), "] Skipping ", projectName,
@@ -886,6 +843,49 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 		}
 
 		return false;
+	}
+
+	private boolean _isDatabaseTypeSupported(String projectName) {
+		String databaseTypes = _getDatabaseTypes(projectName);
+
+		if (JenkinsResultsParserUtil.isNullOrEmpty(databaseTypes)) {
+			return true;
+		}
+
+		String batchDatabaseType = null;
+
+		Matcher matcher = _batchNameDatabaseTypePattern.matcher(getBatchName());
+
+		if (matcher.find()) {
+			batchDatabaseType = matcher.group("databaseType");
+		}
+
+		boolean databaseTypeSupported = false;
+
+		databaseTypes = databaseTypes.trim();
+
+		for (String databaseType : databaseTypes.split("\\s*,\\s*")) {
+			Matcher databaseTypeMatcher = _databaseTypePattern.matcher(
+				databaseType);
+
+			if (!databaseTypeMatcher.matches()) {
+				System.err.println(
+					JenkinsResultsParserUtil.combine(
+						"[", getBatchName(),
+						"] Ignoring unknown database type ", databaseType,
+						" in Playwright project ", projectName,
+						". Valid database types are ",
+						_DATABASE_TYPE_REGEX.replace("|", ", "), "."));
+
+				continue;
+			}
+
+			if (databaseType.equalsIgnoreCase(batchDatabaseType)) {
+				databaseTypeSupported = true;
+			}
+		}
+
+		return databaseTypeSupported;
 	}
 
 	private boolean _isPlaywrightInYarnWorkspace() throws IOException {

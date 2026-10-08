@@ -209,7 +209,7 @@ public class AudiencesCriteriaProviderTest {
 
 		_assertSegmentsAudiencesCriteria(
 			_getAudiencesCriteria(audiencesCriterias, "real_time_segments"),
-			"Real-Time Segments", realTimeSegmentsEntry);
+			"Real Time Segments", realTimeSegmentsEntry);
 		_assertSegmentsAudiencesCriteria(
 			_getAudiencesCriteria(audiencesCriterias, "batch_segments"),
 			"Batch Segments", batchSegmentsEntry);

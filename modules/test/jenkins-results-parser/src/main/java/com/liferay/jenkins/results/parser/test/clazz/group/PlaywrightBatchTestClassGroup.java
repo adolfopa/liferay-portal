@@ -376,8 +376,9 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 			if (!_isDatabaseTypeSupported(projectName)) {
 				System.out.println(
 					JenkinsResultsParserUtil.combine(
-						"[", getBatchName(), "] Skipping ", projectName,
-						" because its database types do not include the ",
+						"[", getBatchName(), "] Skipping Playwright project \"",
+						projectName,
+						"\" because its database types do not include the ",
 						"batch database type"));
 
 				continue;
@@ -881,10 +882,10 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 				System.err.println(
 					JenkinsResultsParserUtil.combine(
 						"[", getBatchName(),
-						"] Ignoring unknown database type ", databaseType,
-						" in Playwright project ", projectName,
-						". Valid database types are ",
-						_DATABASE_TYPE_REGEX.replace("|", ", "), "."));
+						"] Ignoring unknown database type \"", databaseType,
+						"\" in Playwright project \"", projectName,
+						"\" because valid database types are ",
+						_DATABASE_TYPE_REGEX.replace("|", ", ")));
 
 				continue;
 			}

@@ -577,7 +577,7 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 		}
 	}
 
-	private File _getConfigFile(String projectName) {
+	private File _getConfigFile(String projectName) throws IOException {
 		if (_configFiles == null) {
 			_configFiles = new HashMap<>();
 
@@ -587,7 +587,7 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 						"config\\.ts")) {
 
 				Matcher matcher = _configProjectNamePattern.matcher(
-					_read(configFile));
+					JenkinsResultsParserUtil.read(configFile));
 
 				while (matcher.find()) {
 					_configFiles.put(matcher.group("projectName"), configFile);
@@ -598,7 +598,7 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 		return _configFiles.get(projectName);
 	}
 
-	private String _getDatabaseTypes(String projectName) {
+	private String _getDatabaseTypes(String projectName) throws IOException {
 		File configFile = _getConfigFile(projectName);
 
 		if (configFile == null) {
@@ -612,7 +612,8 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 			return databaseTypes;
 		}
 
-		Matcher matcher = _configTestDirPattern.matcher(_read(configFile));
+		Matcher matcher = _configTestDirPattern.matcher(
+			JenkinsResultsParserUtil.read(configFile));
 
 		if (!matcher.find()) {
 			return null;
@@ -788,10 +789,11 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 	}
 
 	private String _getTestProperty(File dir, String propertyName) {
+		Properties testProperties = JenkinsResultsParserUtil.getProperties(
+			new File(dir, "test.properties"));
+
 		return JenkinsResultsParserUtil.getProperty(
-			JenkinsResultsParserUtil.getProperties(
-				new File(dir, "test.properties")),
-			propertyName);
+			testProperties, propertyName);
 	}
 
 	private boolean _hasRunPlaywrightGradleTask() {
@@ -846,7 +848,14 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 	}
 
 	private boolean _isDatabaseTypeSupported(String projectName) {
-		String databaseTypes = _getDatabaseTypes(projectName);
+		String databaseTypes = null;
+
+		try {
+			databaseTypes = _getDatabaseTypes(projectName);
+		}
+		catch (IOException ioException) {
+			throw new RuntimeException(ioException);
+		}
 
 		if (JenkinsResultsParserUtil.isNullOrEmpty(databaseTypes)) {
 			return true;
@@ -860,9 +869,9 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 			batchDatabaseType = matcher.group("databaseType");
 		}
 
-		boolean databaseTypeSupported = false;
-
 		databaseTypes = databaseTypes.trim();
+
+		boolean databaseTypeSupported = false;
 
 		for (String databaseType : databaseTypes.split("\\s*,\\s*")) {
 			Matcher databaseTypeMatcher = _databaseTypePattern.matcher(
@@ -1197,15 +1206,6 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 							ignored, specTitle, testClass));
 				}
 			}
-		}
-	}
-
-	private String _read(File file) {
-		try {
-			return JenkinsResultsParserUtil.read(file);
-		}
-		catch (IOException ioException) {
-			throw new RuntimeException(ioException);
 		}
 	}
 

@@ -204,7 +204,7 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 
 	@Test
 	public void testFetchQueueItem() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		mockURLReaders();
 
 		String executableURL =
 			"https://" + RandomTestUtil.randomString() + "/job/" +
@@ -221,16 +221,14 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 				).put(
 					"url", executableURL
 				)
-			),
-			urlReader);
+			));
 
 		_testFetchQueueItem(
 			false, null,
 			new JSONObject(
 			).put(
 				"why", RandomTestUtil.randomString()
-			),
-			urlReader);
+			));
 		_testFetchQueueItem(
 			true, executableURL,
 			new JSONObject(
@@ -242,13 +240,12 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 				).put(
 					"url", executableURL
 				)
-			),
-			urlReader);
+			));
 	}
 
 	@Test
 	public void testFetchQueueItemFailure() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		mockURLReaders();
 
 		long queueId = _getQueueId();
 
@@ -257,7 +254,7 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 		IOException ioException1 = new IOException(
 			RandomTestUtil.randomString());
 
-		setUrlReaderException(ioException1, queueItemAPIURL, urlReader);
+		setURLReaderException(ioException1, queueItemAPIURL);
 
 		IOException ioException2 = Assert.assertThrows(
 			IOException.class, () -> _jenkinsMaster.fetchQueueItem(queueId));
@@ -270,13 +267,13 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 
 	@Test
 	public void testFetchQueueItemNotFound() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		mockURLReaders();
 
 		long queueId = _getQueueId();
 
 		String queueItemAPIURL = _getQueueItemAPIURL(queueId);
 
-		setUrlReaderOutput("", queueItemAPIURL, urlReader);
+		setURLReaderOutput("", queueItemAPIURL);
 
 		Assert.assertNull(_jenkinsMaster.fetchQueueItem(queueId));
 
@@ -284,12 +281,12 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 
 		queueItemAPIURL = _getQueueItemAPIURL(queueId);
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			new JSONObject(
 			).put(
 				"why", RandomTestUtil.randomString()
 			).toString(),
-			queueItemAPIURL, urlReader);
+			queueItemAPIURL);
 
 		Assert.assertNull(_jenkinsMaster.fetchQueueItem(queueId));
 
@@ -297,9 +294,8 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 
 		queueItemAPIURL = _getQueueItemAPIURL(queueId);
 
-		setUrlReaderException(
-			new FileNotFoundException(queueItemAPIURL), queueItemAPIURL,
-			urlReader);
+		setURLReaderException(
+			new FileNotFoundException(queueItemAPIURL), queueItemAPIURL);
 
 		Assert.assertNull(_jenkinsMaster.fetchQueueItem(queueId));
 	}
@@ -393,9 +389,9 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 
 	@Test
 	public void testGetQueueItems() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		mockURLReaders();
 
-		_setQueueItemIds(urlReader, _getQueueId(), _getQueueId());
+		_setQueueItemIds(_getQueueId(), _getQueueId());
 
 		List<JenkinsMaster.QueueItem> queueItems =
 			_jenkinsMaster.getQueueItems();
@@ -410,7 +406,7 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 		Assert.assertEquals(
 			cachedQueueItems.toString(), 2, cachedQueueItems.size());
 
-		_setQueueItemIds(urlReader, _getQueueId());
+		_setQueueItemIds(_getQueueId());
 
 		List<JenkinsMaster.QueueItem> refreshedQueueItems =
 			_jenkinsMaster.getQueueItems();
@@ -423,14 +419,14 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 
 	@Test
 	public void testGetQueueItemsFailure() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		mockURLReaders();
 
 		ReflectionTestUtil.setFieldValue(
 			_jenkinsMaster, "_queueUpdateTime", null);
 
-		setUrlReaderException(
+		setURLReaderException(
 			new IOException(RandomTestUtil.randomString()),
-			"http://test-9-1/queue/api/json", urlReader);
+			"http://test-9-1/queue/api/json");
 
 		Assert.assertThrows(
 			RuntimeException.class, _jenkinsMaster::getQueueItems);
@@ -607,9 +603,7 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 		return executionRequest.getCommands()[0];
 	}
 
-	private void _setQueueItemIds(UrlReader urlReader, long... queueIds)
-		throws Exception {
-
+	private void _setQueueItemIds(long... queueIds) throws Exception {
 		JSONArray itemsJSONArray = new JSONArray();
 
 		for (long queueId : queueIds) {
@@ -620,12 +614,12 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 				));
 		}
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			new JSONObject(
 			).put(
 				"items", itemsJSONArray
 			).toString(),
-			"http://test-9-1/queue/api/json", urlReader);
+			"http://test-9-1/queue/api/json");
 
 		ReflectionTestUtil.setFieldValue(
 			_jenkinsMaster, "_queueUpdateTime", null);
@@ -653,16 +647,16 @@ public class JenkinsMasterTest extends com.liferay.jenkins.results.parser.Test {
 
 	private void _testFetchQueueItem(
 			boolean cancelled, String executableURL,
-			JSONObject queueItemJSONObject, UrlReader urlReader)
+			JSONObject queueItemJSONObject)
 		throws Exception {
 
 		long queueId = _getQueueId();
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			queueItemJSONObject.put(
 				"id", queueId
 			).toString(),
-			_getQueueItemAPIURL(queueId), urlReader);
+			_getQueueItemAPIURL(queueId));
 
 		JenkinsMaster.QueueItem queueItem = _jenkinsMaster.fetchQueueItem(
 			queueId);

@@ -890,7 +890,7 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 				continue;
 			}
 
-			if (databaseType.equalsIgnoreCase(batchDatabaseType)) {
+			if (databaseType.equals(batchDatabaseType)) {
 				databaseTypeSupported = true;
 			}
 		}
@@ -1250,7 +1250,7 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 	private static final Pattern _configTestDirPattern = Pattern.compile(
 		"testDir:\\s*'(?<testDir>[^']+)'");
 	private static final Pattern _databaseTypePattern = Pattern.compile(
-		_DATABASE_TYPE_REGEX, Pattern.CASE_INSENSITIVE);
+		_DATABASE_TYPE_REGEX);
 	private static final Pattern _npmCommandOutputPattern = Pattern.compile(
 		"^\\s*(\\{)", Pattern.MULTILINE);
 	private static final Pattern _playwrightFileNamePattern = Pattern.compile(

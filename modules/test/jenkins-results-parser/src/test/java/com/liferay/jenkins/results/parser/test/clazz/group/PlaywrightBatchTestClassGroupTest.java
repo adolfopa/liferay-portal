@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,6 +49,22 @@ import org.mockito.Mockito;
  */
 public class PlaywrightBatchTestClassGroupTest
 	extends com.liferay.jenkins.results.parser.Test {
+
+	@After
+	@Override
+	public void tearDown() {
+		super.tearDown();
+
+		AtomicBoolean playwrightJSONObjectsLoaded =
+			ReflectionTestUtil.getFieldValue(
+				PlaywrightBatchTestClassGroup.class,
+				"_playwrightJSONObjectsLoaded");
+
+		playwrightJSONObjectsLoaded.set(false);
+
+		ReflectionTestUtil.setFieldValue(
+			PlaywrightBatchTestClassGroup.class, "_playwrightJSONObject", null);
+	}
 
 	@Test
 	public void testIsDatabaseTypeSupported() throws Exception {
@@ -69,9 +86,6 @@ public class PlaywrightBatchTestClassGroupTest
 			"playwright-js-tomcat101-db2111", null, false,
 			"database.types=mysql,postgresql");
 		_testIsDatabaseTypeSupported(
-			"playwright-js-tomcat101-mysql84",
-			"database.types=MySQL,postgresql", false, null);
-		_testIsDatabaseTypeSupported(
 			"playwright-js-tomcat101-mysql84", "database.types=mysql", true,
 			null);
 		_testIsDatabaseTypeSupported(
@@ -83,9 +97,6 @@ public class PlaywrightBatchTestClassGroupTest
 		_testIsDatabaseTypeSupported(
 			"playwright-js-tomcat101-oracle193",
 			"database.types=db2,mysql,oracle", true, null);
-		_testIsDatabaseTypeSupported(
-			"playwright-js-tomcat101-postgresql163",
-			"database.types=MySQL,postgresql", true, null);
 		_testIsDatabaseTypeSupported(
 			"playwright-js-tomcat101-postgresql163", "database.types=db2",
 			false, "database.types=mysql,postgresql");
@@ -101,6 +112,15 @@ public class PlaywrightBatchTestClassGroupTest
 		_testIsDatabaseTypeSupported(
 			"playwright-js-tomcat101-postgresql163_stable",
 			"database.types=mysql", false, null);
+	}
+
+	@Test
+	public void testIsDatabaseTypeSupportedFailure() throws Exception {
+		_testIsDatabaseTypeSupportedFailure(
+			"playwright-js-tomcat101-mysql84", "database.types=MySQL");
+		_testIsDatabaseTypeSupportedFailure(
+			"playwright-js-tomcat101-postgresql163",
+			"database.types=MySQL,postgresql");
 	}
 
 	@Test
@@ -373,6 +393,13 @@ public class PlaywrightBatchTestClassGroupTest
 
 		File workingDirectory = temporaryFolder.newFolder();
 
+		JenkinsResultsParserUtil.write(
+			new File(workingDirectory, "test.properties"),
+			JenkinsResultsParserUtil.combine(
+				"database.db2.version=11.5\n", "database.mysql.version=8.4\n",
+				"database.oracle.version=19.3\n",
+				"database.postgresql.version=16.3"));
+
 		File playwrightDir = new File(
 			workingDirectory, "modules/test/playwright");
 
@@ -452,6 +479,24 @@ public class PlaywrightBatchTestClassGroupTest
 			playwrightBatchTestClassGroup.getTestClasses();
 
 		Assert.assertEquals(batchName, expected, !testClasses.isEmpty());
+	}
+
+	private void _testIsDatabaseTypeSupportedFailure(
+			String batchName, String configDirTestProperties)
+		throws Exception {
+
+		try {
+			_testIsDatabaseTypeSupported(
+				batchName, configDirTestProperties, false, null);
+
+			Assert.fail(batchName);
+		}
+		catch (RuntimeException runtimeException) {
+			String message = runtimeException.getMessage();
+
+			Assert.assertTrue(
+				message, message.startsWith("Invalid database type \"MySQL\""));
+		}
 	}
 
 	private void _testLoadPlaywrightJSONObjects(

@@ -71,9 +71,9 @@ public class ExternalStatusMonitorTest
 
 		MonitorResult monitorResult = _execute();
 
-		testEquals(MonitorResult.Status.UNKNOWN, monitorResult.getStatus());
 		testEquals(
 			"Unable to read status page " + _URL, monitorResult.getMessage());
+		testEquals(MonitorResult.Status.UNKNOWN, monitorResult.getStatus());
 	}
 
 	@Test
@@ -117,13 +117,13 @@ public class ExternalStatusMonitorTest
 
 		MonitorResult monitorResult = _execute();
 
-		testEquals(MonitorResult.Status.CRITICAL, monitorResult.getStatus());
 		testEquals(
 			JenkinsResultsParserUtil.combine(
 				"Status page ", _URL, " reports ", _COMPONENT_NAME_1,
 				": degraded_performance, ", _COMPONENT_NAME_2,
 				": major_outage"),
 			monitorResult.getMessage());
+		testEquals(MonitorResult.Status.CRITICAL, monitorResult.getStatus());
 	}
 
 	@Test
@@ -152,10 +152,10 @@ public class ExternalStatusMonitorTest
 
 		MonitorResult monitorResult = _execute();
 
-		testEquals(MonitorResult.Status.OK, monitorResult.getStatus());
 		testEquals(
 			JenkinsResultsParserUtil.combine("Status page ", _URL, " is OK"),
 			monitorResult.getMessage());
+		testEquals(MonitorResult.Status.OK, monitorResult.getStatus());
 
 		verifyUrlReaderRead(false, 0, 13500, urlReader);
 	}
@@ -168,9 +168,9 @@ public class ExternalStatusMonitorTest
 
 		MonitorResult monitorResult = _execute();
 
-		testEquals(MonitorResult.Status.UNKNOWN, monitorResult.getStatus());
 		testEquals(
 			"Unable to read status page " + _URL, monitorResult.getMessage());
+		testEquals(MonitorResult.Status.UNKNOWN, monitorResult.getStatus());
 
 		verifyUrlReaderRead(false, 0, 2, 13500, urlReader);
 	}
@@ -188,10 +188,10 @@ public class ExternalStatusMonitorTest
 
 		MonitorResult monitorResult = _execute();
 
-		testEquals(MonitorResult.Status.OK, monitorResult.getStatus());
 		testEquals(
 			JenkinsResultsParserUtil.combine("Status page ", _URL, " is OK"),
 			monitorResult.getMessage());
+		testEquals(MonitorResult.Status.OK, monitorResult.getStatus());
 
 		verifyUrlReaderRead(false, 0, 2, 13500, urlReader);
 	}
@@ -221,12 +221,12 @@ public class ExternalStatusMonitorTest
 
 		MonitorResult monitorResult = _execute();
 
-		testEquals(MonitorResult.Status.CRITICAL, monitorResult.getStatus());
 		testEquals(
 			JenkinsResultsParserUtil.combine(
 				"Status page ", _URL, " reports ", _COMPONENT_NAME_1,
 				": major_outage, ", _COMPONENT_NAME_2, ": missing"),
 			monitorResult.getMessage());
+		testEquals(MonitorResult.Status.CRITICAL, monitorResult.getStatus());
 	}
 
 	@Test
@@ -235,7 +235,8 @@ public class ExternalStatusMonitorTest
 			"monitor[a].parameter[components]", " ");
 		_testExternalStatusMonitorInvalidProperty(
 			"monitor[a].parameter[components]",
-			_COMPONENT_NAME_1 + ",," + _COMPONENT_NAME_2);
+			JenkinsResultsParserUtil.combine(
+				_COMPONENT_NAME_1, ",,", _COMPONENT_NAME_2));
 		_testExternalStatusMonitorInvalidProperty(
 			"monitor[a].parameter[url]",
 			"file:///" + RandomTestUtil.randomString());
@@ -286,7 +287,8 @@ public class ExternalStatusMonitorTest
 
 		monitorProperties.setProperty(
 			"monitor[a].parameter[components]",
-			_COMPONENT_NAME_2 + "," + _COMPONENT_NAME_1);
+			JenkinsResultsParserUtil.combine(
+				_COMPONENT_NAME_2, ",", _COMPONENT_NAME_1));
 		monitorProperties.setProperty("monitor[a].parameter[url]", _URL);
 		monitorProperties.setProperty("monitor[a].type", "external-status");
 
@@ -323,12 +325,12 @@ public class ExternalStatusMonitorTest
 
 		MonitorResult monitorResult = _execute();
 
-		testEquals(status, monitorResult.getStatus());
 		testEquals(
 			JenkinsResultsParserUtil.combine(
 				"Status page ", _URL, " reports ", _COMPONENT_NAME_1, ": ",
 				componentStatusString),
 			monitorResult.getMessage());
+		testEquals(status, monitorResult.getStatus());
 	}
 
 	private void _testExecuteDuplicateComponent(
@@ -342,11 +344,11 @@ public class ExternalStatusMonitorTest
 
 		MonitorResult monitorResult = _execute();
 
-		testEquals(status, monitorResult.getStatus());
 		testEquals(
 			JenkinsResultsParserUtil.combine(
 				"Status page ", _URL, " reports ", componentMessages),
 			monitorResult.getMessage());
+		testEquals(status, monitorResult.getStatus());
 	}
 
 	private void _testExecuteMalformedComponent(
@@ -359,11 +361,11 @@ public class ExternalStatusMonitorTest
 
 		MonitorResult monitorResult = _execute();
 
-		testEquals(MonitorResult.Status.CRITICAL, monitorResult.getStatus());
 		testEquals(
 			JenkinsResultsParserUtil.combine(
 				"Status page ", _URL, " reports ", componentMessages),
 			monitorResult.getMessage());
+		testEquals(MonitorResult.Status.CRITICAL, monitorResult.getStatus());
 	}
 
 	private void _testExecuteNoComponents(String statusPageJSON)
@@ -375,11 +377,11 @@ public class ExternalStatusMonitorTest
 
 		MonitorResult monitorResult = _execute();
 
-		testEquals(MonitorResult.Status.UNKNOWN, monitorResult.getStatus());
 		testEquals(
 			"Unable to determine the component statuses from status page " +
 				_URL,
 			monitorResult.getMessage());
+		testEquals(MonitorResult.Status.UNKNOWN, monitorResult.getStatus());
 	}
 
 	private void _testExecuteUnknownComponentStatus(
@@ -396,12 +398,12 @@ public class ExternalStatusMonitorTest
 
 		MonitorResult monitorResult = _execute();
 
-		testEquals(MonitorResult.Status.UNKNOWN, monitorResult.getStatus());
 		testEquals(
 			JenkinsResultsParserUtil.combine(
 				"Status page ", _URL, " reports ", _COMPONENT_NAME_2, ": ",
 				componentStatusString),
 			monitorResult.getMessage());
+		testEquals(MonitorResult.Status.UNKNOWN, monitorResult.getStatus());
 	}
 
 	private void _testExternalStatusMonitorExpectedIllegalArgumentException(

@@ -872,33 +872,38 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 			return true;
 		}
 
-		String batchDatabaseType = null;
+		Set<String> validDatabaseTypes = new HashSet<>();
 
-		Matcher matcher = _batchNameDatabaseTypePattern.matcher(getBatchName());
+		Properties testProperties =
+			portalGitWorkingDirectory.getTestProperties();
 
-		if (matcher.find()) {
-			batchDatabaseType = matcher.group("databaseType");
+		for (String propertyName : testProperties.stringPropertyNames()) {
+			Matcher matcher = _databaseVersionPropertyNamePattern.matcher(
+				propertyName);
+
+			if (matcher.matches()) {
+				validDatabaseTypes.add(matcher.group("databaseType"));
+			}
 		}
 
 		boolean databaseTypeSupported = false;
 
 		for (String databaseType : databaseTypes) {
-			Matcher databaseTypeMatcher = _databaseTypePattern.matcher(
-				databaseType);
-
-			if (!databaseTypeMatcher.matches()) {
-				System.err.println(
+			if (!validDatabaseTypes.contains(databaseType)) {
+				throw new RuntimeException(
 					JenkinsResultsParserUtil.combine(
-						"[", getBatchName(),
-						"] Ignoring unknown database type \"", databaseType,
-						"\" in Playwright project \"", projectName,
-						"\" because valid database types are ",
-						_DATABASE_TYPE_REGEX.replace("|", ", ")));
-
-				continue;
+						"Invalid database type \"", databaseType,
+						"\" in Playwright project \"", projectName, "\""));
 			}
 
-			if (databaseType.equals(batchDatabaseType)) {
+			Pattern batchNameDatabaseTypePattern = Pattern.compile(
+				JenkinsResultsParserUtil.combine(
+					"-", databaseType, "\\d*(?=[-_]|$)"));
+
+			Matcher matcher = batchNameDatabaseTypePattern.matcher(
+				getBatchName());
+
+			if (matcher.find()) {
 				databaseTypeSupported = true;
 			}
 		}
@@ -1246,19 +1251,12 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 			"Playwright batch creation failure", "Liferay Playwright");
 	}
 
-	private static final String _DATABASE_TYPE_REGEX =
-		"db2|hypersonic|mariadb|mysql|oracle|postgresql|sqlserver";
-
-	private static final Pattern _batchNameDatabaseTypePattern =
-		Pattern.compile(
-			JenkinsResultsParserUtil.combine(
-				"-(?<databaseType>", _DATABASE_TYPE_REGEX, ")\\d*(?=[-_]|$)"));
 	private static final Pattern _configProjectNamePattern = Pattern.compile(
 		"name:\\s*'(?<projectName>[^']+)'");
 	private static final Pattern _configTestDirPattern = Pattern.compile(
 		"testDir:\\s*'(?<testDir>[^']+)'");
-	private static final Pattern _databaseTypePattern = Pattern.compile(
-		_DATABASE_TYPE_REGEX);
+	private static final Pattern _databaseVersionPropertyNamePattern =
+		Pattern.compile("database\\.(?<databaseType>[^.]+)\\.version");
 	private static final Pattern _npmCommandOutputPattern = Pattern.compile(
 		"^\\s*(\\{)", Pattern.MULTILINE);
 	private static final Pattern _playwrightFileNamePattern = Pattern.compile(

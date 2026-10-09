@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -599,17 +600,35 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 		return _configFiles.get(projectName);
 	}
 
-	private String _getDatabaseTypes(String projectName) throws IOException {
+	private List<String> _getDatabaseTypes(File dir) {
+		Properties testProperties = JenkinsResultsParserUtil.getProperties(
+			new File(dir, "test.properties"));
+
+		String propertyValue = JenkinsResultsParserUtil.getProperty(
+			testProperties, "database.types");
+
+		if (JenkinsResultsParserUtil.isNullOrEmpty(propertyValue)) {
+			return Collections.emptyList();
+		}
+
+		propertyValue = propertyValue.trim();
+
+		return Arrays.asList(propertyValue.split("\\s*,\\s*"));
+	}
+
+	private List<String> _getDatabaseTypes(String projectName)
+		throws IOException {
+
 		File configFile = _getConfigFile(projectName);
 
 		if (configFile == null) {
-			return null;
+			return Collections.emptyList();
 		}
 
-		String databaseTypes = _getTestProperty(
-			configFile.getParentFile(), "database.types");
+		List<String> databaseTypes = _getDatabaseTypes(
+			configFile.getParentFile());
 
-		if (!JenkinsResultsParserUtil.isNullOrEmpty(databaseTypes)) {
+		if (!databaseTypes.isEmpty()) {
 			return databaseTypes;
 		}
 
@@ -617,12 +636,11 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 			JenkinsResultsParserUtil.read(configFile));
 
 		if (!matcher.find()) {
-			return null;
+			return Collections.emptyList();
 		}
 
-		return _getTestProperty(
-			new File(getPlaywrightBaseDir(), matcher.group("testDir")),
-			"database.types");
+		return _getDatabaseTypes(
+			new File(getPlaywrightBaseDir(), matcher.group("testDir")));
 	}
 
 	private String _getDefaultProjectNames() {
@@ -789,14 +807,6 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 		return new ArrayList<>(testClassesMap.values());
 	}
 
-	private String _getTestProperty(File dir, String propertyName) {
-		Properties testProperties = JenkinsResultsParserUtil.getProperties(
-			new File(dir, "test.properties"));
-
-		return JenkinsResultsParserUtil.getProperty(
-			testProperties, propertyName);
-	}
-
 	private boolean _hasRunPlaywrightGradleTask() {
 		if (_hasRunPlaywrightGradleTask != null) {
 			return _hasRunPlaywrightGradleTask;
@@ -849,7 +859,7 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 	}
 
 	private boolean _isDatabaseTypeSupported(String projectName) {
-		String databaseTypes = null;
+		List<String> databaseTypes = null;
 
 		try {
 			databaseTypes = _getDatabaseTypes(projectName);
@@ -858,7 +868,7 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 			throw new RuntimeException(ioException);
 		}
 
-		if (JenkinsResultsParserUtil.isNullOrEmpty(databaseTypes)) {
+		if (databaseTypes.isEmpty()) {
 			return true;
 		}
 
@@ -870,11 +880,9 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 			batchDatabaseType = matcher.group("databaseType");
 		}
 
-		databaseTypes = databaseTypes.trim();
-
 		boolean databaseTypeSupported = false;
 
-		for (String databaseType : databaseTypes.split("\\s*,\\s*")) {
+		for (String databaseType : databaseTypes) {
 			Matcher databaseTypeMatcher = _databaseTypePattern.matcher(
 				databaseType);
 

@@ -366,6 +366,26 @@ public class Test {
 		setURLReaderOutput(0, standardOut, url);
 	}
 
+	protected void setURLReaderOutputAfterException(
+			IOException ioException, String standardOut, String url)
+		throws Exception {
+
+		for (BaseURLReader<?> baseURLReader : _baseURLReaders) {
+			Mockito.doThrow(
+				ioException
+			).doAnswer(
+				invocation -> mockURLConnection(standardOut, 200)
+			).when(
+				baseURLReader
+			).openURLConnection(
+				Mockito.any(), Mockito.anyBoolean(), Mockito.any(),
+				Mockito.any(), Mockito.anyBoolean(), Mockito.anyInt(),
+				Mockito.argThat(
+					readURL -> (readURL != null) && readURL.contains(url))
+			);
+		}
+	}
+
 	protected void setURLReaderResponseCode(int responseCode, String url)
 		throws Exception {
 

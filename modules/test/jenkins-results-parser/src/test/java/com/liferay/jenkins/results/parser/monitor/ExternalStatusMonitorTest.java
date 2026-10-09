@@ -7,7 +7,6 @@ package com.liferay.jenkins.results.parser.monitor;
 
 import com.liferay.jenkins.results.parser.JenkinsResultsParserUtil;
 import com.liferay.jenkins.results.parser.RandomTestUtil;
-import com.liferay.jenkins.results.parser.UrlReader;
 
 import java.io.IOException;
 
@@ -29,13 +28,13 @@ public class ExternalStatusMonitorTest
 
 	@Test
 	public void testExecuteComponentNamesWithWhitespace() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		mockURLReaders();
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			_newStatusPageStandardOut(
 				_newComponentJSONObject(_COMPONENT_NAME_1, "major_outage"),
 				_newComponentJSONObject(_COMPONENT_NAME_2, "operational")),
-			_URL, urlReader);
+			_URL);
 
 		Properties monitorProperties = _newMonitorProperties();
 
@@ -101,9 +100,9 @@ public class ExternalStatusMonitorTest
 
 	@Test
 	public void testExecuteInvalidJSON() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		mockURLReaders();
 
-		setUrlReaderOutput(RandomTestUtil.randomString(), _URL, urlReader);
+		setURLReaderOutput(RandomTestUtil.randomString(), _URL);
 
 		MonitorResult monitorResult = _execute();
 
@@ -142,14 +141,14 @@ public class ExternalStatusMonitorTest
 
 	@Test
 	public void testExecuteMostSevere() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		mockURLReaders();
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			_newStatusPageStandardOut(
 				_newComponentJSONObject(_COMPONENT_NAME_2, "major_outage"),
 				_newComponentJSONObject(
 					_COMPONENT_NAME_1, "degraded_performance")),
-			_URL, urlReader);
+			_URL);
 
 		MonitorResult monitorResult = _execute();
 
@@ -176,15 +175,15 @@ public class ExternalStatusMonitorTest
 
 	@Test
 	public void testExecuteOK() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		mockURLReaders();
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			_newStatusPageStandardOut(
 				_newComponentJSONObject(_COMPONENT_NAME_1, "operational"),
 				_newComponentJSONObject(_COMPONENT_NAME_2, "operational"),
 				_newComponentJSONObject(
 					RandomTestUtil.randomString(), "major_outage")),
-			_URL, urlReader);
+			_URL);
 
 		MonitorResult monitorResult = _execute();
 
@@ -193,14 +192,14 @@ public class ExternalStatusMonitorTest
 			monitorResult.getMessage());
 		testEquals(MonitorResult.Status.OK, monitorResult.getStatus());
 
-		verifyUrlReaderRead(false, 0, 13500, urlReader);
+		verifyURLReaderRead(false, 1, 13500);
 	}
 
 	@Test
 	public void testExecuteReadFailure() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		mockURLReaders();
 
-		setUrlReaderException(new IOException(), _URL, urlReader);
+		setURLReaderException(new IOException(), _URL);
 
 		MonitorResult monitorResult = _execute();
 
@@ -208,19 +207,19 @@ public class ExternalStatusMonitorTest
 			"Unable to read status page " + _URL, monitorResult.getMessage());
 		testEquals(MonitorResult.Status.UNKNOWN, monitorResult.getStatus());
 
-		verifyUrlReaderRead(false, 0, 2, 13500, urlReader);
+		verifyURLReaderAttemptsCount(2, _URL);
 	}
 
 	@Test
 	public void testExecuteRetry() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		mockURLReaders();
 
-		setUrlReaderOutputAfterException(
+		setURLReaderOutputAfterException(
 			new IOException(),
 			_newStatusPageStandardOut(
 				_newComponentJSONObject(_COMPONENT_NAME_1, "operational"),
 				_newComponentJSONObject(_COMPONENT_NAME_2, "operational")),
-			_URL, urlReader);
+			_URL);
 
 		MonitorResult monitorResult = _execute();
 
@@ -229,7 +228,7 @@ public class ExternalStatusMonitorTest
 			monitorResult.getMessage());
 		testEquals(MonitorResult.Status.OK, monitorResult.getStatus());
 
-		verifyUrlReaderRead(false, 0, 2, 13500, urlReader);
+		verifyURLReaderAttemptsCount(2, _URL);
 	}
 
 	@Test
@@ -248,12 +247,12 @@ public class ExternalStatusMonitorTest
 
 	@Test
 	public void testExecuteUnknownComponentStatusWithOutage() throws Exception {
-		UrlReader urlReader = mockUrlReader();
+		mockURLReaders();
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			_newStatusPageStandardOut(
 				_newComponentJSONObject(_COMPONENT_NAME_1, "major_outage")),
-			_URL, urlReader);
+			_URL);
 
 		MonitorResult monitorResult = _execute();
 
@@ -351,14 +350,14 @@ public class ExternalStatusMonitorTest
 			String componentStatusString, MonitorResult.Status status)
 		throws Exception {
 
-		UrlReader urlReader = mockUrlReader();
+		mockURLReaders();
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			_newStatusPageStandardOut(
 				_newComponentJSONObject(
 					_COMPONENT_NAME_1, componentStatusString),
 				_newComponentJSONObject(_COMPONENT_NAME_2, "operational")),
-			_URL, urlReader);
+			_URL);
 
 		MonitorResult monitorResult = _execute();
 
@@ -375,9 +374,9 @@ public class ExternalStatusMonitorTest
 			String statusPageStandardOut)
 		throws Exception {
 
-		UrlReader urlReader = mockUrlReader();
+		mockURLReaders();
 
-		setUrlReaderOutput(statusPageStandardOut, _URL, urlReader);
+		setURLReaderOutput(statusPageStandardOut, _URL);
 
 		MonitorResult monitorResult = _execute();
 
@@ -392,9 +391,9 @@ public class ExternalStatusMonitorTest
 			String componentMessages, String statusPageStandardOut)
 		throws Exception {
 
-		UrlReader urlReader = mockUrlReader();
+		mockURLReaders();
 
-		setUrlReaderOutput(statusPageStandardOut, _URL, urlReader);
+		setURLReaderOutput(statusPageStandardOut, _URL);
 
 		MonitorResult monitorResult = _execute();
 
@@ -408,9 +407,9 @@ public class ExternalStatusMonitorTest
 	private void _testExecuteNoComponents(String statusPageStandardOut)
 		throws Exception {
 
-		UrlReader urlReader = mockUrlReader();
+		mockURLReaders();
 
-		setUrlReaderOutput(statusPageStandardOut, _URL, urlReader);
+		setURLReaderOutput(statusPageStandardOut, _URL);
 
 		MonitorResult monitorResult = _execute();
 
@@ -425,13 +424,13 @@ public class ExternalStatusMonitorTest
 			JSONObject componentJSONObject, String componentStatusString)
 		throws Exception {
 
-		UrlReader urlReader = mockUrlReader();
+		mockURLReaders();
 
-		setUrlReaderOutput(
+		setURLReaderOutput(
 			_newStatusPageStandardOut(
 				_newComponentJSONObject(_COMPONENT_NAME_1, "operational"),
 				componentJSONObject),
-			_URL, urlReader);
+			_URL);
 
 		MonitorResult monitorResult = _execute();
 

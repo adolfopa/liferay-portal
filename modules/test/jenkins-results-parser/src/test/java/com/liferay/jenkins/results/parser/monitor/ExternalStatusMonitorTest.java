@@ -281,7 +281,6 @@ public class ExternalStatusMonitorTest
 			"http://" + RandomTestUtil.randomString());
 		_testExternalStatusMonitorInvalidProperty(
 			"monitor[a].parameter[url]", RandomTestUtil.randomString());
-
 		_testExternalStatusMonitorMissingProperty(
 			"monitor[a].parameter[components]");
 		_testExternalStatusMonitorMissingProperty("monitor[a].parameter[url]");

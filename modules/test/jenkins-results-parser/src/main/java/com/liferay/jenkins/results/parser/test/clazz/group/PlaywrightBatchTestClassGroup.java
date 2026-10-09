@@ -87,7 +87,7 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 			_getPlaywrightProjectsIncludesJobProperty();
 
 		if (playwrightProjectsIncludesJobProperty == null) {
-			_addProjectNames(_getDefaultProjectNames());
+			_projectNames.addAll(_getDefaultProjectNames());
 		}
 		else {
 			_addProjectNames(playwrightProjectsIncludesJobProperty.getValue());
@@ -312,10 +312,10 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 					playwrightTestProjectJobProperties) {
 
 				if (playwrightTestProjectJobProperty.getValue() != null) {
-					String projectNames =
+					String projectNamesString =
 						playwrightTestProjectJobProperty.getValue();
 
-					_addProjectNames(projectNames);
+					_addProjectNames(projectNamesString);
 
 					playwrightJobProperties.add(
 						playwrightTestProjectJobProperty);
@@ -331,10 +331,10 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 					playwrightExcludeProjectJobProperties) {
 
 				if (playwrightExcludeProjectJobProperty.getValue() != null) {
-					String projectNames =
+					String projectNamesString =
 						playwrightExcludeProjectJobProperty.getValue();
 
-					removeProjectNames(projectNames);
+					removeProjectNames(projectNamesString);
 
 					playwrightJobProperties.add(
 						playwrightExcludeProjectJobProperty);
@@ -482,10 +482,11 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 				JenkinsResultsParserUtil.toDurationString(duration)));
 	}
 
-	private void _addProjectNames(String projectNames) {
-		projectNames = projectNames.trim();
+	private void _addProjectNames(String projectNamesString) {
+		projectNamesString = projectNamesString.trim();
 
-		Collections.addAll(_projectNames, projectNames.split("\\s*,\\s*"));
+		Collections.addAll(
+			_projectNames, projectNamesString.split("\\s*,\\s*"));
 	}
 
 	private String _callGradleCommand(
@@ -643,17 +644,19 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 			new File(getPlaywrightBaseDir(), matcher.group("testDir")));
 	}
 
-	private String _getDefaultProjectNames() {
+	private List<String> _getDefaultProjectNames() {
 		String playwrightProjectName = Environment.get(
 			"PLAYWRIGHT_PROJECT_NAME");
 
 		if (!JenkinsResultsParserUtil.isNullOrEmpty(playwrightProjectName)) {
-			return playwrightProjectName;
+			playwrightProjectName = playwrightProjectName.trim();
+
+			return Arrays.asList(playwrightProjectName.split("\\s*,\\s*"));
 		}
 
 		_loadPlaywrightJSONObjects();
 
-		StringBuilder sb = new StringBuilder();
+		List<String> projectNames = new ArrayList<>();
 
 		JSONObject configJSONObject = _playwrightJSONObject.getJSONObject(
 			"config");
@@ -663,14 +666,10 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 		for (int i = 0; i < projectsJSONArray.length(); i++) {
 			JSONObject projectJSONObject = projectsJSONArray.getJSONObject(i);
 
-			sb.append(projectJSONObject.optString("name"));
-
-			sb.append(",");
+			projectNames.add(projectJSONObject.optString("name"));
 		}
 
-		sb.setLength(sb.length() - 1);
-
-		return sb.toString();
+		return projectNames;
 	}
 
 	private File _getModulesDir() {

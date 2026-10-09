@@ -32,7 +32,7 @@ public class ExternalStatusMonitorTest
 		UrlReader urlReader = mockUrlReader();
 
 		setUrlReaderOutput(
-			_newStatusPageJSON(
+			_newStatusPageStandardOut(
 				_newComponentJSONObject(_COMPONENT_NAME_1, "major_outage"),
 				_newComponentJSONObject(_COMPONENT_NAME_2, "operational")),
 			_URL, urlReader);
@@ -74,26 +74,26 @@ public class ExternalStatusMonitorTest
 		_testExecuteDuplicateComponent(
 			_COMPONENT_NAME_1 + ": degraded_performance",
 			MonitorResult.Status.WARN,
-			_newStatusPageJSON(
+			_newStatusPageStandardOut(
 				_newComponentJSONObject(
 					_COMPONENT_NAME_1, "degraded_performance"),
 				_newComponentJSONObject(_COMPONENT_NAME_1, "under_maintenance"),
 				_newComponentJSONObject(_COMPONENT_NAME_2, "operational")));
 		_testExecuteDuplicateComponent(
 			_COMPONENT_NAME_1 + ": major_outage", MonitorResult.Status.CRITICAL,
-			_newStatusPageJSON(
+			_newStatusPageStandardOut(
 				_newComponentJSONObject(_COMPONENT_NAME_1, "major_outage"),
 				_newComponentJSONObject(_COMPONENT_NAME_1, "operational"),
 				_newComponentJSONObject(_COMPONENT_NAME_2, "operational")));
 		_testExecuteDuplicateComponent(
 			_COMPONENT_NAME_1 + ": major_outage", MonitorResult.Status.CRITICAL,
-			_newStatusPageJSON(
+			_newStatusPageStandardOut(
 				_newComponentJSONObject(_COMPONENT_NAME_1, "operational"),
 				_newComponentJSONObject(_COMPONENT_NAME_1, "major_outage"),
 				_newComponentJSONObject(_COMPONENT_NAME_2, "operational")));
 		_testExecuteDuplicateComponent(
 			_COMPONENT_NAME_1 + ": major_outage", MonitorResult.Status.CRITICAL,
-			_newStatusPageJSON(
+			_newStatusPageStandardOut(
 				_newComponentJSONObject(_COMPONENT_NAME_1, "operational"),
 				_newComponentJSONObject(_COMPONENT_NAME_2, "operational"),
 				_newComponentJSONObject(_COMPONENT_NAME_1, "major_outage")));
@@ -118,7 +118,7 @@ public class ExternalStatusMonitorTest
 			JenkinsResultsParserUtil.combine(
 				_COMPONENT_NAME_1, ": major_outage, ", _COMPONENT_NAME_2,
 				": missing"),
-			_newStatusPageJSON(
+			_newStatusPageStandardOut(
 				_newComponentJSONObject(_COMPONENT_NAME_1, "major_outage"),
 				_newComponentJSONObject(_COMPONENT_NAME_2, null)));
 
@@ -145,7 +145,7 @@ public class ExternalStatusMonitorTest
 		UrlReader urlReader = mockUrlReader();
 
 		setUrlReaderOutput(
-			_newStatusPageJSON(
+			_newStatusPageStandardOut(
 				_newComponentJSONObject(_COMPONENT_NAME_2, "major_outage"),
 				_newComponentJSONObject(
 					_COMPONENT_NAME_1, "degraded_performance")),
@@ -179,7 +179,7 @@ public class ExternalStatusMonitorTest
 		UrlReader urlReader = mockUrlReader();
 
 		setUrlReaderOutput(
-			_newStatusPageJSON(
+			_newStatusPageStandardOut(
 				_newComponentJSONObject(_COMPONENT_NAME_1, "operational"),
 				_newComponentJSONObject(_COMPONENT_NAME_2, "operational"),
 				_newComponentJSONObject(
@@ -217,7 +217,7 @@ public class ExternalStatusMonitorTest
 
 		setUrlReaderOutputAfterException(
 			new IOException(),
-			_newStatusPageJSON(
+			_newStatusPageStandardOut(
 				_newComponentJSONObject(_COMPONENT_NAME_1, "operational"),
 				_newComponentJSONObject(_COMPONENT_NAME_2, "operational")),
 			_URL, urlReader);
@@ -251,7 +251,7 @@ public class ExternalStatusMonitorTest
 		UrlReader urlReader = mockUrlReader();
 
 		setUrlReaderOutput(
-			_newStatusPageJSON(
+			_newStatusPageStandardOut(
 				_newComponentJSONObject(_COMPONENT_NAME_1, "major_outage")),
 			_URL, urlReader);
 
@@ -331,7 +331,9 @@ public class ExternalStatusMonitorTest
 		return monitorProperties;
 	}
 
-	private String _newStatusPageJSON(JSONObject... componentJSONObjects) {
+	private String _newStatusPageStandardOut(
+		JSONObject... componentJSONObjects) {
+
 		JSONArray componentsJSONArray = new JSONArray();
 
 		for (JSONObject componentJSONObject : componentJSONObjects) {
@@ -353,7 +355,7 @@ public class ExternalStatusMonitorTest
 		UrlReader urlReader = mockUrlReader();
 
 		setUrlReaderOutput(
-			_newStatusPageJSON(
+			_newStatusPageStandardOut(
 				_newComponentJSONObject(
 					_COMPONENT_NAME_1, componentStatusString),
 				_newComponentJSONObject(_COMPONENT_NAME_2, "operational")),
@@ -371,12 +373,12 @@ public class ExternalStatusMonitorTest
 
 	private void _testExecuteDuplicateComponent(
 			String componentMessages, MonitorResult.Status status,
-			String statusPageJSON)
+			String statusPageStandardOut)
 		throws Exception {
 
 		UrlReader urlReader = mockUrlReader();
 
-		setUrlReaderOutput(statusPageJSON, _URL, urlReader);
+		setUrlReaderOutput(statusPageStandardOut, _URL, urlReader);
 
 		MonitorResult monitorResult = _execute();
 
@@ -388,12 +390,12 @@ public class ExternalStatusMonitorTest
 	}
 
 	private void _testExecuteMalformedComponent(
-			String componentMessages, String statusPageJSON)
+			String componentMessages, String statusPageStandardOut)
 		throws Exception {
 
 		UrlReader urlReader = mockUrlReader();
 
-		setUrlReaderOutput(statusPageJSON, _URL, urlReader);
+		setUrlReaderOutput(statusPageStandardOut, _URL, urlReader);
 
 		MonitorResult monitorResult = _execute();
 
@@ -404,12 +406,12 @@ public class ExternalStatusMonitorTest
 		testEquals(MonitorResult.Status.CRITICAL, monitorResult.getStatus());
 	}
 
-	private void _testExecuteNoComponents(String statusPageJSON)
+	private void _testExecuteNoComponents(String statusPageStandardOut)
 		throws Exception {
 
 		UrlReader urlReader = mockUrlReader();
 
-		setUrlReaderOutput(statusPageJSON, _URL, urlReader);
+		setUrlReaderOutput(statusPageStandardOut, _URL, urlReader);
 
 		MonitorResult monitorResult = _execute();
 
@@ -427,7 +429,7 @@ public class ExternalStatusMonitorTest
 		UrlReader urlReader = mockUrlReader();
 
 		setUrlReaderOutput(
-			_newStatusPageJSON(
+			_newStatusPageStandardOut(
 				_newComponentJSONObject(_COMPONENT_NAME_1, "operational"),
 				componentJSONObject),
 			_URL, urlReader);

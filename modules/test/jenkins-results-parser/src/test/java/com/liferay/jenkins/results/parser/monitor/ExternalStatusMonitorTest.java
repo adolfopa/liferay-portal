@@ -28,6 +28,36 @@ public class ExternalStatusMonitorTest
 	extends com.liferay.jenkins.results.parser.Test {
 
 	@Test
+	public void testExecuteComponentNamesWithWhitespace() throws Exception {
+		UrlReader urlReader = mockUrlReader();
+
+		setUrlReaderOutput(
+			_newStatusPageJSON(
+				_newComponentJSONObject(_COMPONENT_NAME_1, "major_outage"),
+				_newComponentJSONObject(_COMPONENT_NAME_2, "operational")),
+			_URL, urlReader);
+
+		Properties monitorProperties = _newMonitorProperties();
+
+		monitorProperties.setProperty(
+			"monitor[a].parameter[components]",
+			JenkinsResultsParserUtil.combine(
+				" ", _COMPONENT_NAME_1, " , ", _COMPONENT_NAME_2, " "));
+
+		ExternalStatusMonitor externalStatusMonitor = _newExternalStatusMonitor(
+			monitorProperties);
+
+		MonitorResult monitorResult = externalStatusMonitor.execute();
+
+		testEquals(
+			JenkinsResultsParserUtil.combine(
+				"Status page ", _URL, " reports ", _COMPONENT_NAME_1,
+				": major_outage"),
+			monitorResult.getMessage());
+		testEquals(MonitorResult.Status.CRITICAL, monitorResult.getStatus());
+	}
+
+	@Test
 	public void testExecuteComponentStatus() throws Exception {
 		_testExecuteComponentStatus(
 			"degraded_performance", MonitorResult.Status.WARN);
@@ -61,6 +91,12 @@ public class ExternalStatusMonitorTest
 				_newComponentJSONObject(_COMPONENT_NAME_1, "operational"),
 				_newComponentJSONObject(_COMPONENT_NAME_1, "major_outage"),
 				_newComponentJSONObject(_COMPONENT_NAME_2, "operational")));
+		_testExecuteDuplicateComponent(
+			_COMPONENT_NAME_1 + ": major_outage", MonitorResult.Status.CRITICAL,
+			_newStatusPageJSON(
+				_newComponentJSONObject(_COMPONENT_NAME_1, "operational"),
+				_newComponentJSONObject(_COMPONENT_NAME_2, "operational"),
+				_newComponentJSONObject(_COMPONENT_NAME_1, "major_outage")));
 	}
 
 	@Test

@@ -45,6 +45,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -605,16 +606,16 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 		Properties testProperties = JenkinsResultsParserUtil.getProperties(
 			new File(dir, "test.properties"));
 
-		String propertyValue = JenkinsResultsParserUtil.getProperty(
-			testProperties, "database.types");
+		String[] databaseTypes = StringUtils.split(
+			JenkinsResultsParserUtil.getProperty(
+				testProperties, "database.types"),
+			", ");
 
-		if (JenkinsResultsParserUtil.isNullOrEmpty(propertyValue)) {
+		if (databaseTypes == null) {
 			return Collections.emptyList();
 		}
 
-		propertyValue = propertyValue.trim();
-
-		return Arrays.asList(propertyValue.split("\\s*,\\s*"));
+		return Arrays.asList(databaseTypes);
 	}
 
 	private List<String> _getDatabaseTypes(String projectName)

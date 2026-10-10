@@ -311,10 +311,8 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 					playwrightTestProjectJobProperties) {
 
 				if (playwrightTestProjectJobProperty.getValue() != null) {
-					String projectNamesString =
-						playwrightTestProjectJobProperty.getValue();
-
-					_addProjectNames(projectNamesString);
+					_addProjectNames(
+						playwrightTestProjectJobProperty.getValue());
 
 					playwrightJobProperties.add(
 						playwrightTestProjectJobProperty);
@@ -330,10 +328,8 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 					playwrightExcludeProjectJobProperties) {
 
 				if (playwrightExcludeProjectJobProperty.getValue() != null) {
-					String projectNamesString =
-						playwrightExcludeProjectJobProperty.getValue();
-
-					removeProjectNames(projectNamesString);
+					removeProjectNames(
+						playwrightExcludeProjectJobProperty.getValue());
 
 					playwrightJobProperties.add(
 						playwrightExcludeProjectJobProperty);

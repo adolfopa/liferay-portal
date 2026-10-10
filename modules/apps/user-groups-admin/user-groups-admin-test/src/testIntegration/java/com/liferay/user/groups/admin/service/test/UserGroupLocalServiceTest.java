@@ -534,15 +534,15 @@ public class UserGroupLocalServiceTest {
 						ExportImportReportEntryConstants.TYPE_EMPTY, null, null,
 						RandomTestUtil.randomString());
 
-			String description = RandomTestUtil.randomString();
 			String name = RandomTestUtil.randomString();
+			String description = RandomTestUtil.randomString();
 
 			userGroup = _userGroupLocalService.updateUserGroup(
 				externalReferenceCode, TestPropsValues.getCompanyId(),
 				userGroup.getUserGroupId(), name, description, null);
 
-			Assert.assertEquals(description, userGroup.getDescription());
 			Assert.assertEquals(name, userGroup.getName());
+			Assert.assertEquals(description, userGroup.getDescription());
 			Assert.assertEquals(
 				WorkflowConstants.STATUS_APPROVED, userGroup.getStatus());
 

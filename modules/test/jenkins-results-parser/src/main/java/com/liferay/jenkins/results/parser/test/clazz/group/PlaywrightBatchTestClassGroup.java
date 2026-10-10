@@ -186,9 +186,7 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 		playwrightJobProperties.removeAll(Collections.singleton(null));
 
 		for (JobProperty jobProperty : playwrightJobProperties) {
-			String jobPropertyValue = jobProperty.getValue();
-
-			Collections.addAll(_projectNames, jobPropertyValue.split(","));
+			_addProjectNames(jobProperty.getValue());
 		}
 
 		JobProperty excludesJobProperty =
@@ -348,11 +346,9 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 		return new ArrayList<>(playwrightJobProperties);
 	}
 
-	protected void removeProjectNames(String jobPropertyValue) {
-		String[] excludesProjectNames = jobPropertyValue.split("\\s*,\\s*");
-
-		for (String excludeProjectName : excludesProjectNames) {
-			_projectNames.remove(excludeProjectName);
+	protected void removeProjectNames(String projectNamesString) {
+		for (String projectName : StringUtils.split(projectNamesString, ", ")) {
+			_projectNames.remove(projectName);
 		}
 	}
 
@@ -484,10 +480,8 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 	}
 
 	private void _addProjectNames(String projectNamesString) {
-		projectNamesString = projectNamesString.trim();
-
 		Collections.addAll(
-			_projectNames, projectNamesString.split("\\s*,\\s*"));
+			_projectNames, StringUtils.split(projectNamesString, ", "));
 	}
 
 	private String _callGradleCommand(
@@ -650,9 +644,8 @@ public class PlaywrightBatchTestClassGroup extends BatchTestClassGroup {
 			"PLAYWRIGHT_PROJECT_NAME");
 
 		if (!JenkinsResultsParserUtil.isNullOrEmpty(playwrightProjectName)) {
-			playwrightProjectName = playwrightProjectName.trim();
-
-			return Arrays.asList(playwrightProjectName.split("\\s*,\\s*"));
+			return Arrays.asList(
+				StringUtils.split(playwrightProjectName, ", "));
 		}
 
 		_loadPlaywrightJSONObjects();

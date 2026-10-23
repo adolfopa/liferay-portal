@@ -168,7 +168,7 @@ public class BatchEngineImportTaskLocalServiceTest {
 
 			String content = _readContent(batchEngineImportTask);
 
-			Assert.assertFalse(content, content.contains(password));
+			Assert.assertFalse(content.contains(password));
 
 			JSONArray jsonArray = JSONFactoryUtil.createJSONArray(content);
 
@@ -179,7 +179,7 @@ public class BatchEngineImportTaskLocalServiceTest {
 
 			String encryptedPassword = jsonObject.getString("password");
 
-			Assert.assertFalse(encryptedPassword, encryptedPassword.isEmpty());
+			Assert.assertFalse(encryptedPassword.isEmpty());
 
 			jsonObject = jsonArray.getJSONObject(1);
 

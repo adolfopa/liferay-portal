@@ -200,7 +200,9 @@ public class AssetVocabularyExternalReferenceCodeUpgradeProcessTest {
 
 	private void _runUpgrade() throws Exception {
 		UpgradeProcess upgradeProcess = UpgradeTestUtil.getUpgradeStep(
-			_upgradeStepRegistrator, _CLASS_NAME);
+			_upgradeStepRegistrator,
+			"com.liferay.asset.categories.internal.upgrade.v1_1_0." +
+				"AssetVocabularyExternalReferenceCodeUpgradeProcess");
 
 		upgradeProcess.upgrade();
 
@@ -498,10 +500,6 @@ public class AssetVocabularyExternalReferenceCodeUpgradeProcessTest {
 			}
 		}
 	}
-
-	private static final String _CLASS_NAME =
-		"com.liferay.asset.categories.internal.upgrade.v1_1_0." +
-			"AssetVocabularyExternalReferenceCodeUpgradeProcess";
 
 	private static final String _KEY_FREEMARKER_FRAGMENT_ENTRY_PROCESSOR =
 		"com.liferay.fragment.entry.processor.freemarker." +

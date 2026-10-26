@@ -6,6 +6,7 @@
 package com.liferay.asset.categories.internal.upgrade.v1_1_0;
 
 import com.liferay.asset.kernel.model.AssetVocabularyConstants;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
@@ -26,10 +27,8 @@ import com.liferay.portal.kernel.util.Validator;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -104,7 +103,7 @@ public class AssetVocabularyExternalReferenceCodeUpgradeProcess
 	}
 
 	private String _getNewExternalReferenceCode(
-		Map<Long, String> externalReferenceCodes, String externalReferenceCode,
+		String externalReferenceCode, Map<Long, String> externalReferenceCodes,
 		long groupId) {
 
 		if (!externalReferenceCode.equals(
@@ -128,14 +127,14 @@ public class AssetVocabularyExternalReferenceCodeUpgradeProcess
 			name.equals("assetVocabularyExternalReferenceCodes")) {
 
 			return _getNewExternalReferenceCode(
-				externalReferenceCodes, value, groupId);
+				value, externalReferenceCodes, groupId);
 		}
 
 		if (name.startsWith(
 				_ASSET_VOCABULARY_EXTERNAL_REFERENCE_CODES_PREFIX)) {
 
 			return _getNewExternalReferenceCode(
-				externalReferenceCodes, value,
+				value, externalReferenceCodes,
 				_getGroupId(
 					companyId, groupId,
 					name.substring(
@@ -147,31 +146,25 @@ public class AssetVocabularyExternalReferenceCodeUpgradeProcess
 			return value;
 		}
 
-		List<String> groupVocabularyExternalReferenceCodes = new ArrayList<>();
-
-		for (String groupVocabularyExternalReferenceCode :
-				StringUtil.split(value)) {
-
-			String[] parts = StringUtil.split(
-				groupVocabularyExternalReferenceCode, "&&");
-
-			if (parts.length != 2) {
-				groupVocabularyExternalReferenceCodes.add(
-					groupVocabularyExternalReferenceCode);
-
-				continue;
-			}
-
-			String newExternalReferenceCode = _getNewExternalReferenceCode(
-				externalReferenceCodes, parts[1],
-				_getGroupId(companyId, 0, parts[0]));
-
-			groupVocabularyExternalReferenceCodes.add(
-				parts[0] + "&&" + newExternalReferenceCode);
-		}
-
 		return StringUtil.merge(
-			groupVocabularyExternalReferenceCodes, StringPool.COMMA);
+			TransformUtil.transformToList(
+				StringUtil.split(value),
+				groupVocabularyExternalReferenceCode -> {
+					String[] parts = StringUtil.split(
+						groupVocabularyExternalReferenceCode, "&&");
+
+					if (parts.length != 2) {
+						return groupVocabularyExternalReferenceCode;
+					}
+
+					String newExternalReferenceCode =
+						_getNewExternalReferenceCode(
+							parts[1], externalReferenceCodes,
+							_getGroupId(companyId, 0, parts[0]));
+
+					return parts[0] + "&&" + newExternalReferenceCode;
+				}),
+			StringPool.COMMA);
 	}
 
 	private Map<Long, String> _upgradeAssetVocabularies(
@@ -282,7 +275,8 @@ public class AssetVocabularyExternalReferenceCodeUpgradeProcess
 
 					JSONObject jsonObject =
 						editableValuesJSONObject.getJSONObject(
-							_KEY_FREEMARKER_FRAGMENT_ENTRY_PROCESSOR);
+							"com.liferay.fragment.entry.processor.freemarker." +
+								"FreeMarkerFragmentEntryProcessor");
 
 					if (jsonObject == null) {
 						continue;
@@ -313,7 +307,7 @@ public class AssetVocabularyExternalReferenceCodeUpgradeProcess
 
 						String newExternalReferenceCode =
 							_getNewExternalReferenceCode(
-								externalReferenceCodes, externalReferenceCode,
+								externalReferenceCode, externalReferenceCodes,
 								_getGroupId(
 									companyId, resultSet.getLong("groupId"),
 									valueJSONObject.getString(
@@ -454,7 +448,7 @@ public class AssetVocabularyExternalReferenceCodeUpgradeProcess
 
 					String newExternalReferenceCode =
 						_getNewExternalReferenceCode(
-							externalReferenceCodes, externalReferenceCode,
+							externalReferenceCode, externalReferenceCodes,
 							_getGroupId(
 								companyId, resultSet.getLong("groupId"),
 								typeSettingsUnicodeProperties.get(
@@ -487,10 +481,6 @@ public class AssetVocabularyExternalReferenceCodeUpgradeProcess
 	private static final String
 		_ASSET_VOCABULARY_EXTERNAL_REFERENCE_CODES_PREFIX =
 			"assetVocabularyExternalReferenceCodes_";
-
-	private static final String _KEY_FREEMARKER_FRAGMENT_ENTRY_PROCESSOR =
-		"com.liferay.fragment.entry.processor.freemarker." +
-			"FreeMarkerFragmentEntryProcessor";
 
 	private final CompanyLocalService _companyLocalService;
 	private final GroupLocalService _groupLocalService;

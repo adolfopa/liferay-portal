@@ -19,12 +19,12 @@ import java.util.Map;
 public class RatingUtil {
 
 	public static Rating toRating(
-		Map<String, Map<String, String>> actions, Portal portal,
+		Map<String, Map<String, String>> actionsMap, Portal portal,
 		RatingsEntry ratingsEntry, UserLocalService userLocalService) {
 
 		return new Rating() {
 			{
-				setActions(() -> actions);
+				setActions(() -> actionsMap);
 				setBestRating(() -> 1D);
 				setCreator(
 					() -> CreatorUtil.toCreator(

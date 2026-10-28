@@ -104,19 +104,7 @@ public class BlogPostingResourceTest extends BaseBlogPostingResourceTestCase {
 	public void testGetBlogPostingMyRating() throws Exception {
 		super.testGetBlogPostingMyRating();
 
-		BlogPosting blogPosting = testGetBlogPosting_addBlogPosting();
-
-		testGetBlogPostingMyRating_addRating(
-			blogPosting.getId(), randomRating());
-
-		Rating rating = blogPostingResource.getBlogPostingMyRating(
-			blogPosting.getId());
-
-		Map<String, Map<String, String>> actions = rating.getActions();
-
-		Assert.assertEquals(
-			SetUtil.fromArray("create", "delete", "get", "replace"),
-			actions.keySet());
+		_testGetBlogPostingMyRatingActions();
 	}
 
 	@Override
@@ -311,6 +299,22 @@ public class BlogPostingResourceTest extends BaseBlogPostingResourceTestCase {
 		}
 
 		return contains;
+	}
+
+	private void _testGetBlogPostingMyRatingActions() throws Exception {
+		BlogPosting blogPosting = testGetBlogPosting_addBlogPosting();
+
+		testGetBlogPostingMyRating_addRating(
+			blogPosting.getId(), randomRating());
+
+		Rating rating = blogPostingResource.getBlogPostingMyRating(
+			blogPosting.getId());
+
+		Map<String, Map<String, String>> actions = rating.getActions();
+
+		Assert.assertEquals(
+			SetUtil.fromArray("create", "delete", "get", "replace"),
+			actions.keySet());
 	}
 
 	private BlogPosting _testGetSiteBlogPostingsPage_addBlogPosting(
